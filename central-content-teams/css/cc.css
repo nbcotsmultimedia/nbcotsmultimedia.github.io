@@ -1,0 +1,179 @@
+body {
+  overflow: auto;
+}
+#thumbsCon {
+  float: left;
+  width: 53%;
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.thumb {
+  width: 18%;
+  padding: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.thMask {
+  overflow: hidden;
+}
+.headOnly {
+  width: 175px;
+  position: relative;
+  left: -45px;
+
+}
+
+.thactive {
+  border: 3px solid #ffcc00;
+  box-sizing: border-box;
+}
+
+#contentCon {
+  width: 47%;
+  float: right;
+  padding-left: 20px;
+}
+
+.thLast {
+  font-size: 13px;
+  line-height: 1.2em;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+#cardCon {
+  background-image: url('../images/card-bg-n.jpg');
+  width: 489px;
+  height: 550px;
+  padding: 15px;
+  position: relative;
+  border-radius: 8px;
+}
+
+#cardPic {
+  width: 46%;
+  border: 10px solid white;
+}
+
+
+#cardInfo {
+  position: absolute;
+  width: 54%;
+  right: 0;
+  top: 200px;
+  padding-left: 15px;
+}
+
+#fName {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 300;
+  font-size: 45px;
+  margin-bottom: 0px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 1px #FFF;
+}
+#lName {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 45px;
+  margin-top: -30px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 1px #FFF;
+}
+#pInfo {
+  font-family: 'Roboto Condensed', sans-serif;
+  font-weight: 300;
+  font-size: 18px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px #FFF;
+  background-color: rgba(255,255,255, .60);
+  width: 93%;
+  padding: 10px;
+}
+.stat {
+  line-height: 1.1em;
+  margin-bottom: 10px;
+}
+.bolder {
+  font-weight: 500;
+}
+.smaller {
+  font-size: 40px !important;
+}
+
+.dlabel {
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+#ddown {
+  display: none;
+
+}
+
+#nav {
+  text-transform: uppercase;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+#teamLabel {
+  font-family: 'ArtHouseBold', sans-serif;
+	font-size: 18px;
+	margin-top: 10px;
+}
+
+@media (max-width: 650px) {
+  body {
+    padding: 0px 15px;
+  }
+  #contentCon {
+    width: 100%;
+    padding-left: 0px;
+  }
+
+  #thumbsCon {
+    display: none;
+  }
+
+  #ddown {
+    display: block;
+  }
+
+
+  #cardPic {
+    width: 50%;
+  }
+
+  #cardCon {
+    width: 100%;
+  }
+
+  #cardInfo {
+    width: 50%;
+    right: 0;
+    top: 175px;
+    padding-left: 15px;
+  }
+
+  #fName {
+    font-size: 31px;
+    margin-bottom: 0px;
+  }
+  #lName {
+    font-size: 31px;
+    margin-top: -20px;
+  }
+
+  .smaller {
+    font-size: 25px !important;
+  }
+
+
+}
