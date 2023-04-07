@@ -1,5 +1,7 @@
+// if mode is true, split is triptych
 let mode;
 
+// event handler for toggle between diptych and triptych
 $(document).on('change', '.form-check', function (e) {
 	mode = e.target.checked;
 	let id = d3.select(".active").attr("id")
@@ -12,11 +14,17 @@ $(document).on('change', '.form-check', function (e) {
 
 });
 
+// function to build split tool
+// takes two variables - is the split a diptych or triptych (mode) and are the lines straight or diagonal? both are boolean
 function buildSplit(mode, diagonal) {
 
-
+	// destroy elements generated during previous run if needed
 	d3.select("#split-tool-options").selectAll("*").remove();
 	d3.select("#split-tool").selectAll("*").remove();
+
+	// the image cropping library (cropme) takes some options
+	// need to adjust viewport and container width based on if diptych or triptych
+	// would have been nice if we could set to 100% of parent container, but unfortunately this needs to be hardcoded for the library to work    
 
 	let options;
 
@@ -64,9 +72,8 @@ function buildSplit(mode, diagonal) {
 		}
 	}
 
+	// using d3 to generate some containers/file upload buttons for cropme
 	var root = d3.select("#split-tool-options")
-	// .append("div")
-	// .attr("class", "option-row r2")
 
 	var leftForm = root
 		.append("div")
@@ -84,6 +91,7 @@ function buildSplit(mode, diagonal) {
 		.attr("type", "file")
 		.attr("id", "formFile-left")
 
+	// if triptych, generate a middle container and file upload
 	if (mode) {
 
 		var middleForm = root
@@ -124,6 +132,7 @@ function buildSplit(mode, diagonal) {
 		.attr("class", "container-wrapper")
 		.attr("id", "capture")
 
+	// seperation lines for photos
 	tool
 		.append("div")
 		.attr("id", "border-line1")
@@ -134,6 +143,7 @@ function buildSplit(mode, diagonal) {
 		.append("div")
 		.attr("id", "left-container")
 
+	// if triptych, implement two lines instead of one
 	if (mode) {
 
 		tool
@@ -153,7 +163,8 @@ function buildSplit(mode, diagonal) {
 			.attr("id", "border-line3")
 	}
 
-
+	// making sure the correct styles are applied to the border lines depending on if straight or diagonal 
+	// this could be more efficient...
 	if (diagonal) {
 		d3.selectAll("#border-line1")
 			.classed("diagonal", true)
@@ -191,6 +202,7 @@ function buildSplit(mode, diagonal) {
 	const leftFile = d3.select("#formFile-left")
 	const rightFile = d3.select("#formFile-right")
 
+	// file upload function
 	var fileUpload = function (ev, container) {
 		if (ev.target.files) {
 			let file = ev.target.files[0];
@@ -208,7 +220,7 @@ function buildSplit(mode, diagonal) {
 						url: image.src
 					});
 
-
+					// the zoom sliders are crop me defaults, so tweaking styling a bit 
 					d3.selectAll(".cropme-slider").style("width", options.viewport.width - 50 + "px")
 					d3.selectAll(".cropme-slider>input").style("width", options.viewport.width - 50 + "px")
 
@@ -217,10 +229,8 @@ function buildSplit(mode, diagonal) {
 			}
 			reader.readAsDataURL(file);
 
-			// active download button when all files have been uploaded 
-
+			// only activate download button when all files have been uploaded 
 			if (mode) {
-
 
 				if ((document.getElementById('formFile-right').files.length != 0) & (document.getElementById('formFile-left').files.length != 0) & (document.getElementById('formFile-middle').files.length != 0)) {
 					console.log("all uploaded");
@@ -239,7 +249,7 @@ function buildSplit(mode, diagonal) {
 		}
 	}
 
-
+	// binding file upload functions to file inputs 
 	leftFile.on("change", function (ev) {
 		fileUpload(ev, leftContainer)
 	})
@@ -248,11 +258,8 @@ function buildSplit(mode, diagonal) {
 		fileUpload(ev, rightContainer)
 	})
 
-	// straight or diagonal lines?
+	// change styling when user clicks between diagonal and straight lines 
 	d3.selectAll(".radio-option").on("click", function (e) {
-
-		console.log("mode", mode)
-		console.log("diag", diagonal)
 		let id = d3.select(this).attr("id")
 
 		d3.selectAll(".radio-option").classed("active", false)
@@ -297,11 +304,6 @@ function buildSplit(mode, diagonal) {
 
 	})
 
-	console.log("mode??", mode)
-	console.log("diagonal??", diagonal)
-
-	
-
 	if(diagonal){
 		if (mode) {
 
@@ -323,6 +325,7 @@ function buildSplit(mode, diagonal) {
 
 	}
 
+	// binding file upload function to middle input if triptych
 	if (mode) {
 		const middleContainer = $('#middle-container');
 		middleContainer.cropme(options);
@@ -335,55 +338,18 @@ function buildSplit(mode, diagonal) {
 
 	} 
 
-
+	// the zoom sliders are crop me defaults, so tweaking styling a bit 
 	d3.selectAll(".cropme-slider").style("width", options.viewport.width - 50 + "px")
 	d3.selectAll(".cropme-slider>input").style("width", options.viewport.width - 50 + "px")
 }
 
-var element = $("#container-wrapper"); // global variable
-var getCanvas; // global variable
-var newData;
-
+// download button even handler
 $("#download").on('click', function () {
 
-	// html2canvas(document.querySelector("#capture"), { scale: 2 }).then(canvas => {
-	// 	// document.body.appendChild(canvas)
-	// 	getCanvas = canvas;
-	// 	var imgageData = getCanvas.toDataURL("image/png");
-	// 	var a = document.createElement("a");
-	// 	a.href = imgageData; //Image Base64 Goes here
-	// 	a.download = "Image.png"; //File name Here
-	// 	a.click(); //Downloaded file
-	// });
-
-
+	// ensures that the diagonal lines are cropped
 	d3.select("#capture").style("overflow", "hidden")
 
-	// let el = document.getElementById('capture');
-
-	// let options = {
-	// 	quality: 0.99,
-	// 	width: el.clientWidth * 2,
-	// 	height: el.clientHeight * 2,
-	// 	style: {
-	// 		'transform': 'scale(2)',
-	// 		'transform-origin': '50% 50%',
-	// 	}
-	// }
-
-	// domtoimage.toBlob(el, options)
-	// 		.then(function (blob) {
-
-
-	// 			var link = window.URL.createObjectURL(blob);
-	// 			var a = document.createElement("a");
-	// 			a.href = link; //Image Base64 Goes here
-	// 			a.download = "Image.jpeg"; //File name Here
-	// 			a.click(); //Downloaded file
-	// 			// window.saveAs(blob, 'my-node.png');
-	// 			d3.select("#capture").style("overflow", "unset")
-	// 		});
-
+	// update this setting to change photo output width and height
 	let options = {
 		canvasWidth: 1500,
 		canvasHeight: 846
@@ -394,22 +360,9 @@ $("#download").on('click', function () {
 			download(dataUrl, 'image.png');
 			d3.select("#capture").style("overflow", "unset")
 		});
-
-	// htmlToImage.toPng(document.getElementById('capture'))
-	// 	.then(function (blob) {
-	// 		console.log("blob", blob)
-	// 		var link = window.URL.createObjectURL(blob);
-	// 		var a = document.createElement("a");
-	// 		a.href = link; //Image Base64 Goes here
-	// 		a.download = "Image.jpeg"; //File name Here
-	// 		a.click(); //Downloaded file
-	// 		// window.saveAs(blob, 'my-node.png');
-	// 		d3.select("#capture").style("overflow", "unset")
-	// 	});
-
 });
 
-
+// on page load generate a diptych with diagonal lines...
 buildSplit(false, true)
 
 

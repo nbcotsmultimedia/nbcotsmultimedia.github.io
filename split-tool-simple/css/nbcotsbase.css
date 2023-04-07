@@ -44,10 +44,6 @@ button {
 	margin-bottom: 30px;
 }
 
-/* .left-photo, .right-photo {
-	width: 45%;
-} */
-
 .left-photo, .right-photo {
 	width: 50%;
 }
@@ -172,45 +168,6 @@ input[type=file]::-webkit-file-upload-button {
 	background-color: #BFBFBE;
 }
 
-/* .btn-group-toggle {
-	margin-left: 15px;
-}
-
-.btn-group label {
-	color: black !important;
-}
-
-.btn-secondary:not(:disabled):not(.disabled).active {
-	background-color: #E9EFF1;
-	border-color:  #ced4da;;
-}
-
-.btn-secondary:not(:disabled):not(.disabled) {
-	background-color: white;
-	border-color:  #ced4da;;
-	border-width: 1px;
-} */
-
-/* .btn-primary:focus,
-.btn-primary:active{
-    box-shadow:none !important;
-    outline:0px !important;
-}
-
-.btn-secondary:not(:disabled):not(.disabled).active:focus, .btn-secondary:not(:disabled):not(.disabled):active:focus, .show>.btn-secondary.dropdown-toggle:focus {
-    box-shadow:none !important;
-    outline:0px !important;
-}
-
-*:hover,
-*:focus,
-*:active
- {
-  outline: none;
-  box-shadow: none !important;
-  -webkit-appearance: none;
-} */
-
 .form-control {
 	border: 1px solid #BFBFBE !important; 
 }
@@ -245,7 +202,6 @@ img {
 	height: 100%;
 	z-index: 1050;
 	pointer-events: none;
-	/* left: -5px; */
 }
 
 #border-line2 {
@@ -255,7 +211,6 @@ img {
 	height: 100%;
 	z-index: 1050;
 	pointer-events: none;
-	/* left: -5px; */
 }
 
 #border-line3 {
@@ -265,7 +220,6 @@ img {
 	height: 100%;
 	z-index: 1050;
 	pointer-events: none;
-	/* left: -5px; */
 }
 
 #split-tool {
@@ -280,12 +234,8 @@ img {
 
 .cropme-slider {
 	transform: unset !important;
-	/* margin-top: -35px !important; */
 	margin-left: auto !important;
 	margin-right: auto !important;
-	/* display: flex !important;
-    justify-content: center !important;
-	width: unset !important; */
 }
 
 .cropme-slider>input {
@@ -298,7 +248,6 @@ img {
 
 #right-container.diptych > .cropme-container > .viewport {
 	clip-path: polygon(20% 0px, 100% 0px, 100% 100%, 0px 100%) !important;
-    left: -40px !important;
 	width: 415px !important;
 }
 
@@ -309,19 +258,15 @@ img {
 
 
 #left-container.diptych > .cropme-container {
-	/* clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%) !important; */
 	clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%) !important;
 	width: 415px !important;
 }
 
 #right-container.diptych > .cropme-container {
-	/* clip-path: polygon(0 0, 100% 0, 80% 100%, 0% 100%) !important; */
 	clip-path: polygon(20% 0px, 100% 0px, 100% 100%, 0px 100%) !important;
 	width: 415px !important;
 	left: -40px !important;
 }
-
-
 
 /* triptych */
 
@@ -351,33 +296,6 @@ img {
 }
 
 /* code */
-
-/* .leftviewport {
-	clip-path: polygon(0 0, 100% 0, 79% 100%, 0% 100%) !important;
-	width: 290px !important;
-}
-
-.middleviewport {
-	clip-path: polygon(20% 0px, 100% 0px, 80% 100%, 0px 100%) !important;
-	width: 300px !important;
-}
-
-.middlecontainer {
-	position: relative;
-	left: -60px !important;
-}
-
-.rightviewport {
-	clip-path: polygon(20% 0px, 100% 0px, 100% 100%, 0px 100%) !important;
-	width: 280px !important;
-}
-
-.rightcontainer {
-	position: relative;
-	left: -120px !important;
-} */
-
-/* the rest */
 
 .viewport {
 	border-style: unset !important;
