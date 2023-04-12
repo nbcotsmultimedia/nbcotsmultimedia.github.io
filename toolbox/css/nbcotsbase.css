@@ -1,0 +1,88 @@
+
+body { background-color: #FFF !important; padding-top: 25px; }
+
+.headline {
+	font-family: 'ArtHouseBold', sans-serif;
+	font-size: 24px;
+	color: #191919;
+	margin-bottom: 10px;
+}
+
+.subhead {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+	color: #999;
+	margin-bottom: 10px;
+	line-height: 1.4em;
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 16px;
+	color: #191919;
+}
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	color: #666;
+	margin-top: 10px;
+	line-height: 1.5em;
+}
+
+h1 {
+	margin-top: 15px;
+}
+
+h5 {
+	border-top: 1px dotted #CCC;
+	padding-top: 10px;
+}
+.toolDesc {
+	margin-top: 10px;
+}
+.toolDesc2 {
+	text-transform: uppercase;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.tool {
+	padding: 25px;
+}
+
+button a {
+	color: #FFF;
+}
+button a:hover {
+	color: #FFF;
+	text-decoration: none;
+}
+
+.btn-outline-primary a {
+	color: #007bff;
+}
+.btn-outline-primary a:hover {
+	color: #007bff;
+}
+
+@media (max-width: 900px ) {
+
+}
+
+@media (max-width: 500px ) {
+	.headline {
+		font-size: 20px;
+	}
+	.subhead {
+		font-size: 16px;
+	}
+	p {
+		font-size: 16px;
+	}
+	.credits {
+		font-size: 12px;
+	}
+
+}
