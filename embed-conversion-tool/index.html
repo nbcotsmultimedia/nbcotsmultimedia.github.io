@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Video Embed Code Coverter</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+
+    <style>
+      .output {
+        height: 200px;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+        padding: 10px;
+        word-wrap: break-word;
+        font-family: "Courier", sans-serif;
+      }
+      #note1, #note2 {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .smTxt {
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      #stations {
+        padding: 7px;
+        border-color: #CCC;
+        border-radius: 4px;
+        margin-top: 3px;
+      }
+
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <!-- Start content here-->
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-12">
+          <h1>OTS/LX Video Embed Code Converter</h1>
+          <p>The default embed code is a javscript embed that doesn't always work when embeded on other sites.  This tool will take any OTS or LX embed and covert it an iframe embed. If you have the video id and syndication ids already, scroll down. </p>
+
+          <p><strong>Paste embed code from OTS or LX site</strong><input type="text" class="form-control" id="pastedCode" placeholder="Should begin with <script type=..."></p>
+          <button type="button" class="btn btn-primary" id="convert">Convert to iFrame embed</button>
+
+          <hr/>
+          <p id="note1">Note: The iframe embed is not responsive so you might have fiddle around with the height (height="400") in the embed code depending on where you are embeding this.  If the embedded version looks too short, add height.  If you see letter boxing, reduce height.<p>
+
+          <div class="output" id="out1"></div>
+          <p><a href="javascript:copyCode('#out1');">COPY CODE TO CLIPBOARD</a></p>
+
+
+          <hr/>
+          <p>&nbsp;<p>
+
+          <p><strong>Already have the Video ID and Syndication ID from Wordpress?</strong></p>
+          <p><p>
+
+          <p><span class="smTxt">Video ID</span><input type="text" class="form-control" id="vidPaste" placeholder="0000000000000" maxlength="13" style="width: 150px"></p>
+          <p><span class="smTxt">Syndication ID</span><input type="text" class="form-control" id="cidPaste" placeholder="0:0:000000" maxlength="13" style="width: 150px"></p>
+
+          <span class="smTxt">Select an origin (if it doesn't matter, just select one)</span>
+          <br/>
+          <select id="stations" name="stations">
+            <option value="nbcbayarea.com">nbcbayarea.com</option>
+            <option value="nbcboston.com">nbcboston.com</option>
+            <option value="nbcconnecticut.com">nbcconnecticut.com</option>
+            <option value="nbcchicago.com">nbcchicago.com</option>
+            <option value="nbcdfw.com">nbcdfw.com</option>
+            <option value="nbclosangeles.com">nbclosangeles.com</option>
+            <option value="nbcmiami.com">nbcmiami.com</option>
+            <option value="nbcnewyork.com">nbcnewyork.com</option>
+            <option value="nbcphiladelphia.com">nbcphiladelphia.com</option>
+            <option value="nbcsandiego.com">nbcsandiego.com</option>
+            <option value="nbcwashington.com">nbcwashington.com</option>
+            <option value="necn.com">necn.com</option>
+            <option value="lx.com">lx.com</option>
+            <option value="telemundochicago.com">telemundoareadelabahia.com</option>
+            <option value="telemundochicago.com">telemundochicago.com</option>
+            <option value="telemundodallas.com">telemundodallas.com</option>
+            <option value="telemundodenver.com">telemundodenver.com</option>
+            <option value="telemundo48elpaso.com">telemundo48elpaso.com</option>
+            <option value="telemundohouston.com">telemundohouston.com</option>
+            <option value="telemundo52.com">telemundo52.com</option>
+            <option value="telemundolasvegas.com">telemundolasvegas.com</option>
+            <option value="telemundo40.com">telemundo40.com</option>
+            <option value="telemundo51.com">telemundo51.com</option>
+            <option value="telemundo47.com">telemundo47.com</option>
+            <option value="telemundonuevainglaterra.com">telemundonuevainglaterra.com</option>
+            <option value="telemundo31.com">telemundo31.com</option>
+            <option value="telemundo62.com">telemundo62.com</option>
+            <option value="telemundoarizona.com">telemundoarizona.com</option>
+            <option value="telemundopr.com">telemundopr.com</option>
+            <option value="telemundosanantonio.com">telemundosanantonio.com</option>
+            <option value="telemundo20.com">telemundo20.com</option>
+            <option value="telemundo49.com">telemundo49.com</option>
+            <option value="telemundowashingtondc.com">telemundowashingtondc.com</option>
+            <option value="telemundoutah.com">telemundoutah.com</option>
+            <option value="telemundo33.com">telemundo33.com</option>
+            <option value="telemundofresno.com">telemundofresno.com</option>
+          </select>
+          <br/>
+          <br/>
+
+          <button type="button" class="btn btn-primary" id="get">Get iFrame embed code</button>
+
+          <hr/>
+          <p id="note2">Note: The iframe embed is not responsive so you might have fiddle around with the height (height="400") in the embed code depending on where you are embeding this.  If the embedded version looks too short, add height.  If you see letter boxing, reduce height.<p>
+
+          <div class="output" id="out2"></div>
+          <p><a href="javascript:copyCode('#out2');">COPY CODE TO CLIPBOARD</a></p>
+
+
+
+        </div>
+
+      </div>
+
+      <p>&nbsp;<p>
+
+    </div>
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+
+    <!--
+    <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/miso.ds.deps.min.0.4.1.js"></script>
+    <script src="js/starter.js"></script>
+    -->
+    <script>
+      var extractedURL;
+      var callletters;
+      $("#note1, #note2").hide();
+
+      function getParams(k){
+        var p = {};
+        extractedURL[2].replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=v})
+        return k?p[k]:p;
+      }
+
+      function getCalls(which) {
+
+        switch (which) {
+          case "lx.com":
+            callletters = "lx";
+            break;
+          case "nbcnewyork.com":
+            callletters = "wnbc";
+            break;
+          case "nbcphiladelphia.com":
+            callletters = "wcau";
+            break;
+          case "nbcwashington.com":
+            callletters = "wrc";
+            break;
+          case "nbcmiami.com":
+            callletters = "wtvj";
+            break;
+          case "nbcdfw.com":
+            callletters = "kxas";
+            break;
+          case "nbcsandiego.com":
+            callletters = "knsd";
+            break;
+          case "nbclosangeles.com":
+            callletters = "knbc";
+            break;
+          case "nbcbayarea.com":
+            callletters = "kntv";
+            break;
+          case "nbcchicago.com":
+            callletters = "wmaq";
+            break;
+          case "nbcconnecticut.com":
+            callletters = "wvit";
+            break;
+          case "nbcboston.com":
+            callletters = "wbts";
+            break;
+          case "necn.com":
+            callletters = "necn";
+            break;
+
+          case "telemundoareadelabahia.com":
+            callletters = "ksts";
+            break;
+          case "telemundochicago.com":
+            callletters = "wsns";
+            break;
+          case "telemundodallas.com":
+            callletters = "kxtx";
+            break;
+          case "telemundodenver.com":
+            callletters = "kden";
+            break;
+          case "telemundo48elpaso.com":
+            callletters = "ktdo";
+            break;
+          case "telemundohouston.com":
+            callletters = "ktmd";
+            break;
+          case "telemundo52.com":
+            callletters = "kvea";
+            break;
+          case "telemundolasvegas.com":
+            callletters = "kblr";
+            break;
+          case "telemundo40.com":
+            callletters = "ktml";
+            break;
+          case "telemundo51.com":
+            callletters = "wscv";
+            break;
+          case "telemundo47.com":
+            callletters = "wnju";
+            break;
+          case "telemundonuevainglaterra.com":
+            callletters = "wneu";
+            break;
+          case "telemundo31.com":
+            callletters = "xxxx";
+            break;
+          case "telemundo62.com":
+            callletters = "wtmo";
+            break;
+          case "telemundoarizona.com":
+            callletters = "ktaz";
+            break;
+          case "telemundopr.com":
+            callletters = "wkaq";
+            break;
+          case "telemundosanantonio.com":
+            callletters = "kvda";
+            break;
+          case "telemundo20.com":
+            callletters = "kuan";
+            break;
+          case "telemundo49.com":
+            callletters = "wrmd";
+            break;
+          case "telemundowashingtondc.com":
+            callletters = "wzdc";
+            break;
+          case "telemundoutah.com":
+            callletters = "kulx";
+            break;
+          case "telemundo33.com":
+            callletters = "kcso";
+            break;
+          case "telemundofresno.com":
+            callletters = "knso";
+            break;
+
+          default:
+            callletters = "ots";
+        }
+
+
+      }
+
+      $("#convert").click(function () {
+          var tmp = $("#pastedCode").val();
+
+          extractedURL = tmp.match(/"(.*?)"/g);
+
+          //console.log(extractedURL[2]);
+
+          var cid = getParams("CID");
+          var videoID = getParams("videoID");
+          var origin = getParams("origin");
+          //console.log(cid + " / " + videoID + " / " + origin);
+
+          getCalls(origin);
+
+          $("#out1").text("<iframe width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + origin + "/video-layout/amp_video/?noid=" + cid + "&amp;videoID=" + videoID + "&amp;origin=" + origin + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>")
+
+          $("#note1").show();
+
+
+      });
+
+      $("#get").click(function () {
+
+        getCalls($("#stations").val());
+
+        $("#out2").text("<iframe width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>")
+
+        $("#note2").show();
+
+      });
+
+      function copyCode(element) {
+        //var copyText = $("#" + which).text();
+
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+
+      }
+
+
+
+    </script>
+
+  </body>
+</html>
