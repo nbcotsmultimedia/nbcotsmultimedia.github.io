@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Vertical Image Tool</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+
+    <style>
+      .output {
+        height: 200px;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+        padding: 10px;
+        word-wrap: break-word;
+        font-family: "Courier", sans-serif;
+      }
+      #note1, #note2 {
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .smTxt {
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      #stations {
+        padding: 7px;
+        border-color: #CCC;
+        border-radius: 4px;
+        margin-top: 3px;
+      }
+
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <!-- Start content here-->
+    <div class="container">
+
+      <div class="row">
+
+        <div class="col-12">
+          <h1>Vertical Image Tool</h1>
+          <p>Because our Worpress templates automatically crop any image in an image block to a 16:9, you can use this tool to create display the full image. </p>
+          <p><strong>First</strong>, as you normally would, add the image in your article as an Image Block.</p>
+          <p><strong>Then</strong>, right-click on the image and copy the image url or image address. You can delete the Image Block at this point.</p>
+
+          <p><strong>Paste copied image url here</strong><input type="text" class="form-control" id="pastedCode" placeholder=""></p>
+          <p><strong>Alt tag</strong><input type="text" class="form-control" id="theAlt" placeholder="short description of image"></p>
+          <p><strong>Caption</strong><input type="text" class="form-control" id="theCaption" placeholder="leave blank if none"></p>
+          <p><strong>Credit</strong><input type="text" class="form-control" id="theCredit" placeholder="Photographer/Agency or leave blank if none"></p>
+          <button type="button" class="btn btn-primary" id="convert">Get code</button>
+
+          <hr/>
+
+
+          <div class="output" id="out1"></div>
+          <p><a href="javascript:copyCode('#out1');">COPY CODE TO CLIPBOARD</a></p>
+
+          <p id="note1">In Wordpress, create a Custom HTML Block where you want the image to appear and paste the code into it.<p>
+
+
+
+
+
+        </div>
+
+      </div>
+
+      <p>&nbsp;<p>
+
+    </div>
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+
+    <!--
+    <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/miso.ds.deps.min.0.4.1.js"></script>
+    <script src="js/starter.js"></script>
+    -->
+    <script>
+      var extractedURL;
+      var callletters;
+      $("#note1, #note2").hide();
+
+      function getParams(k){
+        var p = {};
+        extractedURL[2].replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=v})
+        return k?p[k]:p;
+      }
+
+      function getCalls(which) {
+
+        switch (which) {
+          case "lx.com":
+            callletters = "lx";
+            break;
+          case "nbcnewyork.com":
+            callletters = "wnbc";
+            break;
+          case "nbcphiladelphia.com":
+            callletters = "wcau";
+            break;
+          case "nbcwashington.com":
+            callletters = "wrc";
+            break;
+          case "nbcmiami.com":
+            callletters = "wtvj";
+            break;
+          case "nbcdfw.com":
+            callletters = "kxas";
+            break;
+          case "nbcsandiego.com":
+            callletters = "knsd";
+            break;
+          case "nbclosangeles.com":
+            callletters = "knbc";
+            break;
+          case "nbcbayarea.com":
+            callletters = "kntv";
+            break;
+          case "nbcchicago.com":
+            callletters = "wmaq";
+            break;
+          case "nbcconnecticut.com":
+            callletters = "wvit";
+            break;
+          case "nbcboston.com":
+            callletters = "wbts";
+            break;
+          case "necn.com":
+            callletters = "necn";
+            break;
+
+          case "telemundoareadelabahia.com":
+            callletters = "ksts";
+            break;
+          case "telemundochicago.com":
+            callletters = "wsns";
+            break;
+          case "telemundodallas.com":
+            callletters = "kxtx";
+            break;
+          case "telemundodenver.com":
+            callletters = "kden";
+            break;
+          case "telemundo48elpaso.com":
+            callletters = "ktdo";
+            break;
+          case "telemundohouston.com":
+            callletters = "ktmd";
+            break;
+          case "telemundo52.com":
+            callletters = "kvea";
+            break;
+          case "telemundolasvegas.com":
+            callletters = "kblr";
+            break;
+          case "telemundo40.com":
+            callletters = "ktml";
+            break;
+          case "telemundo51.com":
+            callletters = "wscv";
+            break;
+          case "telemundo47.com":
+            callletters = "wnju";
+            break;
+          case "telemundonuevainglaterra.com":
+            callletters = "wneu";
+            break;
+          case "telemundo31.com":
+            callletters = "xxxx";
+            break;
+          case "telemundo62.com":
+            callletters = "wtmo";
+            break;
+          case "telemundoarizona.com":
+            callletters = "ktaz";
+            break;
+          case "telemundopr.com":
+            callletters = "wkaq";
+            break;
+          case "telemundosanantonio.com":
+            callletters = "kvda";
+            break;
+          case "telemundo20.com":
+            callletters = "kuan";
+            break;
+          case "telemundo49.com":
+            callletters = "wrmd";
+            break;
+          case "telemundowashingtondc.com":
+            callletters = "wzdc";
+            break;
+          case "telemundoutah.com":
+            callletters = "kulx";
+            break;
+          case "telemundo33.com":
+            callletters = "kcso";
+            break;
+          case "telemundofresno.com":
+            callletters = "knso";
+            break;
+
+          default:
+            callletters = "ots";
+        }
+
+
+      }
+
+      $("#convert").click(function () {
+          var tmp = [];
+          tmp = $("#pastedCode").val().split("?");
+          console.log(tmp[0]);
+
+
+          $("#out1").text("<img src=\"" + tmp[0] + "?w=900\" alt=\"" + $("#theAlt").val() + "\" width=\"100%\" />");
+          if ($("#theCaption").val() != "") {
+            $("#out1").append("&lt;figcaption class=\"wp-element-caption\"&gt;" + $("#theCaption").val() + " (" + $("#theCredit").val() + ")&lt;/figcaption&gt;");
+          }
+
+          $("#note1").show();
+
+          //<figcaption class="wp-element-caption">A blue recycle bin by the Chicago Lakeshore under a tree.</figcaption>
+
+      });
+
+
+      function copyCode(element) {
+        //var copyText = $("#" + which).text();
+
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+
+      }
+
+
+
+    </script>
+
+  </body>
+</html>
