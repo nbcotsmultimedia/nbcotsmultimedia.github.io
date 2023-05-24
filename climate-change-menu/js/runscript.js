@@ -65,6 +65,12 @@
           document.getElementById('entrees').insertAdjacentHTML('beforeend', items)
           break;
 
+        case "salads":
+          items = '<div class="itemName" id="iName-'+ i +'">' + menu.dish + '</div><div class="itemBlurb" id="iBlurb-'+ i +'">' + menu.ingredients + '</div></div>'
+
+          document.getElementById('salads').insertAdjacentHTML('beforeend', items)
+        break;
+
         case "desserts":
           items = '<div class="itemName" id="iName-'+ i +'">' + menu.dish + '</div><div class="itemBlurb" id="iBlurb-'+ i +'">' + menu.ingredients + '</div></div>'
 
@@ -106,15 +112,27 @@
 
       let instanceA = new Mark(blurb), optionsA = { 
         'className': 'tooltip item category-A',
-        'separateWordSearch': false
+        'separateWordSearch': false,
+        "accuracy": {
+          "value": "exactly",
+          "limiters": [",", "."]
+      }
           },
           instanceB = new Mark(blurb), optionsB = { 
             'className': 'tooltip item category-B',
-            'separateWordSearch': false
+            'separateWordSearch': false,
+            "accuracy": {
+              "value": "exactly",
+              "limiters": [",", "."]
+          }
           },
           instanceC = new Mark(blurb), optionsC = { 
             'className': 'tooltip item category-C',
-            'separateWordSearch': false
+            'separateWordSearch': false,
+            "accuracy": {
+              "value": "exactly",
+              "limiters": [",", "."]
+          }
           }
 
       instanceA.mark(bucketA, optionsA)

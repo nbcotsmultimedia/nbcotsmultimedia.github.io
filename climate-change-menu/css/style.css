@@ -18,10 +18,8 @@ body {
 }
 
 .blurb {
-  padding-bottom: 5vw;
+  padding-bottom: 2rem;
 }
-
-.sections { }
 
 .sectionName {
   display: flex;
@@ -149,7 +147,5 @@ mark.item {
 }
 
 @media (max-width: 400px) {
-  .tooltiptext {
-    
-  }
+
 }
