@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AP Text</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://data.nbcstations.com/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+    <style>
+      .box {
+        border: 1px solid #CCC;
+        height: 618px;
+        margin-top: 5px;
+        border-radius: 4px;
+        padding: 15px;
+        overflow: scroll;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- Start content here -->
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1>AP Text Converter</h1>
+          <p>This will convert AP Newsroom "Copy Story" text into text that will be pasteable as individual blocks in WP.</p>
+          <p>&nbsp;</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <label for="theInput"><strong>Paste AP text here</strong></label>
+            <textarea class="form-control" id="theInput" rows="30"></textarea>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <button type="button" class="btn btn-primary btn-sm" id="convert">Convert</button>
+          <button type="button" class="btn btn-primary btn-sm" id="copy">Copy text to clipboard</button>
+          <div contenteditable="true" class="box" id="output"></div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="js/tether.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <!--
+    <script type="text/javascript" src="js/miso.ds.deps.min.0.4.1.js"></script>
+    <script src="js/starter.js"></script>
+    -->
+    <script>
+
+      $("#convert").click(function() {
+        //if ((/(\r\n|\n|\r)/.test($(this).val()))) {
+          //  alert('there are line breaks here')
+        //}
+        var textAreaContent = $("#theInput").val().replace(/\n/g,"<br><br>");
+        $("#output").html(textAreaContent);
+      })
+
+      $("#copy").click(function() {
+        SelectText("output");
+        document.execCommand("copy");
+      });
+
+      function SelectText(element) {
+          var doc = document;
+          var text = doc.getElementById(element);
+          if (doc.body.createTextRange) { // ms
+              var range = doc.body.createTextRange();
+              range.moveToElementText(text);
+              range.select();
+          } else if (window.getSelection) {
+              var selection = window.getSelection();
+              var range = doc.createRange();
+              range.selectNodeContents(text);
+              selection.removeAllRanges();
+              selection.addRange(range);
+
+          }
+      }
+
+    </script>
+
+  </body>
+</html>
