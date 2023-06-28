@@ -34,18 +34,18 @@
         e.stopPropagation();
       });
 
-      //touch events
-      let scrolling = false;
-      thisLayer.addEventListener('touchstart', () => {
-        scrolling = true;
-      });
+      // //touch events
+      // let scrolling = false;
+      // thisLayer.addEventListener('touchstart', () => {
+      //   scrolling = true;
+      // });
 
-      document.addEventListener('touchmove', function(e) {
-        if (scrolling){
-          e.stopPropagation();
-          scrolling = false;
-        }
-      })
+      // document.addEventListener('touchmove', function(e) {
+      //   if (scrolling){
+      //     e.stopPropagation();
+      //     scrolling = false;
+      //   }
+      // })
 
       //disable map events when interacting with the control layer
       let disableMapEvents = function() {
@@ -60,22 +60,53 @@
         map.scrollWheelZoom.enable();
       }
 
-      thisLayer.addEventListener('mousedown', function(e){
+      let touchStartEvent, touchMoveEvent;
+
+      thisLayer.addEventListener('touchstart', function(e) {
         disableMapEvents();
+
+        touchStartEvent = e;
+        touchMoveEvent = null;
+      })      
+
+      thisLayer.addEventListener('touchmove', function(e) {
+        if (!touchStartEvent || touchMoveEvent) { return }
+
+        touchMoveEvent = e
+
+        let deltaY = touchMoveEvent.touches[0].clientY - touchStartEvent.touches[0].clientY,
+            deltaX = touchMoveEvent.touches[0].clientX - touchStartEvent.touches[0].clientX,
+            isVerticalScroll = Math.abs(deltaY) > Math.abs(deltaX);
+
+        if (isVerticalScroll) {
+          e.stopPropagation()
+        } else {
+          disableMapEvents()
+        }
       })
 
-      thisLayer.addEventListener('mouseup', function(e){
-        enableMapEvents();
+      thisLayer.addEventListener('touchend', function(event) {
+        enableMapEvents()
+
+        touchStartEvent = null;
+        touchMoveEvent = null;
       })
 
-      thisLayer.addEventListener('touchstart', function(e){
-        disableMapEvents();
-      })
+      // thisLayer.addEventListener('mousedown', function(e){
+      //   disableMapEvents();
+      // })
 
-      thisLayer.addEventListener('touchend', function(e){
-        enableMapEvents();
-      })
+      // thisLayer.addEventListener('mouseup', function(e){
+      //   enableMapEvents();
+      // })
 
+      // thisLayer.addEventListener('touchstart', function(e){
+      //   disableMapEvents();
+      // })
+
+      // thisLayer.addEventListener('touchend', function(e){
+      //   enableMapEvents();
+      // })
 
       return thisLayer
     },
@@ -86,7 +117,6 @@
 
   let infoPane = new InfoPane();
   map.addControl(infoPane)
-
 
   //DATA
   let closedRoads = 'data/pre-race-closures.json',
