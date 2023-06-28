@@ -24,28 +24,60 @@
       content: ''
     },
     onAdd: function(map){
-      this._container = L.DomUtil.create('div', 'infoPane')
-      this._container.innerHTML = this.options.content;
+      let thisLayer = this._container
+
+      thisLayer = L.DomUtil.create('div', 'infoPane')
+      thisLayer.innerHTML = this.options.content;
 
       //mouse events
-      this._container.addEventListener('wheel', function(event) {
-        event.stopPropagation();
+      thisLayer.addEventListener('wheel', function(e) {
+        e.stopPropagation();
       });
 
       //touch events
       let scrolling = false;
-      this._container.addEventListener('touchstart', function(){
+      thisLayer.addEventListener('touchstart', () => {
         scrolling = true;
       });
 
-      document.addEventListener('touchmove', function (event) {
+      document.addEventListener('touchmove', function(e) {
         if (scrolling){
-          event.stopPropagation();
+          e.stopPropagation();
           scrolling = false;
         }
       })
 
-      return this._container
+      //disable map events when interacting with the control layer
+      let disableMapEvents = function() {
+        map.dragging.disable();
+        map.doubleClickZoom.disable();
+        map.scrollWheelZoom.disable();
+      }
+
+      let enableMapEvents = function() {
+        map.dragging.enable();
+        map.doubleClickZoom.enable();
+        map.scrollWheelZoom.enable();
+      }
+
+      thisLayer.addEventListener('mousedown', function(e){
+        disableMapEvents();
+      })
+
+      thisLayer.addEventListener('mouseup', function(e){
+        enableMapEvents();
+      })
+
+      thisLayer.addEventListener('touchstart', function(e){
+        disableMapEvents();
+      })
+
+      thisLayer.addEventListener('touchend', function(e){
+        enableMapEvents();
+      })
+
+
+      return thisLayer
     },
     updateContent: function(newContent) {
       this._container.innerHTML = newContent
