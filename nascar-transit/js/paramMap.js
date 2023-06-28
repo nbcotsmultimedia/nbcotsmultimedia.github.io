@@ -34,79 +34,32 @@
         e.stopPropagation();
       });
 
-      // //touch events
-      // let scrolling = false;
-      // thisLayer.addEventListener('touchstart', () => {
-      //   scrolling = true;
-      // });
-
-      // document.addEventListener('touchmove', function(e) {
-      //   if (scrolling){
-      //     e.stopPropagation();
-      //     scrolling = false;
-      //   }
-      // })
-
-      //disable map events when interacting with the control layer
-      let disableMapEvents = function() {
-        map.dragging.disable();
-        map.doubleClickZoom.disable();
-        map.scrollWheelZoom.disable();
-      }
-
-      let enableMapEvents = function() {
-        map.dragging.enable();
-        map.doubleClickZoom.enable();
-        map.scrollWheelZoom.enable();
-      }
-
-      let touchStartEvent, touchMoveEvent;
+      let isTouching = false,
+          touchPosition = null;
 
       thisLayer.addEventListener('touchstart', function(e) {
-        disableMapEvents();
-
-        touchStartEvent = e;
-        touchMoveEvent = null;
-      })      
+        isTouching = true;
+        touchPosition = e.touches[0].clientY;
+      })
 
       thisLayer.addEventListener('touchmove', function(e) {
-        if (!touchStartEvent || touchMoveEvent) { return }
+        if (isTouching) {
+          let deltaY = e.touches[0].clientY - touchPosition;
+          let shouldScroll = Math.abs(deltaY) > 10; //scroll threshold
 
-        touchMoveEvent = e
-
-        let deltaY = touchMoveEvent.touches[0].clientY - touchStartEvent.touches[0].clientY,
-            deltaX = touchMoveEvent.touches[0].clientX - touchStartEvent.touches[0].clientX,
-            isVerticalScroll = Math.abs(deltaY) > Math.abs(deltaX);
-
-        if (isVerticalScroll) {
-          e.stopPropagation()
-        } else {
-          disableMapEvents()
+          if(shouldScroll) {
+            e.stopPropagation()
+          } else {
+            map.dragging.disable()
+          }
         }
       })
 
-      thisLayer.addEventListener('touchend', function(event) {
-        enableMapEvents()
-
-        touchStartEvent = null;
-        touchMoveEvent = null;
+      thisLayer.addEventListener('touchend', function(e) {
+        isTouching = false
+        touchPosition = null
+        map.dragging.enable()
       })
-
-      // thisLayer.addEventListener('mousedown', function(e){
-      //   disableMapEvents();
-      // })
-
-      // thisLayer.addEventListener('mouseup', function(e){
-      //   enableMapEvents();
-      // })
-
-      // thisLayer.addEventListener('touchstart', function(e){
-      //   disableMapEvents();
-      // })
-
-      // thisLayer.addEventListener('touchend', function(e){
-      //   enableMapEvents();
-      // })
 
       return thisLayer
     },
