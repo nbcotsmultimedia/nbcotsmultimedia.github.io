@@ -24,8 +24,15 @@
 
     <div id="mapContainer" class="parent">
       <div id="header">
-        <h2>Getting around Chicago on NASCAR race weekend</h2>
-        <p>Blurb tktktktktktktktk</p>
+        <!-- <h2>Getting around Chicago for NASCAR race weekend</h2>
+
+        <p>This weekend marks the first-ever NASCAR Chicago Street Race, with a 12-turn course that will take drivers in and out of Grant Park.</p>
+
+        <p>Bus lines in and around Grant Park will be rerouted, with disruptions to start from June 26 and run through the duration of the NASCAR Street Race weekend and other events. Those taking the 'L' should exit at stations recommended by the CTA.</p>
+          
+        <p>Those who are driving can see the full list of road closures <a href="/nascar-chicago-street-race/dusable-lake-shore-drive-to-close-nascar-street-race-chicago-street-closures/" target="_blank">here</a>.</p>
+
+        <p>Hover or click over each line or station for more info.</p> -->
 
         <div id="navigation"> 
           <div id="navText">Show</div> 
@@ -34,6 +41,11 @@
             <!-- <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" id="trackLayer" checked>
               <label class="form-check-label" for="flexSwitchCheckChecked">Track</label>
+            </div> -->
+
+            <!-- <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="roadLayer" checked>
+              <label class="form-check-label" for="roadLayer">Planned Road Closures</label>
             </div> -->
 
             <div class="form-check form-switch">
@@ -47,11 +59,6 @@
             </div>
 
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="roadLayer" checked>
-              <label class="form-check-label" for="roadLayer">Planned Road Closures</label>
-            </div>
-
-            <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" id="allLayers" checked>
               <label class="form-check-label" for="allLayers">All</label>
             </div>
@@ -60,42 +67,42 @@
         </div> <!--end switches-->
 
         <div id="mapLegend">        
-          <div>
+          <div class="busKey">
             <svg class="legend">
               <path class="LPath busColor" d="M 2 8 L 28 8"></path>
-            </svg> Bus Routes (Normal) 
+            </svg> Bus Lines (Normal) 
           </div>
 
-          <div>
+          <div class="busKey">
             <svg class="legend">
               <path class="LPath busDisruptedColor" d="M 2 8 L 28 8"></path>
-            </svg> Bus Routes (Disrupted)
+            </svg> Bus Lines (Disrupted)
           </div>
 
-          <div>
+          <div class="railKey">
             <svg class="legend">
               <path class="LPath railColor" d="M 2 8 L 28 8"></path>
               <circle class="LPoint stationColor" cx="15.5" cy="8" r="6"></circle>
             </svg> Rail 
           </div>
 
-          <div>
+          <div class="railKey">
             <svg class="legend">
               <path class="LPath railColor" d="M 2 8 L 28 8"></path>
               <circle class="LPoint stationColor bestStationExit" cx="15.5" cy="8" r="6"></circle>
-            </svg> Recommendated Exit
+            </svg> Best Exits
           </div>
   
-          <div>
+          <!-- <div>
             <svg class="legend">
               <path class="LPath roadColor" d="M 2 8 L 28 8"></path>
             </svg> Closed roads 
-          </div>
+          </div> -->
 
           <div>
             <svg class="legend">
               <path class="LPath trackColor" d="M 2 8 L 28 8"></path>
-            </svg> Track 
+            </svg> NASCAR Track 
           </div>
   
         </div> <!--end legends-->
@@ -118,7 +125,12 @@
      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.js"></script>
 
     <!-- ADD-ONS -->
-    <script src="js/runscript.js" async></script>
+
+    <!-- <script src="js/runscript.js" async></script> -->
+
+    <!-- <script src="js/toggleMap.js" async></script>  -->
+
+    <script src="js/paramMap.js" async></script>
 
   </body>
 </html>
