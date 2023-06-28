@@ -27,9 +27,23 @@
       this._container = L.DomUtil.create('div', 'infoPane')
       this._container.innerHTML = this.options.content;
 
+      //mouse events
       this._container.addEventListener('wheel', function(event) {
         event.stopPropagation();
       });
+
+      //touch events
+      let scrolling = false;
+      this._container.addEventListener('touchstart', function(){
+        scrolling = true;
+      });
+
+      document.addEventListener('touchmove', function (event) {
+        if (scrolling){
+          event.stopPropagation();
+          scrolling = false;
+        }
+      })
 
       return this._container
     },
@@ -40,6 +54,7 @@
 
   let infoPane = new InfoPane();
   map.addControl(infoPane)
+
 
   //DATA
   let closedRoads = 'data/pre-race-closures.json',
