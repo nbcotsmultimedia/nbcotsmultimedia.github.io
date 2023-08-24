@@ -10,7 +10,7 @@
   let startPoint = [-87.6298, 41.8781]; //chicago
 
   //DATA
-  let geofeatures = '../data/world.json',
+  let geofeatures = 'data/world.json',
     dataCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_xT8yxgSYhRlpTyFof08SHyFvvAzESGZeRKifJFGYJV-9JbPFuIcyaEtoPONNEBwmhcChsIp5CRRm/pub?gid=1160922811&single=true&output=csv';
 
   Promise.all([
