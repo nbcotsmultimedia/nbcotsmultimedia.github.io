@@ -18,12 +18,12 @@
     d3.csv(dataCSV, d => {
       return {
         country: d.country,
-        lb: +d.pounds,
+        pounds: +d.pounds,
         value: +d.value,
         lat: +d.latitude,
         lon: +d.longitude,
-        lbsWeighted: +d.lbsNormalized,
-        valWeighted: +d.valNormalized
+        lbsNormalized: +d.lbsNormalized,
+        valNormalized: +d.valNormalized,
       };
     })
   ]).then(d => {
@@ -59,6 +59,14 @@
 
     let map = svg.append('g')
 
+    //cloropleth
+    let colorScale = d3.scaleSequential(d3.interpolatePurples)
+      .domain(d3.extent(data, d => d.lbsNormalized))
+
+    let opacityScale = d3.scaleLinear()
+      .domain(d3.extent(data, d => d.pounds))
+      .range([0.2, .7])
+
     map.append('g')
       .attr('class', 'countries')
       .selectAll('path')
@@ -66,26 +74,30 @@
       .enter().append('path')
       .attr('class', d => 'country_' + d.properties.name.replace(' ','_'))
       .attr('d', path)
-      .attr('fill', '#FFF')
-      .style('stroke', '#afafaf')
-      .style('stroke-width', 0.3)
-      .style('opacity', 0.8)
-    
+      .attr('fill', d => colorScale(getName(d.properties.name)))
+      .style('opacity', 
+        d => getScale(d.properties.name) !== 0
+        ? opacityScale(getScale(d.properties.name))
+        : 1
+      )
+
     //draw paths
-    data.forEach(datum => {
-      let target = [datum.lon, datum.lat],
+    data.forEach(d => {
+      let target = [d.lon, d.lat],
           intPoint = d3.geoInterpolate(startPoint, target)(0.5),
-          strokeWidth = datum.lbsWeighted
+          strokeWidth = d.lbsNormalized
 
       svg.append('path')
         .datum({
-        type: 'LineString',
-        coordinates: [startPoint, intPoint, target]
-      })
-      .classed('bezier-curve', true)
-      .classed('keyline', true)
-      .attr('d', path)
-      .style('stroke-width', strokeWidth)
+          type: 'LineString',
+          coordinates: [startPoint, intPoint, target]
+        })
+        .classed('bezier-curve', true)
+        .classed('keyline', true)
+        .attr('d', path)
+        .style('stroke-width', strokeWidth)
+        // .style('opacity', opacityScale(getScale(d.country)))
+        .style('opacity', 0.2)
     })
 
     //make the globe draggable
@@ -168,6 +180,16 @@
   //     }
 
   } //END DRAW
+
+  function getName(name) {
+    let country = data.find(d => d.country === name)
+    return country ? country.value : 0
+  }
+
+  function getScale(scale) {
+    let country = data.find(d => d.country === scale)
+    return country ? country.pounds : 0
+  }
 
   
 })();

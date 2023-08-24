@@ -7,10 +7,15 @@
   padding-bottom: 30px;
 }
 
+.countries {
+ stroke: #c9c9c9;
+ stroke-width: .5 
+}
+
 .keyline {
   fill: none;
-  stroke: purple;
-  /* stroke-linecap: round;
-  stroke-linejoin: round; */
-  stroke-opacity: .2;
+  stroke: #3f007d;
+  mix-blend-mode: normal;
+  /* stroke-linecap: round; */
+  /* stroke-linejoin: round; */
 }
