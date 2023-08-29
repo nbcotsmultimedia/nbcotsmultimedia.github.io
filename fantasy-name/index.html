@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Fantasy Football Name Generator</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/fantasy.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+
+
+  </head>
+
+  <body>
+
+    <!-- Start content here-->
+    <div class="container">
+      <div class="row">
+        <div class="col-6">
+
+          <div id="q1" class="">
+            <p>Do you want your team named after a player?</p>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_player" id="q_player1" value="yesplayer">
+              <label class="form-check-label" for="q_player1">
+                Yes
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_player" id="q_player2" value="noplayer">
+              <label class="form-check-label" for="q_player2">
+                No
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div id="q2" class="">
+            <p>Which kind of league are you in?</p>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_league" id="q_league1">
+              <label class="form-check-label" for="q_league1">
+                Standard
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_league" id="q_league2">
+              <label class="form-check-label" for="q_league2">
+                Half-PPR
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_league" id="q_league3">
+              <label class="form-check-label" for="q_league3">
+                PPR
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div id="q3" class="">
+            <p>Where do you like to spend an NFL Sunday?</p>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_sun" id="q_sun1">
+              <label class="form-check-label" for="q_sun1">
+                Home
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_sun" id="q_sun2">
+              <label class="form-check-label" for="q_sun2">
+                Stadium
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_sun" id="q_sun3">
+              <label class="form-check-label" for="q_sun3">
+                Bar
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_sun" id="q_sun4">
+              <label class="form-check-label" for="q_sun4">
+                Other
+              </label>
+            </div>
+          </div>
+
+          <hr>
+
+          <div id="q4a" class="">
+            <p>Which player is going to bring you a league championship this season?</p>
+            <select name="dplayer" id="playerdrop" class="drop" onchange="getPlayer()">
+              <option value="">Select</option>
+              <option value="">Patrick Mahomes</option>
+              <option value="">Josh Allen</option>
+              <option value="">Jalen Hurts</option>
+              <option value="">Lamar Jackson</option>
+              <option value="">Justin Fields</option>
+              <option value="">Christian McCaffrey</option>
+              <option value="">Austin Ekeler</option>
+              <option value="">Nick Chubb</option>
+              <option value="">Saquon Barkley</option>
+              <option value="">Bijan Robinson</option>
+              <option value="">Derrick Henry</option>
+              <option value="">Tony Pollard</option>
+              <option value="">Josh Jacobs</option>
+              <option value="">Justin Jefferson</option>
+              <option value="">Ja'Marr Chase</option>
+              <option value="">Cooper Kupp</option>
+              <option value="">Tyreek Hill</option>
+              <option value="">Davante Adams</option>
+              <option value="">Stefon Diggs</option>
+              <option value="">CeeDee Lamb</option>
+              <option value="">A.J. Brown</option>
+              <option value="">Garrett Wilson</option>
+              <option value="">Amon-Ra St. Brown</option>
+              <option value="">Travis Kelce</option>
+              <option value="">Mark Andrews</option>
+
+            </select>
+
+          </div>
+
+
+          <div id="q4b" class="">
+            <p>Which position do you like to draft first?</p>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_pos" id="q_pos1">
+              <label class="form-check-label" for="q_pos1">
+                Running Back
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_pos" id="q_pos2">
+              <label class="form-check-label" for="q_pos2">
+                Wide Reciever
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_pos" id="q_pos3">
+              <label class="form-check-label" for="q_pos3">
+                Quarterback
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="q_pos" id="q_pos4">
+              <label class="form-check-label" for="q_pos4">
+                Other
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-6">
+          <div id="result"></div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/papaparse.min.js"></script>
+    <script src="js/fantasy.js"></script>
+
+
+  </body>
+</html>
