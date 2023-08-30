@@ -11,6 +11,9 @@
 
     <!-- NBC CSS -->
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
     <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
     <link href="css/nbcotsbase.css" rel="stylesheet">
 
@@ -33,10 +36,14 @@
     <!-- Start content here-->
     <div class="container">
       <div class="row">
-        <div class="col-6">
+        <div class="col-12">
 
-          <div id="q1" class="">
-            <p>Do you want your team named after a player?</p>
+          <div id="q1" class="q">
+            <p class="kicker">Question 1 of 4</p>
+            <p class="quest">Do you want your team named after a player?</p>
+            <p><button type="button" class="btn btn-primary" id="playerYesBtn">Yes</button></p>
+            <p><button type="button" class="btn btn-primary" id="playerNoBtn">No</button></p>
+            <!--
             <div class="form-check">
               <input class="form-check-input" type="radio" name="q_player" id="q_player1" value="yesplayer">
               <label class="form-check-label" for="q_player1">
@@ -49,12 +56,17 @@
                 No
               </label>
             </div>
+          -->
           </div>
 
-          <hr>
+          <div id="q2" class="q">
+            <p class="kicker">Question 2 of 4</p>
+            <p class="quest">Which kind of league are you in?</p>
 
-          <div id="q2" class="">
-            <p>Which kind of league are you in?</p>
+            <p><button type="button" class="btn btn-primary dn">Standard</button></p>
+            <p><button type="button" class="btn btn-primary dn">Half-PPR</button></p>
+            <p><button type="button" class="btn btn-primary dn">PPR</button></p>
+            <!--
             <div class="form-check">
               <input class="form-check-input" type="radio" name="q_league" id="q_league1">
               <label class="form-check-label" for="q_league1">
@@ -73,12 +85,17 @@
                 PPR
               </label>
             </div>
+          -->
           </div>
 
-          <hr>
-
-          <div id="q3" class="">
-            <p>Where do you like to spend an NFL Sunday?</p>
+          <div id="q3" class="q">
+            <p class="kicker">Question 3 of 4</p>
+            <p class="quest">Where do you like to spend an NFL Sunday?</p>
+            <p><button type="button" class="btn btn-primary dn">Home</button></p>
+            <p><button type="button" class="btn btn-primary dn">Stadium</button></p>
+            <p><button type="button" class="btn btn-primary dn">Bar</button></p>
+            <p><button type="button" class="btn btn-primary dn">Other</button></p>
+            <!--
             <div class="form-check">
               <input class="form-check-input" type="radio" name="q_sun" id="q_sun1">
               <label class="form-check-label" for="q_sun1">
@@ -103,12 +120,12 @@
                 Other
               </label>
             </div>
+          -->
           </div>
 
-          <hr>
-
-          <div id="q4a" class="">
-            <p>Which player is going to bring you a league championship this season?</p>
+          <div id="q4a" class="q">
+            <p class="kicker">Question 4 of 4</p>
+            <p class="quest">Which player is going to bring you a league championship this season?</p>
             <select name="dplayer" id="playerdrop" class="drop" onchange="getPlayer()">
               <option value="">Select</option>
               <option value="">Patrick Mahomes</option>
@@ -142,8 +159,15 @@
           </div>
 
 
-          <div id="q4b" class="">
-            <p>Which position do you like to draft first?</p>
+          <div id="q4b" class="q">
+            <p class="kicker">Question 4 of 4</p>
+            <p class="quest">Which position do you like to draft first?</p>
+
+            <p><button type="button" class="btn btn-primary dn2">Running Back</button></p>
+            <p><button type="button" class="btn btn-primary dn2">Wide Reciever</button></p>
+            <p><button type="button" class="btn btn-primary dn2">Quarterback</button></p>
+            <p><button type="button" class="btn btn-primary dn2">Other</button></p>
+            <!--
             <div class="form-check">
               <input class="form-check-input" type="radio" name="q_pos" id="q_pos1">
               <label class="form-check-label" for="q_pos1">
@@ -168,13 +192,19 @@
                 Other
               </label>
             </div>
+          -->
+          </div>
+
+          <div id="resultCon" class="q">
+            <p>Based on your responses, we've come up with:</p>
+            <p id="result"></p>
+
+            <p><button type="button" class="btn btn-primary" id="againbtn">Try again</button></p>
           </div>
 
         </div>
 
-        <div class="col-6">
-          <div id="result"></div>
-        </div>
+
       </div>
     </div>
 

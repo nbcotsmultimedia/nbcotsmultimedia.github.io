@@ -3,6 +3,8 @@ var totalEntries;
 var allData;
 var config;
 
+var playerMode = "";
+var currentQ = 1;
 
 function init() {
 	//console.log("ready");
@@ -10,6 +12,39 @@ function init() {
 	$("#q4a").hide();
 	$("#q4b").hide();
 
+	$("#q2").hide();
+	$("#q3").hide();
+
+	$("#resultCon").hide();
+
+	$("#playerYesBtn").click(function(){
+		playerMode = "y";
+		showNextQ();
+	});
+
+	$("#playerNoBtn").click(function(){
+		playerMode = "n";
+		showNextQ();
+	});
+
+	$(".dn").click(function(){
+		showNextQ();
+	});
+
+	$(".dn2").click(function(){
+		getChoices("None");
+	});
+
+	$("#againbtn").click(function(){
+		playerMode = "";
+		currentQ = 1;
+		$("#resultCon").hide();
+		$("#q1").show();
+
+	});
+
+
+	/*
 	$('input[name=q_player]').change(function(){
 		if ($( 'input[name=q_player]:checked' ).val() == "yesplayer") {
 			$("#q4a").show();
@@ -21,6 +56,7 @@ function init() {
 		}
 
 	});
+	*/
 
 	config = buildConfig();
 	loadData();
@@ -82,7 +118,27 @@ function parseData() {
 
 }
 
+function showNextQ() {
+	$("#q" + currentQ).hide();
+	currentQ ++;
+	if (currentQ < 4) {
+		$("#q" + currentQ).show();
+	} else {
+		if (playerMode == "y") {
+			$("#q4a").show();
+			$("#q4b").hide();
+		} else {
+			$("#q4a").hide();
+			$("#q4b").show();
+		}
+
+	}
+}
+
 function getChoices(which) {
+	$("#q4a").hide();
+	$("#q4b").hide();
+
 	var tmpChoices = [];
 
 	for (var i=0; i<totalEntries; i++) {
@@ -93,7 +149,8 @@ function getChoices(which) {
 	}
 	//console.log(tmpChoices)
 	var randomNum = Math.floor(Math.random() * tmpChoices.length);
-	$("#result").text("RESULT: " + tmpChoices[randomNum])
+	$("#result").text(tmpChoices[randomNum]);
+	$("#resultCon").show();
 }
 
 function getPlayer() {
