@@ -1,0 +1,159 @@
+header {
+  background-image: url("../images/nyc-bg.jpg");
+  height: 460px;
+}
+
+hr {
+  border-top: 1px solid rgba(255,255,255,.33);
+  margin: .4em 0;
+}
+.darker {
+  border-top: 1px solid rgba(0,0,0,.1);
+}
+
+#nav {
+  margin: 20px 0px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255,255,255,.33);
+}
+
+#mainStory {
+  background-image: url("../images/main.jpg");
+  background-size: cover;
+  height: 360px;
+  padding: 20px;
+  position: relative;
+}
+
+#mainHead {
+  position: absolute;
+  bottom: 0px;
+}
+
+.kicker {
+  font-size: 11px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #FFF;
+  margin-bottom: 0px;
+}
+
+.bigHead {
+  font-family: 'ArtHouseBold', sans-serif;
+	font-size: 24px;
+  color: #FFF;
+  line-height: 1.2em;
+  padding-right: 15px;
+}
+
+.thumb {
+  margin-bottom: 10px;
+}
+
+.medHead {
+  font-family: 'ArtHouseBold', sans-serif;
+	font-size: 17px;
+  color: #FFF;
+  line-height: 1.2em;
+}
+
+.regHead {
+  font-family: 'ArtHouseMed', sans-serif;
+	font-size: 15px;
+  color: #FFF;
+  line-height: 1.2em;
+}
+
+.sectionHead {
+  font-family: 'ArtHouseBold', sans-serif;
+	font-size: 30px;
+  color: #FFF;
+}
+
+.lightBlue {
+  color: #6ab1ed;
+}
+
+.darkBlue {
+  color: #144aa8;
+}
+
+.blackText {
+  color: #333;
+}
+
+.anotherRow {
+  margin-top: 60px;
+}
+
+#topVids {
+  background: linear-gradient(180deg,#383838,#161616);
+  min-height: 400px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+#mainVidM {
+  display: none;
+}
+#mainVidDT {
+  display: block;
+}
+
+#trending {
+  margin: -10px 0px 10px 0px;
+}
+
+.trendingText {
+  color: #FFF;
+  font-size: 13px;
+  font-family: 'Roboto', sans-serif;
+}
+.trendingKicker {
+  color: #fcb813;
+  font-family: 'ArtHouseBold', sans-serif;
+}
+.trendingItem {
+  margin-right: 20px;
+}
+
+.ad {
+  font-size: 11px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+@media (max-width: 500px) {
+  header {
+    height: auto;
+    overflow: visible;
+
+  }
+  #mainStory {
+    height: 225px;
+  }
+
+  .secondStory {
+    margin-top: 20px;
+  }
+  .secondThumb {
+    width: 50%;
+    float: left;
+    margin-right: 20px;
+  }
+
+  #mainVidM {
+    display: block;
+  }
+  #mainVidDT {
+    display: none;
+  }
+
+  .thumb {
+    margin-bottom: 5px;
+  }
+  .medHead {
+    margin-bottom: 25px;
+  }
+}
