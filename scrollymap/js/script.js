@@ -252,8 +252,7 @@ const addText = (data, map) => {
                                     style=" color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none;"
                                     target="_blank">A post shared by ${row.ig_name} (${row.ig_username})</a></p>
                         </div>
-                    </blockquote>
-                    <script async src="//www.instagram.com/embed.js"></script>`)
+                    </blockquote>`)
                     }
                     break;
                 case "img":
@@ -412,6 +411,7 @@ function parseData() {
             }
         };
         window.addEventListener("scroll", handleScroll);
+	window.instgrm.Embeds.process();
     }
 }
 
