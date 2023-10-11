@@ -25,9 +25,9 @@ p {
 
 .credits {
 	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
+	font-size: 12px !important;
 	color: #666;
-	margin-top: 10px;
+	margin-top: 0 !important;
 	line-height: 1.5em;
 }
 
