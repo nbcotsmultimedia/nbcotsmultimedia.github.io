@@ -84,7 +84,7 @@ const scrollToSlide = (e, map) => {
         const thisSection = sections[i];
         // scroll to text section that corresponds to clicked marker
         if (thisSection.id === e.target?.options?.title) {
-            thisSection.scrollIntoView({ behavior: 'smooth' });
+            thisSection.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start'});
             scrolling = true;
             selectedMarker = thisSection;
             markerOpacity(sections[i].id, map);
