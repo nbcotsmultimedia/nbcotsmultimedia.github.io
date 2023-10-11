@@ -123,7 +123,10 @@ const marker = (markerData, map) => {
 // create a layer group with all markers 
 const markerGroup = (markerData, map) => {
     for(let i = 0; i < markerData.length; i++) {
-        marker(markerData[i], map);
+        const thisMarker = marker(markerData[i], map);
+        if (i == 0) {
+            markerOpacity(thisMarker, map);
+        }
     }
 
     const markerGroup = L.layerGroup(markerList);
