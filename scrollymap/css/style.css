@@ -18,7 +18,7 @@ p {
 }
 
 .text-section {
-    padding: 1em;
+    margin-right: 1em;
     border-bottom: 10px solid #e1e1e1;
 }
 
@@ -69,6 +69,7 @@ p {
         border-radius: 0;
         background: #ffffff;
         border: none;
+        width: 50%;
     }
 
     .fa-solid {
@@ -77,10 +78,6 @@ p {
 
     #next-button {
         border-left: solid 1px #D3D3D3;
-    }
-
-    #prev-button {
-        border-right: solid 1px #D3D3D3;
     }
 
     #map-container { 
