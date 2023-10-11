@@ -359,7 +359,6 @@ function parseData() {
     }).addTo(map);
     // add markers to map
     markerGroup(allData, map).addTo(map);
-    markerOpacity(markerList[0], map);
 
     addText(allData, map);
 
