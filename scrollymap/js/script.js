@@ -124,6 +124,9 @@ const marker = (markerData, map) => {
 const markerGroup = (markerData, map) => {
     for(let i = 0; i < markerData.length; i++) {
         marker(markerData[i], map);
+	    if (i === 0) {
+		    markerOpacity(markerData[i].name, map);
+	    }
     }
 
     const markerGroup = L.layerGroup(markerList);
