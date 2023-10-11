@@ -76,8 +76,8 @@ p {
         color: #5A5A5A;
     }
 
-    #next-button {
-        border-left: solid 1px #D3D3D3;
+    #prev-button {
+        border-right: solid 1px #D3D3D3;
     }
 
     #map-container { 
