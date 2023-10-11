@@ -43,7 +43,7 @@ const slideVisibility = () => {
         // scroll to text section that corresponds to clicked marker
         if (thisSection.id === currentSlide.name) {
             thisSection.style.display = "block";
-            //thisSection.scrollTop = 0;
+            textContainer.scrollTop(0);
         } else {
             thisSection.style.display = "none";
         }
