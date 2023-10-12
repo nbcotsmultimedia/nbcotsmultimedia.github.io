@@ -82,6 +82,10 @@ p {
         border-right: solid 1px #D3D3D3;
     }
 
+    #map {
+        height: 100%;
+    }
+
     #map-container { 
         max-height: 50%; 
         width: 100%;
