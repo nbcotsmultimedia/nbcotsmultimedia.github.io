@@ -27,13 +27,15 @@ const findMarker = locationName => {
     return marker;
 };
 
-// select marker that corresponds to location of current slide
-const markerVisibility = (currentLocation, map) => {
-    currentMarker = findMarker(currentLocation);
-
-    // select whichever marker corresponds to current text section
-    markerOpacity(currentMarker.options?.title, map);
-}
+// set opacity of markers (selected marker = 1.0, unselected markers = 0.5)
+const markerOpacity = (selectedMarkerTitle, map) => {
+    let markers = map.getPanes().markerPane.childNodes;
+    for(let i = 0; i < markers.length; i++) {
+        const thisMarker = markers[i];
+        thisMarker.style.opacity = thisMarker.title === selectedMarkerTitle ? 1.0 : 0.5;
+        thisMarker.style.zIndex = thisMarker.title === selectedMarkerTitle ? 99999 : markerList[i]._zIndex;
+    };
+};
 
 // make current slide visible, hide all others
 const slideVisibility = () => {
@@ -65,10 +67,12 @@ const updateSlide = (slideName, index, increment, buttonClick, map) => {
     // if mobile, center map around current point
     if (mobile) {
         currentMarker = findMarker(currentSlide.name);
-        map.setView([currentMarker._latlng.lat, currentMarker._latlng.lng], 10);
+        if (currentMarker) {
+            map.setView([currentMarker._latlng.lat, currentMarker._latlng.lng], 10);
+        }
     }
     // select current marker
-    markerVisibility(currentSlide.name, map);
+    markerOpacity(currentSlide.name, map);
 
     // if changing slides, update slide
     if (buttonClick) {
@@ -103,45 +107,36 @@ const handleMarkerClick = (e, map) => {
 
 // create a marker and add to marker list
 const marker = (markerData, map) => {
-    const lat = markerData.latitude;
-    const long = markerData.longitude;
-    const name = markerData.name;
-    // create custom marker
-    var markerIcon = L.icon({
-        iconUrl: 'images/map_marker.png',
-        iconSize:     [26, 39.8], 
-        iconAnchor:   [13, 39.8],
-    });
-    const marker = L.marker([lat, long], { title: name, icon : markerIcon });
-    marker.on('click', e => handleMarkerClick(e, map));
+    const onlineOnly = markerData.online_only === "TRUE";
+    if (!onlineOnly) {
+        const lat = markerData.latitude;
+        const long = markerData.longitude;
+        const name = markerData.name;
+        // create custom marker
+        var markerIcon = L.icon({
+            iconUrl: 'images/map_marker.png',
+            iconSize:     [26, 39.8], 
+            iconAnchor:   [13, 39.8],
+        });
 
-    markerList.push(marker);
+        const marker = L.marker([lat, long], { title: name, icon : markerIcon });
+        marker.on('click', e => handleMarkerClick(e, map));
 
-    return marker;
+        markerList.push(marker);
+
+        return marker;
+    }
 };
 
 // create a layer group with all markers 
 const markerGroup = (markerData, map) => {
     for(let i = 0; i < markerData.length; i++) {
         marker(markerData[i], map);
-	    if (i === 0) {
-		    markerOpacity(markerData[i].name, map);
-	    }
     }
 
     const markerGroup = L.layerGroup(markerList);
 
     return markerGroup;
-};
-
-// set opacity of markers (selected marker = 1.0, unselected markers = 0.5)
-const markerOpacity = (selectedMarkerTitle, map) => {
-    let markers = map.getPanes().markerPane.childNodes;
-    for(let i = 0; i < markers.length; i++) {
-        const thisMarker = markers[i];
-        thisMarker.style.opacity = thisMarker.title === selectedMarkerTitle ? 1.0 : 0.5;
-        thisMarker.style.zIndex = thisMarker.title === selectedMarkerTitle ? 99999 : markerList[i]._zIndex;
-    };
 };
 
 // add text to page
@@ -249,8 +244,8 @@ const addText = (data, map) => {
 
     // function to construct html for winery details 
     const addInfo = row => {
-        requiredCols = ["ig_post", "img", "name", "url", "full_address", "city", "website", "latitude", "longitude", "description", "phone", "ig_name", "ig_username", "image_credit"];
-        colHeaders = {
+        const ignoreCols = ["county", "online_only", "ig_post", "img", "name", "url", "full_address", "city", "website", "latitude", "longitude", "description", "phone", "ig_name", "ig_username", "image_credit"];
+        const colHeaders = {
             "driving" : "Driving time from D.C.",
             "hours": "Hours",
             "food": "Can you bring your own food?",
@@ -267,7 +262,7 @@ const addText = (data, map) => {
         // for each column
         for (let i = 0; i < cols.length; i++) {
             const thisCol = cols[i];
-            if (!requiredCols.includes(thisCol) && row[thisCol]) {
+            if (!ignoreCols.includes(thisCol) && row[thisCol]) {
                 colHtml = `<h4>${colHeaders[thisCol]}</h4><p>${row[thisCol]}</p>`
                 htmlBlock = htmlBlock.concat(colHtml);
             }
@@ -278,12 +273,15 @@ const addText = (data, map) => {
     // for each row, add winery info
     for(let i = 0; i < data.length; i++) {
         const row = data[i];
+        const onlineOnly = row.online_only === "TRUE";
         const sectionHtml = `<section id="${row.name}" class=${mobile ? "mobile-text-section" : "text-section"}>`
-        + `<div><h3>${row.name}</h3>` + addImage(row)
-        + `<p class="address">${row.full_address}</p>`
+        + `<div><h3>${row.name}</h3>` + 
+        `<p class="county">${row.county} County</p>` + addImage(row)
+        + (onlineOnly ? `<p><strong>Online only</strong></p><p class="desc">${row.description}</p>` : 
+        `<p class="address">${row.full_address}</p>`
         + `<p>Website: <a href="${row.website}">${row.website}</a></p>`
         + `<p>Phone number: <a href="tel:${row.phone.replace(/-/g, "")}">${row.phone}</a></p>`
-        + `<p class="desc">${row.description}</p>` + addInfo(row);
+        + `<p class="desc">${row.description}</p>` + addInfo(row));
         textContainer.append(sectionHtml);
     };
 
@@ -362,6 +360,7 @@ function parseData() {
     }).addTo(map);
     // add markers to map
     markerGroup(allData, map).addTo(map);
+    markerOpacity(markerList[0].options?.title, map);
 
     addText(allData, map);
 
@@ -392,7 +391,7 @@ function parseData() {
             // scrollytelling behavior
             if (!scrolling) {
                 const thisLocation = e.element?.id;
-                markerVisibility(thisLocation, map);
+                markerOpacity(thisLocation, map);
             }
         };
         scroller.onStepEnter(e => handleStepEnter(e, map));
