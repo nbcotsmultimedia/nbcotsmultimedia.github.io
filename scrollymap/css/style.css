@@ -15,7 +15,6 @@ p {
 .story-content {
     display: flex;
     position: relative;
-    overflow: hidden;
 }
 
 .text-section {
