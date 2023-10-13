@@ -144,7 +144,7 @@ const addText = (data, map) => {
 
     const addImage = row => {
         let htmlBlock = ''
-        if (row.ig_post) {
+        if (!mobile && row.ig_post) {
             htmlBlock = `<blockquote class="instagram-media"
             data-instgrm-permalink="https://www.instagram.com/p/${row.ig_post}/?utm_source=ig_embed&amp;utm_campaign=loading"
             data-instgrm-version="14"
