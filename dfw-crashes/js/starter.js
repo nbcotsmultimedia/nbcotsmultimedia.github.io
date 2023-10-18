@@ -12,7 +12,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.p
 
 // event handler for marker click
 const handleMarkerClick = (e, marker) => {
-	map.setView([marker.lat, marker.long], 16);
+	map.setView([marker.lat, marker.long]);
 };
 
 const cleanText = (str, purpose) => {
