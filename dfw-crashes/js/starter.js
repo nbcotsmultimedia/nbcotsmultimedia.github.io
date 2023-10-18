@@ -12,7 +12,27 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.p
 
 // event handler for marker click
 const handleMarkerClick = (e, marker) => {
-	map.setView([marker.lat, marker.long],15);
+	map.setView([marker.lat, marker.long], 16);
+};
+
+const cleanText = (str, purpose) => {
+	if (purpose === "city name" && str === "OUTSIDE CITY LIMITS") {
+		return "";
+	} else {
+		const stringArray = str.toLowerCase().split(/(\s+)/);
+		let newStr = "";
+		for (let i = 0; i < stringArray.length; i++) {
+			const thisWord = stringArray[i];
+			const firstChar = thisWord.charAt(0);
+			if (purpose === "city name" && firstChar === "(") {
+				i++;
+			}
+			if (thisWord !== " ") {
+				newStr += firstChar.toUpperCase() + thisWord.substring(1) + ((purpose === "city name" && i === stringArray.length - 1) ? "," : " ");
+			}
+		}
+		return newStr;
+	} 
 };
 
 // create a marker and add to marker list
@@ -25,10 +45,13 @@ const marker = markerData => {
 	var markerIcon = L.icon({
 		iconUrl: fatal === "TRUE" ? 'images/fatal-marker.png' : 'images/injury-marker.png',
 		iconSize: [22.84, 35],
-		iconAnchor: [11, 35],
+		iconAnchor: [11, 0],
 	});
 
-	const marker = L.marker([lat, long], { title: id, icon: markerIcon });
+	const marker = L.marker([lat, long], { title: id, icon: markerIcon }).bindPopup(`<strong>${cleanText(markerData.city, "city name")} ${markerData.county} County</strong>`
+	+ `<br/>${markerData.date}`
+	+ `<br/>Contributing factors: ${cleanText(markerData.factors, "factors")}<br/>`
+	+ (markerData.fatalities ? `Fatalities: ${markerData.fatalities}` : `Serious injuries: ${markerData.injuries}`));
 	marker.on('click', e => handleMarkerClick(e, markerData));
 
 	markerList.push(marker);
