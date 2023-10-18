@@ -24,8 +24,8 @@ const marker = markerData => {
 	// create custom marker
 	var markerIcon = L.icon({
 		iconUrl: fatal === "TRUE" ? 'images/fatal-marker.png' : 'images/injury-marker.png',
-		iconSize: [26, 39.83],
-		iconAnchor: [13, 16.5],
+		iconSize: [22.84, 35],
+		iconAnchor: [11, 35],
 	});
 
 	const marker = L.marker([lat, long], { title: id, icon: markerIcon });
