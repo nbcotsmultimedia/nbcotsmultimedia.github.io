@@ -2,6 +2,11 @@
     height: 600px; 
 }
 
+.legend {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 .marker-cluster {
     background-color: transparent !important;
 }
