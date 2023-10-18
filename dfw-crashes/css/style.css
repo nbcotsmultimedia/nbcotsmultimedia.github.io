@@ -74,3 +74,15 @@
 .xsmall-label {
     line-height: 25px !important;
 }
+
+@media screen and (max-width: 768px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    #map {
+        width: 100vw !important;
+    }
+}
