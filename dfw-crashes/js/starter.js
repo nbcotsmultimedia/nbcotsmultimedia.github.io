@@ -4,7 +4,7 @@ var noRepeatData;
 var config;
 const markerList = [];
 const map = L.map('map', { preferCanvas: true }).setView([32.7767, -96.7970], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
@@ -15,7 +15,7 @@ let mapClustered = true;
 let maxCrashes = 0;
 
 // event handler for marker click
-const handleMarkerClick = (e, marker) => {
+const handleMarkerClick = marker => {
 	map.setView([marker.lat, marker.long]);
 };
 
@@ -30,7 +30,7 @@ const marker = row => {
 		color: "white",
 		fillColor: fillColor,
 		fillOpacity: 0.75
-	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(e, row)).addTo(markers);
+	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row)).addTo(markers);
 }
 
 // fucntion to add markers + makeshift clusters to the map 
