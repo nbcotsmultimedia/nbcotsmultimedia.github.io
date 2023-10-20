@@ -13,8 +13,8 @@
 
 .marker-cluster div {
     border-radius: 50% !important;
-    background-color: #a83c5d !important;
-    opacity: 0.8;
+    background-color: #770737 !important;
+    opacity: 0.75;
 }
 
 .marker-cluster span {
@@ -73,6 +73,11 @@
 
 .xsmall-label {
     line-height: 25px !important;
+}
+
+.leaflet-popup-content {
+    max-height: 250px;
+    overflow-y: scroll;
 }
 
 @media screen and (max-width: 768px) {
