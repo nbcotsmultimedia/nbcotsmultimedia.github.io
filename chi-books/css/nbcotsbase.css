@@ -1,0 +1,42 @@
+body {  }
+
+.headline {
+	font-family: 'Roboto', sans-serif;
+	font-size: 30px;
+	font-weight: 300;
+	color: #333;
+	margin-bottom: 20px;
+	line-height: 1.2em;
+}
+
+.blurb {
+	font-family: 'Roboto', sans-serif;
+	font-size: 18px;
+	color: #333;
+	margin: 20px 0 40px 0;
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	color: #333;
+}
+
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 12px;
+	color: #999;
+	margin-top: 10px;
+}
+
+
+@media (max-width: 900px ) {
+
+}
+
+@media (max-width: 500px ) {
+	body {
+		padding: 15px;
+	}
+
+}
