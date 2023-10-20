@@ -1,0 +1,88 @@
+#map { 
+    height: 600px; 
+}
+
+.legend {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.marker-cluster {
+    background-color: transparent !important;
+}
+
+.marker-cluster div {
+    border-radius: 50% !important;
+    background-color: #a83c5d !important;
+    opacity: 0.8;
+}
+
+.marker-cluster span {
+    color: #ffffff;
+}
+
+.xlarge-cluster {
+    height: 75px !important;
+    width: 75px !important;
+}
+
+.xlarge-label {
+    line-height: 75px !important;
+}
+
+.large-cluster {
+    height: 65px !important;
+    width: 65px !important;
+}
+
+.large-label {
+    line-height: 65px !important;
+}
+
+.medium-large-cluster {
+    height: 55px !important;
+    width: 55px !important;
+}
+
+.medium-large-label {
+    line-height: 55px !important;
+}
+
+.medium-cluster {
+    height: 45px !important;
+    width: 45px !important;
+}
+
+.medium-label {
+    line-height: 45px !important;
+}
+
+.small-cluster {
+    height: 35px !important;
+    width: 35px !important;
+}
+
+.small-label {
+    line-height: 35px !important;
+}
+
+.xsmall-cluster {
+    height: 25px !important;
+    width: 25px !important;
+}
+
+.xsmall-label {
+    line-height: 25px !important;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    #map {
+        width: 100vw !important;
+    }
+}
