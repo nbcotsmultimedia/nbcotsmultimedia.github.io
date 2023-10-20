@@ -3,15 +3,16 @@ var totalEntries;
 var noRepeatData;
 var config;
 const markerList = [];
-const map = L.map('map', { scrollWheelZoom: false, preferCanvas: true }).setView([32.7767, -96.7970], 8);
+const map = L.map('map', { preferCanvas: true }).setView([32.7767, -96.7970], 8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
-const clusters = new L.MarkerClusterGroup();
+const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
 let markers;
 let mapClustered = true;
+let maxCrashes = 0;
 
 // event handler for marker click
 const handleMarkerClick = (e, marker) => {
@@ -19,14 +20,16 @@ const handleMarkerClick = (e, marker) => {
 };
 
 const marker = row => {
-	const color = row.repeat === "TRUE" ? "#a83c5d" : row.fatal === "TRUE" ? "#5D3FD3" : "#023020";
-	const radius = row.repeat === "TRUE" ? 10 : 6;
+	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
+	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
+	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
 	L.circleMarker([row.lat, row.long], {
 		renderer: myRenderer,
-		weight: 0,
+		weight: strokeWeight,
 		radius: radius,
-		color: color,
-		fillOpacity: 0.65
+		color: "white",
+		fillColor: fillColor,
+		fillOpacity: 0.75
 	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(e, row)).addTo(markers);
 }
 
@@ -37,7 +40,6 @@ const addMarkers = data => {
 		const row = data[i];
 		marker(row);
 	}
-
 	mapClustered = false;
 };
 
@@ -73,7 +75,7 @@ function init() {
 
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
+	setTimeout(loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats'), 50);
 };
 
 function buildConfig() {
@@ -134,7 +136,6 @@ function parseData() {
 
 map.on('zoom', () => {
 	const zoomLevel = map.getZoom();
-	console.log(zoomLevel)
 	if (mapClustered) {
 		if (zoomLevel > 8) {
 			clusters.clearLayers();
