@@ -1,64 +1,47 @@
 var ds;
 var totalEntries;
-var allData;
+var noRepeatData;
 var config;
 const markerList = [];
-
-const map = L.map('map', { scrollWheelZoom: false }).setView([32.7767, -96.7970], 8);
+const map = L.map('map', { scrollWheelZoom: false, preferCanvas: true }).setView([32.7767, -96.7970], 8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
+const myRenderer = L.canvas({ padding: 0.5 });
+const clusters = new L.MarkerClusterGroup();
+let markers;
+let mapClustered = true;
 
 // event handler for marker click
 const handleMarkerClick = (e, marker) => {
 	map.setView([marker.lat, marker.long]);
 };
 
-const cleanText = (str, purpose) => {
-	if (purpose === "city name" && str === "OUTSIDE CITY LIMITS") {
-		return "";
-	} else {
-		const stringArray = str.toLowerCase().split(/(\s+)/);
-		let newStr = "";
-		for (let i = 0; i < stringArray.length; i++) {
-			const thisWord = stringArray[i];
-			const firstChar = thisWord.charAt(0);
-			if (purpose === "city name" && firstChar === "(") {
-				i++;
-			}
-			if (thisWord !== " ") {
-				newStr += firstChar.toUpperCase() + thisWord.substring(1) + ((purpose === "city name" && i === stringArray.length - 1) ? "," : " ");
-			}
-		}
-		return newStr;
-	} 
+const marker = row => {
+	const color = row.repeat === "TRUE" ? "#a83c5d" : row.fatal === "TRUE" ? "#5D3FD3" : "#023020";
+	const radius = row.repeat === "TRUE" ? 10 : 6;
+	L.circleMarker([row.lat, row.long], {
+		renderer: myRenderer,
+		weight: 0,
+		radius: radius,
+		color: color,
+		fillOpacity: 0.65
+	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(e, row)).addTo(markers);
+}
+
+// fucntion to add markers + makeshift clusters to the map 
+const addMarkers = data => {
+	markers = L.layerGroup().addTo(map);
+	for (let i = 0; i < data.length; i++) {
+		const row = data[i];
+		marker(row);
+	}
+
+	mapClustered = false;
 };
 
-// create a marker and add to marker list
-const marker = markerData => {
-	const lat = markerData.lat;
-	const long = markerData.long;
-	const id = markerData.crash_id;
-	const fatal = markerData.fatal;
-	// create custom marker
-	var markerIcon = L.icon({
-		iconUrl: fatal === "TRUE" ? 'images/fatal-marker.png' : 'images/injury-marker.png',
-		iconSize: [22.84, 35],
-		iconAnchor: [11, 0],
-	});
-
-	const marker = L.marker([lat, long], { title: id, icon: markerIcon }).bindPopup(`<strong>${cleanText(markerData.city, "city name")} ${markerData.county} County</strong>`
-	+ `<br/>${markerData.date}`
-	+ `<br/>Contributing factors: ${cleanText(markerData.factors, "factors")}<br/>`
-	+ (markerData.fatalities ? `Fatalities: ${markerData.fatalities}` : `Serious injuries: ${markerData.injuries}`));
-	marker.on('click', e => handleMarkerClick(e, markerData));
-
-	markerList.push(marker);
-
-	return marker;
-};
-
+// fucntion to style clusters
 const styleClusters = () => {
 	const clusters = $(".marker-cluster div");
 	for (let i = 0; i < clusters.length; i++) {
@@ -71,13 +54,26 @@ const styleClusters = () => {
 	}
 };
 
+// function to add clusters only
+const addClusters = data => {
+
+	for (let i = 0; i < data.length; i++) {
+		clusters.addLayer(L.circleMarker([data[i].lat, data[i].long], { 
+			renderer: myRenderer, 
+			fillOpacity: 0,
+			weight: 0
+		 }));
+	}
+	map.addLayer(clusters);
+	mapClustered = true;
+};
 
 function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv');
-
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
 };
 
 function buildConfig() {
@@ -111,7 +107,7 @@ function buildConfig() {
 };
 
 
-function loadData(url) {
+function loadData(url, dataset) {
 
 	Papa.parse(url, {
 		download: true,
@@ -119,31 +115,41 @@ function loadData(url) {
 		config,
 		complete: function (results) {
 			//console.log("Finished:", results.data);
-			allData = results.data;
-			parseData();
-
+			if (dataset === "no repeats") {
+				noRepeatData = results.data;
+			} else {
+				withRepeatsData = results.data;
+				parseData();
+			}
 		}
 	});
 };
 
 function parseData() {
-	var $len = allData.length;
-	totalEntries = $len;
-
-	var markers = new L.MarkerClusterGroup();
-
-	for (let i = 0; i < totalEntries; i++) {
-		markers.addLayer(marker(allData[i]));
-	}
-	map.addLayer(markers);
-
+	addClusters(withRepeatsData);
 	styleClusters();
+	//addMarkers(noRepeatData);
+
 };
 
 map.on('zoom', () => {
-	setTimeout(styleClusters, 50);
+	const zoomLevel = map.getZoom();
+	console.log(zoomLevel)
+	if (mapClustered) {
+		if (zoomLevel > 8) {
+			clusters.clearLayers();
+			addMarkers(noRepeatData);
+		} else {
+			setTimeout(styleClusters, 50);
+		}
+	} else if (zoomLevel <= 8) {
+		map.removeLayer(markers);
+		addClusters(withRepeatsData);
+		setTimeout(styleClusters, 50);
+	} 
 });
 
+// setTimeout(styleClusters, 50);
 
 
 $(document).ready(function () {
