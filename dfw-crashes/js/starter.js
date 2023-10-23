@@ -3,7 +3,7 @@ var totalEntries;
 var noRepeatData;
 var config;
 const markerList = [];
-const map = L.map('map', { preferCanvas: true }).setView([32.7767, -96.7970], 8);
+const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.7767, -96.7970], 8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
@@ -23,6 +23,7 @@ const marker = row => {
 	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
+	console.log(row.tooltip);
 	const marker = L.circleMarker([row.lat, row.long], {
 		renderer: myRenderer,
 		weight: strokeWeight,
@@ -78,8 +79,8 @@ function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
-	setTimeout(loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats'), 50);
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'no repeats');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
 };
 
 function buildConfig() {
@@ -123,6 +124,9 @@ function loadData(url, dataset) {
 			//console.log("Finished:", results.data);
 			if (dataset === "no repeats") {
 				noRepeatData = results.data;
+				if (noRepeatData) {
+					L.control.zoom().addTo(map);
+				}
 			} else {
 				withRepeatsData = results.data;
 				parseData();
@@ -149,63 +153,64 @@ const styleMarkerOnZoom = zoomLevel => {
 	let bigClusterRadius;
 	switch (zoomLevel) {
 		case 9:
+			markerRadius = 2;
+			smallClusterRadius = 3;
+			bigClusterRadius = 5;
+			break;
+		case 10:
 			markerRadius = 3;
+			smallClusterRadius = 4;
+			bigClusterRadius = 6;
+			break;
+		case 11:
+			markerRadius = 4;
 			smallClusterRadius = 5;
 			bigClusterRadius = 7;
 			break;
-		case 10:
-			markerRadius = 4;
+		case 12:
+			markerRadius = 5;
 			smallClusterRadius = 6;
 			bigClusterRadius = 8;
 			break;
-		case 11:
-			markerRadius = 5;
-			smallClusterRadius = 7;
-			bigClusterRadius = 9;
-			break;
-		case 12:
+		case 13:
 			markerRadius = 6;
-			smallClusterRadius = 8;
+			smallClusterRadius = 7;
 			bigClusterRadius = 10;
 			break;
-		case 13:
-			markerRadius = 7;
-			smallClusterRadius = 8;
-			bigClusterRadius = 13;
-			break;
 		case 14:
-			markerRadius = 8;
-			smallClusterRadius = 10;
-			bigClusterRadius = 15;
+			markerRadius = 6;
+			smallClusterRadius = 7;
+			bigClusterRadius = 10;
 			break;
 		case 15:
-			markerRadius = 9;
-			smallClusterRadius = 12;
-			bigClusterRadius = 18;
+			markerRadius = 7;
+			smallClusterRadius = 8;
+			bigClusterRadius = 11;
 			break;
 		case 16:
-			markerRadius = 9;
-			smallClusterRadius = 12;
-			bigClusterRadius = 18;
+			markerRadius = 7;
+			smallClusterRadius = 8;
+			bigClusterRadius = 11;
 			break;
 		case 17:
-			markerRadius = 10;
-			smallClusterRadius = 14;
-			bigClusterRadius = 20;
+			markerRadius = 8;
+			smallClusterRadius = 9;
+			bigClusterRadius = 12;
 			break;
 		case 18:
-			markerRadius = 10;
-			smallClusterRadius = 14;
-			bigClusterRadius = 20;
+			markerRadius = 8;
+			smallClusterRadius = 9;
+			bigClusterRadius = 12;
 			break;
 		case 19:
 			markerRadius = 10;
-			smallClusterRadius = 14;
-			bigClusterRadius = 20;
+			smallClusterRadius = 10;
+			bigClusterRadius = 13;
 			break;
 
 	}
 	
+	const strokeWeight = markerRadius > 2 ? 0.5 : 0.25;
 	const setMarkerRadius = marker => {
 		if (marker.options.repeat === "TRUE") {
 			if (marker.options.num_crashes < 5) {
@@ -216,6 +221,7 @@ const styleMarkerOnZoom = zoomLevel => {
 			}
 		} else {
 			marker.setRadius(markerRadius);
+			marker.options.weight = strokeWeight;
 		}
 	}
 	markerList.map(marker => setMarkerRadius(marker));
