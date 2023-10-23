@@ -23,14 +23,18 @@ const marker = row => {
 	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
-	L.circleMarker([row.lat, row.long], {
+	const marker = L.circleMarker([row.lat, row.long], {
 		renderer: myRenderer,
 		weight: strokeWeight,
 		radius: radius,
 		color: "white",
 		fillColor: fillColor,
-		fillOpacity: 0.75
-	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row)).addTo(markers);
+		fillOpacity: 0.75,
+		repeat: row.repeat,
+		num_crashes: row.num_crashes
+	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row));
+	marker.addTo(markers);
+	markerList.push(marker);
 }
 
 // fucntion to add markers + makeshift clusters to the map 
@@ -60,11 +64,11 @@ const styleClusters = () => {
 const addClusters = data => {
 
 	for (let i = 0; i < data.length; i++) {
-		clusters.addLayer(L.circleMarker([data[i].lat, data[i].long], { 
-			renderer: myRenderer, 
+		clusters.addLayer(L.circleMarker([data[i].lat, data[i].long], {
+			renderer: myRenderer,
 			fillOpacity: 0,
 			weight: 0
-		 }));
+		}));
 	}
 	map.addLayer(clusters);
 	mapClustered = true;
@@ -128,11 +132,94 @@ function loadData(url, dataset) {
 };
 
 function parseData() {
-	addClusters(withRepeatsData);
-	styleClusters();
-	//addMarkers(noRepeatData);
+	const zoomLevel = map.getZoom();
+	if (zoomLevel <= 8) {
+		addClusters(withRepeatsData);
+		styleClusters();
+	} else {
+		addMarkers(noRepeatData);
+		styleMarkerOnZoom(zoomLevel);
+	}
 
 };
+
+const styleMarkerOnZoom = zoomLevel => {
+	let markerRadius;
+	let smallClusterRadius;
+	let bigClusterRadius;
+	switch (zoomLevel) {
+		case 9:
+			markerRadius = 3;
+			smallClusterRadius = 5;
+			bigClusterRadius = 7;
+			break;
+		case 10:
+			markerRadius = 4;
+			smallClusterRadius = 6;
+			bigClusterRadius = 8;
+			break;
+		case 11:
+			markerRadius = 5;
+			smallClusterRadius = 7;
+			bigClusterRadius = 9;
+			break;
+		case 12:
+			markerRadius = 6;
+			smallClusterRadius = 8;
+			bigClusterRadius = 10;
+			break;
+		case 13:
+			markerRadius = 7;
+			smallClusterRadius = 8;
+			bigClusterRadius = 13;
+			break;
+		case 14:
+			markerRadius = 8;
+			smallClusterRadius = 10;
+			bigClusterRadius = 15;
+			break;
+		case 15:
+			markerRadius = 9;
+			smallClusterRadius = 12;
+			bigClusterRadius = 18;
+			break;
+		case 16:
+			markerRadius = 9;
+			smallClusterRadius = 12;
+			bigClusterRadius = 18;
+			break;
+		case 17:
+			markerRadius = 10;
+			smallClusterRadius = 14;
+			bigClusterRadius = 20;
+			break;
+		case 18:
+			markerRadius = 10;
+			smallClusterRadius = 14;
+			bigClusterRadius = 20;
+			break;
+		case 19:
+			markerRadius = 10;
+			smallClusterRadius = 14;
+			bigClusterRadius = 20;
+			break;
+
+	}
+	
+	const setMarkerRadius = marker => {
+		if (marker.options.repeat === "TRUE") {
+			if (marker.options.num_crashes < 5) {
+				marker.setRadius(smallClusterRadius);
+			} else {
+				console.log(bigClusterRadius);
+				marker.setRadius(bigClusterRadius);
+			}
+		} else {
+			marker.setRadius(markerRadius);
+		}
+	}
+	markerList.map(marker => setMarkerRadius(marker));
+}
 
 map.on('zoom', () => {
 	const zoomLevel = map.getZoom();
@@ -140,14 +227,19 @@ map.on('zoom', () => {
 		if (zoomLevel > 8) {
 			clusters.clearLayers();
 			addMarkers(noRepeatData);
+			styleMarkerOnZoom(zoomLevel);
 		} else {
 			setTimeout(styleClusters, 50);
 		}
-	} else if (zoomLevel <= 8) {
-		map.removeLayer(markers);
-		addClusters(withRepeatsData);
-		setTimeout(styleClusters, 50);
-	} 
+	} else {
+		if (zoomLevel <= 8) {
+			map.removeLayer(markers);
+			addClusters(withRepeatsData);
+			setTimeout(styleClusters, 50);
+		} else {
+			styleMarkerOnZoom(zoomLevel);
+		}
+	}
 });
 
 // setTimeout(styleClusters, 50);
