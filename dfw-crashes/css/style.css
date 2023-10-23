@@ -80,6 +80,10 @@
     overflow-y: scroll;
 }
 
+.tooltip-heading {
+    font-size: 14px;
+}
+
 @media screen and (max-width: 768px) {
     body {
         display: flex;
