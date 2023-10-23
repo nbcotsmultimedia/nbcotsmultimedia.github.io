@@ -10,6 +10,23 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
+const legendItems = {
+	"fatal": {
+		"color": "red",
+		"size": "10px",
+		"label": "Fatal crash"
+	},
+	"si": {
+		"color": "orange",
+		"size": "10px",
+		"label": "Serious injury crash"
+	},
+	"cluster": {
+		"color": "#770737",
+		"size": "15px",
+		"label": "Multiple crashes"
+	}
+}
 let markers;
 let mapClustered = true;
 let maxCrashes = 0;
@@ -81,6 +98,8 @@ function init() {
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'no repeats');
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
+
+	fillLegend(legendItems);
 };
 
 function buildConfig() {
@@ -247,6 +266,19 @@ map.on('zoom', () => {
 		}
 	}
 });
+
+const fillLegend = legendItems => {
+	const legendItemKeys =  Object.keys(legendItems);
+	let innerHtml = '';
+	for (let i = 0; i < legendItemKeys.length; i++) {
+		const thisLegendItem = legendItems[legendItemKeys[i]]
+		const itemHtml = `<div class="legend-item"><div class="legend-icon" `
+		+ `style="background-color:${thisLegendItem.color};height:${thisLegendItem.size};width:${thisLegendItem.size}"></div><p class="legend-label">${thisLegendItem.label}</p></div>`
+		innerHtml += itemHtml;
+	}
+	$('#legend').html(innerHtml);
+	console.log(innerHtml);
+}
 
 // setTimeout(styleClusters, 50);
 
