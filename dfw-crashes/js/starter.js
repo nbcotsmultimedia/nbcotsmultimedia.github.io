@@ -28,8 +28,10 @@ const legendItems = {
 	}
 }
 let markers;
+let texts;
 let mapClustered = true;
 let maxCrashes = 0;
+let zoomLevel;
 
 // event handler for marker click
 const handleMarkerClick = marker => {
@@ -40,7 +42,6 @@ const marker = row => {
 	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
-	console.log(row.tooltip);
 	const marker = L.circleMarker([row.lat, row.long], {
 		renderer: myRenderer,
 		weight: strokeWeight,
@@ -53,11 +54,27 @@ const marker = row => {
 	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row));
 	marker.addTo(markers);
 	markerList.push(marker);
+	if (row.repeat === "TRUE") {
+		text(row);
+	}
+}
+
+const text = row => {
+	const text = L.tooltip({
+        permanent: true,
+        direction: 'center',
+        className: 'cluster-label',
+		renderer: myRenderer,
+    })
+    .setContent(row.num_crashes.toString())
+    .setLatLng([row.lat, row.long]);
+    text.addTo(texts);
 }
 
 // fucntion to add markers + makeshift clusters to the map 
 const addMarkers = data => {
 	markers = L.layerGroup().addTo(map);
+	texts = L.layerGroup().addTo(map);
 	for (let i = 0; i < data.length; i++) {
 		const row = data[i];
 		marker(row);
@@ -96,7 +113,7 @@ function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'no repeats');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
 
 	fillLegend(legendItems);
@@ -148,25 +165,25 @@ function loadData(url, dataset) {
 				}
 			} else {
 				withRepeatsData = results.data;
-				parseData();
+				parseData()
 			}
 		}
 	});
 };
 
 function parseData() {
-	const zoomLevel = map.getZoom();
+	zoomLevel = map.getZoom();
 	if (zoomLevel <= 8) {
 		addClusters(withRepeatsData);
 		styleClusters();
 	} else {
 		addMarkers(noRepeatData);
-		styleMarkerOnZoom(zoomLevel);
+		styleMarkerOnZoom();
 	}
 
 };
 
-const styleMarkerOnZoom = zoomLevel => {
+const styleMarkerOnZoom = () => {
 	let markerRadius;
 	let smallClusterRadius;
 	let bigClusterRadius;
@@ -235,7 +252,6 @@ const styleMarkerOnZoom = zoomLevel => {
 			if (marker.options.num_crashes < 5) {
 				marker.setRadius(smallClusterRadius);
 			} else {
-				console.log(bigClusterRadius);
 				marker.setRadius(bigClusterRadius);
 			}
 		} else {
@@ -247,12 +263,13 @@ const styleMarkerOnZoom = zoomLevel => {
 }
 
 map.on('zoom', () => {
-	const zoomLevel = map.getZoom();
+	zoomLevel = map.getZoom();
+	console.log(zoomLevel);
 	if (mapClustered) {
 		if (zoomLevel > 8) {
 			clusters.clearLayers();
 			addMarkers(noRepeatData);
-			styleMarkerOnZoom(zoomLevel);
+			styleMarkerOnZoom();
 		} else {
 			setTimeout(styleClusters, 50);
 		}
@@ -262,8 +279,13 @@ map.on('zoom', () => {
 			addClusters(withRepeatsData);
 			setTimeout(styleClusters, 50);
 		} else {
-			styleMarkerOnZoom(zoomLevel);
+			styleMarkerOnZoom();
 		}
+	}
+	if (zoomLevel < 13) {
+		$('.cluster-label').css('display', 'none');
+	} else {
+		$('.cluster-label').css('display', 'block');
 	}
 });
 
@@ -277,7 +299,6 @@ const fillLegend = legendItems => {
 		innerHtml += itemHtml;
 	}
 	$('#legend').html(innerHtml);
-	console.log(innerHtml);
 }
 
 // setTimeout(styleClusters, 50);
