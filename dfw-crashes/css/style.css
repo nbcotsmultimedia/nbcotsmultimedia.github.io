@@ -100,6 +100,13 @@
     font-size: 14px;
 }
 
+.cluster-label {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 @media screen and (max-width: 768px) {
     body {
         display: flex;
