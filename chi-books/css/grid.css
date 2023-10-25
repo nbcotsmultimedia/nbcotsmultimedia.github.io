@@ -90,31 +90,72 @@
 
 #infoWin {
   position: fixed;
-  top: 50px;
-  left: 10px;
-  width: 98%;
+  top: 100px;
+  width: 650px;
   padding: 10px;
   border: 1px solid #CCC;
   border-radius: 5px;
-  margin: 10px 0px;
-  overflow: hidden;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   background-color: #FFF;
+  -webkit-box-shadow:0px 0px 20px 10px rgba(100,100,100,0.9);
+  -moz-box-shadow: 0px 0px 20px 10px rgba(100,100,100,0.9);
+  box-shadow: 0px 0px 20px 10px rgba(100,100,100,0.9);
 }
 #infoWin {
   font-size: 14px;
 }
 #infoCon {
   max-width: 650px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
+}
 #infoImg {
   width: 33%;
   float: left;
   margin-right: 15px;
 }
 
+#winNav {
+  border-top: 1px solid #CCC;
+  padding-top: 5px;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  height: 25px;
+}
+
+.btnIcon {
+  float: left;
+  margin-right: 3px;
+}
+.btnText {
+  font-size: 12px;
+
+}
+
+#closeBtn {
+  width: 75px;
+  position: absolute;
+  left: 5px;
+}
+#nextBtn {
+  width: 65px;
+  position: absolute;
+  right: 0px;
+}
+#prevBtn {
+  width: 90px;
+  position: absolute;
+  right: 85px;
+}
+
+.bookTitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2em;
+  margin-bottom: 0px;
+}
 
 .arrow_box {
 	position: relative;
@@ -188,13 +229,9 @@
 }
 
 .navBtn {
-  font-size: 14px;
-  float: left;
-  margin: 10px;
-  border: 1px solid #e1e1e1;
-  padding: 5px 10px;
-  border-radius: 5px;
   cursor: pointer;
+  padding: 5px 5px 0px 5px;
+  border-radius: 5px;
 }
 .navBtn:hover {
   background-color: #e1e1e1;
@@ -209,6 +246,46 @@
 
 #navCon {
 
+}
+
+#key {
+  margin-left: 30px;
+}
+.keyItem {
+  font-size: 14px;
+  float: left;
+  margin-right: 15px;
+}
+.keyCircle {
+  width: 12px;
+  height: 12px;
+  background-color: #CCC;
+  float: left;
+  margin-right: 3px;
+  margin-top: 5px;
+}
+
+#s0 .form-check-input:checked {
+    background-color: #009900;
+    border-color: #009900;
+}
+#s1 .form-check-input:checked {
+    background-color: #CC0000;
+    border-color: #CC0000;
+}
+#s2 .form-check-input:checked {
+    background-color: #0066cc;
+    border-color: #0066cc;
+}
+#s3 .form-check-input:checked {
+    background-color: #ff9900;
+    border-color: #ff9900;
+}
+
+#countDisp {
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-top: 10px;
 }
 
 @media (max-width: 500px) {
@@ -235,6 +312,14 @@
     padding: 0px 2px;
     margin: 0px 0px 15px 0px;
   }
+
+  #key {
+    margin-left: 0px;
+  }
+
+  #infoWin {
+    width: 85%;
+  }
 }
 
 @media (max-width: 325px) {
@@ -242,4 +327,5 @@
     width: 90px;
     height: 120px;
   }
+
 }

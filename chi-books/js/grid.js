@@ -16,6 +16,7 @@ var intros = [];
 var sheets = [];
 var currentDecade = "";
 
+var currentMaterial = 0;
 var status = "";
 
 function init() {
@@ -36,28 +37,23 @@ function init() {
 	//myparent = xtalk.parentDomain;
 	//console.log("parent" + myparent + "parent")
 
-	$(".nextBtn").click( function() {
-		nextPage();
+	$("#nextBtn").click( function() {
+		next();
 	});
-	$(".prevBtn").click( function() {
-		prevPage();
+	$("#prevBtn").click( function() {
+		prev();
 	});
+	$("#closeBtn").click( function() {
+		$("#infoWin").hide();
+		$("#gridCon").css("opacity", 1);
+	})
 
 	loadData(0);
-
-	$("#btnall").click(function() {
-		currentDecade = "ny";
-		$(this).addClass("active");
-		$("#dcbtn").removeClass("active");
-		$("#pabtn").removeClass("active");
-    loadData(0);
-	});
 
 }
 
 
 function loadData(which) {
-
 	Papa.parse(sheets[which], {
 		download: true,
     header: true,
@@ -122,7 +118,7 @@ function generateGrid() {
 
 	for (var i=0; i<totalEntries; i++) {
 
-		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-gid='" + (i+1) + "'>" +
+		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-o='" + allData[i].outcome + "'>" +
 												"<div class='th'><img id='img" + i + "'src='" + allData[i].image + "' width='100%' alt='thumb' onerror='imgError(this);' />" +
 												"<p class='pName'>" + allData[i].material + "<br/><span class='facility'>" + allData[i].facility_name + "</span></p>" +
 												"</div>");
@@ -150,16 +146,49 @@ function generateGrid() {
 		$("#th" + i).click(function () {
 				//console.log(allData[$(this).attr("data-id")].link);
 				//window.open(allData[$(this).attr("data-id")].link, '_blank');
-				showInfo($(this).attr("data-id"));
+				//showInfo($(this).attr("data-id"));
 		})
-
 
 	}
 
 	$(".item").css("margin-right", "0px");
 	//$("#gridCon").css("justify-content", "space-between");
 
+	$("#s0").on('change', function() {
+		if ($("#k0").prop('checked')) {
+				$( ".item[data-o='Stayed']" ).show();
+		} else {
+				$( ".item[data-o='Stayed']" ).hide();
+		}
+		showCount();
+	});
+	$("#s1").on('change', function() {
+		if ($("#k1").prop('checked')) {
+				$( ".item[data-o='Removed']" ).show();
+		} else {
+				$( ".item[data-o='Removed']" ).hide();
+		}
+		showCount();
+	});
+	$("#s2").on('change', function() {
+		console.log($("#k2").prop('checked'))
+		if ($("#k2").prop('checked')) {
+				$( ".item[data-o='Moved']" ).show();
+		} else {
+				$( ".item[data-o='Moved']" ).hide();
+		}
+		showCount();
+	});
+	$("#s3").on('change', function() {
+		if ($("#k3").prop('checked')) {
+				$( ".item[data-o='Unclear']" ).show();
+		} else {
+				$( ".item[data-o='Unclear']" ).hide();
+		}
+		showCount();
+	});
 
+	showCount();
 	resizeItems();
 
 
@@ -174,9 +203,35 @@ function imgError(image) {
 
 function showInfo(which) {
 	$("#infoImg").html("<img src='" + allData[which].image + "' class='img-fluid' />");
-	$("#infoText").html("Title: " + allData[which].material + "<br/>Type: " + allData[which].type + "<br/><br/>Challenge: " + allData[which].challenge + "<br/><br/>Reponse: " + allData[which].response);
+	$("#infoText").html("<p class='bookTitle'> " + allData[which].material + "</p>" +
+											"<p class='bookInfo'><em>" + allData[which].author + "</em></p>" +
+											"<p class='bookInfo'><b>Type:</b> " + allData[which].type + "</p>" +
+											"<p class='bookInfo'><b>Outcome: </b>" + allData[which].outcome + "</p>" +
+											"<p class='bookInfo'><b>Library or School District: </b>" + allData[which].facility_name + " (" + allData[which].location + ")</p>" +
+											"<p class='bookInfo'><b>Challenge:</b> " + allData[which].challenge + "</p>" +
+											"<p class='bookInfo'><b>Reponse:</b> " + allData[which].response) + "</p>";
 	$("#infoWin").show();
+	currentMaterial = which;
 
+	$("#gridCon").css("opacity", .25);
+}
+
+function showCount() {
+	$("#countDisp").text("Showing " + $('.item:visible').length + " items");
+}
+
+function next() {
+	if (currentMaterial < totalEntries) {
+		currentMaterial ++;
+		showInfo(currentMaterial)
+	}
+}
+
+function prev() {
+	if (currentMaterial > 0) {
+		currentMaterial --;
+		showInfo(currentMaterial);
+	}
 }
 
 function resizeItems() {
