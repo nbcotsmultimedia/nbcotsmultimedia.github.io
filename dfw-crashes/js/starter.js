@@ -3,41 +3,82 @@ var totalEntries;
 var noRepeatData;
 var config;
 const markerList = [];
-const map = L.map('map', { scrollWheelZoom: false, preferCanvas: true }).setView([32.7767, -96.7970], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.7767, -96.7970], 8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
-const clusters = new L.MarkerClusterGroup();
+const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
+const legendItems = {
+	"fatal": {
+		"color": "red",
+		"size": "10px",
+		"label": "Fatal crash"
+	},
+	"si": {
+		"color": "orange",
+		"size": "10px",
+		"label": "Serious injury crash"
+	},
+	"cluster": {
+		"color": "#770737",
+		"size": "15px",
+		"label": "Multiple crashes"
+	}
+}
 let markers;
+let texts;
 let mapClustered = true;
+let maxCrashes = 0;
+let zoomLevel;
 
 // event handler for marker click
-const handleMarkerClick = (e, marker) => {
+const handleMarkerClick = marker => {
 	map.setView([marker.lat, marker.long]);
 };
 
 const marker = row => {
-	const color = row.repeat === "TRUE" ? "#a83c5d" : row.fatal === "TRUE" ? "#5D3FD3" : "#023020";
-	const radius = row.repeat === "TRUE" ? 10 : 6;
-	L.circleMarker([row.lat, row.long], {
+	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
+	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
+	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
+	const marker = L.circleMarker([row.lat, row.long], {
 		renderer: myRenderer,
-		weight: 0,
+		weight: strokeWeight,
 		radius: radius,
-		color: color,
-		fillOpacity: 0.65
-	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(e, row)).addTo(markers);
+		color: "white",
+		fillColor: fillColor,
+		fillOpacity: 0.75,
+		repeat: row.repeat,
+		num_crashes: row.num_crashes
+	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row));
+	marker.addTo(markers);
+	markerList.push(marker);
+	if (row.repeat === "TRUE") {
+		text(row);
+	}
+}
+
+const text = row => {
+	const text = L.tooltip({
+        permanent: true,
+        direction: 'center',
+        className: 'cluster-label',
+		renderer: myRenderer,
+    })
+    .setContent(row.num_crashes.toString())
+    .setLatLng([row.lat, row.long]);
+    text.addTo(texts);
 }
 
 // fucntion to add markers + makeshift clusters to the map 
 const addMarkers = data => {
 	markers = L.layerGroup().addTo(map);
+	texts = L.layerGroup().addTo(map);
 	for (let i = 0; i < data.length; i++) {
 		const row = data[i];
 		marker(row);
 	}
-
 	mapClustered = false;
 };
 
@@ -58,11 +99,11 @@ const styleClusters = () => {
 const addClusters = data => {
 
 	for (let i = 0; i < data.length; i++) {
-		clusters.addLayer(L.circleMarker([data[i].lat, data[i].long], { 
-			renderer: myRenderer, 
+		clusters.addLayer(L.circleMarker([data[i].lat, data[i].long], {
+			renderer: myRenderer,
 			fillOpacity: 0,
 			weight: 0
-		 }));
+		}));
 	}
 	map.addLayer(clusters);
 	mapClustered = true;
@@ -74,6 +115,8 @@ function init() {
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
+
+	fillLegend(legendItems);
 };
 
 function buildConfig() {
@@ -117,37 +160,146 @@ function loadData(url, dataset) {
 			//console.log("Finished:", results.data);
 			if (dataset === "no repeats") {
 				noRepeatData = results.data;
+				if (noRepeatData) {
+					L.control.zoom().addTo(map);
+				}
 			} else {
 				withRepeatsData = results.data;
-				parseData();
+				parseData()
 			}
 		}
 	});
 };
 
 function parseData() {
-	addClusters(withRepeatsData);
-	styleClusters();
-	//addMarkers(noRepeatData);
+	zoomLevel = map.getZoom();
+	if (zoomLevel <= 8) {
+		addClusters(withRepeatsData);
+		styleClusters();
+	} else {
+		addMarkers(noRepeatData);
+		styleMarkerOnZoom();
+	}
 
 };
 
+const styleMarkerOnZoom = () => {
+	let markerRadius;
+	let smallClusterRadius;
+	let bigClusterRadius;
+	switch (zoomLevel) {
+		case 9:
+			markerRadius = 2;
+			smallClusterRadius = 3;
+			bigClusterRadius = 5;
+			break;
+		case 10:
+			markerRadius = 3;
+			smallClusterRadius = 4;
+			bigClusterRadius = 6;
+			break;
+		case 11:
+			markerRadius = 4;
+			smallClusterRadius = 5;
+			bigClusterRadius = 7;
+			break;
+		case 12:
+			markerRadius = 5;
+			smallClusterRadius = 6;
+			bigClusterRadius = 8;
+			break;
+		case 13:
+			markerRadius = 6;
+			smallClusterRadius = 7;
+			bigClusterRadius = 10;
+			break;
+		case 14:
+			markerRadius = 6;
+			smallClusterRadius = 7;
+			bigClusterRadius = 10;
+			break;
+		case 15:
+			markerRadius = 7;
+			smallClusterRadius = 8;
+			bigClusterRadius = 11;
+			break;
+		case 16:
+			markerRadius = 7;
+			smallClusterRadius = 8;
+			bigClusterRadius = 11;
+			break;
+		case 17:
+			markerRadius = 8;
+			smallClusterRadius = 9;
+			bigClusterRadius = 12;
+			break;
+		case 18:
+			markerRadius = 8;
+			smallClusterRadius = 9;
+			bigClusterRadius = 12;
+			break;
+		case 19:
+			markerRadius = 10;
+			smallClusterRadius = 10;
+			bigClusterRadius = 13;
+			break;
+
+	}
+	
+	const strokeWeight = markerRadius > 2 ? 0.5 : 0.25;
+	const setMarkerRadius = marker => {
+		if (marker.options.repeat === "TRUE") {
+			if (marker.options.num_crashes < 5) {
+				marker.setRadius(smallClusterRadius);
+			} else {
+				marker.setRadius(bigClusterRadius);
+			}
+		} else {
+			marker.setRadius(markerRadius);
+			marker.options.weight = strokeWeight;
+		}
+	}
+	markerList.map(marker => setMarkerRadius(marker));
+}
+
 map.on('zoom', () => {
-	const zoomLevel = map.getZoom();
-	console.log(zoomLevel)
+	zoomLevel = map.getZoom();
+	console.log(zoomLevel);
 	if (mapClustered) {
 		if (zoomLevel > 8) {
 			clusters.clearLayers();
 			addMarkers(noRepeatData);
+			styleMarkerOnZoom();
 		} else {
 			setTimeout(styleClusters, 50);
 		}
-	} else if (zoomLevel <= 8) {
-		map.removeLayer(markers);
-		addClusters(withRepeatsData);
-		setTimeout(styleClusters, 50);
-	} 
+	} else {
+		if (zoomLevel <= 8) {
+			map.removeLayer(markers);
+			addClusters(withRepeatsData);
+			setTimeout(styleClusters, 50);
+		} else {
+			styleMarkerOnZoom();
+		}
+	}
+	if (zoomLevel < 13) {
+		$('.cluster-label').css('display', 'none');
+	} else {
+		$('.cluster-label').css('display', 'block');
+	}
 });
+
+const fillLegend = legendItems => {
+	const legendItemKeys =  Object.keys(legendItems);
+	let innerHtml = '';
+	for (let i = 0; i < legendItemKeys.length; i++) {
+		const thisLegendItem = legendItems[legendItemKeys[i]]
+		const itemHtml = `<div class="legend-item"><div class="legend-icon" `
+		+ `style="background-color:${thisLegendItem.color};height:${thisLegendItem.size};width:${thisLegendItem.size}"></div><p class="legend-label">${thisLegendItem.label}</p></div>`
+		innerHtml += itemHtml;
+	}
+	$('#legend').html(innerHtml);
+}
 
 // setTimeout(styleClusters, 50);
 
