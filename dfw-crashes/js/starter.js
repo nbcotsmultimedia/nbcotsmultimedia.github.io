@@ -114,7 +114,7 @@ function init() {
 
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vShLzLujzc3Mdk3lC6XjrOkWXOKvpeWBHnnHV3E35dwr_35MVzoGg8VYY7txatxizUmoHPepbbCKwCA/pub?output=csv', 'no repeats');
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vQofM7Oeic99e_sVEXBe_ask_Xku0Y8GZAEeUw-YWvf41-H4IwzaF2Rwm-PE69xx8RDQRzcqBybrKdw/pub?output=csv', 'with repeats')
 
 	fillLegend(legendItems);
 };
