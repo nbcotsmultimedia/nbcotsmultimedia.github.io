@@ -146,7 +146,7 @@ function generateGrid() {
 		$("#th" + i).click(function () {
 				//console.log(allData[$(this).attr("data-id")].link);
 				//window.open(allData[$(this).attr("data-id")].link, '_blank');
-				//showInfo($(this).attr("data-id"));
+				showInfo($(this).attr("data-id"));
 		})
 
 	}
