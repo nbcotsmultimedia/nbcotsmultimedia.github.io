@@ -250,6 +250,7 @@
 
 #key {
   margin-left: 30px;
+  margin-right: 20px;
 }
 .keyItem {
   font-size: 14px;
@@ -288,6 +289,10 @@
   margin-top: 10px;
 }
 
+#searchG {
+  width: 385px;
+}
+
 @media (max-width: 500px) {
   .thumb {
     width: 110px;
@@ -315,10 +320,15 @@
 
   #key {
     margin-left: 0px;
+    margin-right: 0px;
   }
 
   #infoWin {
     width: 85%;
+  }
+
+  #searchG {
+    width: 100%;
   }
 }
 
