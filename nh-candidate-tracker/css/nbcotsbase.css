@@ -101,8 +101,8 @@ body {
 
 /* Style for the image container */
 .image-container {
-    width: 6.25rem; /* 100px */
-    height: 6.25rem; /* 100px */
+    width: 6.5rem; /* 100px */
+    height: 6.5rem; /* 100px */
     display: flex;
     justify-content: flex-end; /* Shift the image to the right */
     align-items: center; /* Center vertically */
@@ -110,8 +110,8 @@ body {
 
 /* Basic style for the images */
 img.img-fluid {
-    width: 6.25rem; /* 100px */
-    height: 6.25rem; /* 100px */
+    width: 100%;
+    height: 100%;
     border-radius: 50%; /* Create a circular border */
 }
 

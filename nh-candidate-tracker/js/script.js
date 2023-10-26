@@ -165,6 +165,8 @@ function parseData() {
             currentDay.append(card);
         }
     }
+
+    xtalk.signalIframe();
 }
 
 // Update the 'This Week' header
