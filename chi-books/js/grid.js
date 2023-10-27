@@ -120,7 +120,8 @@ function generateGrid() {
 
 		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-o='" + allData[i].outcome + "' data-f='" + allData[i].facility_name + "'>" +
 												"<div class='th'><img id='img" + i + "'src='" + allData[i].image + "' width='100%' alt='thumb' onerror='imgError(this);' />" +
-												"<p class='pName'>" + allData[i].material + "<br/><span class='facility'>" + allData[i].facility_name + "</span></p>" +
+												"<p class='pName'>" + allData[i].material + "</p>"+
+												"<p class='facility'>" + allData[i].facility_name + "</p>" +
 												"</div>");
 
 
