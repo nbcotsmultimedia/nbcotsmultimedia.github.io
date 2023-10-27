@@ -155,36 +155,19 @@ function generateGrid() {
 	$(".item").css("margin-right", "0px");
 	//$("#gridCon").css("justify-content", "space-between");
 
-	$("#s0").on('change', function() {
-		if ($("#k0").prop('checked')) {
-				$( ".item[data-o='Stayed']" ).show();
+
+	$(".keyItem").on('change', function() {
+		if ($("#k" + $(this).attr("data-num")).prop('checked')) {
+			//$( ".item[data-o='" + $(this).attr("data-outcome") + "']" ).show();
+			if ($("#searchF").val() == "") {
+				$( ".item[data-o='" + $(this).attr("data-outcome") + "']" ).show();
+			} else {
+				//console.log("yes search value");
+				$( ".item[data-o='" + $(this).attr("data-outcome") + "'][data-f*='" + $("#searchF").val() + "']" ).show();
+
+			}
 		} else {
-				$( ".item[data-o='Stayed']" ).hide();
-		}
-		showCount();
-	});
-	$("#s1").on('change', function() {
-		if ($("#k1").prop('checked')) {
-				$( ".item[data-o='Removed']" ).show();
-		} else {
-				$( ".item[data-o='Removed']" ).hide();
-		}
-		showCount();
-	});
-	$("#s2").on('change', function() {
-		console.log($("#k2").prop('checked'))
-		if ($("#k2").prop('checked')) {
-				$( ".item[data-o='Moved']" ).show();
-		} else {
-				$( ".item[data-o='Moved']" ).hide();
-		}
-		showCount();
-	});
-	$("#s3").on('change', function() {
-		if ($("#k3").prop('checked')) {
-				$( ".item[data-o='Unclear']" ).show();
-		} else {
-				$( ".item[data-o='Unclear']" ).hide();
+			$( ".item[data-o='" + $(this).attr("data-outcome") + "']" ).hide();
 		}
 		showCount();
 	});
