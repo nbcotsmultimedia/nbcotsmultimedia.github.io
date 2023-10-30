@@ -85,8 +85,10 @@ function parseData() {
 
     // Create a loop to go through each event in 'allData'
     for (var i = 0; i < totalEntries; i++) {
-        // Parse the event date using the JS 'Date' object to check for a new day
-        var eventDate = new Date(allData[i].date);
+
+        // Parse the event date using the MM/DD/YYYY format
+        var dateParts = allData[i].date.split('/');
+        var eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
 
         // Check if the event date is within the current week
         if (eventDate >= currentWeekStartDate && eventDate <= currentWeekEndDate) {
@@ -146,15 +148,6 @@ function parseData() {
             var imageContainer = $("<div class='image-container'></div");
             var image = $("<img src='" + allData[i].img + "' class='img-fluid' party='" + allData[i].party + "' />");
 
-            var currentTime = new Date(); // Create a Date object for the current time
-
-            // Check if the event's date is in the past (before the current date) or if it's today and the event time is in the past
-            if (eventDate < currentDate || (eventDate.toDateString() === currentDate.toDateString() && eventDate.getTime() < currentTime.getTime())) {
-                // If the event is in the past:
-                // Reduce the opacity of the card
-                card.addClass('past-event');
-            }
-
             // Append time, info, and imageContainer to the card element
             card.append(time, info, imageContainer);
 
@@ -169,15 +162,22 @@ function parseData() {
     xtalk.signalIframe();
 }
 
-// Update the 'This Week' header
+// Update the 'This Week' header in AP style
 function updateThisWeekHeader() {
     const thisWeekHeader = document.getElementById('thisWeekHeader');
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay()); // Start of the current week
     const lastDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 6); // End of the current week
-    const startDateString = (firstDay.getMonth() + 1) + '/' + firstDay.getDate();
-    const endDateString = (lastDay.getMonth() + 1) + '/' + lastDay.getDate();
-    thisWeekHeader.textContent = 'This Week: ' + startDateString + ' - ' + endDateString;
+    const startDateString = formatDate(firstDay);
+    const endDateString = formatDate(lastDay);
+    thisWeekHeader.textContent = startDateString + ' - ' + endDateString;
+}
+
+// Format date in AP style
+function formatDate(date) {
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return dayNames[date.getDay()] + ', ' + monthNames[date.getMonth()] + ' ' + date.getDate();
 }
 
 // Call the function to update the header when the page loads
