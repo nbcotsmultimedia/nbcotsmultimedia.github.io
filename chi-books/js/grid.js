@@ -200,14 +200,49 @@ function showInfo(which) {
 											"<p class='bookInfo'><b>Library or School District: </b>" + allData[which].facility_name + " (" + allData[which].location + ")</p>" +
 											"<p class='bookInfo'><b>Challenge:</b> " + allData[which].challenge + "</p>" +
 											"<p class='bookInfo'><b>Reponse:</b> " + allData[which].response) + "</p>";
-	$("#infoWin").show();
 	currentMaterial = which;
-
 	$("#gridCon").css("opacity", .25);
+
+	if ($("#searchF").val() == "") {
+		$("#prevBtn").show();
+		$("#nextBtn").show();
+		checkToggles();
+	} else {
+		$("#prevBtn").hide();
+		$("#nextBtn").hide();
+	}
+
+	/*for (var i=0; i<4; i++) {
+		if ($("#k" + i).prop('checked') == false) {
+			$("#prevBtn").hide();
+			$("#nextBtn").hide();
+			break;
+		} else {
+			$("#prevBtn").show();
+			$("#nextBtn").show();
+		}
+	}*/
+
+
+	$("#infoWin").show();
+
 }
 
 function showCount() {
-	$("#countDisp").text("Showing " + $('.item:visible').length + " items");
+	$("#countDisp").html("Showing " + $('.item:visible').length + " items | " + "<a class='shall' href='javascript:showAll()'>Show all</a>");
+}
+
+function checkToggles() {
+	for (var i=0; i<4; i++) {
+		if ($("#k" + i).prop('checked') == false) {
+			$("#prevBtn").hide();
+			$("#nextBtn").hide();
+			//break;
+		} //else {
+			//$("#prevBtn").show();
+			//$("#nextBtn").show();
+		//}
+	}
 }
 
 function next() {
@@ -222,6 +257,16 @@ function prev() {
 		currentMaterial --;
 		showInfo(currentMaterial);
 	}
+}
+
+function showAll() {
+	$("#searchF").val("");
+	for (var i=0; i<4; i++) {
+		//console.log($("#k" + i).prop('checked'))
+		$("#k" + i).prop('checked', true);
+	}
+	$(".item").show();
+	showCount();
 }
 
 function resizeItems() {
