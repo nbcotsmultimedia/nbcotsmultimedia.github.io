@@ -116,6 +116,11 @@ function parseData() {
             // Create a card div for each event using jQuery, give each card class 'event-card'
             var card = $("<div class='event-card'></div>");
 
+            // Check if the event date is in the past and apply the 'past-event' class
+            if (eventDate < currentDate) {
+                card.addClass('past-event');
+            }
+
             // Within the card, create sections
 
             // Create time section
