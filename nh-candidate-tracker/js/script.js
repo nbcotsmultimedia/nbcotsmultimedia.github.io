@@ -121,6 +121,9 @@ function parseData() {
                 card.addClass('past-event');
             }
 
+            // Fix of past-event error
+            if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {}
+
             // Within the card, create sections
 
             // Create time section
