@@ -118,7 +118,7 @@ function generateGrid() {
 
 	for (var i=0; i<totalEntries; i++) {
 
-		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-o='" + allData[i].outcome + "' data-f='" + allData[i].facility_name + "'>" +
+		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-o='" + allData[i].outcome + "' data-f='" + allData[i].facility_name.toLowerCase() + " " + allData[i].location.toLowerCase() + "'>" +
 												"<div class='th'><img id='img" + i + "'src='" + allData[i].image + "' width='100%' alt='thumb' onerror='imgError(this);' />" +
 												"<p class='pName'>" + allData[i].material + "</p>"+
 												"<p class='facility'>" + allData[i].facility_name + "</p>" +
@@ -163,7 +163,7 @@ function generateGrid() {
 				$( ".item[data-o='" + $(this).attr("data-outcome") + "']" ).show();
 			} else {
 				//console.log("yes search value");
-				$( ".item[data-o='" + $(this).attr("data-outcome") + "'][data-f*='" + $("#searchF").val() + "']" ).show();
+				$( ".item[data-o='" + $(this).attr("data-outcome") + "'][data-f*='" + $("#searchF").val().toLowerCase() + "']" ).show();
 
 			}
 		} else {
@@ -173,7 +173,7 @@ function generateGrid() {
 	});
 
 	$("#searchBtn").click (function() {
-		var input = $("#searchF").val();
+		var input = $("#searchF").val().toLowerCase();
 		$(".item").hide();
 		$( ".item[data-f*='" + input + "']" ).show();
 		showCount();

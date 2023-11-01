@@ -117,9 +117,9 @@ function parseData() {
             var card = $("<div class='event-card'></div>");
 
             // Check if the event date is in the past and apply the 'past-event' class
-            if (eventDate < currentDate) {
+						if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
                 card.addClass('past-event');
-            }
+					  }
 
             // Within the card, create sections
 
