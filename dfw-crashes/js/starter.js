@@ -4,9 +4,9 @@ var noRepeatData;
 var config;
 const markerList = [];
 const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.7767, -96.7970], 8);
-L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
-	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
