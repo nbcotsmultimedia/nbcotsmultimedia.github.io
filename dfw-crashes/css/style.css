@@ -1,3 +1,12 @@
+body {
+    background-color: #0C0C0C !important;
+    color: #C8C8D7 !important;
+}
+
+p {
+    color: #C8C8D7 !important;
+}
+
 #map { 
     height: 600px; 
 }
@@ -12,8 +21,8 @@
 
 .marker-cluster div {
     border-radius: 50% !important;
-    background-color: #770737 !important;
-    opacity: 0.75;
+    background-color: #bd55bd !important;
+    opacity: 0.85;
 }
 
 .marker-cluster span {
@@ -91,7 +100,7 @@
 
 .legend-icon {
     border-radius: 50%;
-    opacity: 0.75;
+    opacity: 0.85;
     margin-bottom: 1.35em;
     margin-right: 0.25em;
 }
