@@ -4,9 +4,9 @@ var noRepeatData;
 var config;
 const markerList = [];
 const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.7767, -96.7970], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
 	maxZoom: 19,
-	attribution: '©OpenStreetMap, ©CartoDB'
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
@@ -22,7 +22,7 @@ const legendItems = {
 		"label": "Serious injury crash"
 	},
 	"cluster": {
-		"color": "#770737",
+		"color": "#bd55bd",
 		"size": "15px",
 		"label": "Multiple crashes"
 	}
@@ -39,7 +39,7 @@ const handleMarkerClick = marker => {
 };
 
 const marker = row => {
-	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
+	const fillColor = row.repeat === "TRUE" ? "#bd55bd" : row.fatal === "TRUE" ? "red" : "orange";
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
 	const marker = L.circleMarker([row.lat, row.long], {
@@ -48,7 +48,7 @@ const marker = row => {
 		radius: radius,
 		color: "white",
 		fillColor: fillColor,
-		fillOpacity: 0.75,
+		fillOpacity: 0.85,
 		repeat: row.repeat,
 		num_crashes: row.num_crashes
 	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row));
