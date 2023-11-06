@@ -57,10 +57,14 @@ function loadData() {
 
 }
 
-// A List of this Week's Events //
-
+// Format date in AP style
+function formatDate(eventDate) {
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return dayNames[eventDate.getDay()] + ', ' + monthNames[eventDate.getMonth()] + ' ' + eventDate.getDate();
+}
+// Create cards
 function parseData() {
-    // Sort the data by event date in ascending order
     allData.sort(function (a, b) {
         var dateA = new Date(a.date);
         var dateB = new Date(b.date);
@@ -70,126 +74,99 @@ function parseData() {
     var $len = allData.length;
     totalEntries = $len;
 
-    // Create a variable to track the current day
     var currentDay;
+    var currentWeek = null;
+    var weekStartDate = null;
+    var weekEndDate = null;
+    var currentWeekHeader;
 
-    // Get the current date
     var currentDate = new Date();
 
-    // Calculate the start and end dates of the current week
-    var currentWeekStartDate = new Date(currentDate);
-    currentWeekStartDate.setHours(0, 0, 0, 0);
-    currentWeekStartDate.setDate(currentDate.getDate() - currentDate.getDay());
-    var currentWeekEndDate = new Date(currentWeekStartDate);
-    currentWeekEndDate.setDate(currentWeekStartDate.getDate() + 6);
-
-    // Create a loop to go through each event in 'allData'
     for (var i = 0; i < totalEntries; i++) {
-
-        // Parse the event date using the MM/DD/YYYY format
         var dateParts = allData[i].date.split('/');
         var eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
 
-        // Check if the event date is within the current week
-        if (eventDate >= currentWeekStartDate && eventDate <= currentWeekEndDate) {
-            // Extract the day of the week from 'eventDate' using 'toLocaleString'
-            var dayOfWeek = eventDate.toLocaleString('en-us', { weekday: 'long' });
+        // Check if eventDate is a valid date
+        if (isNaN(eventDate.getTime())) {
+            console.error("Invalid date for entry at index " + i + ": " + allData[i].date);
+            continue;  // Skip invalid date and move to the next entry
+        }
 
-            // Check if the current day is a new day. When a new day is encountered...
-            if (!currentDay || dayOfWeek !== currentDay.data('day')) {
-                // Create a new div in the HTML called 'day-container'
-                currentDay = $('<div class="day-container"></div>');
+        // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
+        var dayOfWeek = eventDate.getDay();
 
-                // Store the current day ('dayOfWeek') as an attribute named 'day' in 'currentDay'
-                currentDay.data('day', dayOfWeek);
-
-                // Generate a heading for the day by combining 'dayOfWeek' and day of the month from 'eventDate'
-                // Append it to the 'currentDay' container
-                currentDay.append("<h2>" + dayOfWeek + " " + eventDate.getDate() + "</h2>");
-
-                // Append the 'currentDay' container to the main 'content' container
-                $("#content").append(currentDay);
+        if (!currentWeek || !weekStartDate || !weekEndDate || eventDate > weekEndDate) {
+            if (currentWeek) {
+                if (currentWeekHeader) {
+                    $("#content").append(currentWeekHeader);
+                }
+                $("#content").append(currentWeek);
             }
 
-            // Make the cards //
+            weekStartDate = new Date(eventDate);
+            weekStartDate.setDate(eventDate.getDate() - eventDate.getDay());
 
-            // Create a card div for each event using jQuery, give each card class 'event-card'
-            var card = $("<div class='event-card'></div>");
+            weekEndDate = new Date(weekStartDate);
+            weekEndDate.setDate(weekStartDate.getDate() + 6);
 
-            // Check if the event date is in the past and apply the 'past-event' class
-						if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
-                card.addClass('past-event');
-					  }
-
-            // Fix of past-event error
-            if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {}
-
-            // Within the card, create sections
-
-            // Create time section
-            var timeData = allData[i].time.split(' ');
-            var time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
-
-            // Create info section (Candidate name, event type, and address)
-            var info = $("<div class='info'></div>");
-            info.append(
-                "<p class='name'>" + allData[i].candidate + " (" + allData[i].party[0] + ")" + "</p>",
-                "<p class='type'>" + allData[i].event_type + "</p>",
-                // Create and append a new div for the map-pin icon and address block
-                '<div class="address-container">' +
-                    '<div class="left-content">' +
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
-                    '</div>' +
-                    '<div class="right-content">' +
-                        '<p class="address">' +
-                            allData[i].address_line_1 + "<br>" +
-                            allData[i].address_line_2 + "<br>" +
-                            allData[i].city + ", " +
-                            allData[i].state + " " +
-                            allData[i].zip + "</p>" +
-                    '</div>' +
-                '</div>',
-                "<p class='description'>" + allData[i].description + "</p>"
-            );
-
-            // Create image section (Candidate portrait)
-            var imageContainer = $("<div class='image-container'></div");
-            var image = $("<img src='" + allData[i].img + "' class='img-fluid' party='" + allData[i].party + "' />");
-
-            // Append time, info, and imageContainer to the card element
-            card.append(time, info, imageContainer);
-
-            // Append the image to the image container
-            imageContainer.append(image);
-
-            // Append the card to the current day container, grouping all events in by day
-            currentDay.append(card);
+            currentWeekHeader = $('<h1 class="custom-header">' + formatDate(weekStartDate) + ' - ' + formatDate(weekEndDate) + '</h1>');
+            currentWeek = $('<div class="week-container"></div>');
         }
+
+        if (!currentDay || dayOfWeek !== currentDay.data('day')) {
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            currentDay = $('<div class="day-container"></div');
+            currentDay.data('day', dayOfWeek);
+            currentDay.append("<h2>" + dayNames[dayOfWeek] + " " + eventDate.getDate() + "</h2");
+            currentWeek.append(currentDay);
+        }
+
+        var card = $("<div class='event-card'></div");
+
+        if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
+            card.addClass('past-event');
+        }
+
+        var timeData = allData[i].time.split(' ');
+        var time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
+
+        var info = $("<div class='info'></div>");
+        info.append(
+            "<p class='name'>" + allData[i].candidate + " (" + allData[i].party[0] + ")" + "</p>",
+            "<p class='type'>" + allData[i].event_type + "</p>",
+            '<div class="address-container">' +
+            '<div class="left-content">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
+            '</div>' +
+            '<div class="right-content">' +
+            '<p class="address">' +
+            allData[i].address_line_1 + "<br>" +
+            allData[i].address_line_2 + "<br>" +
+            allData[i].city + ", " +
+            allData[i].state + " " +
+            allData[i].zip + "</p>" +
+            '</div>' +
+            '</div>',
+            "<p class='description'>" + allData[i].description + "</p>"
+        );
+
+        var imageContainer = $("<div class='image-container'></div>");
+        var image = $("<img src='" + allData[i].img + "' class='img-fluid' party='" + allData[i].party + "' />");
+
+        card.append(time, info, imageContainer);
+        imageContainer.append(image);
+        currentDay.append(card);
+    }
+
+    if (currentWeek) {
+        if (currentWeekHeader) {
+            $("#content").append(currentWeekHeader);
+        }
+        $("#content").append(currentWeek);
     }
 
     xtalk.signalIframe();
 }
-
-// Update the 'This Week' header in AP style
-function updateThisWeekHeader() {
-    const thisWeekHeader = document.getElementById('thisWeekHeader');
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay()); // Start of the current week
-    const lastDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 6); // End of the current week
-    const startDateString = formatDate(firstDay);
-    const endDateString = formatDate(lastDay);
-    thisWeekHeader.textContent = startDateString + ' - ' + endDateString;
-}
-
-// Format date in AP style
-function formatDate(date) {
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return dayNames[date.getDay()] + ', ' + monthNames[date.getMonth()] + ' ' + date.getDate();
-}
-
-// Call the function to update the header when the page loads
-updateThisWeekHeader();
 
 $(document).ready(function(){
 	init();
