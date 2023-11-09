@@ -256,13 +256,20 @@ button:focus {
 }
 
 @media screen and (max-width: 768px) {
+
     #button-container-2 {
+        width: 92vw;
+        margin: auto;
+    }
+
+    .carousel-controls-container {
         display: flex;
+        width: 100%;
     }
 
     .table-container {
         overflow-x: hidden;
-        height: 40vh !important;
+        height: 32vh !important;
     }
 
     .app-container {
@@ -273,20 +280,45 @@ button:focus {
     }
 
     .carousel-button {
-        padding: 0.25em;
-        border-radius: 0;
-        background: #ffffff;
-        border: none;
-        color: #515151;
-        border-bottom: solid 1px #D3D3D3;
+        background-color: #735c4f;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        margin: 0;
     }
 
-    #button-container-2 {
-        width: 100% !important;
+    .icon-wrapper {
+        margin: 0.5em 0;
+        border-radius: 50%;
+        background-color: #ffffff;
+        border: none;
+        color: #000000;
+        opacity: 80%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .fa-circle-arrow-left,
+    .fa-circle-arrow-right {
+        padding: 0;
+        margin: 0;
+        opacity: 80%;
+    }
+
+    #prev-icon {
+        margin-left: 80px;
+    }
+
+    #next-icon {
+        margin-right: 80px;
     }
 
     #mobile-carousel {
         width: 100%;
+        background-color: #735c4f;
     }
 
     #receipt-container {
@@ -296,7 +328,6 @@ button:focus {
 
     #receipt {
         max-width: 100vw;
-        width: 100%;
         height: auto;
         max-height: 100%;
         margin: 0 1em;
