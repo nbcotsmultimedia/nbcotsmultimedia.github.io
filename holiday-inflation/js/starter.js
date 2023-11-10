@@ -8,6 +8,8 @@ let firstView = true;
 
 function init() {
 	//console.log("ready");
+	console.log(window.innerWidth);
+	console.log(mobile);
 
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vSp1Olv9WSaA6tHp-50QG1DhnLUCCS6QDO_-LCG33x4jjLiqDaJtdvWGGS8cmf7F6nE_SlO69_Z-VA1/pub?gid=318411528&single=true&output=csv');
