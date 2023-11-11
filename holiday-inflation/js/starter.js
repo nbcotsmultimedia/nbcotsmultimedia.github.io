@@ -2,7 +2,7 @@ var ds;
 var totalEntries;
 var allData = [];
 let addedItems = {};
-const mobile = window.innerWidth <= 729;
+const mobile = window.innerWidth <= 737;
 let firstView = true;
 
 
