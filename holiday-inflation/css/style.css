@@ -62,7 +62,7 @@ button:focus {
 
 #receipt-container {
     display: flex;
-    max-height: 650px;
+    max-height: 550px;
     max-width: 450px;
 }
 
@@ -75,7 +75,7 @@ button:focus {
     border-radius: 3px;
     float: left;
     margin-left: 0.5em;
-    height: 650px;
+    height: 550px;
 }
 
 #receipt:before {
@@ -147,15 +147,17 @@ button:focus {
 .button-list {
     padding: 0;
     cursor: pointer;
-    height: 650px !important;
+    height: 550px !important;
+    background-color: #735c4f;
 }
 
 .app-container {
     display: flex;
     justify-content: center;
     align-items: start;
-    height: 650px;
-    max-height: 650px;
+    height: 550px;
+    max-height: 550px;
+    width: 100%;
 }
 
 .item-qty {
@@ -239,7 +241,7 @@ button:focus {
 .table-container {
     display: none;
     overflow-x: hidden;
-    height: 500px;
+    height: 415px;
 }
 
 .carousel-row {
