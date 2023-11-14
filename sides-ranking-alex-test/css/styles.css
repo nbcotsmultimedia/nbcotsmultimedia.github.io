@@ -1,0 +1,254 @@
+#app {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+.sortable-list {
+    flex: 1;
+}
+
+.sortable-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    cursor: grab;
+    position: relative;
+    background: rgba(217, 217, 217, 0.1);
+    border: 0.25px solid #C1C1C1;
+}
+
+.sortable-item .item-name {
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 29px;
+    letter-spacing: 0.0025em;
+    color: #000000;
+    text-align: left;
+}
+
+.sortable-item.hovering::before {
+    opacity: 1; /* Make the drop target visible when hovering */
+}
+
+.sortable-item .move-icon {
+    margin-right: 10px;
+    cursor: grab;
+    display: inline-block;
+}
+
+.item-name {
+    flex-grow: 1;
+    box-sizing: border-box;
+    padding-left: 10px;
+}
+
+.move-icon {
+    margin-right: 10px;
+    cursor: grab;
+}
+
+.button-container {
+    display: flex;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button {
+    box-sizing: border-box;
+    width: 400px;
+    height: 55px;
+    background: #3FA65B;
+    border: 0.25px solid #C1C1C1;
+    border-radius: 10px;
+    cursor: pointer; /* Add a pointer cursor for better UX */
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 29px;
+    text-align: center;
+    letter-spacing: 0.0025em;
+    color: #FFFFFF;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.highlight {
+    background-color: #ffcc80;
+    transition: background-color 0.5s ease;
+}
+
+.shadow-animation {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.5s ease;
+}
+
+#result {
+    margin-top: 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+/* Add this to your existing CSS file */
+.sortable-item.wrong-order-higher {
+    background-color: #ffdddd; /* Pale red for items in a higher position */
+}
+
+.sortable-item.wrong-order-lower {
+    background-color: #ddffdd; /* Pale green for items in a lower position */
+}
+
+/* Add this to your existing CSS file */
+.animate-sort .sortable-item {
+    transition: transform 1s ease; /* Adjust the duration and easing as needed */
+}
+
+.animate-sort .sortable-item.dragging {
+    transition: none; /* Disable transition during dragging */
+}
+
+/* Guess America’s ranking of favorite Thanksgiving dishes. */
+#app p {
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 21px;
+    text-align: center;
+    letter-spacing: 0.0015em;
+    color: #787878;
+}
+
+/* Food fight */
+#app h1 {
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 44px;
+    text-align: center;
+    letter-spacing: 0.0025em;
+    color: #000000;
+}
+
+
+/* //////////// NBC STYLES //////////// */
+
+.headline {
+	font-family: 'ArtHouseBold', sans-serif;
+	font-size: 1.5rem; /* 24px */
+	color: #191919;
+	margin-bottom: 10px;
+}
+
+.subhead {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+	color: #999;
+	margin-bottom: 10px;
+	line-height: 1.4em;
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 17px;
+	color: #191919;
+}
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	color: #666;
+	margin-top: 10px;
+	line-height: 1.5em;
+}
+
+/* //////////// VIEWPORT STYLES //////////// */
+
+@media (min-width: 501px ) {
+
+	#content {
+        margin-right: 3.75rem; /* 60px */
+        margin-left: 3.75rem; /* 60px */
+        margin-top: 0.625rem; /* 10px */
+        margin-bottom: 0.625rem; /* 10px */
+	}
+
+	.time {
+        padding: 1.75rem; /* 28px */
+	}
+
+	.address-container {
+		max-width: 220px;
+		/* flex-direction: row; */
+	}
+
+	.image-container {
+        margin-right: 1.75rem; /* 28px */
+        width: 6.875rem; /* 110px */
+        height: 6.875rem; /* 110px */
+	}
+
+	.info {
+        padding-left: 1.75rem; /* 28px */
+	}
+
+}
+
+@media (max-width: 500px ) {
+
+	#content {
+        margin: 0.625rem; /* 10px */
+	}
+
+	.time {
+        padding: 0.625rem; /* 10px */
+	}
+
+	.info {
+        padding-left: 0.625rem; /* 10px */
+	}
+
+	.headline {
+		font-size: 20px;
+	}
+	.subhead {
+		font-size: 16px;
+	}
+	p {
+		font-size: 16px;
+	}
+	.credits {
+		font-size: 12px;
+	}
+
+	.image-container {
+        width: 6.25rem; /* 100px */
+        height: 6.25rem; /* 100px */
+        margin-right: 0.625rem; /* 10px */
+	}
+
+}
