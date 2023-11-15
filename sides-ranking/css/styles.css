@@ -1,0 +1,319 @@
+/* General Styles */
+
+#app {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+}
+
+/* Typography Styles */
+
+#app p, #app h1, #app h2 {
+    font-family: 'Arthouse Owned Mono Rounded';
+    text-align: center;
+}
+
+#app p {
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.0015em;
+    color: #787878;
+    font-weight: 600;
+}
+
+#app h1 {
+    font-size: 24px;
+    line-height: 44px;
+    letter-spacing: 0.0025em;
+    color: #000000;
+    font-weight: 600;
+}
+
+#app h2 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 26px;
+    letter-spacing: 0.0015em;
+    color: #535353;
+    font-variant: small-caps;
+}
+
+/* Comparison Section Styles */
+
+.comparison-section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+/* User Ranking and Actual Order Styles */
+
+.user-ranking,
+.actual-order {
+    flex: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 0 5px;
+}
+
+/* List Styles */
+
+/* Hamburger move icon */
+.sortable-item .move-icon {
+    margin-right: 10px;
+    margin-left: 1px;
+    cursor: grab;
+    display: inline-block;
+    color: #787878;
+}
+
+/* List itself */
+.sortable-list, .actual-list {
+    flex: 1;
+    list-style: none;
+}
+
+/* List items (card and number) */
+#actual-list li,
+#sortable-list li {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+/* Fade-in animation */
+.actual-list li {
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 1s ease-in-out;
+}
+
+/* Show content after the user submits ranking */
+.actual-list.show-content li {
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+/* Sortable item (card) */
+.sortable-item, .actual-order .sortable-item {
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background: rgba(217, 217, 217, 0.1);
+    border: 0.25px solid #C1C1C1;
+    border-radius: 6px;
+}
+
+/* Item name */
+.sortable-item .item-name, .actual-order .sortable-item .item-name {
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 0.0025em;
+    color: #000000;
+    text-align: left;
+    flex-grow: 1;
+    padding-left: 10px;
+}
+
+/* Ghost */
+.sortable-ghost {
+    background-color: #C1C1C1;
+}
+
+.actual-order .sortable-ghost {
+    background-color: #C1C1C1;
+}
+
+/* Counter */
+.counter {
+    position: absolute;
+    left: -30px; /* Adjust the left position as needed */
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-weight: 200;
+    font-size: 20px;
+    color: #000000;
+    width: 20px;
+    text-align: center;
+}
+
+/* Button Styles */
+
+.button-container {
+    display: flex;
+}
+
+button {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+    width: 50%;
+    height: 55px;
+    background: #3FA65B;
+    border: 0.25px solid #C1C1C1;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.shadow-animation {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.5s ease;
+}
+
+/* Loading Animation */
+#loading-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-size: 24px;
+    color: #000;
+}
+
+/* Hide content until loaded */
+.hide-until-loaded {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s ease; /* Optional: Add a smooth fade-in transition */
+}
+
+.hide-until-loaded.loaded {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* NBC Styles */
+
+.headline {
+    font-family: 'ArtHouseBold', sans-serif;
+    font-size: 1.5rem; /* 24px */
+    color: #191919;
+    margin-bottom: 10px;
+}
+
+.subhead {
+    font-family: 'ArtHouseMed', sans-serif;
+    font-size: 17px;
+    color: #999;
+    margin-bottom: 10px;
+    line-height: 1.4em;
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 17px;
+    color: #191919;
+}
+
+.credits {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.5em;
+}
+
+/* Responsive Styles */
+
+@media (min-width: 501px) {
+
+    #content {
+        margin-right: 3.75rem; /* 60px */
+        margin-left: 3.75rem; /* 60px */
+        margin-top: 0.625rem; /* 10px */
+        margin-bottom: 0.625rem; /* 10px */
+    }
+
+    .time {
+        padding: 1.75rem; /* 28px */
+    }
+
+    .address-container {
+        max-width: 220px;
+    }
+
+    .image-container {
+        margin-right: 1.75rem; /* 28px */
+        width: 6.875rem; /* 110px */
+        height: 6.875rem; /* 110px */
+    }
+
+    .info {
+        padding-left: 1.75rem; /* 28px */
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    #content {
+        margin: 0.625rem; /* 10px */
+    }
+
+    .time {
+        padding: 0.625rem; /* 10px */
+    }
+
+    .info {
+        padding-left: 0.625rem; /* 10px */
+    }
+
+    .headline {
+        font-size: 20px;
+    }
+
+    .subhead {
+        font-size: 16px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .credits {
+        font-size: 12px;
+    }
+
+    .image-container {
+        width: 6.25rem; /* 100px */
+        height: 6.25rem; /* 100px */
+        margin-right: 0.625rem; /* 10px */
+    }
+
+}
+
+/* For mobile view of lists */
+
+@media (max-width: 500px) {
+    .comparison-section {
+        flex-direction: column; /* Stack the lists vertically on mobile */
+    }
+
+    .user-ranking,
+    .actual-order {
+        margin: 10px 0; /* Add some margin between the stacked lists */
+    }
+}
