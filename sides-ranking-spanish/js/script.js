@@ -25,24 +25,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Data set
   const data = [
-    { dish: 'Turkey', win: 83, img: 'Images/turkey.png' },
-    { dish: 'Mashed potatoes', win: 78, img: 'Images/mashed-potatoes.png' },
-    { dish: 'Stuffing or dressing', win: 77, img: 'Images/stuffing.png' },
-    { dish: 'Bread or rolls', win: 74, img: 'Images/roll.png' },
-    { dish: 'Ham', win: 67, img: 'Images/ham.png' },
-    {
-      dish: 'Scalloped potatoes',
-      win: 66,
-      img: 'Images/scalloped-potatoes.png'
-    },
-    {
-      dish: 'Sweet potatoes',
-      win: 65,
-      img: 'Images/sweet-potato-casserole.png'
-    },
+    { dish: 'Pavo', win: 83, img: 'Images/turkey.png' },
+    { dish: 'Puré de papas', win: 78, img: 'Images/mashed-potatoes.png' },
+    { dish: '“Stuffing” o rellenos', win: 77, img: 'Images/stuffing.png' },
+    { dish: 'Pan', win: 74, img: 'Images/roll.png' },
+    { dish: 'Jamón', win: 67, img: 'Images/ham.png' },
+    { dish: 'Papas gratinadas', win: 66, img: 'Images/scalloped-potatoes.png' },
+    { dish: 'Batatas', win: 65, img: 'Images/sweet-potato-casserole.png' },
     { dish: 'Gravy', win: 64, img: 'Images/gravy.png' },
-    { dish: 'Green beans', win: 64, img: 'Images/green-bean-casserole.png' },
-    { dish: 'Mac and cheese', win: 62, img: 'Images/mac-and-cheese.png' }
+    { dish: 'Ejotes, vainitas o habichuelas', win: 64, img: 'Images/green-bean-casserole.png' },
+    { dish: 'Macarrones con queso', win: 62, img: 'Images/mac-and-cheese.png' }
   ]
 
   function refreshList() {
