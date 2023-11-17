@@ -249,7 +249,7 @@ const addText = (data, map) => {
     const addInfo = row => {
         const ignoreCols = ["county", "online_only", "ig_post", "img", "name", "url", "full_address", "city", "website", "latitude", "longitude", "description", "phone", "ig_name", "ig_username", "image_credit"];
         const colHeaders = {
-            "driving" : "Tiempo de conducción desde DC",
+            "driving" : "Tiempo de manejo desde DC",
             "hours": "Horas",
             "food": "¿Puedes traer tu propia comida?",
             "family": "¿Apto para familias?",
@@ -279,7 +279,7 @@ const addText = (data, map) => {
         const onlineOnly = row.online_only === "TRUE";
         const sectionHtml = `<section id="${row.name}" class=${mobile ? "mobile-text-section" : "text-section"}>`
         + `<div><h3>${row.name}</h3>` + 
-        `<p class="county">${row.county} Condado</p>` + addImage(row)
+        `<p class="county">Condado ${row.county}</p>` + addImage(row)
         + (onlineOnly ? `<p><strong>Solo online</strong></p><p class="desc">${row.description}</p>` : 
         `<p class="address">${row.full_address}</p>`
         + `<p>Sitio web: <a href="${row.website}">${row.website}</a></p>`
