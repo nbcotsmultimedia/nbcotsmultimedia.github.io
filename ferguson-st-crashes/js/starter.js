@@ -3,7 +3,7 @@ var totalEntries;
 var noRepeatData;
 var config;
 const markerList = [];
-const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.8187259, -96.6850948], 13);
+const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView(coords, zoom);
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
@@ -141,8 +141,8 @@ function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vSYXKnHLbT9eWrYZefmRNBLTX_3qGK9X7lkq3qo7kQqUKhi_bYuVSl8-NV5tjuy7zPNy5pv5N678I7M/pub?gid=0&single=true&output=csv', 'with repeats');
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vSYXKnHLbT9eWrYZefmRNBLTX_3qGK9X7lkq3qo7kQqUKhi_bYuVSl8-NV5tjuy7zPNy5pv5N678I7M/pub?gid=1533037830&single=true&output=csv', 'no repeats');
+	loadData(sheets[0], 'with repeats');
+	loadData(sheets[1], 'no repeats');
 
 	fillLegend(legendItems);
 };
@@ -179,21 +179,24 @@ function buildConfig() {
 
 
 function loadData(url, dataset) {
-
 	Papa.parse(url, {
 		download: true,
 		header: true,
 		config,
 		complete: function (results) {
-			//console.log("Finished:", results.data);
 			if (dataset === "no repeats") {
 				noRepeatData = results.data;
 				if (noRepeatData) {
 					L.control.zoom().addTo(map);
 				}
-				parseData();
+				if (zoom > 10) {
+					parseData();
+				}
 			} else {
 				withRepeatsData = results.data;
+				if (zoom <= 10) {
+					parseData();
+				}
 			}
 		}
 	});
@@ -328,8 +331,6 @@ const fillLegend = legendItems => {
 	}
 	$('#legend').html(innerHtml);
 }
-
-// setTimeout(styleClusters, 50);
 
 
 $(document).ready(function () {
