@@ -4,7 +4,7 @@ var noRepeatData;
 var config;
 const markerList = [];
 const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView([32.7767, -96.7970], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
@@ -22,7 +22,7 @@ const legendItems = {
 		"label": "Serious injury crash"
 	},
 	"cluster": {
-		"color": "#bd55bd",
+		"color": "#770737",
 		"size": "15px",
 		"label": "Multiple crashes"
 	}
@@ -39,7 +39,7 @@ const handleMarkerClick = marker => {
 };
 
 const marker = row => {
-	const fillColor = row.repeat === "TRUE" ? "#bd55bd" : row.fatal === "TRUE" ? "red" : "orange";
+	const fillColor = row.repeat === "TRUE" ? "#770737" : row.fatal === "TRUE" ? "red" : "orange";
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
 	const marker = L.circleMarker([row.lat, row.long], {

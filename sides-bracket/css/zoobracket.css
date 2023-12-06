@@ -1,0 +1,139 @@
+body {
+  overflow: hidden;
+}
+.containerX {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.rd {
+  width: 14%;
+}
+
+.rHead {
+  background-color: #333;
+  padding: 7px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #FFF;
+}
+.box {
+  border-radius: 4px;
+  border: 1px solid #CCC;
+  padding: 3px 7px 7px 7px;
+  max-width: 200px;
+  margin-top: 25px;
+  font-size: 12px;
+  min-height: 68px;
+}
+.super {
+  padding: 15px 7px 21px 7px;
+}
+
+.team {
+  font-size: 12px;
+  padding-top: 3px;
+}
+.info {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #999;
+  line-height: 1.1em;
+}
+.spacer {
+  margin-bottom: 5px;
+}
+
+table{
+   width:100%;
+   table-layout: fixed;
+   overflow-wrap: break-word;
+}
+.tL {
+  width: 75%;
+}
+.tR {
+
+  text-align: right;
+}
+
+.logo {
+  width: 30px;
+  margin-right: 4px;
+}
+
+.seed {
+  color: #999;
+}
+
+#m-rd {
+  display: none;
+}
+
+.afc {
+  background-color: #5c8f32;
+}
+.nfc {
+  background-color: #8f6f32;
+}
+
+#g4, #g9 {
+  margin-bottom: 140px;
+}
+
+.jimg {
+  float: left;
+}
+.tgrp {
+  margin-bottom: 8px;
+
+  line-height: 1.3em;
+}
+.tgrpb {
+  margin-bottom: 0px;
+  line-height: 1.3em;
+}
+
+@media (max-width: 800px) {
+  .tL {
+    width: 70%;
+  }
+}
+
+@media (max-width: 700px) {
+  #wrapper{
+    overflow: auto;
+    padding-bottom: 25px;
+  }
+  .containerX {
+    width: 1100px;
+  }
+  #headers {
+
+  }
+  #m-rd {
+    display: block;
+    width: 100%;
+    text-align: center;
+    border-color: #CCC;
+    border-radius: 4px;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+
+  .box {
+    max-width: 250px;
+  }
+
+
+  .rd {
+    width: 250px;
+    float: left;
+    margin-right: 10px;
+  }
+
+}

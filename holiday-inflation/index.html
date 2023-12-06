@@ -16,7 +16,6 @@
     <link href="css/style.css" rel="stylesheet">
 
     <!-- Responsive iFrame stuff -->
-    <!--
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
     <script type="text/javascript">
          document.addEventListener("DOMContentLoaded", function() {
@@ -24,7 +23,6 @@
             xtalk.init();
          });
     </script>
-    -->
 
     </style>
 
@@ -33,38 +31,40 @@
   <body>
 
     <!-- Start content here-->
-    <div class="app-container">
-      <div id="button-container-2">
-      </div>
-      <div id="receipt-container">
-        <div id="above-receipt"></div>
-        <div id="receipt">
-          <h3>RECEIPT</h3>
-          <hr class="receipt-divider"/>
-          <div class="init-msg">
-            <p>Click an item on the shelves to add to your cart.</p>
-            <p>Or, click the button below to fill your cart with ingredients for a typical meal for four people.</p>
-            <center><button class="button" onclick="loadInitMenu()">Fill your cart with a meal for four</button></center>
-          </div>
-          <div class="table-container">
-            <table id="items">
-              <tr class="header-row">
-                <th width="15%">QTY</th>
-                <th width="20%">ITEM</th>
-                <th width="17%">2022 PRICE</th>
-                <th width="17%">2023 PRICE</th>
-                <th width="25%"></th>
-              </tr>
-            </table>
-            <table id="total">
-              <tr class="footer-row">
-                <td width="15%"><button class="button" onclick="clearItems()">Clear</button></td>
-                <th id="total-label" width="12%">Total</th>
-                <td id="total-22" width="15%"></td>
-                <td id="total-23" width="15%"></td>
-                <td id="total-change" width="25%"></td>
-              </tr>
-            </table>
+    <div id="inflationCalc" class="parent" style="width:100%; padding-bottom:30px;">
+      <div class="app-container">
+        <div id="button-container-2">
+        </div>
+        <div id="receipt-container">
+          <div id="above-receipt"></div>
+          <div id="receipt">
+            <h3>RECEIPT</h3>
+            <hr class="receipt-divider"/>
+            <div class="init-msg">
+              <p>Click an item on the shelves to add to your cart.</p>
+              <p>Or, click the button below to fill your cart with ingredients for a typical meal for four people.</p>
+              <center><button class="button" onclick="loadInitMenu()">Fill your cart with a meal for four</button></center>
+            </div>
+            <div class="table-container">
+              <table id="items">
+                <tr class="header-row">
+                  <th width="15%">QTY</th>
+                  <th width="20%">ITEM</th>
+                  <th width="17%">2022 PRICE</th>
+                  <th width="17%">2023 PRICE</th>
+                  <th width="25%"></th>
+                </tr>
+              </table>
+              <table id="total">
+                <tr class="footer-row">
+                  <td width="15%"><button class="button" onclick="clearItems()">Clear</button></td>
+                  <th id="total-label" width="12%">Total</th>
+                  <td id="total-22" width="15%"></td>
+                  <td id="total-23" width="15%"></td>
+                  <td id="total-change" width="25%"></td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
       </div>

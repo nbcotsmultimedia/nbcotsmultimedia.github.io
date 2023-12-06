@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>DC Zoo Bracket</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+    <link href="css/zoobracket.css" rel="stylesheet">
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+
+
+  </head>
+
+  <body>
+    <select name="m-rd" id="m-rd" onchange="scrollToPos(this.value)">
+      <option value="afcwc">Round 1 - West</option>
+      <option value="afcdv">Round 2 - West</option>
+      <option value="afcch">Semifinal - West</option>
+      <option value="sb">Final</option>
+      <option value="nfcch">Semifinal - East</option>
+      <option value="nfcdv">Round 2 - East</option>
+      <option value="nfcwc">Round 1 - East</option>
+    </select>
+
+    <div id="wrapper">
+
+    <!-- Start content here-->
+    <div class="containerX" id="headers">
+      <div class="rd">
+        <div class="rHead afc" id="rd0">ROUND 1</div>
+      </div>
+      <div class="rd">
+        <div class="rHead afc" id="rd1">ROUND 2</div>
+      </div>
+      <div class="rd">
+        <div class="rHead afc" id="rd2">SEMIFNAL</div>
+      </div>
+      <div class="rd">
+        <div class="rHead" id="rd3">FINAL</div>
+      </div>
+      <div class="rd">
+        <div class="rHead nfc" id="rd4">SEMIFNAL</div>
+      </div>
+      <div class="rd">
+        <div class="rHead nfc" id="rd5">ROUND 2</div>
+      </div>
+      <div class="rd">
+        <div class="rHead nfc" id="rd6">ROUND 1</div>
+      </div>
+
+    </div>
+
+    <div class="containerX">
+
+      <div class="rd">
+        <div class="box" id="g0"></div>
+        <div class="box" id="g1"></div>
+        <div class="box" id="g2"></div>
+        <div class="box" id="g3"></div>
+      </div>
+      <div class="rd" id="rd2a">
+        <div class="box" id="g4"></div>
+        <div class="box" id="g5"></div>
+      </div>
+      <div class="rd">
+        <div class="box" id="g6"></div>
+      </div>
+      <div class="rd">
+        <div class="box super" id="g7"></div>
+      </div>
+      <div class="rd">
+        <div class="box" id="g8"></div>
+      </div>
+      <div class="rd" id="rd2b">
+        <div class="box" id="g9"></div>
+        <div class="box" id="g10"></div>
+      </div>
+      <div class="rd">
+        <div class="box" id="g11"></div>
+        <div class="box" id="g12"></div>
+        <div class="box" id="g13"></div>
+        <div class="box" id="g14"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/papaparse.min.js"></script>
+    <script src="js/zoobracket.js"></script>
+
+  </body>
+</html>

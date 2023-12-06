@@ -2,11 +2,14 @@ var ds;
 var totalEntries;
 var allData = [];
 let addedItems = {};
-const mobile = window.innerWidth <= 768;
+const mobile = window.innerWidth <= 737;
+let firstView = true;
 
 
 function init() {
 	//console.log("ready");
+	console.log(window.innerWidth);
+	console.log(mobile);
 
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vSp1Olv9WSaA6tHp-50QG1DhnLUCCS6QDO_-LCG33x4jjLiqDaJtdvWGGS8cmf7F6nE_SlO69_Z-VA1/pub?gid=318411528&single=true&output=csv');
@@ -80,12 +83,14 @@ function parseData() {
 	}
 	else {
 		buttonContainer2.append(
-			`<button onclick="$('#mobile-carousel').carousel('prev')" class="carousel-button" id="prev-button"><i class="fa-solid fa-chevron-left"></i></button>
-			<div id="mobile-carousel" class="carousel slide" data-ride="carousel">
+			`<div id="mobile-carousel" class="carousel slide" data-ride="carousel">
 				<div class="carousel-inner">
 				</div>
 			</div>
-			<button onclick="$('#mobile-carousel').carousel('next')" class="carousel-button" id="next-button"><i class="fa-solid fa-chevron-right"></i></button>`);
+			<div class="carousel-controls-container">
+				<button onclick="$('#mobile-carousel').carousel('prev')" class="carousel-button" id="prev-button"><div class="icon-wrapper" id="prev-icon"><i class="fa-solid fa-circle-arrow-left fa-xl"></i></div></button>
+				<button onclick="carouselNext()" class="carousel-button" id="next-button"><div class="icon-wrapper" id="next-icon"><i class="fa-solid fa-circle-arrow-right fa-xl"></i></i></div></button>
+			</div>`);
 		let currentIndex = 0;
 		const carouselInner = $(".carousel-inner");
 		for (let i = 0; i < Math.ceil(allData.length / 6); i++) {
@@ -98,7 +103,11 @@ function parseData() {
 				for (let k = 0; k < 3; k++) {
 					if (currentIndex < allData.length) {
 						const thisFoodItem = allData[currentIndex];
-						thisRow.append(`<button class="d-block w-30 food-button" onclick="addItem(event)" id="${thisFoodItem.id}"><img class="food-img" src="images/mobile_${thisFoodItem.id}.jpg"></img></button>`);
+						if (firstView  && (thisFoodItem.id === "flour" || thisFoodItem.id === "roastBeef")) {
+							thisRow.append(`<button class="d-block w-30 food-button" onclick="addItem(event)" id="${thisFoodItem.id}"><img class="food-img" id="${thisFoodItem.id}-img" src="images/${thisFoodItem.id}-fade.jpg"></img></button>`);
+						} else {
+							thisRow.append(`<button class="d-block w-30 food-button" onclick="addItem(event)" id="${thisFoodItem.id}"><img class="food-img" id="${thisFoodItem.id}-img" src="images/mobile_${thisFoodItem.id}.jpg"></img></button>`);
+						}	
 						currentIndex++;
 					} else {
 						thisRow.append(`<button class="d-block w-30 food-button"><img class="food-img" src="images/mobile_empty.jpg"></img></button>`);
@@ -108,6 +117,15 @@ function parseData() {
 			}
 		}
 	}
+}
+
+const carouselNext = () => {
+	if (firstView) {
+		$('#flour-img').attr("src","images/mobile_flour.jpg");
+		$('#roastBeef-img').attr("src","images/mobile_roastBeef.jpg");
+	}
+	firstView = false;
+	$('#mobile-carousel').carousel('next');
 }
 
 const receiptVisibility = showReceipt => {

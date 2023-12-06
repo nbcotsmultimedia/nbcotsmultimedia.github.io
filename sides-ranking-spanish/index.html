@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <title>Thanksgiving Food Ranking Game</title>
+</head>
+<body>
+
+    <div id="app" class="hide-until-loaded">
+    <h1>Batalla de comida</h1>
+    <p>Arrastra los elementos a continuación para adivinar la clasificación de los platos de Acción de Gracias favoritos en Estados Unidos.</p>
+    <div id="loading-animation">
+        <!-- Add loading animation content here -->
+        Loading...
+    </div>    
+    <div class="comparison-section">
+        <div class="user-ranking">
+            <h2>Tu selección</h2>
+            <ol id="sortable-list" class="sortable-list" type="1">
+                <!-- The user's ranking will be displayed here -->
+            </ol>
+        </div>
+        <!-- Actual Order Section -->
+        <div class="actual-order">
+            <h2>El orden de favoritos</h2>
+            <ol id="actual-list" class="sortable-list show-content" type="1">
+                <!-- The actual order will be displayed here -->
+            </ol>
+        </div>
+    </div>
+    <form id="ranking-form"> <!-- Add a form element around the content -->
+        <button type="button" onclick="checkRanking()">Envía tu clasificación</button>
+        <p id="result"></p>
+    </form>
+</div>
+
+    
+    <script src="js/script.js" defer></script>
+</body>
+</html>

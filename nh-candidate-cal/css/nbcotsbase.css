@@ -1,0 +1,276 @@
+body {
+	background-color: #FFF !important;
+	font-size: 1rem; /* 16 px */
+}
+
+/* Commons styles for fonts */
+.font-common {
+	font-family: 'Roboto', sans-serif;
+}
+
+/* Header styles */
+.custom-header {
+	font-family: 'Arthouse Owned Mono Rounded';
+	font-weight: 600;
+	font-size: 1.15rem;
+	color: rgba(0, 0, 0, 0.9);
+	display: flex;
+	align-items: center;
+}
+
+/* Shared styles for text */
+.font-common, .name, .type {
+	font-weight: 500;
+	font-size: 1rem; /* 16px */
+	line-height: 1rem; /* 16px */
+}
+
+/* Candidate name */
+.name {
+	letter-spacing: 0.001em;
+}
+
+/* Event type */
+.type {
+	font-size: 1rem; /* 16px */
+	letter-spacing: 0.05em;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-transform: uppercase;
+	color: #818181;
+}
+
+/* Day headings */
+.day-container h2 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1rem; /* 16px */
+    line-height: 1rem; /* 16px */
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+/* Event card styles */
+.event-card {
+    display: flex;
+    border-radius: 8px;
+	border: .25px solid #BEBEBE;
+    background-color: #b0b0b01a;
+    box-shadow: 0px 4px 4px #00000005;
+    justify-content: space-between;
+    align-items: center;
+	margin: 10px 0;
+}
+
+/* Style for the time */
+.time {
+    flex: 0.2;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1rem; /* 16px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+/* Style for time text */
+.time-text, .am-pm {
+	font-family: 'Arthouse Owned Mono Rounded';
+	font-style: normal;
+	font-weight: 600;
+    text-align: center;
+	letter-spacing: 0.0025em;
+}
+
+/* Style for the hour */
+.time-text {
+	font-size: 1rem; /* 16px */
+	color: #292b2c;
+    margin: 0;
+}
+
+/* Style for AM/PM */
+.am-pm {
+	font-size: 1rem; /* 16px */
+	line-height: 1.125rem; /* 18px */
+	color: #949494;
+}
+
+/* Style for the image container */
+.image-container {
+    width: 6.5rem; /* 100px */
+    height: 6.5rem; /* 100px */
+    display: flex;
+    justify-content: flex-end; /* Shift the image to the right */
+    align-items: center; /* Center vertically */
+}
+
+/* Basic style for the images */
+img.img-fluid {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; /* Create a circular border */
+}
+
+/* Add specific border colors for each party */
+img.img-fluid[party='Republican'] {
+    border: 0.125rem solid #CC0000; /* 2px Red */
+}
+img.img-fluid[party='Democrat'] {
+    border:  0.125rem solid #3366CC; /* 2px Blue */
+}
+img.img-fluid[party='Third Party'] {
+    border:  0.125rem solid #666699; /* 2px Gray */
+}
+
+/* Style for the center section */
+.info {
+    flex: 2; /* Twice the width of the left side */
+    padding: 0.625rem; /* 10px */
+	margin-top: 0.625rem; /* 10px */
+    margin-bottom: 0; /* No margin at the bottom */
+	border-left: 0.015625rem solid #BEBEBE; /* 0.25px border to form vertical line */
+}
+
+/* Style past events */
+.past-event {
+	opacity: 0.60; /* Reduce opacity of past event cards */
+}  
+
+/* Address styles */
+.address {
+	font-family: 'Arthouse Owned';
+	font-weight: 400;
+	font-size: 0.875rem; /* 14px */
+	letter-spacing: 0.0025em;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Style for the address container */
+.address-container {
+    display: flex;
+}
+
+.left-content, .right-content {
+    display: flex;
+    align-items: center;
+}
+
+/* Map pin icon */
+.feather.feather-map-pin {
+    width: 1.5rem; /* 24px */
+    height: 1.5rem; /* 24px */
+    margin-right: 1.25rem; /* 10px */
+}
+
+/* Description */
+.description {
+    font-family: 'Arthouse Owned';
+	font-size: 0.875rem; /* 14px */
+    line-height: 1.5;
+    letter-spacing: 0.0025em;
+    margin: 0.625rem 0; /* 10px */
+}
+
+/* //////////// NBC STYLES //////////// */
+
+.headline {
+	font-family: 'ArtHouseBold', sans-serif;
+	font-size: 1.5rem; /* 24px */
+	color: #191919;
+	margin-bottom: 10px;
+}
+
+.subhead {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+	color: #999;
+	margin-bottom: 10px;
+	line-height: 1.4em;
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 17px;
+	color: #191919;
+}
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	color: #666;
+	margin-top: 10px;
+	line-height: 1.5em;
+}
+
+/* //////////// VIEWPORT STYLES //////////// */
+
+@media (min-width: 501px ) {
+
+	#content {
+        margin-right: 3.75rem; /* 60px */
+        margin-left: 3.75rem; /* 60px */
+        margin-top: 0.625rem; /* 10px */
+        margin-bottom: 0.625rem; /* 10px */
+	}
+
+	.time {
+        padding: 1.75rem; /* 28px */
+	}
+
+	.address-container {
+		max-width: 220px;
+		/* flex-direction: row; */
+	}
+
+	.image-container {
+        margin-right: 1.75rem; /* 28px */
+        width: 6.875rem; /* 110px */
+        height: 6.875rem; /* 110px */
+	}
+
+	.info {
+        padding-left: 1.75rem; /* 28px */
+	}
+
+}
+
+@media (max-width: 500px ) {
+
+	#content {
+        margin: 0.625rem; /* 10px */
+	}
+
+	.time {
+        padding: 0.625rem; /* 10px */
+	}
+
+	.info {
+        padding-left: 0.625rem; /* 10px */
+	}
+
+	.headline {
+		font-size: 20px;
+	}
+	.subhead {
+		font-size: 16px;
+	}
+	p {
+		font-size: 16px;
+	}
+	.credits {
+		font-size: 12px;
+	}
+
+	.image-container {
+        width: 6.25rem; /* 100px */
+        height: 6.25rem; /* 100px */
+        margin-right: 0.625rem; /* 10px */
+	}
+
+}
