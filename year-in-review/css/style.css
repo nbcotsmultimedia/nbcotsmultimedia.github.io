@@ -286,4 +286,16 @@ a:active {
     .image-card {
         margin-bottom: 0;
     }
+
+    .controls-container {
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        height: 100%;
+        transform: none;
+    }
+
+    .slide-banner {
+        padding: 0 40px;
+    }
 }

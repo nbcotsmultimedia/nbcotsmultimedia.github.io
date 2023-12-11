@@ -129,7 +129,7 @@ const addCards = data => {
 		const col = $('#col-' + colNum);
 		const row = data[i];
 		const htmlString = `
-		<button class="gallery-card ${row.category}"  onclick="selectSlide('${row.image.split(".")[0]}')" data-toggle="modal" data-target="#modal">
+		<button class="gallery-card ${row.category}"  onclick="selectSlide('${row.id}')" data-toggle="modal" data-target="#modal">
 			<img src="${row.image}" class="card-image"/>
 			<p class="date">${row.date}</p>
 			<h2 class="caption">${row.caption}</h2>
@@ -163,12 +163,10 @@ const addCarousel = () => {
 	
 	for (let i = 0; i < totalEntries; i++) {
 		const row = allData[i];
-		const imageSource = row.image;
-		const imageId = imageSource.split(".")[0]
 		let slideHtml = `
-		<div class="carousel-item" id="${imageId}">
+		<div class="carousel-item" id="${row.id}">
 			<div class="slide-container">
-				<img class="d-block w-100" src="${imageSource}" id="${imageId}-img">
+				<img class="d-block w-100" src="${row.image}" id="${row.id}-img">
 				<div class="slide-banner">
 					<p class="date">${row.date}</p>
 					<h1>${row.caption}</h1>
@@ -184,7 +182,7 @@ const addCarousel = () => {
 
 const selectSlide = selectedImage => {
 	for (let i = 0; i < totalEntries; i++) {
-		const thisID = allData[i].image.split(".")[0];
+		const thisID = allData[i].id;
 		if (thisID === selectedImage) {
 			$(`#${thisID}`).addClass('active');
 		} else {
