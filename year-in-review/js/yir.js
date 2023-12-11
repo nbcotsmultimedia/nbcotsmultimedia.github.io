@@ -130,7 +130,7 @@ const addCards = data => {
 		const row = data[i];
 		const htmlString = `
 		<button class="gallery-card ${row.category}"  onclick="selectSlide('${row.image.split(".")[0]}')" data-toggle="modal" data-target="#modal">
-			<img src="images/${row.image}" class="card-image"/>
+			<img src="${row.image}" class="card-image"/>
 			<p class="date">${row.date}</p>
 			<h2 class="caption">${row.caption}</h2>
 		</button>`;
@@ -168,7 +168,7 @@ const addCarousel = () => {
 		let slideHtml = `
 		<div class="carousel-item" id="${imageId}">
 			<div class="slide-container">
-				<img class="d-block w-100" src="images/${imageSource}" id="${imageId}-img">
+				<img class="d-block w-100" src="${imageSource}" id="${imageId}-img">
 				<div class="slide-banner">
 					<p class="date">${row.date}</p>
 					<h1>${row.caption}</h1>
