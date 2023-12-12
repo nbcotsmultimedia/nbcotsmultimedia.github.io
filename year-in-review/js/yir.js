@@ -183,7 +183,6 @@ const addCarousel = () => {
 };
 
 const selectSlide = (e, selectedImage) => {
-	console.log(e.currentTarget.getBoundingClientRect());
 	for (let i = 0; i < totalEntries; i++) {
 		const thisID = allData[i].id;
 		if (thisID === selectedImage) {
@@ -192,7 +191,11 @@ const selectSlide = (e, selectedImage) => {
 			$(`#${thisID}`).removeClass('active');
 		}
 	}
-	$('.modal').css("top", e.currentTarget.getBoundingClientRect().y.toString() + "px");
+	let cardYPos = e.currentTarget.getBoundingClientRect().y;
+	if (cardYPos > 390) {
+		cardYPos -= 300;
+	}
+	$('.modal').css("top", cardYPos.toString() + "px");
 };
 
 $(document).ready(function () {
