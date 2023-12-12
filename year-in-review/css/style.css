@@ -17,6 +17,11 @@ h2 {
     margin-bottom: 16px;
 }
 
+.caption {
+    font-family: 'Georgia';
+    font-weight: 400;
+}
+
 h1 {
     font-size: 24px;
     text-align: start;
@@ -158,8 +163,11 @@ a:active {
     width: 100%;
     padding: 8px 0 12px;
     font-size: 18px;
-    font-weight: 450;
+    font-weight: 500;
     color: #9B9B9B;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-size: normal;
+    line-height: 23px;
 }
 
 .selected-tab {
@@ -204,7 +212,10 @@ a:active {
 
 .date {
     color: rgba(255, 255, 255, 0.70);
-    font-weight: 500;
+    font-family: 'Arthouse Owned Rounded';
+    font-style: normal;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .desc {
