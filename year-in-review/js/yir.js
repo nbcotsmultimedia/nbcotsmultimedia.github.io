@@ -70,6 +70,7 @@ function parseData() {
 	totalEntries = $len;
 	addTabs();
 	addCards(allData);
+
 	addCarousel();
 };
 
@@ -137,6 +138,7 @@ const addCards = data => {
 		col.append(htmlString);
 		colNum = colNum < numCols - 1 ? colNum + 1 : 0;
 	}
+	setTimeout(function(){ xtalk.signalIframe(); }, 2000);
 };
 
 const removeCards = () => {
