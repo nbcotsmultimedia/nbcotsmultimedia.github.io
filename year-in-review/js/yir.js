@@ -130,7 +130,7 @@ const addCards = data => {
 		const col = $('#col-' + colNum);
 		const row = data[i];
 		const htmlString = `
-		<button class="gallery-card ${row.category}"  onclick="selectSlide('${row.id}')" data-toggle="modal" data-target="#modal">
+		<button class="gallery-card ${row.category}"  onclick="selectSlide(event, '${row.id}')" data-toggle="modal" data-target="#modal">
 			<img src="${row.image}" class="card-image"/>
 			<p class="date">${row.date}</p>
 			<h2 class="caption">${row.caption}</h2>
@@ -182,7 +182,8 @@ const addCarousel = () => {
 	carouselInner.append(carouselHtml);
 };
 
-const selectSlide = selectedImage => {
+const selectSlide = (e, selectedImage) => {
+	console.log(e.currentTarget.getBoundingClientRect());
 	for (let i = 0; i < totalEntries; i++) {
 		const thisID = allData[i].id;
 		if (thisID === selectedImage) {
@@ -191,6 +192,7 @@ const selectSlide = selectedImage => {
 			$(`#${thisID}`).removeClass('active');
 		}
 	}
+	$('.modal').css("top", e.currentTarget.getBoundingClientRect().y.toString() + "px");
 };
 
 $(document).ready(function () {
