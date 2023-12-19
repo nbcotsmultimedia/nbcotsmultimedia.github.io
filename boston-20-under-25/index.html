@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 20 Athletes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="controls">
+        <label for="sort">Sort by:</label>
+        <select id="sort" onchange="sortData()">
+            <option value="rank">Rank</option>
+            <option value="birthdate">Birthdate</option>
+            <option value="name-last">Last Name</option>
+        </select>
+
+        <label for="filter">Filter by team:</label>
+        <select id="filter" onchange="filterData()">
+            <option value="all">All Teams</option>
+            <option value="Boston Bruins">Boston Bruins</option>
+            <option value="Boston Celtics">Boston Celtics</option>
+            <option value="Boston Red Sox">Boston Red Sox</option>
+            <option value="New England Patriots">New England Patriots</option>
+            <option value="New England Revolution">New England Revolution</option>
+        </select>
+    </div>
+
+    <div id="card-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
