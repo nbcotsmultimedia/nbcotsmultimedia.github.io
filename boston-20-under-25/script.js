@@ -1,3 +1,56 @@
+// function init() {
+// 	//console.log("ready");
+
+// 	config = buildConfig();
+// 	loadData();
+
+// }
+
+// function buildConfig() {
+// 	return {
+// 		delimiter: "",	// auto-detect
+// 		newline: "",	// auto-detect
+// 		quoteChar: '"',
+// 		escapeChar: '"',
+// 		header: false,
+// 		transformHeader: undefined,
+// 		dynamicTyping: false,
+// 		preview: 0,
+// 		encoding: "",
+// 		worker: false,
+// 		comments: false,
+// 		step: undefined,
+// 		complete: undefined,
+// 		error: undefined,
+// 		download: false,
+// 		downloadRequestHeaders: undefined,
+// 		downloadRequestBody: undefined,
+// 		skipEmptyLines: false,
+// 		chunk: undefined,
+// 		chunkSize: undefined,
+// 		fastMode: undefined,
+// 		beforeFirstChunk: undefined,
+// 		withCredentials: undefined,
+// 		transform: undefined,
+// 		delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
+// 	};
+// }
+
+// function loadData() {
+
+// 	Papa.parse('https://docs.google.com/spreadsheets/d/1lVWFTJ0Tcqv9LYi3SXf-IUGr57OGJ9bryA_GSDlkpPQ/pub?gid=0&single=true&output=csv', {
+// 		download: true,
+//     	header: true,
+// 		config,
+// 		complete: function(results) {
+// 			console.log("Finished:", results.data);
+// 			allData = results.data;
+// 			parseData();
+// 		}
+// 	});
+
+// }
+
 // Function to fetch JSON data
 async function fetchData() {
   try {
@@ -5,7 +58,7 @@ async function fetchData() {
     const data = await response.json()
 
     // Log the data to the console
-    console.log(data)
+    // console.log(data)
 
     // Get the container element
     const container = document.getElementById('card-container')
@@ -74,3 +127,7 @@ document.getElementById('filter').addEventListener('change', function () {
   // Call a function to filter the data based on the selected option
   // Implement your filtering logic here
 })
+
+$(document).ready(function(){
+	init();
+});
