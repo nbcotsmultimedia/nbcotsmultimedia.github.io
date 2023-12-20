@@ -1,4 +1,21 @@
-/* Add your global styles here if needed */
+body {
+	background-color: #FFF !important;
+	font-size: 1rem; /* 16 px */
+}
+
+/* Commons styles for fonts */
+.font-common {
+	font-family: 'Roboto', sans-serif;
+}
+
+/* Content */
+.card .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* height: 100%; */
+    font-family: 'Roboto', sans-serif;
+}
 
 #card-container {
     display: flex;
@@ -8,26 +25,16 @@
 
 .card {
     display: flex;
-    width: 800px; /* Adjust the width as needed */
+    width: 800px;
     overflow: hidden;
     margin-bottom: 20px;
 }
 
 /* Image */
 .card img {
-    width: 270px;
-    height: 390px;
+    width: 270px !important;
+    height: 390px !important;
     object-fit: cover; /* Ensure the image covers the container */
-}
-
-/* Content */
-.card .content {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%; /* Ensure content takes full height of the card */
-    font-family: 'Roboto', sans-serif; /* Add this line to set the default font to Roboto */
-
 }
 
 /* Top Section */

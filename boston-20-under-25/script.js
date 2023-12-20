@@ -51,7 +51,7 @@ function createCard(player) {
               <div class="details">
                   <div class="name-first">${player['name-first']}</div>
                   <div class="name-last">${player['name-last']}</div>
-                  <div class="team-position">${player['team']} - ${player['position']}</div>
+                  <div class="team-position">${player['team']} | ${player['position']}</div>
               </div>
           </div>
           <div class="info">
