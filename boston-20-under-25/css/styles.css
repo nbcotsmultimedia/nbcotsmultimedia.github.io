@@ -1,52 +1,57 @@
 body {
 	background-color: #FFF !important;
 	font-size: 1rem; /* 16 px */
-}
-
-/* Commons styles for fonts */
-.font-common {
-	font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Drop down menu */
 
-#controls, filter label {
-    font-family: 'Roboto';
-    font-style: normal;
+.column-container {
+    display: flex; /* Display columns side by side */
+    justify-content: space-between; /* Justify */
+}
+
+.column {
+    flex: 1; /* Make each column take up equal space */
+    margin-right: 20px; /* Adjust the value for spacing between columns */
+}
+
+/* Apply styles to the first column */
+.column:first-child {
+    margin-right: 20px;
+}
+
+/* Apply styles to "Sort by" and "Filter by team" */
+.column label {
     font-weight: 500;
     font-size: 14px;
     line-height: 16px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #222222;
-    margin-right: 10px;
-  }
+    display: block; /* Make the label a block element to move it to a new line */
+    margin-bottom: 8px;
+}
 
-#controls select {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-#sort, #filter {
-    font-family: 'Roboto';
-    font-style: normal;
+/* Apply styles to input */
+.column select {
     font-weight: 600;
     font-size: 14px;
     line-height: 16px;
     color: #222222;
-    background-color: white;
     border: 1px solid #222222;
     padding: 8px;
-  }
-  
+    width: 100%; /* Make the select fill the entire width of the column */
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
 /* Content */
+
 .card .content {
     display: flex;
     flex-direction: column;
     width: 100%;
-    /* height: 100%; */
     font-family: 'Roboto', sans-serif;
 }
 
@@ -66,7 +71,8 @@ body {
 /* Image */
 .card img {
     width: 270px !important;
-    height: 390px !important;
+    /* height: 390px !important; */
+    height: 100%;
     object-fit: cover; /* Ensure the image covers the container */
 }
 

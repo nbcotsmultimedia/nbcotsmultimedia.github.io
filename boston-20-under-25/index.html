@@ -20,24 +20,29 @@
 
 </head>
 <body>
-    <div id="controls">
-        <label for="sort">Sort by:</label>
-        <select id="sort">
-            <option value="rank">Rank</option>
-            <option value="birthdate">Birthdate</option>
-            <option value="name-last">Last Name (A-Z)</option>
-        </select>
-
-        <label for="filter">Filter by team:</label>
-        <select id="filter">
-            <option value="all">All Teams</option>
-            <option value="Boston Bruins">Boston Bruins</option>
-            <option value="Boston Celtics">Boston Celtics</option>
-            <option value="Boston Red Sox">Boston Red Sox</option>
-            <option value="New England Patriots">New England Patriots</option>
-            <option value="New England Revolution">New England Revolution</option>
-        </select>
+    <div id="controls" class="column-container">
+        <div class="column">
+            <label for="sort">Sort by</label>
+            <select id="sort">
+                <option value="rank">Rank</option>
+                <option value="birthdate">Birthdate</option>
+                <option value="name-last">Last Name (A-Z)</option>
+            </select>
+        </div>
+        
+        <div class="column">
+            <label for="filter">Filter by team</label>
+            <select id="filter">
+                <option value="all">All Teams</option>
+                <option value="Boston Bruins">Boston Bruins</option>
+                <option value="Boston Celtics">Boston Celtics</option>
+                <option value="Boston Red Sox">Boston Red Sox</option>
+                <option value="New England Patriots">New England Patriots</option>
+                <option value="New England Revolution">New England Revolution</option>
+            </select>
+        </div>        
     </div>
+    
 
     <div id="card-container"></div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
