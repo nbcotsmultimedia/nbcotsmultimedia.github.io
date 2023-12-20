@@ -3,6 +3,14 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+#card-container {
+    max-width: 800px;
+}
+
+#controls {
+    max-width: 800px;
+}
+
 /* Drop down menu */
 .column-container {
     display: flex;
@@ -23,7 +31,7 @@ body {
 
 .column label {
     font-weight: 500;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 16px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -34,7 +42,7 @@ body {
 
 .column select {
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 16px;
     color: #222222;
     border: 0.5px solid #BEBEBE;
@@ -123,10 +131,10 @@ body {
 .team-position {
     font-family: 'Roboto';
     font-style: normal;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 16px;
     line-height: 22px;
-    font-variant: all-small-caps;
+    text-transform: uppercase;
 }
 
 /* Info */
@@ -147,15 +155,6 @@ body {
     border-radius: 5px;
     overflow: hidden;
 }
-
-/* Remove accordion icon style */
-/* .card .info .blurb-section .accordion-icon {
-    cursor: pointer;
-    font-size: 20px;
-    margin-left: 4px;
-    transition: transform 0.3s ease;
-    display: inline-block;
-} */
 
 .card .info .additional-info .fan-rating-bar .progress {
     height: 100%;
@@ -215,12 +214,7 @@ a:hover {
     #filter-buttons-container {
         display: none;
     }
-
-    #sort-dropdown-mobile,
-    #filter-buttons-container {
-        display: none;
-    }
-
+    
     /* Hide accordion icon on desktop */
     .card .info .blurb-section .accordion-icon {
         display: none;
@@ -239,7 +233,7 @@ a:hover {
         display: none;
     }
 
-    .blurb {
+    .blurb .additional-info {
         font-size: 14px;
         line-height: 17px;
     }
@@ -250,6 +244,15 @@ a:hover {
         width: 100%;
         height: auto; /* Adjust the height as needed */
         margin-bottom: 20px;
+    }
+
+    .column select {
+        font-size: 18px;
+        line-height: 20px;
+    }
+
+    .column label {
+        font-size: 18px;
     }
 
     .card .info .blurb-section .link {
@@ -281,7 +284,7 @@ a:hover {
         font-size: 50px; /* Adjust font size as needed */
         line-height: 136px; /* Adjust line height as needed */
         margin-bottom: 4px;
-        width: 40px;
+        width: 66px;
         height: 86px;
     }
 
@@ -299,7 +302,7 @@ a:hover {
 
     /* Add a specific style for the players who need object-position adjustment */
     .card img[data-object-position] {
-        object-position: center 30% !important; /* Adjust the values accordingly */
+        object-position: center 30% !important;
     }
 
     /* Hide the fan rating bar on mobile */
@@ -326,18 +329,8 @@ a:hover {
         margin-bottom: 8px;
         padding: 8px 10px;
         box-sizing: border-box;
-    }
-
-    /* Text styles for buttons */
-    button span,
-    #filter-buttons-container button span {
-        letter-spacing: 0.001em;
-        font-family: 'Roboto';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 16px; /* Increase font size */
-        line-height: 18px; /* Increase line height */
-        text-align: center;
+        font-size: 16px;
+        line-height: 18px;
     }
 
     /* Styles for selected buttons */

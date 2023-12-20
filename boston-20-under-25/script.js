@@ -1,11 +1,7 @@
 // Create all data variable globally
 var allData;
 var sortedAndFilteredData;
-var namesWithObjectPositionMobile = [ // Updated variable name
-  "Casas", "Bello", "Poitras", "Douglas", "Barmore", 
-  "Teel", "Mayer", "Lohrei", "Baringer", "Buck", 
-  "Bleis", "Beecher", "Abreu", "Walsh", "Lauko", "Zappe"
-];
+var namesWithObjectPosition = [];
 
 // Function to fetch Google Sheet data using Papa Parse
 async function fetchData() {
@@ -87,10 +83,12 @@ function createCard(player) {
   `;
 
   // Use a condition to determine if object-position should be applied
-  const shouldApplyObjectPosition = namesWithObjectPositionMobile.includes(player['name-last']); // Updated variable name
+  const shouldApplyObjectPosition = namesWithObjectPosition.includes(player['Beecher']); // Updated variable name
 
   if (shouldApplyObjectPosition) {
     const playerImage = card.querySelector('img');
+
+    // Set the object-position style based on your criteria
     playerImage.style.objectPosition = '50% 30%'; // Adjust these values accordingly
   }
 
@@ -154,9 +152,6 @@ document.getElementById('sort-mobile').addEventListener('change', function () {
   const selectedSortOption = this.value;
   handleSort(selectedSortOption);
 });
-
-// Initial load of cards
-fetchData();
 
 // Function to handle filter changes
 function handleFilterChange(selectedFilterOption) {
