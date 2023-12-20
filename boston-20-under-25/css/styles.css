@@ -191,8 +191,8 @@ a:hover {
     line-height: 22px;
 }
 
+/* Hide mobile-styled dropdown and buttons on desktop */
 @media only screen and (min-width: 651px) {
-    /* Hide mobile-styled dropdown and buttons on desktop */
     #sort-dropdown-mobile,
     #filter-buttons-container {
         display: none;
@@ -201,7 +201,6 @@ a:hover {
 
 /* Mobile styles */
 @media only screen and (max-width: 650px) {
-
     /* Hide other columns in mobile view */
     .column:not(#sort-dropdown):not(#sort-dropdown-mobile) {
         display: none;
@@ -211,18 +210,18 @@ a:hover {
     .card .image-container {
         width: 100%;
     }
-  
+
     .card .image-container img {
         width: 100%;
         height: auto;
         object-fit: cover;
     }
-  
+
     /* Hide the original top section on mobile */
     .card .top-section {
         display: none;
     }
-  
+
     /* Display the details in a column on mobile */
     .card .content {
         display: flex;
@@ -238,12 +237,13 @@ a:hover {
 
     /* Add margin to filter buttons container on mobile */
     #filter-buttons-container {
-        margin-bottom: 20px; 
+        margin-bottom: 20px;
     }
 
     /* Style for unselected buttons */
     button,
-    #filter-buttons-container button { /* Added styles for mobile sort dropdown */
+    #filter-buttons-container button {
+        /* Added styles for mobile sort dropdown */
         background: #F4F5F6;
         border: 1px solid #7F7F7F;
         border-radius: 20px; /* Increase border radius */
@@ -270,7 +270,8 @@ a:hover {
 
     /* Styles for selected buttons */
     button.selected,
-    #filter-buttons-container button.selected { /* Updated to target the correct ID */
+    #filter-buttons-container button.selected {
+        /* Updated to target the correct ID */
         background: #216DFF;
         border: 1px solid #216DFF;
         color: #FFFFFF;
@@ -281,5 +282,4 @@ a:hover {
         width: 100%;
         margin-bottom: 10px;
     }
-
 }

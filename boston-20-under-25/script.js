@@ -123,7 +123,16 @@ document.querySelectorAll('.team-filter').forEach(button => {
 
     // Call the filter function with the selected value
     handleFilterChange(this.dataset.value);
+    // Trigger sorting based on the selected sort option
+    const selectedSortOption = document.getElementById('sort-mobile').value;
+    handleSort(selectedSortOption);
   });
+});
+
+// Event listener for sorting dropdown on mobile
+document.getElementById('sort-mobile').addEventListener('change', function () {
+  const selectedSortOption = this.value;
+  handleSort(selectedSortOption);
 });
 
 // Initial load of cards
@@ -138,5 +147,21 @@ function handleFilterChange(selectedFilterOption) {
 
   // Re-render the cards with the sorted and filtered data
   const container = document.getElementById('card-container');
+  appendCardsToContainer(container, sortedAndFilteredData);
+}
+
+// Function to handle sorting changes
+function handleSort(selectedSortOption) {
+  if (selectedSortOption === 'name-last') {
+    sortedAndFilteredData.sort((a, b) => a['name-last'].localeCompare(b['name-last']));
+  } else if (selectedSortOption === 'rank') {
+    sortedAndFilteredData.sort((a, b) => a['rank'] - b['rank']);
+  } else if (selectedSortOption === 'birthdate') {
+    sortedAndFilteredData.sort((a, b) => new Date(a['birth-date']) - new Date(b['birth-date']));
+  }
+
+  // Re-render the cards in the sorted order
+  const container = document.getElementById('card-container');
+  container.innerHTML = ''; // Clear the container
   appendCardsToContainer(container, sortedAndFilteredData);
 }
