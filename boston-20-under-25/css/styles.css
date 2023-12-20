@@ -148,14 +148,14 @@ body {
     overflow: hidden;
 }
 
-/* Add this style for accordion icon */
-.card .info .blurb-section .accordion-icon {
+/* Remove accordion icon style */
+/* .card .info .blurb-section .accordion-icon {
     cursor: pointer;
     font-size: 20px;
     margin-left: 4px;
     transition: transform 0.3s ease;
     display: inline-block;
-}
+} */
 
 .card .info .additional-info .fan-rating-bar .progress {
     height: 100%;
@@ -179,6 +179,7 @@ body {
 /* Link */
 .link {
     margin-top: auto;
+    padding-left: 15px;
 }
 
 .card .info.active .link {
@@ -238,6 +239,11 @@ a:hover {
         display: none;
     }
 
+    .blurb {
+        font-size: 14px;
+        line-height: 17px;
+    }
+
     /* Display the details in a column on mobile */
     .card {
         display: block;
@@ -247,7 +253,13 @@ a:hover {
     }
 
     .card .info .blurb-section .link {
-        display: none;
+        display: block; /* Show the link on mobile */
+        margin-top: 10px; /* Add margin for separation */
+    }
+
+    .blurb-section .blurb {
+        display: block; /* Show the blurb on mobile */
+        margin-top: 10px; /* Add margin for separation */
     }
 
     /* Styles for rank, first name, and last name */
@@ -256,6 +268,7 @@ a:hover {
         align-items: center;
         justify-content: space-between; /* Add this line to push first and last name to the sides */
         margin-bottom: 10px;
+        height: auto !important;
     }
 
     /* Reset styles for content */
@@ -266,8 +279,10 @@ a:hover {
 
     .rank {
         font-size: 50px; /* Adjust font size as needed */
-        line-height: 184px; /* Adjust line height as needed */
+        line-height: 136px; /* Adjust line height as needed */
         margin-bottom: 4px;
+        width: 40px;
+        height: 86px;
     }
 
     .card .info {
@@ -282,37 +297,14 @@ a:hover {
         max-height: 200px; /* Adjust the max-height as needed */
     }
 
+    /* Add a specific style for the players who need object-position adjustment */
+    .card img[data-object-position] {
+        object-position: center 30% !important; /* Adjust the values accordingly */
+    }
+
     /* Hide the fan rating bar on mobile */
     .card .info .additional-info .fan-rating-bar {
         display: none;
-    }
-
-    /* Hide the blurb by default */
-    .blurb-section .blurb {
-        display: none;
-    }
-    
-    /* Show the blurb when the accordion is open */
-    .card .blurb-section.active .link {
-        display: block;
-    }
-    
-    /* Add accordion icon style */
-    .card .info .accordion-icon {
-        cursor: pointer;
-        font-size: 20px; /* Adjust the font size as needed */
-        margin-left: 4px; /* Adjust the margin */
-        transition: transform 0.2s ease; /* Add transition effect */
-    }
-
-    /* Position the accordion icon on the same line as team/role */
-    .card .info .team-position {
-        display: flex;
-        align-items: center;
-    }
-
-    .card .info.active .accordion-icon {
-        transform: rotate(180deg); /* Rotate the icon when the accordion is open */
     }
 
     /* Add margin to filter buttons container on mobile */
@@ -365,5 +357,6 @@ a:hover {
 
     .link {
         margin: 0;
+        padding: 0 !important;
     }
 }

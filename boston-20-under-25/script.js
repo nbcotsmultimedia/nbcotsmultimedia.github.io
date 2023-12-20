@@ -1,6 +1,11 @@
 // Create all data variable globally
 var allData;
 var sortedAndFilteredData;
+var namesWithObjectPositionMobile = [ // Updated variable name
+  "Casas", "Bello", "Poitras", "Douglas", "Barmore", 
+  "Teel", "Mayer", "Lohrei", "Baringer", "Buck", 
+  "Bleis", "Beecher", "Abreu", "Walsh", "Lauko", "Zappe"
+];
 
 // Function to fetch Google Sheet data using Papa Parse
 async function fetchData() {
@@ -72,25 +77,26 @@ function createCard(player) {
                   <div class="turns-25"><strong>Turns 25:</strong> ${player['birth-date']}</div>
               </div>
               <div class="blurb-section">
-                  <div class="accordion-icon">&#9660;</div>
                   <p class="blurb">${player['blurb']}</p>
-                  <div class="link">
-                  <a href="${player['link-to-more']}" target="_blank">More about ${player['name-first']} ${player['name-last']}</a>
-                  </div>
               </div>
+          </div>
+          <div class="link">
+              <a href="${player['link-to-more']}" target="_blank">More about ${player['name-first']} ${player['name-last']}</a>
           </div>
       </div>
   `;
 
-  // Event listener for the accordion icon
-  const accordionIcon = card.querySelector('.info .accordion-icon');
-  const infoSection = card.querySelector('.info');
-  accordionIcon.addEventListener('click', function () {
-    infoSection.classList.toggle('active');
-  });
+  // Use a condition to determine if object-position should be applied
+  const shouldApplyObjectPosition = namesWithObjectPositionMobile.includes(player['name-last']); // Updated variable name
+
+  if (shouldApplyObjectPosition) {
+    const playerImage = card.querySelector('img');
+    playerImage.style.objectPosition = '50% 30%'; // Adjust these values accordingly
+  }
 
   return card;
 }
+
 
 // Function to append cards to the container
 function appendCardsToContainer(container, players) {
