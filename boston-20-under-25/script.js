@@ -26,6 +26,10 @@ async function fetchData() {
 
         // Append the cards to the container
         appendCardsToContainer(container, sortedAndFilteredData);
+
+        // Add handleSort to set default sort
+        handleSort('rank');
+
       },
       error: function (error) {
         console.error('Error parsing CSV data:', error);
