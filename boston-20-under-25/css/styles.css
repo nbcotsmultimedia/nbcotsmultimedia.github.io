@@ -8,6 +8,39 @@ body {
 	font-family: 'Roboto', sans-serif;
 }
 
+/* Drop down menu */
+
+#controls, filter label {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #222222;
+    margin-right: 10px;
+  }
+
+#controls select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+#sort, #filter {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    color: #222222;
+    background-color: white;
+    border: 1px solid #222222;
+    padding: 8px;
+  }
+  
 /* Content */
 .card .content {
     display: flex;
