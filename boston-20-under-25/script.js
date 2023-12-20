@@ -6,7 +6,7 @@ async function fetchData() {
   try {
     const response = await fetch(
       'https://docs.google.com/spreadsheets/d/1lVWFTJ0Tcqv9LYi3SXf-IUGr57OGJ9bryA_GSDlkpPQ/export?format=csv&id=1lVWFTJ0Tcqv9LYi3SXf-IUGr57OGJ9bryA_GSDlkpPQ'
-      );
+    );
     const csvData = await response.text();
 
     // Use Papa Parse to parse the CSV data
@@ -16,15 +16,18 @@ async function fetchData() {
         // Log the parsed data to the console
         console.log(results.data);
 
+        // Store the parsed data in the global variable
+        allData = results.data;
+
         // Get the container element
         const container = document.getElementById('card-container');
 
         // Append the cards to the container
-        appendCardsToContainer(container, results.data);
+        appendCardsToContainer(container, allData);
       },
       error: function (error) {
         console.error('Error parsing CSV data:', error);
-      }
+      },
     });
   } catch (error) {
     console.error('Error fetching data:', error);
