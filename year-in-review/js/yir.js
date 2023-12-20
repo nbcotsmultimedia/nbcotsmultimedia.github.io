@@ -54,7 +54,7 @@ function buildConfig() {
 };
 
 function loadData() {
-	Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vQTyhGl_WM_nTFOjDdCrPvmPggXeEWY9Q3WiE_5CJoHtmFS8BPQPayRW-ae-SntRJsqVT96qZobEIV4/pub?gid=2107581036&single=true&output=csv', {
+	Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vQTyhGl_WM_nTFOjDdCrPvmPggXeEWY9Q3WiE_5CJoHtmFS8BPQPayRW-ae-SntRJsqVT96qZobEIV4/pub?gid=459203480&single=true&output=csv', {
 		download: true,
 		header: true,
 		config,
@@ -131,7 +131,7 @@ const addCards = data => {
 		const row = data[i];
 		const htmlString = `
 		<button class="gallery-card ${row.category}"  onclick="selectSlide(event, '${row.id}')" data-toggle="modal" data-target="#modal">
-			<img src="${row.image}" class="card-image"/>
+			<img src="${row.image}?w=600" class="card-image"/>
 			<p class="date">${row.date}</p>
 			<h2 class="caption">${row.caption}</h2>
 		</button>`;
@@ -168,12 +168,12 @@ const addCarousel = () => {
 		let slideHtml = `
 		<div class="carousel-item" id="${row.id}">
 			<div class="slide-container">
-				<img class="d-block w-100" src="${row.image}" id="${row.id}-img">
+				<img class="d-block w-100" src="${row.image}?w=1000" id="${row.id}-img">
 				<div class="slide-banner">
 					<p class="date">${row.date}</p>
 					<h1>${row.caption}</h1>
 					<p class="desc">${row.desc}</p>
-					<p class="read-more"><em><a href="${row.link}">Read more</a></em></p>
+					<p class="read-more"><em><a href="https://www.nbcnewyork.com${row.link}" target=”_blank”>Read more</a></em></p>
 				</div>
 			</div>
 		</div>`;

@@ -135,6 +135,7 @@ a:active {
     position: absolute;
     bottom: 0;
     padding: 12px 12px 50px;
+    width: 100%;
 }
 
 .slide-container {
@@ -179,11 +180,7 @@ a:active {
     color: #DBDBDB;
 }
 
-.carousel-control-next {
-    height: 50px;
-    margin: auto;
-}
-
+.carousel-control-next,
 .carousel-control-prev {
     height: 50px;
     margin: auto;
@@ -308,5 +305,11 @@ a:active {
 
     .slide-banner {
         padding: 0 40px;
+    }
+
+    .carousel-control-next,
+    .carousel-control-prev {
+        height: 90%;
+        margin: auto;
     }
 }
