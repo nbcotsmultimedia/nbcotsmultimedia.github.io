@@ -83,18 +83,32 @@ function createCard(player) {
   `;
 
   // Use a condition to determine if object-position should be applied
-  const shouldApplyObjectPosition = namesWithObjectPosition.includes(player['Beecher']); // Updated variable name
+let shouldApplyObjectPosition = false;
+let objectPositionValues = '50% 30%'; // Default values
 
-  if (shouldApplyObjectPosition) {
-    const playerImage = card.querySelector('img');
+if (player['name-last'] === 'Beecher' || player['name-last'] === 'Walsh') {
+  shouldApplyObjectPosition = true;
+  objectPositionValues = '70% 30%'; // Adjust these values accordingly
+} else if (player['name-last'] === 'Casas') {
+  shouldApplyObjectPosition = true;
+  objectPositionValues = '60% 30%'; // Adjust these values accordingly
+} else if (player['name-last'] === 'Bello' || player['name-last'] === 'Mayer') {
+  shouldApplyObjectPosition = true;
+  objectPositionValues = '40% 30%';
+}
 
-    // Set the object-position style based on your criteria
-    playerImage.style.objectPosition = '50% 30%'; // Adjust these values accordingly
-  }
+if (shouldApplyObjectPosition) {
+  const playerImage = card.querySelector('img');
+
+  // Set the object-position style based on your criteria
+  playerImage.style.objectPosition = objectPositionValues;
+
+  console.log(`Object position set for ${player['name-first']} ${player['name-last']}: ${playerImage.style.objectPosition}`);
+}
+
 
   return card;
 }
-
 
 // Function to append cards to the container
 function appendCardsToContainer(container, players) {
