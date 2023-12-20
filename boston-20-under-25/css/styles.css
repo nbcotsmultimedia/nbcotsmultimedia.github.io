@@ -134,6 +134,11 @@ body {
     padding: 15px;
 }
 
+.card .info.active {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Apply styles to the fan rating bar */
 .card .info .additional-info .fan-rating-bar {
     height: 8px;
@@ -141,6 +146,15 @@ body {
     margin-bottom: 6px;
     border-radius: 5px;
     overflow: hidden;
+}
+
+/* Add this style for accordion icon */
+.card .info .blurb-section .accordion-icon {
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+    display: inline-block;
 }
 
 .card .info .additional-info .fan-rating-bar .progress {
@@ -159,13 +173,16 @@ body {
     font-size: 16px;
     line-height: 22px;
     flex: 1;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 /* Link */
 .link {
     margin-top: auto;
-    padding-left: 15px;
+}
+
+.card .info.active .link {
+    display: block;
 }
 
 a {
@@ -191,48 +208,111 @@ a:hover {
     line-height: 22px;
 }
 
-/* Hide mobile-styled dropdown and buttons on desktop */
 @media only screen and (min-width: 651px) {
+    /* Hide mobile-styled dropdown and buttons on desktop */
     #sort-dropdown-mobile,
     #filter-buttons-container {
+        display: none;
+    }
+
+    #sort-dropdown-mobile,
+    #filter-buttons-container {
+        display: none;
+    }
+
+    /* Hide accordion icon on desktop */
+    .card .info .blurb-section .accordion-icon {
         display: none;
     }
 }
 
 /* Mobile styles */
 @media only screen and (max-width: 650px) {
+    /* Hide desktop controls on mobile */
+    #controls {
+        display: none;
+    }
+    
     /* Hide other columns in mobile view */
     .column:not(#sort-dropdown):not(#sort-dropdown-mobile) {
         display: none;
     }
 
-    /* Image container and image */
-    .card .image-container {
+    /* Display the details in a column on mobile */
+    .card {
+        display: block;
         width: 100%;
+        height: auto; /* Adjust the height as needed */
+        margin-bottom: 20px;
     }
 
-    .card .image-container img {
-        width: 100%;
+    .card .info .blurb-section .link {
+        display: none;
+    }
+
+    /* Styles for rank, first name, and last name */
+    .card .top-section {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between; /* Add this line to push first and last name to the sides */
+        margin-bottom: 10px;
+    }
+
+    /* Reset styles for content */
+    .card .content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .rank {
+        font-size: 50px; /* Adjust font size as needed */
+        line-height: 184px; /* Adjust line height as needed */
+        margin-bottom: 4px;
+    }
+
+    .card .info {
+        padding: 0px;
+    }
+
+    /* Image styles for mobile */
+    .card img {
+        width: 100% !important;
         height: auto;
         object-fit: cover;
+        max-height: 200px; /* Adjust the max-height as needed */
     }
 
-    /* Hide the original top section on mobile */
-    .card .top-section {
+    /* Hide the fan rating bar on mobile */
+    .card .info .additional-info .fan-rating-bar {
         display: none;
     }
 
-    /* Display the details in a column on mobile */
-    .card .content {
+    /* Hide the blurb by default */
+    .blurb-section .blurb {
+        display: none;
+    }
+    
+    /* Show the blurb when the accordion is open */
+    .card .blurb-section.active .link {
+        display: block;
+    }
+    
+    /* Add accordion icon style */
+    .card .info .accordion-icon {
+        cursor: pointer;
+        font-size: 20px; /* Adjust the font size as needed */
+        margin-left: 4px; /* Adjust the margin */
+        transition: transform 0.2s ease; /* Add transition effect */
+    }
+
+    /* Position the accordion icon on the same line as team/role */
+    .card .info .team-position {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        margin-top: 10px; /* Add spacing between image and content */
     }
 
-    /* Hide desktop controls on mobile */
-    #controls {
-        display: none;
+    .card .info.active .accordion-icon {
+        transform: rotate(180deg); /* Rotate the icon when the accordion is open */
     }
 
     /* Add margin to filter buttons container on mobile */
@@ -281,5 +361,9 @@ a:hover {
     #sort-dropdown-mobile {
         width: 100%;
         margin-bottom: 10px;
+    }
+
+    .link {
+        margin: 0;
     }
 }

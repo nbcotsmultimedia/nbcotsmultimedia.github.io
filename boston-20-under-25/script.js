@@ -67,13 +67,23 @@ function createCard(player) {
                   </div>
                   <div class="turns-25"><strong>Turns 25:</strong> ${player['birth-date']}</div>
               </div>
-              <p class="blurb">${player['blurb']}</p>
-          </div>
-          <div class="link">
-              <a href="${player['link-to-more']}" target="_blank">More about ${player['name-first']} ${player['name-last']}</a>
+              <div class="blurb-section">
+                  <div class="accordion-icon">&#9660;</div>
+                  <p class="blurb">${player['blurb']}</p>
+                  <div class="link">
+                  <a href="${player['link-to-more']}" target="_blank">More about ${player['name-first']} ${player['name-last']}</a>
+                  </div>
+              </div>
           </div>
       </div>
   `;
+
+  // Event listener for the accordion icon
+  const accordionIcon = card.querySelector('.info .accordion-icon');
+  const infoSection = card.querySelector('.info');
+  accordionIcon.addEventListener('click', function () {
+    infoSection.classList.toggle('active');
+  });
 
   return card;
 }
