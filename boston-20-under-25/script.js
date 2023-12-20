@@ -42,6 +42,9 @@ function createCard(player) {
   const card = document.createElement('div');
   card.classList.add('card');
 
+  // Calculate the width for the fan rating bar based on the rating
+  const fanRatingWidth = `${player['rating']}%`;
+
   // Use the player data to create the card's content
   card.innerHTML = `
       <img src="${player['player-img']}" alt="${player['name-first']} ${player['name-last']}">
@@ -51,12 +54,15 @@ function createCard(player) {
               <div class="details">
                   <div class="name-first">${player['name-first']}</div>
                   <div class="name-last">${player['name-last']}</div>
-                  <div class="team-position">${player['team']} | ${player['position']}</div>
+                  <div class="team-position">${player['team']} - ${player['position']}</div>
               </div>
           </div>
           <div class="info">
               <div class="additional-info">
                   <div class="fan-rating"><strong>Fan rating:</strong> ${player['rating']}</div>
+                  <div class="fan-rating-bar">
+                      <div class="progress" style="width: ${fanRatingWidth}"></div>
+                  </div>
                   <div class="turns-25"><strong>Turns 25:</strong> ${player['birth-date']}</div>
               </div>
               <p class="blurb">${player['blurb']}</p>

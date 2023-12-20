@@ -139,6 +139,23 @@ body {
     padding: 15px;
 }
 
+/* Apply styles to the fan rating bar */
+.card .info .additional-info .fan-rating-bar {
+    height: 10px;
+    background-color: #ECECEC;
+    margin-bottom: 6px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.card .info .additional-info .fan-rating-bar .progress {
+    height: 100%;
+    width: 0; /* Adjust this value based on the fan rating percentage */
+    background-color: rgba(33, 109, 255, 0.75);
+    border-radius: 5px;
+    transition: width 0.5s ease; /* Add a smooth transition effect */
+}
+
 .blurb {
     margin-top: 10px;
     font-family: 'Roboto';
