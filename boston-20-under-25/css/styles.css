@@ -1,27 +1,26 @@
 body {
-	background-color: #FFF !important;
-	font-size: 1rem; /* 16 px */
+    font-size: 1rem;
     font-family: 'Roboto', sans-serif;
 }
 
 /* Drop down menu */
-
 .column-container {
-    display: flex; /* Display columns side by side */
-    justify-content: space-between; /* Justify */
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .column {
-    flex: 1; /* Make each column take up equal space */
-    margin-right: 20px; /* Adjust the value for spacing between columns */
+    flex: 1;
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 20px;
 }
 
-/* Apply styles to the first column */
 .column:first-child {
     margin-right: 20px;
 }
 
-/* Apply styles to "Sort by" and "Filter by team" */
 .column label {
     font-weight: 500;
     font-size: 14px;
@@ -29,11 +28,10 @@ body {
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #222222;
-    display: block; /* Make the label a block element to move it to a new line */
+    display: block;
     margin-bottom: 8px;
 }
 
-/* Apply styles to input */
 .column select {
     font-weight: 600;
     font-size: 14px;
@@ -41,14 +39,13 @@ body {
     color: #222222;
     border: 0.5px solid #BEBEBE;
     padding: 8px;
-    width: 100%; /* Make the select fill the entire width of the column */
+    width: 100%;
     box-sizing: border-box;
     margin-bottom: 12px;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.08));
 }
 
 /* Content */
-
 .card {
     display: flex;
     width: 800px;
@@ -72,9 +69,7 @@ body {
 /* Image */
 .card img {
     width: 270px !important;
-    /* height: 390px !important; */
-    height: 100%;
-    object-fit: cover; /* Ensure the image covers the container */
+    object-fit: cover;
 }
 
 /* Top Section */
@@ -90,7 +85,7 @@ body {
     font-weight: 300;
     text-align: right;
     line-height: 170px;
-    margin-right: 8px; /* Adjust the margin to reduce space */
+    margin-right: 8px;
     margin-bottom: 10px;
     width: 90px;
     height: 110px;
@@ -104,7 +99,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-right: 15px;
-    margin-top: auto; /* Align to the bottom */
+    margin-top: auto;
 }
 
 .name-first {
@@ -141,7 +136,7 @@ body {
 
 /* Apply styles to the fan rating bar */
 .card .info .additional-info .fan-rating-bar {
-    height: 10px;
+    height: 8px;
     background-color: #ECECEC;
     margin-bottom: 6px;
     border-radius: 5px;
@@ -150,10 +145,10 @@ body {
 
 .card .info .additional-info .fan-rating-bar .progress {
     height: 100%;
-    width: 0; /* Adjust this value based on the fan rating percentage */
+    width: 0;
     background-color: rgba(33, 109, 255, 0.75);
     border-radius: 5px;
-    transition: width 0.5s ease; /* Add a smooth transition effect */
+    transition: width 0.5s ease;
 }
 
 .blurb {
@@ -169,7 +164,7 @@ body {
 
 /* Link */
 .link {
-    margin-top: auto; /* Push to the bottom */
+    margin-top: auto;
     padding-left: 15px;
 }
 
@@ -194,4 +189,97 @@ a:hover {
     font-style: normal;
     font-size: 16px;
     line-height: 22px;
+}
+
+@media only screen and (min-width: 651px) {
+    /* Hide mobile-styled dropdown and buttons on desktop */
+    #sort-dropdown-mobile,
+    #filter-buttons-container {
+        display: none;
+    }
+}
+
+/* Mobile styles */
+@media only screen and (max-width: 650px) {
+
+    /* Hide other columns in mobile view */
+    .column:not(#sort-dropdown):not(#sort-dropdown-mobile) {
+        display: none;
+    }
+
+    /* Image container and image */
+    .card .image-container {
+        width: 100%;
+    }
+  
+    .card .image-container img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+  
+    /* Hide the original top section on mobile */
+    .card .top-section {
+        display: none;
+    }
+  
+    /* Display the details in a column on mobile */
+    .card .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px; /* Add spacing between image and content */
+    }
+
+    /* Hide desktop controls on mobile */
+    #controls {
+        display: none;
+    }
+
+    /* Add margin to filter buttons container on mobile */
+    #filter-buttons-container {
+        margin-bottom: 20px; 
+    }
+
+    /* Style for unselected buttons */
+    button,
+    #filter-buttons-container button { /* Added styles for mobile sort dropdown */
+        background: #F4F5F6;
+        border: 1px solid #7F7F7F;
+        border-radius: 20px; /* Increase border radius */
+        color: #7F7F7F;
+        align-items: center;
+        cursor: pointer;
+        margin-right: 4px;
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        box-sizing: border-box;
+    }
+
+    /* Text styles for buttons */
+    button span,
+    #filter-buttons-container button span {
+        letter-spacing: 0.001em;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px; /* Increase font size */
+        line-height: 18px; /* Increase line height */
+        text-align: center;
+    }
+
+    /* Styles for selected buttons */
+    button.selected,
+    #filter-buttons-container button.selected { /* Updated to target the correct ID */
+        background: #216DFF;
+        border: 1px solid #216DFF;
+        color: #FFFFFF;
+    }
+
+    /* Make the sort drop-down take full width */
+    #sort-dropdown-mobile {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
 }

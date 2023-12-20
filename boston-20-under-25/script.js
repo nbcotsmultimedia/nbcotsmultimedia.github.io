@@ -1,5 +1,6 @@
 // Create all data variable globally
 var allData;
+var sortedAndFilteredData;
 
 // Function to fetch Google Sheet data using Papa Parse
 async function fetchData() {
@@ -14,16 +15,17 @@ async function fetchData() {
       header: true,
       complete: function (results) {
         // Log the parsed data to the console
-        console.log(results.data);
+        // console.log(results.data);
 
         // Store the parsed data in the global variable
         allData = results.data;
+        sortedAndFilteredData = [...allData];
 
         // Get the container element
         const container = document.getElementById('card-container');
 
         // Append the cards to the container
-        appendCardsToContainer(container, allData);
+        appendCardsToContainer(container, sortedAndFilteredData);
       },
       error: function (error) {
         console.error('Error parsing CSV data:', error);
@@ -54,7 +56,7 @@ function createCard(player) {
               <div class="details">
                   <div class="name-first">${player['name-first']}</div>
                   <div class="name-last">${player['name-last']}</div>
-                  <div class="team-position">${player['team']} - ${player['position']}</div>
+                  <div class="team-position">${player['team']} | ${player['position']}</div>
               </div>
           </div>
           <div class="info">
@@ -81,62 +83,60 @@ function appendCardsToContainer(container, players) {
   // Clear existing cards
   container.innerHTML = '';
 
-  // Apply sorting and filtering logic
-  const selectedSortOption = document.getElementById('sort').value;
-  const selectedFilterOption = document.getElementById('filter').value;
-
-  players
-    .filter(player => selectedFilterOption === 'all' || player['team'] === selectedFilterOption)
-    .sort((a, b) => {
-      switch (selectedSortOption) {
-        case 'rank':
-          return a['rank'] - b['rank'];
-        case 'name-last':
-          return a['name-last'].localeCompare(b['name-last']);
-        case 'birthdate':
-          return new Date(a['birth-date']) - new Date(b['birth-date']);
-        default:
-          return 0;
-      }
-    })
-    .forEach(player => {
-      const card = createCard(player);
-      container.appendChild(card);
-    });
+  players.forEach(player => {
+    const card = createCard(player);
+    container.appendChild(card);
+  });
 }
 
-// Event listener for sorting dropdown
+// Event listener for sorting dropdown (both desktop and mobile)
 document.getElementById('sort').addEventListener('change', function () {
   const selectedSortOption = this.value;
 
   if (selectedSortOption === 'name-last') {
-    allData.sort((a, b) => a['name-last'].localeCompare(b['name-last']));
+    sortedAndFilteredData.sort((a, b) => a['name-last'].localeCompare(b['name-last']));
   } else if (selectedSortOption === 'rank') {
-    allData.sort((a, b) => a['rank'] - b['rank']);
-  } else if (selectedSortOption === 'birth-date') {
-    allData.sort((a, b) => new Date(a['birth-date']) - new Date(b['birth-date']));
+    sortedAndFilteredData.sort((a, b) => a['rank'] - b['rank']);
+  } else if (selectedSortOption === 'birthdate') {
+    sortedAndFilteredData.sort((a, b) => new Date(a['birth-date']) - new Date(b['birth-date']));
   }
 
   // Re-render the cards in the sorted order
   const container = document.getElementById('card-container');
   container.innerHTML = ''; // Clear the container
-  appendCardsToContainer(container, allData);
+  appendCardsToContainer(container, sortedAndFilteredData);
 });
 
-// Event listener for filtering dropdown
+// Event listener for filtering dropdown (desktop)
 document.getElementById('filter').addEventListener('change', function () {
-  const selectedFilterOption = this.value;
+  handleFilterChange(this.value);
+});
 
-  // By team
-  const filteredData = selectedFilterOption === 'all'
-    ? allData
-    : allData.filter(player => player['team'] === selectedFilterOption);
+// Event listeners for filter buttons (mobile)
+document.querySelectorAll('.team-filter').forEach(button => {
+  button.addEventListener('click', function () {
+    // Remove the "selected" class from all buttons
+    document.querySelectorAll('.team-filter').forEach(btn => btn.classList.remove('selected'));
 
-  // Re-render the cards with the filtered data
-  const container = document.getElementById('card-container');
-  container.innerHTML = ''; // Clear the container
-  appendCardsToContainer(container, filteredData);
+    // Add the "selected" class to the clicked button
+    this.classList.add('selected');
+
+    // Call the filter function with the selected value
+    handleFilterChange(this.dataset.value);
+  });
 });
 
 // Initial load of cards
-appendCardsToContainer(document.getElementById('card-container'));
+fetchData();
+
+// Function to handle filter changes
+function handleFilterChange(selectedFilterOption) {
+  // By team
+  sortedAndFilteredData = selectedFilterOption === 'all'
+    ? [...allData]
+    : allData.filter(player => player['team'] === selectedFilterOption);
+
+  // Re-render the cards with the sorted and filtered data
+  const container = document.getElementById('card-container');
+  appendCardsToContainer(container, sortedAndFilteredData);
+}
