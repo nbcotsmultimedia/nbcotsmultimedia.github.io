@@ -2,17 +2,26 @@ let allData = [];
 let cardsToAdd = [];
 let config,
 	totalEntries,
-	numCols;
+	numCols,
+	myParent;
 const mobile = window.innerWidth <= 768;
 let imageGallery = $('#image-gallery');
 let dataFilter = "all";
 
 
 function init() {
+	getParentDomain();
 	buildColumns();
 	config = buildConfig();
 	loadData();
 };
+
+const getParentDomain = ()=> {
+	myParent = xtalk.parentDomain;
+	if (myParent == undefined || myParent == null || myParent == "" || myParent == "https://ots.nbcwpshield.com/" || myParent == "http" ) {
+		myParent = "https://www.nbcdfw.com/";
+	}
+}
 
 const buildColumns = () => {
 	numCols = mobile ? 2 : 3;
@@ -173,7 +182,7 @@ const addCarousel = () => {
 					<p class="date">${row.date}</p>
 					<h1>${row.caption}</h1>
 					<p class="desc">${row.desc}</p>
-					<p class="read-more"><em><a href="https://www.nbcnewyork.com${row.link}" target=”_blank”>Read more</a></em></p>
+					<p class="read-more"><em><a href="${myParent}${row.link}" target=”_blank”>Read more</a></em></p>
 				</div>
 			</div>
 		</div>`;
