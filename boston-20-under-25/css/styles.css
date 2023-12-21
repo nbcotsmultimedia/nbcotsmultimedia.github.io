@@ -159,7 +159,7 @@ body {
 .card .info .additional-info .fan-rating-bar .progress {
     height: 100%;
     width: 0;
-    background-color: rgba(33, 109, 255, 0.75);
+    background-color: rgba(20, 74, 168, .75);
     border-radius: 5px;
     transition: width 0.5s ease;
 }
@@ -187,12 +187,9 @@ body {
 
 a {
     text-decoration: none;
-    font-family: 'Roboto';
-    font-style: italic;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    color: #7F7F7F;
+    font-weight: 600;
+    color: #144AA8;
+    font-size: 16px;
 }
 
 a:hover {
@@ -337,8 +334,8 @@ a:hover {
     button.selected,
     #filter-buttons-container button.selected {
         /* Updated to target the correct ID */
-        background: #216DFF;
-        border: 1px solid #216DFF;
+        background: #144AA8;
+        border: 1px solid #144AA8;
         color: #FFFFFF;
     }
 
