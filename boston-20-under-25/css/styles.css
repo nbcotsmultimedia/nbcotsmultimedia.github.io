@@ -57,7 +57,7 @@ body {
 .card {
     display: flex;
     width: 800px;
-    height: 450px;
+    /* height: 450px; */
     overflow: hidden;
     margin-bottom: 20px;
 }

@@ -82,7 +82,7 @@ function createCard(player) {
       </div>
   `;
 
-  // Use a condition to determine if object-position should be applied
+// Use a condition to determine if object-position should be applied
 let shouldApplyObjectPosition = false;
 let objectPositionValues = '50% 30%'; // Default values
 
