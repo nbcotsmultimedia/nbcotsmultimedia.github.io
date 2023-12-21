@@ -77,7 +77,7 @@ function createCard(player) {
               </div>
           </div>
           <div class="link">
-              <a href="${player['link-to-more']}" target="_blank">More about ${player['name-first']} ${player['name-last']}</a>
+              <a href="${player['link-to-more']}" target="_blank">More on ${player['name-first']} ${player['name-last']}</a>
           </div>
       </div>
   `;
