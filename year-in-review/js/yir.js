@@ -14,6 +14,7 @@ function init() {
 	buildColumns();
 	config = buildConfig();
 	loadData();
+	console.log(mobile)
 };
 
 const getParentDomain = ()=> {
@@ -171,6 +172,23 @@ const hideGallery = () => {
 const addCarousel = () => {
 	let carouselHtml = '';
 	const carouselInner = $('.carousel-inner');
+	let carousel = $('#carousel-controls');
+
+	if (!mobile) {
+		carousel.append('<div class="controls-container"></div>');
+		carousel = $('.controls-container');
+	}
+	const carouselControls = `<a class="carousel-control-prev" href="#carousel-controls" role="button" data-slide="prev">
+		<i class="fa-solid fa-chevron-left fa-xl"></i>
+		<span aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+	</a>
+	<a class="carousel-control-next" href="#carousel-controls" role="button" data-slide="next">
+		<i class="fa-solid fa-chevron-right fa-xl"></i>
+		<span aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+	</a>`;
+	carousel.append(carouselControls);
 	
 	for (let i = 0; i < totalEntries; i++) {
 		const row = allData[i];
