@@ -196,4 +196,6 @@ function handleSort(selectedSortOption) {
   const container = document.getElementById('card-container');
   container.innerHTML = ''; // Clear the container
   appendCardsToContainer(container, sortedAndFilteredData);
+
+  xtalk.signalIframe();
 }
