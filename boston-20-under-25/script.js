@@ -95,6 +95,9 @@ if (player['name-last'] === 'Beecher' || player['name-last'] === 'Walsh') {
 } else if (player['name-last'] === 'Bello' || player['name-last'] === 'Mayer') {
   shouldApplyObjectPosition = true;
   objectPositionValues = '40% 30%';
+} else if (player['name-last'] === 'Lauko') {
+  shouldApplyObjectPosition = true;
+  objectPositionValues = '80% 30%';
 }
 
 if (shouldApplyObjectPosition) {
