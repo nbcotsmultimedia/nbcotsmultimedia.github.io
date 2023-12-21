@@ -111,6 +111,8 @@ if (shouldApplyObjectPosition) {
 
 
   return card;
+
+  xtalk.signalIframe();
 }
 
 // Function to append cards to the container
