@@ -135,6 +135,7 @@ a:active {
     position: absolute;
     bottom: 0;
     padding: 12px 12px 50px;
+    width: 100%;
 }
 
 .slide-container {
@@ -179,11 +180,7 @@ a:active {
     color: #DBDBDB;
 }
 
-.carousel-control-next {
-    height: 50px;
-    margin: auto;
-}
-
+.carousel-control-next,
 .carousel-control-prev {
     height: 50px;
     margin: auto;
@@ -224,6 +221,10 @@ a:active {
 
 
 @media screen and (max-width: 768px) {
+    body {
+        padding: 0 15px;
+    }
+
     h1 {
         font-size: 16px;
     }
@@ -307,6 +308,25 @@ a:active {
     }
 
     .slide-banner {
-        padding: 0 40px;
+        background-color: #0C0C0C;
+        position: static;
+        padding: 5px 10px 0;
+        max-width: 100% !important;
+    }
+
+    .a:link {
+        color: #fff !important;
+    }
+
+    .slide-container {
+        max-width: 100%;
+    }
+
+    .carousel-control-next,
+    .carousel-control-prev {
+        height: 250px;
+        margin: auto;
+        color: #fff !important;
+        opacity: 1 !important;
     }
 }
