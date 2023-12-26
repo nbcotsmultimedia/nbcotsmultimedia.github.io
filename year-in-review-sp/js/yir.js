@@ -64,23 +64,27 @@ function buildConfig() {
 };
 
 function loadData() {
-	Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vQTyhGl_WM_nTFOjDdCrPvmPggXeEWY9Q3WiE_5CJoHtmFS8BPQPayRW-ae-SntRJsqVT96qZobEIV4/pub?gid=459203480&single=true&output=csv', {
+	Papa.parse('https://docs.google.com/spreadsheets/d/1Iye4yPg8ib6DeT5NHxxnZmfFYw9S1EwQmN7o7DpJqnQ/edit#gid=584104934&single=true&output=csv', {
 		download: true,
 		header: true,
 		config,
 		complete: function (results) {
+			console.log("Data loaded successfully:", results);
 			allData = results.data;
 			parseData();
+		},
+		error: function (error) {
+			console.error("Error loading data:", error);
 		}
 	});
 };
 
 function parseData() {
+	console.log("Parsing data:", allData);
 	var $len = allData.length;
 	totalEntries = $len;
 	addTabs();
 	addCards(allData);
-
 	addCarousel();
 };
 
@@ -139,16 +143,34 @@ const addCards = data => {
 	for (let i = 0; i < data.length; i++) {
 		const col = $('#col-' + colNum);
 		const row = data[i];
+
+		// Check if required properties are defined
+		const id = row.id !== undefined ? row.id : '';
+        const category = row.category !== undefined ? row.category : '';
+        const date = row.date !== undefined ? row.date : '';
+        const caption = row.caption !== undefined ? row.caption : '';
+        const image = row.image !== undefined ? row.image : '';
+        const link = row.link !== undefined ? row.link : '';
+
+		// Create a temporary div to parse and sanitize HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = caption;
+
+        // Extract the sanitized HTML content
+        const sanitizedCaption = tempDiv.textContent || tempDiv.innerText || '';
+
 		const htmlString = `
-		<button class="gallery-card ${row.category}"  onclick="selectSlide(event, '${row.id}')" data-toggle="modal" data-target="#modal">
-			<img src="${row.image}?w=600" class="card-image"/>
-			<p class="date">${row.date}</p>
-			<h2 class="caption">${row.caption}</h2>
-		</button>`;
-		col.append(htmlString);
-		colNum = colNum < numCols - 1 ? colNum + 1 : 0;
-	}
-	setTimeout(function(){ xtalk.signalIframe(); }, 2000);
+        <button class="gallery-card ${category}" onclick="selectSlide(event, '${id}')" data-toggle="modal" data-target="#modal">
+            <img src="${image ? image + '?w=600' : ''}" class="card-image"/>
+            <p class="date">${date}</p>
+            <h2 class="caption">${sanitizedCaption}</h2>
+            <a href="${link}" target="_blank">Read more</a>
+        </button>`;
+
+        col.append(htmlString);
+        colNum = colNum < numCols - 1 ? colNum + 1 : 0;
+    }
+    setTimeout(function () { xtalk.signalIframe(); }, 2000);
 };
 
 const removeCards = () => {
