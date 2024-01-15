@@ -16,6 +16,14 @@
     <!-- Responsive iFrame stuff -->
     
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+   
+
 
   </head>
 
@@ -23,46 +31,15 @@
 
     <!-- Start content here-->
 
-    <div id="eventsContainer" class="parent" style="width:100%; padding-bottom:30px;">
-    <!--crosstalk container div-->
-
-    <!-- Candidate Dropdown -->
-    <label for="candidate-dropdown">Select Candidate:</label>
-    <select id="candidate-dropdown">
-        <option value="" selected>All Candidates</option>
-        
-        <!-- Democratic Candidates -->
-        <option value="Joe Biden">Joe Biden (D)</option>
-        <option value="Cenk Uygur">Cenk Uygur (D)</option>
-        <option value="Marianne Williamson">Marianne Williamson (D)</option>
-        <option value="Dean Phillips">Dean Phillips (D)</option>
-
-        <!-- Republican Candidates -->
-        <option value="Ryan Binkley">Ryan Binkley (R)</option>
-        <option value="Doug Burgum">Doug Burgum (R)</option>
-        <option value="Chris Christie">Chris Christie (R)</option>
-        <option value="Ron DeSantis">Ron DeSantis (R)</option>
-        <option value="Larry Elder">Larry Elder (R)</option>
-        <option value="Nikki Haley">Nikki Haley (R)</option>
-        <option value="Asa Hutchinson">Asa Hutchinson (R)</option>
-        <option value="Mike Pence">Mike Pence (R)</option>
-        <option value="Vivek Ramaswamy">Vivek Ramaswamy (R)</option>
-        <option value="Donald Trump">Donald Trump (R)</option>
-
-        <!-- Third Party Candidates -->
-        <option value="Robert F. Kennedy, Jr.">Robert F. Kennedy, Jr. (T)</option>
-        <option value="Chase Oliver">Chase Oliver (T)</option>
-        <option value="Cornel West">Cornel West (T)</option>
-
-    </select>
+    <div id="eventsContainer" class="parent" style="width:100%; padding-bottom:30px;"><!--crosstalk container div-->
 
     <!-- This Week's Events Header -->
     <!-- <h1 id="thisWeekHeader" class="custom-header">This Week</h1> -->
 
     <!-- Content div for week list -->
-      <div id="content"></div>
+    <div id="content"></div>
 
-    </div><!--end crosstalk container div-->
+  </div><!--end crosstalk container div-->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
