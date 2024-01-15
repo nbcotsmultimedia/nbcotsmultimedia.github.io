@@ -43,7 +43,8 @@ function buildConfig() {
 
 function loadData() {
 
-	Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTLf6vvDf-XgnXtguWKz4ayW5P5BCyihNjNpO_axRNLHvaJJUnWS3_TQ0GKcTDBAPPhB0yufGWLX5WE/pub?gid=0&single=true&output=csv', {
+	Papa.parse(
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vTLf6vvDf-XgnXtguWKz4ayW5P5BCyihNjNpO_axRNLHvaJJUnWS3_TQ0GKcTDBAPPhB0yufGWLX5WE/pub?gid=1672632778&single=true&output=csv', {
 		download: true,
     	header: true,
 		config,
