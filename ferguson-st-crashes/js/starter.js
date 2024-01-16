@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
-const legendItems = [
+let legendItems = [
 	{
 		"color": "#e81416",
 		"size": "10px",
@@ -54,7 +54,10 @@ const legendItems = [
 		"label": "Multiple crashes",
 		"severity": ''
 	}
-]
+];
+if (categories.length > 0) {
+	legendItems = legendItems.filter(item => categories.includes(item.severity) || item.severity === '')
+}
 let markers;
 let texts;
 let mapClustered = true;
