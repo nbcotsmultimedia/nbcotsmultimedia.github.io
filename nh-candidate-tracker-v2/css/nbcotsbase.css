@@ -1,6 +1,7 @@
 body {
 	background-color: #FFF !important;
 	font-size: 1rem; /* 16 px */
+    overflow-x: hidden;
 }
 
 /* Commons styles for fonts */
@@ -53,7 +54,6 @@ body {
 }
 
 /* Style for the time */
-
 .time {
     flex: 0.2;
     font-weight: bold;
@@ -222,23 +222,28 @@ body {
     height: 100%;
 }
 
-
 /* Basic style for the images */
 img.img-fluid {
     width: 100%;
     height: 100%;
     border-radius: 50%; /* Create a circular border */
+    margin-right: -2rem; /* Adjust the negative margin to control overlap amount */
 }
 
 /* Add specific border colors for each party */
 img.img-fluid[party='R'] {
     border: 0.125rem solid #CC0000; /* 2px Red */
+    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
 }
+
 img.img-fluid[party='D'] {
     border:  0.125rem solid #3366CC; /* 2px Blue */
+    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
 }
+
 img.img-fluid[party='I'] {
     border:  0.125rem solid #666699; /* 2px Gray */
+    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
 }
 
 .img-fluid {
@@ -258,15 +263,12 @@ img.img-fluid[party='I'] {
     border: 0.125rem solid transparent; /* Set initial border to transparent */
 }
 
-.img-fluid[party="Democrat"] {
-    border-color: #3366CC; /* Border color for Democrat party */
-}
-
-.img-fluid[party="Republican"] {
-    border-color: #FF6347; /* Border color for Republican party */
-}
-
 /* //////////// VIEWPORT STYLES //////////// */
+
+/* Common styles for both mobile and desktop */
+#content {
+    margin: 0.625rem; /* 10px */
+}
 
 @media (min-width: 501px ) {
 
@@ -287,10 +289,33 @@ img.img-fluid[party='I'] {
 	}
 
 	.image-container {
-        margin-right: 1.75rem; /* 28px */
+        margin-right: 3.75rem; /* 28px */
         width: 6.875rem; /* 110px */
         height: 6.875rem; /* 110px */
 	}
+
+    .image-container-wrapper {
+        position: relative;
+    }
+    
+    .plus-icon {
+        position: absolute;
+        bottom: 25px;
+        right: 25px;
+        width: 30px; /* Adjust the width and height to make it circular */
+        height: 30px;
+        background-color: #D9D9D9; /* Fill color */
+        border: 2px solid #FFFFFF; /* Stroke color and width */
+        border-radius: 50%;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Roboto', sans-serif; /* Roboto font */
+        font-weight: bold; /* Adjust font weight as needed */
+        font-size: 12pt; /* Font size */
+        color: #474747; /* Text color */
+    }                
 
 	.info {
         padding-left: 1.75rem; /* 28px */
@@ -298,7 +323,7 @@ img.img-fluid[party='I'] {
 
 }
 
-@media (max-width: 500px ) {
+@media (max-width: 500px) {
 
 	#content {
         margin: 0.625rem; /* 10px */
@@ -331,36 +356,4 @@ img.img-fluid[party='I'] {
         margin-right: 0.625rem; /* 10px */
 	}
 
-}
-
-/* //////////// NBC STYLES //////////// */
-
-.headline {
-	font-family: 'ArtHouseBold', sans-serif;
-	font-size: 1.5rem; /* 24px */
-	color: #191919;
-	margin-bottom: 10px;
-}
-
-.subhead {
-	font-family: 'ArtHouseMed', sans-serif;
-	font-size: 17px;
-	color: #999;
-	margin-bottom: 10px;
-	line-height: 1.4em;
-}
-
-p {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 17px;
-	color: #191919;
-}
-
-.credits {
-	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
-	color: #666;
-	margin-top: 10px;
-	line-height: 1.5em;
 }

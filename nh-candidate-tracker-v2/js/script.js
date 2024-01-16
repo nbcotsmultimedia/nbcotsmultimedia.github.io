@@ -172,16 +172,39 @@ function parseData() {
                 subCard.addClass('past-event');
             }
 
-            var uniqueCandidateNames = Array.from(new Set(candidateNames)).join(', ');
-            var combinedImages = candidateImages.map(function (imgData) {
-                return "<img src='" + imgData.img + "' class='img-fluid' party='" + imgData.party + "' />";
-            }).join('');
+            // Only take up to 3 candidates
+            var uniqueCandidateNames = Array.from(new Set(candidateNames)).slice(0, 3).join(', ');
+            var remainingCandidates = candidateNames.length - 3;
+
+            // Create a container for candidate images
+            var imageContainer = $("<div class='image-container'></div>");
+
+            // Loop through each candidate and create image elements
+            for (var i = 0; i < Math.min(candidateImages.length, 3); i++) {
+                var imgData = candidateImages[i];
+                var imgElement = $("<img src='" + imgData.img + "' class='img-fluid' party='" + imgData.party + "' />");
+                imageContainer.append(imgElement);
+            }
+
+            // Add a small circle icon showing +(number of additional candidates)
+            if (remainingCandidates > 0) {
+                var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
+
+                // Attach a click event to toggle visibility
+                plusIcon.click(function () {
+                    // Toggle visibility of additional candidates
+                    $(this).siblings('.img-fluid:hidden').toggle();
+                });
+
+                imageContainer.append(plusIcon);
+            }
 
             subCard.append(
                 time,
                 info,
-                "<div class='image-container'>" + combinedImages + "</div>"
+                $("<div class='image-container-wrapper'></div>").append(imageContainer)
                 );
+
             combinedCard.append(
                 "<p class='name'>" + uniqueCandidateNames + "</p>",
                 subCard
