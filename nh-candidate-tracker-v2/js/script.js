@@ -3,84 +3,95 @@ var totalEntries;
 var allData;
 var config;
 
+// Function to initialize the process
 function init() {
-	//console.log("ready");
-
-	config = buildConfig();
-	loadData();
-
+    // Build configuration settings
+    config = buildConfig();
+    // Load data using Papa.parse
+    loadData();
 }
 
+// Function to set up configuration for Papa.parse
 function buildConfig() {
-	return {
-		delimiter: "",	// auto-detect
-		newline: "",	// auto-detect
-		quoteChar: '"',
-		escapeChar: '"',
-		header: false,
-		transformHeader: undefined,
-		dynamicTyping: false,
-		preview: 0,
-		encoding: "",
-		worker: false,
-		comments: false,
-		step: undefined,
-		complete: undefined,
-		error: undefined,
-		download: false,
-		downloadRequestHeaders: undefined,
-		downloadRequestBody: undefined,
-		skipEmptyLines: false,
-		chunk: undefined,
-		chunkSize: undefined,
-		fastMode: undefined,
-		beforeFirstChunk: undefined,
-		withCredentials: undefined,
-		transform: undefined,
-		delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
-	};
+    return {
+        delimiter: "", // auto-detect
+        newline: "", // auto-detect
+        quoteChar: '"',
+        escapeChar: '"',
+        header: false,
+        transformHeader: undefined,
+        dynamicTyping: false,
+        preview: 0,
+        encoding: "",
+        worker: false,
+        comments: false,
+        step: undefined,
+        complete: undefined,
+        error: undefined,
+        download: false,
+        downloadRequestHeaders: undefined,
+        downloadRequestBody: undefined,
+        skipEmptyLines: false,
+        chunk: undefined,
+        chunkSize: undefined,
+        fastMode: undefined,
+        beforeFirstChunk: undefined,
+        withCredentials: undefined,
+        transform: undefined,
+        delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP],
+    };
 }
 
+// Function to fetch data using Papa.parse
 function loadData() {
-
     Papa.parse(
         'https://docs.google.com/spreadsheets/d/1TtoR-QwRWs7avrZqvAmIfx7BL-cXisMndbR5lgbLGO8/export?format=csv&gid=1672632778', {
-          download: true,
-          header: true,
-          config,
-          complete: function (results) {
-            allData = results.data;
-            parseData();
-          }
+            download: true,
+            header: true,
+            config,
+            complete: function (results) {
+                //console.log("Finished:", results.data);
+                allData = results.data;
+                parseData();
+            },
         }
-      );      
-
+    );
 }
 
 // Format date in AP style
 function formatDate(eventDate) {
+    // Logic for formatting the date
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNames = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ];
     return dayNames[eventDate.getDay()] + ', ' + monthNames[eventDate.getMonth()] + ' ' + eventDate.getDate();
 }
-// Create cards
+
+// Function to create cards from parsed data
 function parseData() {
+    // Sorting the data by date
     allData.sort(function (a, b) {
         var dateA = new Date(a.date);
         var dateB = new Date(b.date);
         return dateA - dateB;
     });
 
-    var $len = allData.length;
-    totalEntries = $len;
-
-    var currentDay;
-    var currentWeek = null;
-    var weekStartDate = null;
-    var weekEndDate = null;
-    var currentWeekHeader;
-
     var currentDate = new Date();
+    var eventDate; // Declare eventDate outside the loop
+    var time; // Declare time outside the loop
+    var info; // Declare info outside the loop
 
     // Helper function to group array of objects by a specified key
     function groupBy(arr, key) {
@@ -92,77 +103,97 @@ function parseData() {
         }, {});
     }
 
+    // Create a new variable groupedData with events grouped by id
     var groupedData = groupBy(allData, 'event_id');
 
+    // Loop through each grouped event
     for (var eventId in groupedData) {
         if (groupedData.hasOwnProperty(eventId)) {
             var eventGroup = groupedData[eventId];
 
-            // Create cards for each candidate in the event group
+            // Creating a single card for the entire event group
+            var combinedCard = $("<div class='event-card'></div>");
+
+            // Collecting names and images for all candidates in the event group
+            var candidateNames = [];
+            var candidateImages = [];
+
+            // Loop through each candidate in the event group
             eventGroup.forEach(function (eventData) {
                 var dateParts = eventData.date.split('/');
-                var eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+                eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
 
                 // Check if eventDate is a valid date
                 if (isNaN(eventDate.getTime())) {
                     console.error("Invalid date for entry with event_id " + eventId + ": " + eventData.date);
-                    return;  // Skip invalid date and move to the next entry
+                    return; // Log a warning and move to the next entry
                 }
 
-                // Get the day of the week (0 = Sunday, 1 = Monday, etc.)
-                var dayOfWeek = eventDate.getDay();
+                var timeData = eventData.time.split(' ');
+                time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
 
-                if (!currentWeek || !weekStartDate || !weekEndDate || eventDate > weekEndDate) {
-                    if (currentWeek) {
-                        if (currentWeekHeader) {
-                            $("#content").append(currentWeekHeader);
-                        }
-                        $("#content").append(currentWeek);
-                    }
+                info = $("<div class='info'></div>");
+                info.append(
+                    // Type of event
+                    "<p class='type'>" + eventData.event_type + "</p>",
+                    // Address container
+                    '<div class="address-container">' +
+                        // Icon
+                        '<div class="left-content">' +
+                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
+                        '</div>' +
+                        // Address
+                        '<div class="right-content">' +
+                            '<p class="address">' +
+                                eventData.address_line_1 + "<br>" +
+                                eventData.address_line_2 + "<br>" +
+                                eventData.city + ", " +
+                                eventData.state + " " +
+                                eventData.zip + "</p>" +
+                        '</div>' +
+                    '</div>',
+                    // Description
+                    "<p class='description'>" + eventData.description + "</p>"
+                );
 
-                    weekStartDate = new Date(eventDate);
-                    weekStartDate.setDate(eventDate.getDate() - eventDate.getDay());
-
-                    weekEndDate = new Date(weekStartDate);
-                    weekEndDate.setDate(weekStartDate.getDate() + 6);
-
-                    currentWeekHeader = $('<h1 class="custom-header">' + formatDate(weekStartDate) + ' - ' + formatDate(weekEndDate) + '</h1>');
-                    currentWeek = $('<div class="week-container"></div>');
-                }
-
-                if (!currentDay || dayOfWeek !== currentDay.data('day')) {
-                    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    currentDay = $('<div class="day-container"></div');
-                    currentDay.data('day', dayOfWeek);
-                    currentDay.append("<h2>" + dayNames[dayOfWeek] + " " + eventDate.getDate() + "</h2");
-                    currentWeek.append(currentDay);
-                }
-
-                // Existing code to create cards (similar to your current implementation)
-                var card = $("<div class='event-card'></div");
-
-                // Customize the card content based on eventData
-                card.append("<p>Candidate: " + eventData.candidate + "</p>");
-                card.append("<p>Party: " + eventData.party + "</p>");
-                card.append("<img src='" + eventData.img + "' alt='" + eventData.candidate + "' class='img-fluid' />");
-                // ... (continue with other candidate-specific information)
-
-                // Append the card to the currentDay
-                currentDay.append(card);
+                // Collect candidate names and images
+                candidateNames.push(eventData.candidate + " (" + eventData.party[0] + ")");
+                candidateImages.push({
+                    img: eventData.img,
+                    party: eventData.party[0]
+                });
             });
+
+            // Creating a sub-card for each candidate
+            var subCard = $("<div class='sub-card'></div>");
+
+            // Customizing the sub-card content based on eventData
+            if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
+                subCard.addClass('past-event');
+            }
+
+            var uniqueCandidateNames = Array.from(new Set(candidateNames)).join(', ');
+            var combinedImages = candidateImages.map(function (imgData) {
+                return "<img src='" + imgData.img + "' class='img-fluid' party='" + imgData.party + "' />";
+            }).join('');
+
+            subCard.append(
+                time,
+                info,
+                "<div class='image-container'>" + combinedImages + "</div>"
+                );
+            combinedCard.append(
+                "<p class='name'>" + uniqueCandidateNames + "</p>",
+                subCard
+                );
+
+            // Append the combined card to the content area
+            $("#content").append(combinedCard);
         }
     }
-
-    if (currentWeek) {
-        if (currentWeekHeader) {
-            $("#content").append(currentWeekHeader);
-        }
-        $("#content").append(currentWeek);
-    }
-
-    xtalk.signalIframe();
 }
 
-$(document).ready(function(){
-	init();
+// Document ready function to initiate the process when the DOM is ready
+$(document).ready(function () {
+    init();
 });

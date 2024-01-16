@@ -52,19 +52,8 @@ body {
 	margin-bottom: 10px;
 }
 
-/* Event card styles */
-.event-card {
-    display: flex;
-    border-radius: 8px;
-	border: .25px solid #BEBEBE;
-    background-color: #b0b0b01a;
-    box-shadow: 0px 4px 4px #00000005;
-    justify-content: space-between;
-    align-items: center;
-	margin: 10px 0;
-}
-
 /* Style for the time */
+
 .time {
     flex: 0.2;
     font-weight: bold;
@@ -72,7 +61,7 @@ body {
     font-size: 1rem; /* 16px */
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Add this line to vertically align content */
     margin: 0;
 }
 
@@ -83,6 +72,7 @@ body {
 	font-weight: 600;
     text-align: center;
 	letter-spacing: 0.0025em;
+    margin: 0;
 }
 
 /* Style for the hour */
@@ -97,33 +87,6 @@ body {
 	font-size: 1rem; /* 16px */
 	line-height: 1.125rem; /* 18px */
 	color: #949494;
-}
-
-/* Style for the image container */
-.image-container {
-    width: 6.5rem; /* 100px */
-    height: 6.5rem; /* 100px */
-    display: flex;
-    justify-content: flex-end; /* Shift the image to the right */
-    align-items: center; /* Center vertically */
-}
-
-/* Basic style for the images */
-img.img-fluid {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%; /* Create a circular border */
-}
-
-/* Add specific border colors for each party */
-img.img-fluid[party='Republican'] {
-    border: 0.125rem solid #CC0000; /* 2px Red */
-}
-img.img-fluid[party='Democrat'] {
-    border:  0.125rem solid #3366CC; /* 2px Blue */
-}
-img.img-fluid[party='Third Party'] {
-    border:  0.125rem solid #666699; /* 2px Gray */
 }
 
 /* Style for the center section */
@@ -176,36 +139,131 @@ img.img-fluid[party='Third Party'] {
     margin: 0.625rem 0; /* 10px */
 }
 
-/* //////////// NBC STYLES //////////// */
-
-.headline {
-	font-family: 'ArtHouseBold', sans-serif;
-	font-size: 1.5rem; /* 24px */
-	color: #191919;
-	margin-bottom: 10px;
+.event-card {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #292b2c;
+    font-size: 1rem;
+    box-sizing: inherit;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    border: .25px solid #BEBEBE;
+    background-color: #b0b0b01a;
+    box-shadow: 0px 4px 4px #00000005;
+    margin: 10px 0;
 }
 
-.subhead {
-	font-family: 'ArtHouseMed', sans-serif;
-	font-size: 17px;
-	color: #999;
-	margin-bottom: 10px;
-	line-height: 1.4em;
+.event-card .sub-card {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
 }
 
-p {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 17px;
-	color: #191919;
+.event-card .name {
+    margin: 0;
+    margin-top: 14px;
+    margin-left: 14px;
+    font-weight: bold;
 }
 
-.credits {
-	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
-	color: #666;
-	margin-top: 10px;
-	line-height: 1.5em;
+.event-card .info {
+    flex: 1;
+}
+
+.event-card .time {
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-end; */
+    margin-bottom: 10px; /* Add margin to separate from other elements */
+    justify-content: center;
+}
+
+.event-card .address-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px; /* Add margin to separate from other elements */
+}
+
+.event-card .left-content {
+    margin-right: 5px;
+}
+
+.event-card .right-content {
+    flex: 1;
+    margin-left: 5px;
+}
+
+.event-card .address {
+    margin: 0;
+}
+
+.event-card .description {
+    margin-top: 10px; /* Add margin to separate from other elements */
+}
+
+.event-card .image-container {
+    margin-top: 10px; /* Add margin to separate from other elements */
+    border: 0.125rem;
+    border-radius: 50%;
+    width: 6.5rem; /* 100px */
+    height: 6.5rem; /* 100px */
+    display: flex;
+    justify-content: flex-end; /* Shift the image to the right */
+    align-items: center; /* Center vertically */
+}
+
+.event-card img {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* Basic style for the images */
+img.img-fluid {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; /* Create a circular border */
+}
+
+/* Add specific border colors for each party */
+img.img-fluid[party='R'] {
+    border: 0.125rem solid #CC0000; /* 2px Red */
+}
+img.img-fluid[party='D'] {
+    border:  0.125rem solid #3366CC; /* 2px Blue */
+}
+img.img-fluid[party='I'] {
+    border:  0.125rem solid #666699; /* 2px Gray */
+}
+
+.img-fluid {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #292b2c;
+    font-size: 1rem;
+    box-sizing: inherit;
+    vertical-align: middle;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 0.125rem solid transparent; /* Set initial border to transparent */
+}
+
+.img-fluid[party="Democrat"] {
+    border-color: #3366CC; /* Border color for Democrat party */
+}
+
+.img-fluid[party="Republican"] {
+    border-color: #FF6347; /* Border color for Republican party */
 }
 
 /* //////////// VIEWPORT STYLES //////////// */
@@ -273,4 +331,36 @@ p {
         margin-right: 0.625rem; /* 10px */
 	}
 
+}
+
+/* //////////// NBC STYLES //////////// */
+
+.headline {
+	font-family: 'ArtHouseBold', sans-serif;
+	font-size: 1.5rem; /* 24px */
+	color: #191919;
+	margin-bottom: 10px;
+}
+
+.subhead {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+	color: #999;
+	margin-bottom: 10px;
+	line-height: 1.4em;
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 17px;
+	color: #191919;
+}
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	color: #666;
+	margin-top: 10px;
+	line-height: 1.5em;
 }
