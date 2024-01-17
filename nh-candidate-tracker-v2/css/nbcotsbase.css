@@ -29,6 +29,7 @@ body {
 /* Candidate name */
 .name {
     letter-spacing: 0.001em;
+    line-height: 1.5; /* Adjust the line height value as needed */
 }
 
 /* Event type */
@@ -268,6 +269,25 @@ border-radius: 50%;
 border: 0.125rem solid transparent;
 }
 
+/* Style for plus icon */
+.plus-icon {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #D9D9D9;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 12pt;
+    color: #474747;
+}
+
 /* //////////// VIEWPORT STYLES //////////// */
 
 /* Common styles for both mobile and desktop */
@@ -284,7 +304,7 @@ border: 0.125rem solid transparent;
     }
 
     .time {
-        padding: 1.75rem;
+        padding: 1rem;
     }
 
     .address-container {
@@ -299,25 +319,6 @@ border: 0.125rem solid transparent;
 
     .image-container-wrapper {
         position: relative;
-    }
-
-    .plus-icon {
-        position: absolute;
-        bottom: 25px;
-        right: 25px;
-        width: 30px;
-        height: 30px;
-        background-color: #D9D9D9;
-        border: 2px solid #FFFFFF;
-        border-radius: 50%;
-        box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Roboto', sans-serif;
-        font-weight: bold;
-        font-size: 12pt;
-        color: #474747;
     }
 
     .info {
@@ -339,7 +340,7 @@ border: 0.125rem solid transparent;
     }
 
     .time {
-        padding: 0.625rem;
+        padding: 0.75rem;
     }
 
     .info {

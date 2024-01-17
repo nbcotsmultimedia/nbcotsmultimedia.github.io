@@ -50,7 +50,6 @@ function loadData() {
             header: true,
             config,
             complete: function (results) {
-                //console.log("Finished:", results.data);
                 allData = results.data;
                 parseData();
             },
@@ -60,7 +59,6 @@ function loadData() {
 
 // Format date in AP style
 function formatDate(eventDate) {
-    // Logic for formatting the date
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const monthNames = [
         'January',
@@ -81,22 +79,19 @@ function formatDate(eventDate) {
 
 // Function to create cards from parsed data
 function parseData() {
-
-    // Sort the data by date
-    allData.sort(function (a, b) {
+    allData.sort(function(a, b) {
         var dateA = new Date(a.date);
         var dateB = new Date(b.date);
         return dateA - dateB;
     });
 
     var currentDate = new Date();
-    var eventDate; // Declare eventDate outside the loop
-    var time; // Declare time outside the loop
-    var info; // Declare info outside the loop
+    var eventDate;
+    var time;
+    var info;
 
-    // Helper function to group array of objects by a specified key
     function groupBy(arr, key) {
-        return arr.reduce(function (acc, obj) {
+        return arr.reduce(function(acc, obj) {
             var groupKey = obj[key];
             acc[groupKey] = acc[groupKey] || [];
             acc[groupKey].push(obj);
@@ -104,124 +99,140 @@ function parseData() {
         }, {});
     }
 
-    // Create a new variable groupedData with events grouped by id
     var groupedData = groupBy(allData, 'event_id');
 
-    // Loop through each grouped event
-    for (var eventId in groupedData) {
-        if (groupedData.hasOwnProperty(eventId)) {
-            var eventGroup = groupedData[eventId];
+    // Call the updateImages function when resizing
+    function updateImages() {
+        // Clear existing content before adding new content
+        $("#content").empty();
 
-            // Create a single card for the entire event group
-            var combinedCard = $("<div class='event-card'></div>");
+        for (var eventId in groupedData) {
+            if (groupedData.hasOwnProperty(eventId)) {
+                var eventGroup = groupedData[eventId];
+                var combinedCard = $("<div class='event-card'></div>");
+                var candidateNames = [];
+                var candidateImages = [];
 
-            // Collect names and images for all candidates in the event group
-            var candidateNames = [];
-            var candidateImages = [];
+                eventGroup.forEach(function (eventData) {
+                    var dateParts = eventData.date.split('/');
+                    eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
 
-            // Loop through each candidate in the event group
-            eventGroup.forEach(function (eventData) {
-                var dateParts = eventData.date.split('/');
-                eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+                    if (isNaN(eventDate.getTime())) {
+                        console.error("Invalid date for entry with event_id " + eventId + ": " + eventData.date);
+                        return;
+                    }
 
-                // Check if eventDate is a valid date
-                if (isNaN(eventDate.getTime())) {
-                    console.error("Invalid date for entry with event_id " + eventId + ": " + eventData.date);
-                    return; // Log a warning and move to the next entry
+                    var timeData = eventData.time.split(' ');
+                    time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
+
+                    info = $("<div class='info'></div>");
+                    info.append(
+                        "<p class='type'>" + eventData.event_type + "</p>",
+                        '<div class="address-container">' +
+                        '<div class="left-content">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
+                        '</div>' +
+                        '<div class="right-content">' +
+                        '<p class="address">' +
+                        eventData.address_line_1 + "<br>" +
+                        eventData.address_line_2 + "<br>" +
+                        eventData.city + ", " +
+                        eventData.state + " " +
+                        eventData.zip + "</p>" +
+                        '</div>' +
+                        '</div>',
+                        "<p class='description'>" + eventData.description + "</p>"
+                    );
+
+                    candidateNames.push(eventData.candidate + " (" + eventData.party[0] + ")");
+                    candidateImages.push({
+                        img: eventData.img,
+                        party: eventData.party[0]
+                    });
+
+                });
+
+                var subCard = $("<div class='sub-card'></div>");
+
+                if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
+                    subCard.addClass('past-event');
                 }
 
-                var timeData = eventData.time.split(' ');
-                time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
+                // Candidate name list
+                var uniqueCandidateNames = candidateNames.join(', ');
 
-                info = $("<div class='info'></div>");
-                info.append(
-                    // Type of event
-                    "<p class='type'>" + eventData.event_type + "</p>",
-                    // Address container
-                    '<div class="address-container">' +
-                        // Icon
-                        '<div class="left-content">' +
-                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
-                        '</div>' +
-                        // Address
-                        '<div class="right-content">' +
-                            '<p class="address">' +
-                                eventData.address_line_1 + "<br>" +
-                                eventData.address_line_2 + "<br>" +
-                                eventData.city + ", " +
-                                eventData.state + " " +
-                                eventData.zip + "</p>" +
-                        '</div>' +
-                    '</div>',
-                    // Description
-                    "<p class='description'>" + eventData.description + "</p>"
+                var imageContainer = $("<div class='image-container'></div>");
+
+                for (var i = 0; i < Math.min(candidateImages.length, (window.innerWidth >= 501) ? 3 : 1); i++) {
+                    var imgData = candidateImages[i];
+                    var imgElement = $(
+                        "<img src='" +
+                        imgData.img +
+                        "' class='img-fluid visible' party='" +
+                        imgData.party +
+                        "' />"
+                    );
+                    imageContainer.append(imgElement);
+                }
+
+                var remainingCandidates = Math.max(candidateImages.length - (window.innerWidth >= 501 ? 3 : 1), 0);
+
+                if (remainingCandidates > 0) {
+                    // Dynamically adjust the position of the plus-icon
+                    var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
+                    imageContainer.append(plusIcon);
+
+                    var lastImage = imageContainer.find('img:last');
+
+                    if (lastImage.length > 0) {
+                        var iconPosition = calculateIconPosition();
+                        
+                        plusIcon.css({
+                            position: 'absolute',
+                            bottom: iconPosition.bottom,
+                            right: iconPosition.right,
+                        });
+                    }
+                }
+
+                subCard.append(
+                    time,
+                    info,
+                    $("<div class='image-container-wrapper'></div>").append(imageContainer)
                 );
 
-                // Collect candidate names and images
-                candidateNames.push(eventData.candidate + " (" + eventData.party[0] + ")");
-                candidateImages.push({
-                    img: eventData.img,
-                    party: eventData.party[0]
-                });
-                
-                // Add console.log statement to log image data
-                console.log("Image Data:", {
-                    img: eventData.img,
-                    party: eventData.party[0]
-                });
-            });
-
-            // Create a sub-card for each candidate
-            var subCard = $("<div class='sub-card'></div>");
-
-            // Customize the sub-card content based on eventData
-            if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
-                subCard.addClass('past-event');
-            }
-
-            // Only take up to 3 candidate images on desktop and 1 on mobile
-            var uniqueCandidateNames = Array.from(new Set(candidateNames)).slice(0, (window.innerWidth >= 501) ? 3 : 1).join(', ');
-
-            // Create a container for candidate images
-            var imageContainer = $("<div class='image-container'></div>");
-
-            // Loop through each candidate and create image elements
-            for (var i = 0; i < Math.min(candidateImages.length, (window.innerWidth >= 501) ? 3 : 1); i++) {
-                var imgData = candidateImages[i];
-                var imgElement = $(
-                    "<img src='" +
-                    imgData.img +
-                    "' class='img-fluid visible' party='" +
-                    imgData.party +
-                    "' />"
-                );
-                imageContainer.append(imgElement);
-            }
-
-            // Check if the viewport width is greater than or equal to 501 pixels; if it is, consider up to 3 candidates; otherwise, consider up to 1 candidate
-            var remainingCandidates = Math.max(candidateImages.length - (window.innerWidth >= 501 ? 3 : 1), 0);
-
-            // Add a small circle icon showing +(number of additional candidates) for wider viewports
-            if (remainingCandidates > 0) {
-                var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
-                imageContainer.append(plusIcon);
-            }
-
-            subCard.append(
-                time,
-                info,
-                $("<div class='image-container-wrapper'></div>").append(imageContainer)
-            );
-
-            combinedCard.append(
-                "<p class='name'>" + uniqueCandidateNames + "</p>",
-                subCard
+                combinedCard.append(
+                    "<p class='name'>" + uniqueCandidateNames + "</p>",
+                    subCard
                 );
 
-            // Append the combined card to the content area
-            $("#content").append(combinedCard);
+                $("#content").append(combinedCard);
+            }
         }
     }
+
+    // Function to calculate icon position based on viewport width
+    function calculateIconPosition() {
+        var iconPosition = {
+            bottom: 25,
+            right: 25
+        };
+
+        if (window.innerWidth < 501) {
+            // Adjust bottom and right values for mobile view
+            iconPosition.bottom = 412;
+            iconPosition.right = 10;
+        }
+
+        return iconPosition;
+    }
+
+    // Call the updateImages function when the DOM is ready
+    $(document).ready(updateImages);
+    // Call the updateImages function when resizing
+    window.addEventListener('resize', updateImages);
+
+    // ... (unchanged)
 }
 
 // Document ready function to initiate the process when the DOM is ready
