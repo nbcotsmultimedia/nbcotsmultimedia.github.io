@@ -81,7 +81,8 @@ function formatDate(eventDate) {
 
 // Function to create cards from parsed data
 function parseData() {
-    // Sorting the data by date
+
+    // Sort the data by date
     allData.sort(function (a, b) {
         var dateA = new Date(a.date);
         var dateB = new Date(b.date);
@@ -111,10 +112,10 @@ function parseData() {
         if (groupedData.hasOwnProperty(eventId)) {
             var eventGroup = groupedData[eventId];
 
-            // Creating a single card for the entire event group
+            // Create a single card for the entire event group
             var combinedCard = $("<div class='event-card'></div>");
 
-            // Collecting names and images for all candidates in the event group
+            // Collect names and images for all candidates in the event group
             var candidateNames = [];
             var candidateImages = [];
 
@@ -162,7 +163,7 @@ function parseData() {
                     img: eventData.img,
                     party: eventData.party[0]
                 });
-
+                
                 // Add console.log statement to log image data
                 console.log("Image Data:", {
                     img: eventData.img,
@@ -170,23 +171,22 @@ function parseData() {
                 });
             });
 
-            // Creating a sub-card for each candidate
+            // Create a sub-card for each candidate
             var subCard = $("<div class='sub-card'></div>");
 
-            // Customizing the sub-card content based on eventData
+            // Customize the sub-card content based on eventData
             if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
                 subCard.addClass('past-event');
             }
 
-            // Only take up to 3 candidates
-            var uniqueCandidateNames = Array.from(new Set(candidateNames)).slice(0, 3).join(', ');
-            var remainingCandidates = candidateNames.length - 3;
+            // Only take up to 3 candidates on desktop and 1 on mobile
+            var uniqueCandidateNames = Array.from(new Set(candidateNames)).slice(0, (window.innerWidth >= 501) ? 3 : 1).join(', ');
 
             // Create a container for candidate images
             var imageContainer = $("<div class='image-container'></div>");
 
             // Loop through each candidate and create image elements
-            for (var i = 0; i < Math.min(candidateImages.length, 3); i++) {
+            for (var i = 0; i < Math.min(candidateImages.length, (window.innerWidth >= 501) ? 3 : 1); i++) {
                 var imgData = candidateImages[i];
                 var imgElement = $(
                     "<img src='" +
@@ -198,8 +198,15 @@ function parseData() {
                 imageContainer.append(imgElement);
             }
 
-            // Determine the number of additional candidates beyond the initial 3
-            var remainingCandidates = Math.max(candidateImages.length - 3, 0);
+            // Add console.log to check the number of candidate images being added
+            console.log("Number of candidate images added:", Math.min(candidateImages.length, 3));
+
+
+            // Check if the viewport width is greater than or equal to 501 pixels; if it is, consider up to 3 candidates; otherwise, consider up to 1 candidate
+            var remainingCandidates = Math.max(candidateImages.length - (window.innerWidth >= 501 ? 3 : 1), 0);
+
+            // Add console.log to check the value of remainingCandidates
+            console.log("Remaining Candidates:", remainingCandidates);
 
             // Add a small circle icon showing +(number of additional candidates) for wider viewports
             if (remainingCandidates > 0) {
@@ -207,14 +214,14 @@ function parseData() {
                 imageContainer.append(plusIcon);
             }
 
+            // Add console.log to check if the plusIcon is being added
+            console.log("Is plusIcon added?", remainingCandidates > 0);
+
             subCard.append(
                 time,
                 info,
                 $("<div class='image-container-wrapper'></div>").append(imageContainer)
             );
-
-            // Determine the number of additional candidates beyond the initial 3
-            var remainingCandidates = Math.max(candidateImages.length - 3, 0);
 
             // Add a small circle icon showing +(number of additional candidates) for wider viewports
             if (remainingCandidates > 0 && $(window).width() >= 501) {

@@ -363,6 +363,7 @@ border: 0.125rem solid transparent;
     }
 
     .image-container {
+        flex-direction: column;
         width: 6.25rem;
         height: 6.25rem;
         margin-right: 0.625rem;
