@@ -179,7 +179,7 @@ function parseData() {
                 subCard.addClass('past-event');
             }
 
-            // Only take up to 3 candidates on desktop and 1 on mobile
+            // Only take up to 3 candidate images on desktop and 1 on mobile
             var uniqueCandidateNames = Array.from(new Set(candidateNames)).slice(0, (window.innerWidth >= 501) ? 3 : 1).join(', ');
 
             // Create a container for candidate images
@@ -198,15 +198,8 @@ function parseData() {
                 imageContainer.append(imgElement);
             }
 
-            // Add console.log to check the number of candidate images being added
-            console.log("Number of candidate images added:", Math.min(candidateImages.length, 3));
-
-
             // Check if the viewport width is greater than or equal to 501 pixels; if it is, consider up to 3 candidates; otherwise, consider up to 1 candidate
             var remainingCandidates = Math.max(candidateImages.length - (window.innerWidth >= 501 ? 3 : 1), 0);
-
-            // Add console.log to check the value of remainingCandidates
-            console.log("Remaining Candidates:", remainingCandidates);
 
             // Add a small circle icon showing +(number of additional candidates) for wider viewports
             if (remainingCandidates > 0) {
@@ -214,26 +207,11 @@ function parseData() {
                 imageContainer.append(plusIcon);
             }
 
-            // Add console.log to check if the plusIcon is being added
-            console.log("Is plusIcon added?", remainingCandidates > 0);
-
             subCard.append(
                 time,
                 info,
                 $("<div class='image-container-wrapper'></div>").append(imageContainer)
             );
-
-            // Add a small circle icon showing +(number of additional candidates) for wider viewports
-            if (remainingCandidates > 0 && $(window).width() >= 501) {
-                var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
-                imageContainer.append(plusIcon);
-            }
-
-            subCard.append(
-                time,
-                info,
-                $("<div class='image-container-wrapper'></div>").append(imageContainer)
-                );
 
             combinedCard.append(
                 "<p class='name'>" + uniqueCandidateNames + "</p>",
