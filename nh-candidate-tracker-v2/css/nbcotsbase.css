@@ -1,56 +1,56 @@
 body {
-	background-color: #FFF !important;
-	font-size: 1rem; /* 16 px */
+    background-color: #FFF !important;
+    font-size: 1rem;
     overflow-x: hidden;
 }
 
 /* Commons styles for fonts */
 .font-common {
-	font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Header styles */
 .custom-header {
-	font-family: 'Arthouse Owned Mono Rounded';
-	font-weight: 600;
-	font-size: 1.15rem;
-	color: rgba(0, 0, 0, 0.9);
-	display: flex;
-	align-items: center;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
 }
 
 /* Shared styles for text */
 .font-common, .name, .type {
-	font-weight: 500;
-	font-size: 1rem; /* 16px */
-	line-height: 1rem; /* 16px */
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1rem;
 }
 
 /* Candidate name */
 .name {
-	letter-spacing: 0.001em;
+    letter-spacing: 0.001em;
 }
 
 /* Event type */
 .type {
-	font-size: 1rem; /* 16px */
-	letter-spacing: 0.05em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	text-transform: uppercase;
-	color: #818181;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #818181;
 }
 
 /* Day headings */
 .day-container h2 {
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    font-size: 1rem; /* 16px */
-    line-height: 1rem; /* 16px */
+    font-size: 1rem;
+    line-height: 1rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-	margin-top: 20px;
-	margin-bottom: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 /* Style for the time */
@@ -58,57 +58,57 @@ body {
     flex: 0.2;
     font-weight: bold;
     text-align: center;
-    font-size: 1rem; /* 16px */
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Add this line to vertically align content */
+    align-items: center;
     margin: 0;
 }
 
 /* Style for time text */
 .time-text, .am-pm {
-	font-family: 'Arthouse Owned Mono Rounded';
-	font-style: normal;
-	font-weight: 600;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 600;
     text-align: center;
-	letter-spacing: 0.0025em;
+    letter-spacing: 0.0025em;
     margin: 0;
 }
 
 /* Style for the hour */
 .time-text {
-	font-size: 1rem; /* 16px */
-	color: #292b2c;
+    font-size: 1rem;
+    color: #292b2c;
     margin: 0;
 }
 
 /* Style for AM/PM */
 .am-pm {
-	font-size: 1rem; /* 16px */
-	line-height: 1.125rem; /* 18px */
-	color: #949494;
+    font-size: 1rem;
+    line-height: 1.125rem;
+    color: #949494;
 }
 
 /* Style for the center section */
 .info {
-    flex: 2; /* Twice the width of the left side */
-    padding: 0.625rem; /* 10px */
-	margin-top: 0.625rem; /* 10px */
-    margin-bottom: 0; /* No margin at the bottom */
-	border-left: 0.015625rem solid #BEBEBE; /* 0.25px border to form vertical line */
+    flex: 2;
+    padding: 0.625rem;
+    margin-top: 0.625rem;
+    margin-bottom: 0;
+    border-left: 0.015625rem solid #BEBEBE;
 }
 
 /* Style past events */
 .past-event {
-	opacity: 0.60; /* Reduce opacity of past event cards */
+    opacity: 0.60;
 }  
 
 /* Address styles */
 .address {
-	font-family: 'Arthouse Owned';
-	font-weight: 400;
-	font-size: 0.875rem; /* 14px */
-	letter-spacing: 0.0025em;
+    font-family: 'Arthouse Owned';
+    font-weight: 400;
+    font-size: 0.875rem;
+    letter-spacing: 0.0025em;
     margin: 0;
     line-height: 1.5;
 }
@@ -125,18 +125,18 @@ body {
 
 /* Map pin icon */
 .feather.feather-map-pin {
-    width: 1.5rem; /* 24px */
-    height: 1.5rem; /* 24px */
-    margin-right: 1.25rem; /* 10px */
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 1.25rem;
 }
 
 /* Description */
 .description {
     font-family: 'Arthouse Owned';
-	font-size: 0.875rem; /* 14px */
+    font-size: 0.875rem;
     line-height: 1.5;
     letter-spacing: 0.0025em;
-    margin: 0.625rem 0; /* 10px */
+    margin: 0.625rem 0;
 }
 
 .event-card {
@@ -177,15 +177,14 @@ body {
 .event-card .time {
     display: flex;
     flex-direction: column;
-    /* align-items: flex-end; */
-    margin-bottom: 10px; /* Add margin to separate from other elements */
+    margin-bottom: 10px;
     justify-content: center;
 }
 
 .event-card .address-container {
     display: flex;
     align-items: center;
-    margin-top: 10px; /* Add margin to separate from other elements */
+    margin-top: 10px;
 }
 
 .event-card .left-content {
@@ -202,18 +201,18 @@ body {
 }
 
 .event-card .description {
-    margin-top: 10px; /* Add margin to separate from other elements */
+    margin-top: 10px;
 }
 
 .event-card .image-container {
-    margin-top: 10px; /* Add margin to separate from other elements */
+    margin-top: 10px;
     border: 0.125rem;
     border-radius: 50%;
-    width: 6.5rem; /* 100px */
-    height: 6.5rem; /* 100px */
+    width: 6.5rem;
+    height: 6.5rem;
     display: flex;
-    justify-content: flex-end; /* Shift the image to the right */
-    align-items: center; /* Center vertically */
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .event-card img {
@@ -226,134 +225,146 @@ body {
 img.img-fluid {
     width: 100%;
     height: 100%;
-    border-radius: 50%; /* Create a circular border */
-    margin-right: -2rem; /* Adjust the negative margin to control overlap amount */
+    border-radius: 50%;
+    margin-right: -2rem;
+    display: none;
 }
 
 /* Add specific border colors for each party */
 img.img-fluid[party='R'] {
-    border: 0.125rem solid #CC0000; /* 2px Red */
-    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
+    border: 0.125rem solid #CC0000;
+    margin-right: -2rem;
 }
 
 img.img-fluid[party='D'] {
-    border:  0.125rem solid #3366CC; /* 2px Blue */
-    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
+    border: 0.125rem solid #3366CC;
+    margin-right: -2rem;
 }
 
 img.img-fluid[party='I'] {
-    border:  0.125rem solid #666699; /* 2px Gray */
-    margin-right: -2rem; /* Adjust the negative margin to control the overlap amount */
+    border: 0.125rem solid #666699;
+    margin-right: -2rem;
+}
+
+/* Show images with the 'visible' class */
+img.img-fluid.visible {
+display: block;
 }
 
 .img-fluid {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #292b2c;
-    font-size: 1rem;
-    box-sizing: inherit;
-    vertical-align: middle;
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 0.125rem solid transparent; /* Set initial border to transparent */
+-webkit-text-size-adjust: 100%;
+-webkit-tap-highlight-color: transparent;
+font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+font-weight: 400;
+line-height: 1.5;
+color: #292b2c;
+font-size: 1rem;
+box-sizing: inherit;
+vertical-align: middle;
+max-width: 100%;
+width: 100%;
+height: 100%;
+border-radius: 50%;
+border: 0.125rem solid transparent;
 }
 
 /* //////////// VIEWPORT STYLES //////////// */
 
 /* Common styles for both mobile and desktop */
 #content {
-    margin: 0.625rem; /* 10px */
+    margin: 0.625rem;
 }
 
-@media (min-width: 501px ) {
+@media (min-width: 501px) {
+    #content {
+        margin-right: 3.75rem;
+        margin-left: 3.75rem;
+        margin-top: 0.625rem;
+        margin-bottom: 0.625rem;
+    }
 
-	#content {
-        margin-right: 3.75rem; /* 60px */
-        margin-left: 3.75rem; /* 60px */
-        margin-top: 0.625rem; /* 10px */
-        margin-bottom: 0.625rem; /* 10px */
-	}
+    .time {
+        padding: 1.75rem;
+    }
 
-	.time {
-        padding: 1.75rem; /* 28px */
-	}
+    .address-container {
+        max-width: 220px;
+    }
 
-	.address-container {
-		max-width: 220px;
-		/* flex-direction: row; */
-	}
-
-	.image-container {
-        margin-right: 3.75rem; /* 28px */
-        width: 6.875rem; /* 110px */
-        height: 6.875rem; /* 110px */
-	}
+    .image-container {
+        margin-right: 3.75rem;
+        width: 6.875rem;
+        height: 6.875rem;
+    }
 
     .image-container-wrapper {
         position: relative;
     }
-    
+
     .plus-icon {
         position: absolute;
         bottom: 25px;
         right: 25px;
-        width: 30px; /* Adjust the width and height to make it circular */
+        width: 30px;
         height: 30px;
-        background-color: #D9D9D9; /* Fill color */
-        border: 2px solid #FFFFFF; /* Stroke color and width */
+        background-color: #D9D9D9;
+        border: 2px solid #FFFFFF;
         border-radius: 50%;
         box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Roboto', sans-serif; /* Roboto font */
-        font-weight: bold; /* Adjust font weight as needed */
-        font-size: 12pt; /* Font size */
-        color: #474747; /* Text color */
-    }                
+        font-family: 'Roboto', sans-serif;
+        font-weight: bold;
+        font-size: 12pt;
+        color: #474747;
+    }
 
-	.info {
-        padding-left: 1.75rem; /* 28px */
-	}
-
+    .info {
+        padding-left: 1.75rem;
+    }
 }
 
 @media (max-width: 500px) {
+    #content {
+        margin: 0.625rem;
+    }
 
-	#content {
-        margin: 0.625rem; /* 10px */
-	}
+    .img-fluid:not(.visible) {
+        display: none;
+    }
 
-	.time {
-        padding: 0.625rem; /* 10px */
-	}
+    .img-fluid.visible {
+        display: block;
+    }
 
-	.info {
-        padding-left: 0.625rem; /* 10px */
-	}
+    .time {
+        padding: 0.625rem;
+    }
 
-	.headline {
-		font-size: 20px;
-	}
-	.subhead {
-		font-size: 16px;
-	}
-	p {
-		font-size: 16px;
-	}
-	.credits {
-		font-size: 12px;
-	}
+    .info {
+        padding-left: 0.625rem;
+    }
 
-	.image-container {
-        width: 6.25rem; /* 100px */
-        height: 6.25rem; /* 100px */
-        margin-right: 0.625rem; /* 10px */
-	}
+    .headline {
+        font-size: 20px;
+    }
 
+    .subhead {
+        font-size: 16px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .credits {
+        font-size: 12px;
+    }
+
+    .image-container {
+        width: 6.25rem;
+        height: 6.25rem;
+        margin-right: 0.625rem;
+    }
 }

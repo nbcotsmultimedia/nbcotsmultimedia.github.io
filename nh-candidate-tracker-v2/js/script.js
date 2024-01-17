@@ -162,6 +162,12 @@ function parseData() {
                     img: eventData.img,
                     party: eventData.party[0]
                 });
+
+                // Add console.log statement to log image data
+                console.log("Image Data:", {
+                    img: eventData.img,
+                    party: eventData.party[0]
+                });
             });
 
             // Creating a sub-card for each candidate
@@ -182,20 +188,37 @@ function parseData() {
             // Loop through each candidate and create image elements
             for (var i = 0; i < Math.min(candidateImages.length, 3); i++) {
                 var imgData = candidateImages[i];
-                var imgElement = $("<img src='" + imgData.img + "' class='img-fluid' party='" + imgData.party + "' />");
+                var imgElement = $(
+                    "<img src='" +
+                    imgData.img +
+                    "' class='img-fluid visible' party='" +
+                    imgData.party +
+                    "' />"
+                );
                 imageContainer.append(imgElement);
             }
 
-            // Add a small circle icon showing +(number of additional candidates)
+            // Determine the number of additional candidates beyond the initial 3
+            var remainingCandidates = Math.max(candidateImages.length - 3, 0);
+
+            // Add a small circle icon showing +(number of additional candidates) for wider viewports
             if (remainingCandidates > 0) {
                 var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
+                imageContainer.append(plusIcon);
+            }
 
-                // Attach a click event to toggle visibility
-                plusIcon.click(function () {
-                    // Toggle visibility of additional candidates
-                    $(this).siblings('.img-fluid:hidden').toggle();
-                });
+            subCard.append(
+                time,
+                info,
+                $("<div class='image-container-wrapper'></div>").append(imageContainer)
+            );
 
+            // Determine the number of additional candidates beyond the initial 3
+            var remainingCandidates = Math.max(candidateImages.length - 3, 0);
+
+            // Add a small circle icon showing +(number of additional candidates) for wider viewports
+            if (remainingCandidates > 0 && $(window).width() >= 501) {
+                var plusIcon = $("<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
                 imageContainer.append(plusIcon);
             }
 
