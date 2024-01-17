@@ -101,6 +101,18 @@ function parseData() {
 
     var groupedData = groupBy(allData, 'event_id');
 
+    // Format candidate names for top of card
+    function formatCandidateNames(candidateNames) {
+        if (candidateNames.length > 1) {
+            // If there are multiple candidates, add "and" before the last name
+            var lastCandidate = candidateNames.pop(); // Remove the last element
+            return candidateNames.join(', ') + ', and ' + lastCandidate;
+        } else {
+            // If there's only one candidate, return it as is
+            return candidateNames[0];
+        }
+    }
+
     // Call the updateImages function when resizing
     function updateImages() {
         // Clear existing content before adding new content
@@ -159,7 +171,7 @@ function parseData() {
                 }
 
                 // Candidate name list
-                var uniqueCandidateNames = candidateNames.join(', ');
+                var candidateNameText = formatCandidateNames(candidateNames);
 
                 var imageContainer = $("<div class='image-container'></div>");
 
@@ -202,7 +214,9 @@ function parseData() {
                 );
 
                 combinedCard.append(
-                    "<p class='name'>" + uniqueCandidateNames + "</p>",
+                    "<p class='name'>" +
+                    candidateNameText +
+                    "</p>",
                     subCard
                 );
 
@@ -231,8 +245,6 @@ function parseData() {
     $(document).ready(updateImages);
     // Call the updateImages function when resizing
     window.addEventListener('resize', updateImages);
-
-    // ... (unchanged)
 }
 
 // Document ready function to initiate the process when the DOM is ready

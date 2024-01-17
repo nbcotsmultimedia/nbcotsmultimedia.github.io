@@ -27,7 +27,12 @@ body {
 }
 
 /* Candidate name */
-.name {
+
+.event-card .name {
+    margin: 0;
+    margin-top: 14px;
+    margin-left: 14px;
+    font-weight: 550;
     letter-spacing: 0.001em;
     line-height: 1.5; /* Adjust the line height value as needed */
 }
@@ -162,13 +167,6 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-}
-
-.event-card .name {
-    margin: 0;
-    margin-top: 14px;
-    margin-left: 14px;
-    font-weight: bold;
 }
 
 .event-card .info {
