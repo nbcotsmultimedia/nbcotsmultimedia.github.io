@@ -25,6 +25,12 @@ let legendItems = [
 		"severity": 'SUSPECTED SERIOUS INJURY'
 	},
 	{
+		"color": "#70369d",
+		"size": "10px",
+		"label": "Other injury/ Not injured",
+		"severity": 'OTHER INJURY'
+	},
+	{
 		"color": "#79c314",
 		"size": "10px",
 		"label": "Suspected minor injury",
@@ -70,6 +76,8 @@ const handleMarkerClick = marker => {
 };
 
 const marker = row => {
+	console.log(row.severity)
+	console.log(legendItems.find(legendItem => legendItem.severity === row.severity))
 	const fillColor = row.repeat === "TRUE" ? "#FF69B4" : legendItems.find(legendItem => legendItem.severity === row.severity).color;
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
