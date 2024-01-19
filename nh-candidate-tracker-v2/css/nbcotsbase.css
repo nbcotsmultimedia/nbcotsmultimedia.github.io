@@ -1,152 +1,123 @@
 body {
-	background-color: #FFF !important;
-	font-size: 1rem; /* 16 px */
+    background-color: #FFF !important;
+    font-size: 1rem;
+    overflow-x: hidden;
 }
 
 /* Commons styles for fonts */
 .font-common {
-	font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Header styles */
 .custom-header {
-	font-family: 'Arthouse Owned Mono Rounded';
-	font-weight: 600;
-	font-size: 1.15rem;
-	color: rgba(0, 0, 0, 0.9);
-	display: flex;
-	align-items: center;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
 }
 
 /* Shared styles for text */
 .font-common, .name, .type {
-	font-weight: 500;
-	font-size: 1rem; /* 16px */
-	line-height: 1rem; /* 16px */
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1rem;
 }
 
 /* Candidate name */
-.name {
-	letter-spacing: 0.001em;
+.event-card .name {
+    margin: 14px;
+    margin-bottom: 0;
+    font-weight: 550;
+    letter-spacing: 0.001em;
+    line-height: 1.5; /* Adjust the line height value as needed */
 }
 
 /* Event type */
 .type {
-	font-size: 1rem; /* 16px */
-	letter-spacing: 0.05em;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	text-transform: uppercase;
-	color: #818181;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    color: #818181;
 }
 
 /* Day headings */
 .day-container h2 {
     font-family: 'Roboto', sans-serif;
     font-weight: 500;
-    font-size: 1rem; /* 16px */
-    line-height: 1rem; /* 16px */
+    font-size: 1rem;
+    line-height: 1rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-	margin-top: 20px;
-	margin-bottom: 10px;
+    margin: 20px 0 10px;
 }
 
 /* Style for the time */
-
 .time {
-    flex: 0.2;
     font-weight: bold;
     text-align: center;
-    font-size: 1rem; /* 16px */
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Add this line to vertically align content */
-    margin: 0;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: center;
+    padding: 1rem;
 }
-
 /* Style for time text */
 .time-text, .am-pm {
-	font-family: 'Arthouse Owned Mono Rounded';
-	font-style: normal;
-	font-weight: 600;
+    font-family: 'Arthouse Owned Mono Rounded';
+    font-style: normal;
+    font-weight: 600;
     text-align: center;
-	letter-spacing: 0.0025em;
+    letter-spacing: 0.0025em;
     margin: 0;
 }
 
 /* Style for the hour */
 .time-text {
-	font-size: 1rem; /* 16px */
-	color: #292b2c;
+    font-size: 1rem;
+    color: #292b2c;
     margin: 0;
 }
 
 /* Style for AM/PM */
 .am-pm {
-	font-size: 1rem; /* 16px */
-	line-height: 1.125rem; /* 18px */
-	color: #949494;
+    font-size: 1rem;
+    line-height: 1.125rem;
+    color: #949494;
 }
 
 /* Style for the center section */
 .info {
-    flex: 2; /* Twice the width of the left side */
-    padding: 0.625rem; /* 10px */
-	margin-top: 0.625rem; /* 10px */
-    margin-bottom: 0; /* No margin at the bottom */
-	border-left: 0.015625rem solid #BEBEBE; /* 0.25px border to form vertical line */
+    flex: 2;
+    padding: 1rem;
+    margin: 0.625rem 0 0;
+    border-left: 0.015625rem solid #BEBEBE;
 }
-
-/* Style past events */
-.past-event {
-	opacity: 0.60; /* Reduce opacity of past event cards */
-}  
 
 /* Address styles */
 .address {
-	font-family: 'Arthouse Owned';
-	font-weight: 400;
-	font-size: 0.875rem; /* 14px */
-	letter-spacing: 0.0025em;
-    margin: 0;
+    font-family: 'Arthouse Owned';
+    font-weight: 400;
+    font-size: 0.875rem;
+    letter-spacing: 0.0025em;
     line-height: 1.5;
-}
-
-/* Style for the address container */
-.address-container {
-    display: flex;
-}
-
-.left-content, .right-content {
-    display: flex;
-    align-items: center;
-}
-
-/* Map pin icon */
-.feather.feather-map-pin {
-    width: 1.5rem; /* 24px */
-    height: 1.5rem; /* 24px */
-    margin-right: 1.25rem; /* 10px */
 }
 
 /* Description */
 .description {
     font-family: 'Arthouse Owned';
-	font-size: 0.875rem; /* 14px */
+    font-size: 0.875rem;
     line-height: 1.5;
     letter-spacing: 0.0025em;
-    margin: 0.625rem 0; /* 10px */
+    margin: 0.625rem 0;
 }
 
 .event-card {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #292b2c;
-    font-size: 1rem;
     box-sizing: inherit;
     display: flex;
     flex-direction: column;
@@ -160,41 +131,7 @@ body {
 .event-card .sub-card {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-}
-
-.event-card .name {
-    margin: 0;
-    margin-top: 14px;
-    margin-left: 14px;
-    font-weight: bold;
-}
-
-.event-card .info {
-    flex: 1;
-}
-
-.event-card .time {
-    display: flex;
-    flex-direction: column;
-    /* align-items: flex-end; */
-    margin-bottom: 10px; /* Add margin to separate from other elements */
-    justify-content: center;
-}
-
-.event-card .address-container {
-    display: flex;
-    align-items: center;
-    margin-top: 10px; /* Add margin to separate from other elements */
-}
-
-.event-card .left-content {
-    margin-right: 5px;
-}
-
-.event-card .right-content {
-    flex: 1;
-    margin-left: 5px;
+    padding-bottom: 10px;
 }
 
 .event-card .address {
@@ -202,165 +139,93 @@ body {
 }
 
 .event-card .description {
-    margin-top: 10px; /* Add margin to separate from other elements */
+    margin-top: 10px;
 }
 
-.event-card .image-container {
-    margin-top: 10px; /* Add margin to separate from other elements */
-    border: 0.125rem;
-    border-radius: 50%;
-    width: 6.5rem; /* 100px */
-    height: 6.5rem; /* 100px */
-    display: flex;
-    justify-content: flex-end; /* Shift the image to the right */
-    align-items: center; /* Center vertically */
+/* Image container div */
+.image-container {
+    margin-right: 3.5rem; /* Allow for overlap of circular images */
+    display: flex; /* Allow images to sit side x side */
+    justify-content: flex-end; /* Align last image to the right */
+    align-items: center;
 }
-
-.event-card img {
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-}
-
 
 /* Basic style for the images */
 img.img-fluid {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%; /* Create a circular border */
+    max-height: 100px; /* Control height while maintaining aspect ratio */
+    max-width: 100px; /* Set maximum width to prevent images from exceeding their container */
+    border-radius: 50%; /* Create circular border */
+    margin-right: -2.25rem; /* Allow overlap */
 }
 
 /* Add specific border colors for each party */
 img.img-fluid[party='R'] {
-    border: 0.125rem solid #CC0000; /* 2px Red */
+    border: 0.125rem solid #CC0000;
 }
 img.img-fluid[party='D'] {
-    border:  0.125rem solid #3366CC; /* 2px Blue */
+    border: 0.125rem solid #3366CC;
 }
 img.img-fluid[party='I'] {
-    border:  0.125rem solid #666699; /* 2px Gray */
+    border: 0.125rem solid #666699;
 }
 
-.img-fluid {
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #292b2c;
-    font-size: 1rem;
-    box-sizing: inherit;
-    vertical-align: middle;
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 0.125rem solid transparent; /* Set initial border to transparent */
+/* Style for plus icon */
+.plus-icon {
+    width: 30px; /* Keep size proportionate */
+    height: 30px; /* Keep size proportionate */
+    display: flex; /* Center text */
+    align-items: center; /* Center text */
+    justify-content: center; /* Center text */
+    background-color: #D9D9D9; /* Color bg */
+    border: 2px solid #FFFFFF; /* Color stroke */
+    border-radius: 50%; /* Round border */
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    font-weight: 600; /* Bold font */
+    font-size: 12pt;
+    color: #474747;
 }
 
-.img-fluid[party="Democrat"] {
-    border-color: #3366CC; /* Border color for Democrat party */
-}
-
-.img-fluid[party="Republican"] {
-    border-color: #FF6347; /* Border color for Republican party */
-}
+/* Style past events */
+.past-event {
+    opacity: 0.60;
+}  
 
 /* //////////// VIEWPORT STYLES //////////// */
 
-@media (min-width: 501px ) {
-
-	#content {
-        margin-right: 3.75rem; /* 60px */
-        margin-left: 3.75rem; /* 60px */
-        margin-top: 0.625rem; /* 10px */
-        margin-bottom: 0.625rem; /* 10px */
-	}
-
-	.time {
-        padding: 1.75rem; /* 28px */
-	}
-
-	.address-container {
-		max-width: 220px;
-		/* flex-direction: row; */
-	}
-
-	.image-container {
-        margin-right: 1.75rem; /* 28px */
-        width: 6.875rem; /* 110px */
-        height: 6.875rem; /* 110px */
-	}
-
-	.info {
-        padding-left: 1.75rem; /* 28px */
-	}
-
+/* Common styles for both mobile and desktop */
+#content {
+    margin: 0.625rem;
 }
 
-@media (max-width: 500px ) {
-
-	#content {
-        margin: 0.625rem; /* 10px */
-	}
-
-	.time {
-        padding: 0.625rem; /* 10px */
-	}
-
-	.info {
-        padding-left: 0.625rem; /* 10px */
-	}
-
-	.headline {
-		font-size: 20px;
-	}
-	.subhead {
-		font-size: 16px;
-	}
-	p {
-		font-size: 16px;
-	}
-	.credits {
-		font-size: 12px;
-	}
-
-	.image-container {
-        width: 6.25rem; /* 100px */
-        height: 6.25rem; /* 100px */
-        margin-right: 0.625rem; /* 10px */
-	}
-
+/* Desktop styles */
+@media (min-width: 501px) {
+    #content {
+        margin-right: 3.75rem;
+        margin-left: 3.75rem;
+        margin-top: 0.625rem;
+        margin-bottom: 0.625rem;
+    }
 }
 
-/* //////////// NBC STYLES //////////// */
+/* Mobile styles */
+@media (max-width: 500px) {
+    #content {
+        margin: 0.625rem;
+    }
 
-.headline {
-	font-family: 'ArtHouseBold', sans-serif;
-	font-size: 1.5rem; /* 24px */
-	color: #191919;
-	margin-bottom: 10px;
-}
+    .headline {
+        font-size: 20px;
+    }
 
-.subhead {
-	font-family: 'ArtHouseMed', sans-serif;
-	font-size: 17px;
-	color: #999;
-	margin-bottom: 10px;
-	line-height: 1.4em;
-}
+    .subhead {
+        font-size: 16px;
+    }
 
-p {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 300;
-	font-size: 17px;
-	color: #191919;
-}
+    p {
+        font-size: 16px;
+    }
 
-.credits {
-	font-family: 'Roboto', sans-serif;
-	font-size: 14px;
-	color: #666;
-	margin-top: 10px;
-	line-height: 1.5em;
+    .credits {
+        font-size: 12px;
+    }
 }

@@ -1,56 +1,22 @@
-var ds;
-var totalEntries;
-var allData;
-var config;
+// Constant
+const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1TtoR-QwRWs7avrZqvAmIfx7BL-cXisMndbR5lgbLGO8/export?format=csv&gid=1672632778';
 
-// Function to initialize the process
+// Global variable
+let allData;
+
+// When doc is ready, run loadData function
 function init() {
-    // Build configuration settings
-    config = buildConfig();
-    // Load data using Papa.parse
     loadData();
 }
 
-// Function to set up configuration for Papa.parse
-function buildConfig() {
-    return {
-        delimiter: "", // auto-detect
-        newline: "", // auto-detect
-        quoteChar: '"',
-        escapeChar: '"',
-        header: false,
-        transformHeader: undefined,
-        dynamicTyping: false,
-        preview: 0,
-        encoding: "",
-        worker: false,
-        comments: false,
-        step: undefined,
-        complete: undefined,
-        error: undefined,
-        download: false,
-        downloadRequestHeaders: undefined,
-        downloadRequestBody: undefined,
-        skipEmptyLines: false,
-        chunk: undefined,
-        chunkSize: undefined,
-        fastMode: undefined,
-        beforeFirstChunk: undefined,
-        withCredentials: undefined,
-        transform: undefined,
-        delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP],
-    };
-}
-
-// Function to fetch data using Papa.parse
+// Fetch and load data, then run parseData function
 function loadData() {
     Papa.parse(
-        'https://docs.google.com/spreadsheets/d/1TtoR-QwRWs7avrZqvAmIfx7BL-cXisMndbR5lgbLGO8/export?format=csv&gid=1672632778', {
+        SPREADSHEET_URL,
+        {
             download: true,
             header: true,
-            config,
             complete: function (results) {
-                //console.log("Finished:", results.data);
                 allData = results.data;
                 parseData();
             },
@@ -58,142 +24,225 @@ function loadData() {
     );
 }
 
-// Format date in AP style
-function formatDate(eventDate) {
-    // Logic for formatting the date
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const monthNames = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-    ];
-    return dayNames[eventDate.getDay()] + ', ' + monthNames[eventDate.getMonth()] + ' ' + eventDate.getDate();
-}
-
-// Function to create cards from parsed data
+// Organize and format data
 function parseData() {
-    // Sorting the data by date
-    allData.sort(function (a, b) {
-        var dateA = new Date(a.date);
-        var dateB = new Date(b.date);
-        return dateA - dateB;
-    });
+    
+    // Sort allData by date
+    allData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    var currentDate = new Date();
-    var eventDate; // Declare eventDate outside the loop
-    var time; // Declare time outside the loop
-    var info; // Declare info outside the loop
+    const currentDate = new Date();
 
-    // Helper function to group array of objects by a specified key
+    // Group data by a specified key
     function groupBy(arr, key) {
-        return arr.reduce(function (acc, obj) {
-            var groupKey = obj[key];
+        return arr.reduce((acc, obj) => {
+            const groupKey = obj[key];
             acc[groupKey] = acc[groupKey] || [];
             acc[groupKey].push(obj);
             return acc;
         }, {});
     }
 
-    // Create a new variable groupedData with events grouped by id
-    var groupedData = groupBy(allData, 'event_id');
+    // Create variable groupedData that groups allData by event_id
+    const groupedData = groupBy(allData, 'event_id');
 
-    // Loop through each grouped event
-    for (var eventId in groupedData) {
-        if (groupedData.hasOwnProperty(eventId)) {
-            var eventGroup = groupedData[eventId];
+    // Format multiple candidate names as a string
+    function formatCandidateNames(candidateNames) {
+        return candidateNames.length > 1
+            ? candidateNames.slice(0, -1).join(', ') + ', and ' + candidateNames.slice(-1)
+            : candidateNames[0];
+    }
 
-            // Creating a single card for the entire event group
-            var combinedCard = $("<div class='event-card'></div>");
+    // Update images based on grouped data
+    function updateImages() {
 
-            // Collecting names and images for all candidates in the event group
-            var candidateNames = [];
-            var candidateImages = [];
+        // Empty content in the #content element
+        $("#content").empty();
 
-            // Loop through each candidate in the event group
-            eventGroup.forEach(function (eventData) {
-                var dateParts = eventData.date.split('/');
-                eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+        // Iterate through each event in the groupedData object
+        for (const eventId in groupedData) {
+            if (groupedData.hasOwnProperty(eventId)) {
 
-                // Check if eventDate is a valid date
-                if (isNaN(eventDate.getTime())) {
-                    console.error("Invalid date for entry with event_id " + eventId + ": " + eventData.date);
-                    return; // Log a warning and move to the next entry
+                // Retrieve the event group associated with the current eventId
+                const eventGroup = groupedData[eventId];
+                // Declare combinedCard variable to contain various elements in the group
+                const combinedCard = $("<div class='event-card'></div>");
+                // Initialize empty arrays to store candidate information
+                const candidateNames = [];
+                const candidateImages = [];
+                // Declare imageContainer variable to contain images
+                const imageContainer = $("<div class='image-container'></div>");
+                // Declare the 'time' and 'info' variables
+                let time, info;
+
+                // Process each event in the group
+                eventGroup.forEach(function (eventData) {
+
+                    // Declare dateParts variable to extract date into
+                    const dateParts = eventData.date.split('/');
+                    const eventDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+
+                    if (isNaN(eventDate.getTime())) {
+                        console.error("Invalid date for entry with event_id " + eventId + ": " + eventData.date);
+                        return;
+                    }
+
+                    // Declare isPastEvent if the current event is in the past
+                    const isPastEvent = eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0);
+
+                    // Declare timeData
+                    const timeData = eventData.time.split(' ');
+                    time = $(
+                        "<div class='time'><p class='time-text'>" +
+                        timeData[0] +
+                        "</p><p class='am-pm'>" +
+                        timeData[1] +
+                        "</p></div>"
+                        );
+
+                    info = $("<div class='info'></div>");
+                    info.append(
+                        "<p class='type'>" + eventData.event_type + "</p>",
+                        '<p class="address">' +
+                        eventData.address_line_1 + "<br>" +
+                        eventData.address_line_2 + "<br>" +
+                        eventData.city + ", " +
+                        eventData.state + " " +
+                        eventData.zip + "</p>" +
+                        "<p class='description'>" + eventData.description + "</p>"
+                        );
+
+                    // If event is in the past, add class past-event (reduce opacity)
+                    if (isPastEvent) {
+                        combinedCard.addClass('past-event');
+                    }
+
+                    candidateNames.push(eventData.candidate + " (" + eventData.party[0] + ")");
+                    candidateImages.push({
+                        img: eventData.img,
+                        party: eventData.party[0]
+                    });
+                });
+
+                // Create subCard element to contain time, info, and imageContainer
+                const subCard = $("<div class='sub-card'></div>");
+
+                // Create candidateNameText to contain formatted candidate names
+                const candidateNameText = formatCandidateNames(candidateNames);
+
+                // Iterate through candidate images and add them to container
+                for (let i = 0; i < Math.min(candidateImages.length, getMaxImages()); i++) {
+                    const imgData = candidateImages[i];
+                    const imgElement = $(
+                        "<img src='" +
+                        imgData.img +
+                        "' class='img-fluid visible' party='" + // Add party border
+                        imgData.party +
+                        "' />"
+                    );
+                    imageContainer.append(imgElement);
                 }
 
-                var timeData = eventData.time.split(' ');
-                time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
+                // Calculate remaining candidates beyond max (determined by viewport)
+                const remainingCandidates = Math.max(candidateImages.length - getMaxImages(), 0);
 
-                info = $("<div class='info'></div>");
-                info.append(
-                    // Type of event
-                    "<p class='type'>" + eventData.event_type + "</p>",
-                    // Address container
-                    '<div class="address-container">' +
-                        // Icon
-                        '<div class="left-content">' +
-                            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#939393" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map-pin"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>' +
-                        '</div>' +
-                        // Address
-                        '<div class="right-content">' +
-                            '<p class="address">' +
-                                eventData.address_line_1 + "<br>" +
-                                eventData.address_line_2 + "<br>" +
-                                eventData.city + ", " +
-                                eventData.state + " " +
-                                eventData.zip + "</p>" +
-                        '</div>' +
-                    '</div>',
-                    // Description
-                    "<p class='description'>" + eventData.description + "</p>"
+                // If remaining candidates are greater than zero, display plus icon
+                if (remainingCandidates > 0) {
+                    const plusIcon = $(
+                        "<div class='plus-icon'>" +
+                        "+" +
+                        remainingCandidates +
+                        "</div>"
+                        );
+                    imageContainer.append(plusIcon);
+
+                    // Retrieve the last visible image
+                    const lastImage = imageContainer.find('img:last');
+
+                    if (lastImage.length > 0) {
+                        // Calculate the position for the plus icon
+                        const iconPosition = calculateIconPosition(imageContainer, subCard);
+                        // Set CSS properties for the plus icon to position it absolutely
+                        plusIcon.css({
+                            position: 'absolute',
+                            bottom: iconPosition.bottom,
+                            right: iconPosition.right,
+                        });
+                    }
+                }
+
+                // Appendtime, info, and imageContainer to the subCard
+                subCard.append(
+                    time,
+                    info,
+                    imageContainer
                 );
 
-                // Collect candidate names and images
-                candidateNames.push(eventData.candidate + " (" + eventData.party[0] + ")");
-                candidateImages.push({
-                    img: eventData.img,
-                    party: eventData.party[0]
-                });
-            });
+                // Append candidate name string and subCard to the combinedCard
+                combinedCard.append(
+                    "<p class='name'>" +
+                    candidateNameText +
+                    "</p>",
+                    subCard
+                );
 
-            // Creating a sub-card for each candidate
-            var subCard = $("<div class='sub-card'></div>");
-
-            // Customizing the sub-card content based on eventData
-            if (eventDate.setHours(0, 0, 0, 0) < currentDate.setHours(0, 0, 0, 0)) {
-                subCard.addClass('past-event');
+                // Append the combinedCard to the DOM
+                $("#content").append(combinedCard);
             }
-
-            var uniqueCandidateNames = Array.from(new Set(candidateNames)).join(', ');
-            var combinedImages = candidateImages.map(function (imgData) {
-                return "<img src='" + imgData.img + "' class='img-fluid' party='" + imgData.party + "' />";
-            }).join('');
-
-            subCard.append(
-                time,
-                info,
-                "<div class='image-container'>" + combinedImages + "</div>"
-                );
-            combinedCard.append(
-                "<p class='name'>" + uniqueCandidateNames + "</p>",
-                subCard
-                );
-
-            // Append the combined card to the content area
-            $("#content").append(combinedCard);
         }
     }
+
+    // Calculate where plus icon will sit
+    function calculateIconPosition(imageContainer, subCard) {
+
+        // Initialize the iconPosition object with initial position
+        const iconPosition = { bottom: 205, right: 0 };
+
+        // Get the last image element in imageContainer
+        const lastImage = imageContainer.find('img:last');
+
+        // If at least one last image exists, execute the block
+        if (lastImage.length > 0) {
+
+            // Get the position of the subCard element (top and left relative to parent)
+            const eventCardPosition = subCard.position();
+
+            // Calculate the number of currently visible images
+            const numVisibleImages = imageContainer.find('img:visible').length;
+            
+            // Set the horizontal position of icon
+            iconPosition.right =
+                eventCardPosition.left + 75 // add 75px
+                + subCard.width();
+
+            // If there is more than one visible image
+            if (numVisibleImages > 1) {
+                // Adjust the right property of iconPosition by subtracting 30 for each additional visible image beyond the first one
+                iconPosition.right -= 30 * (numVisibleImages - 1);
+            }
+        }
+
+        // Return the calculated iconPosition object
+        return iconPosition;
+    }
+
+    // When the document is fully loaded and ready, call updateImages
+    $(document).ready(updateImages);
+
+    // Whenever the user resizes the window, call updateImages
+    window.addEventListener('resize', updateImages);
+
+    // Display a certain number of images depending on viewport
+    function getMaxImages() {
+        if (window.innerWidth >= 800) {
+            return 3;
+        } else if (window.innerWidth >= 600) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
 }
 
-// Document ready function to initiate the process when the DOM is ready
-$(document).ready(function () {
-    init();
-});
+// Event listener
+$(document).ready(init);

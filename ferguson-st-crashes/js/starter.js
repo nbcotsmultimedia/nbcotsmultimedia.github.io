@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false });
-const legendItems = [
+let legendItems = [
 	{
 		"color": "#e81416",
 		"size": "10px",
@@ -23,6 +23,12 @@ const legendItems = [
 		"size": "10px",
 		"label": "Suspected serious injury",
 		"severity": 'SUSPECTED SERIOUS INJURY'
+	},
+	{
+		"color": "#70369d",
+		"size": "10px",
+		"label": "Other injury/ Not injured",
+		"severity": 'OTHER INJURY'
 	},
 	{
 		"color": "#79c314",
@@ -54,7 +60,10 @@ const legendItems = [
 		"label": "Multiple crashes",
 		"severity": ''
 	}
-]
+];
+if (categories.length > 0) {
+	legendItems = legendItems.filter(item => categories.includes(item.severity) || item.severity === '')
+}
 let markers;
 let texts;
 let mapClustered = true;
@@ -67,6 +76,8 @@ const handleMarkerClick = marker => {
 };
 
 const marker = row => {
+	console.log(row.severity)
+	console.log(legendItems.find(legendItem => legendItem.severity === row.severity))
 	const fillColor = row.repeat === "TRUE" ? "#FF69B4" : legendItems.find(legendItem => legendItem.severity === row.severity).color;
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
