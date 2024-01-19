@@ -11,6 +11,8 @@ var nbc = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbhhcadzDRzmVpf4H-AG
 var tlmd = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbhhcadzDRzmVpf4H-AGGoksaov6RUXzeY1CrJnmtvi8xiyTVjO_tuCmoYhGY8SD1MkP74tYlc4YJg/pub?gid=0&single=true&output=csv";
 var lead = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbhhcadzDRzmVpf4H-AGGoksaov6RUXzeY1CrJnmtvi8xiyTVjO_tuCmoYhGY8SD1MkP74tYlc4YJg/pub?gid=285289146&single=true&output=csv";
 var aud = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbhhcadzDRzmVpf4H-AGGoksaov6RUXzeY1CrJnmtvi8xiyTVjO_tuCmoYhGY8SD1MkP74tYlc4YJg/pub?gid=1032593897&single=true&output=csv";
+var dl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbhhcadzDRzmVpf4H-AGGoksaov6RUXzeY1CrJnmtvi8xiyTVjO_tuCmoYhGY8SD1MkP74tYlc4YJg/pub?gid=586000388&single=true&output=csv";
+
 
 function init() {
 	//console.log("ready");
@@ -34,6 +36,9 @@ function init() {
 			break;
 		case "aud":
 			loadData(aud);
+			break;
+		case "dl":
+			loadData(dl);
 			break;
 		default:
 			loadData(lead);
@@ -105,6 +110,11 @@ function loadData(which) {
 
 		case aud:
 		$("#teamLabel").text("Audience Development");
+		$("#cardCon").css("background-image", "url('images/card-bg-n.jpg')");
+		break;
+
+		case dl:
+		$("#teamLabel").text("Digital Leads");
 		$("#cardCon").css("background-image", "url('images/card-bg-n.jpg')");
 		break;
 
@@ -182,7 +192,7 @@ function loadCard(which) {
 	$("#pInfo").html("<div class='stat'><span class='bolder'>Title: </span>" + allData[which].title + "</div>" +
  									 "<div class='stat'><span class='bolder'>Phone: </span>" + allData[which].phone + "</div>" +
 									 "<div class='stat'><span class='bolder'>Slack: </span>" + allData[which].slack + "</div>" +
-									 "<div class='stat'><span class='bolder'>Hours: </span>" + allData[which].hours + "</div>" +
+									 
 									 "<div class='stat'><span class='bolder'>Location: </span>" + allData[which].location + "</div>");
 
 
