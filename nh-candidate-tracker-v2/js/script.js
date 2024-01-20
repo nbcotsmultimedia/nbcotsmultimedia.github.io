@@ -7,6 +7,7 @@ let allData;
 // When doc is ready, run loadData function
 function init() {
     loadData();
+    $(window).on('resize', debounce(updateImages, 250)); // Debounce resize event
 }
 
 // Fetch and load data, then run parseData function
@@ -133,13 +134,18 @@ function parseData() {
                 for (let i = 0; i < Math.min(candidateImages.length, getMaxImages()); i++) {
                     const imgData = candidateImages[i];
                     const imgElement = $(
-                        "<img src='" +
+                        "<img src='" + // Construct link
                         imgData.img +
                         "' class='img-fluid visible' party='" + // Add party border
                         imgData.party +
                         "' />"
                     );
+
+                    // Check if the image should be visible
+                    const isVisible = i < getMaxImages();
+                    imgElement.toggleClass('visible', isVisible); // Add/remove 'visible' class based on visibility
                     imageContainer.append(imgElement);
+
                 }
 
                 // Calculate remaining candidates beyond max (determined by viewport)
@@ -148,11 +154,7 @@ function parseData() {
                 // If remaining candidates are greater than zero, display plus icon
                 if (remainingCandidates > 0) {
                     const plusIcon = $(
-                        "<div class='plus-icon'>" +
-                        "+" +
-                        remainingCandidates +
-                        "</div>"
-                        );
+                        "<div class='plus-icon'>" + "+" + remainingCandidates + "</div>");
                     imageContainer.append(plusIcon);
 
                     // Retrieve the last visible image
@@ -160,7 +162,8 @@ function parseData() {
 
                     if (lastImage.length > 0) {
                         // Calculate the position for the plus icon
-                        const iconPosition = calculateIconPosition(imageContainer, subCard);
+                        const iconPosition = calculateIconPosition(imageContainer, subCard, remainingCandidates);
+
                         // Set CSS properties for the plus icon to position it absolutely
                         plusIcon.css({
                             position: 'absolute',
@@ -171,19 +174,10 @@ function parseData() {
                 }
 
                 // Appendtime, info, and imageContainer to the subCard
-                subCard.append(
-                    time,
-                    info,
-                    imageContainer
-                );
+                subCard.append(time, info, imageContainer);
 
                 // Append candidate name string and subCard to the combinedCard
-                combinedCard.append(
-                    "<p class='name'>" +
-                    candidateNameText +
-                    "</p>",
-                    subCard
-                );
+                combinedCard.append("<p class='name'>" + candidateNameText + "</p>", subCard);
 
                 // Append the combinedCard to the DOM
                 $("#content").append(combinedCard);
@@ -192,37 +186,35 @@ function parseData() {
     }
 
     // Calculate where plus icon will sit
-    function calculateIconPosition(imageContainer, subCard) {
+    function calculateIconPosition(imageContainer) {
+        // Get the last visible image element in imageContainer
+        const lastVisibleImage = imageContainer.find('img.visible:last');
 
-        // Initialize the iconPosition object with initial position
-        const iconPosition = { bottom: 205, right: 0 };
+        // If at least one last visible image exists, execute the block
+        if (lastVisibleImage.length > 0) {
+            // Get the dimensions of the plus icon
+            const plusIcon = imageContainer.find('.plus-icon');
+            const iconWidth = plusIcon.outerWidth();
+            const iconHeight = plusIcon.outerHeight();
 
-        // Get the last image element in imageContainer
-        const lastImage = imageContainer.find('img:last');
+            // Get the position of the last visible image
+            const imagePosition = lastVisibleImage.position();
 
-        // If at least one last image exists, execute the block
-        if (lastImage.length > 0) {
+            // Adjust the right position to move the icon into the overlap area of the image
+            const rightAdjustment = 20;
+            const rightPosition = imagePosition.left + lastVisibleImage.outerWidth(false) - iconWidth + rightAdjustment;
 
-            // Get the position of the subCard element (top and left relative to parent)
-            const eventCardPosition = subCard.position();
+            // Adjust the bottom position to move the icon into the overlap area of the image
+            const bottomAdjustment = 30;
+            const bottomPosition = imagePosition.top + lastVisibleImage.outerHeight(false) - iconHeight + bottomAdjustment;
 
-            // Calculate the number of currently visible images
-            const numVisibleImages = imageContainer.find('img:visible').length;
-            
-            // Set the horizontal position of icon
-            iconPosition.right =
-                eventCardPosition.left + 75 // add 75px
-                + subCard.width();
-
-            // If there is more than one visible image
-            if (numVisibleImages > 1) {
-                // Adjust the right property of iconPosition by subtracting 30 for each additional visible image beyond the first one
-                iconPosition.right -= 30 * (numVisibleImages - 1);
-            }
+            // Set the CSS properties for the plus icon
+            return { bottom: bottomPosition, right: rightPosition };
+        } else {
+            // Log default position if no visible images
+            console.log('Using default position');
+            return { bottom: 0, right: 0 };
         }
-
-        // Return the calculated iconPosition object
-        return iconPosition;
     }
 
     // When the document is fully loaded and ready, call updateImages

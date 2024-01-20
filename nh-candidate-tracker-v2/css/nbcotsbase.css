@@ -126,6 +126,7 @@ body {
     background-color: #b0b0b01a;
     box-shadow: 0px 4px 4px #00000005;
     margin: 10px 0;
+    position: relative; /* Allow absolutely positioned elements (like plus icon) to be positioned relative to the card */
 }
 
 .event-card .sub-card {
@@ -158,6 +159,14 @@ img.img-fluid {
     margin-right: -2.25rem; /* Allow overlap */
 }
 
+/* Visual class images */
+img.img-fluid.visible {
+    max-height: 100px; /* Control height while maintaining aspect ratio */
+    max-width: 100px; /* Set maximum width to prevent images from exceeding their container */
+    border-radius: 50%; /* Create circular border */
+    margin-right: -2.25rem; /* Allow overlap */
+}
+
 /* Add specific border colors for each party */
 img.img-fluid[party='R'] {
     border: 0.125rem solid #CC0000;
@@ -183,6 +192,7 @@ img.img-fluid[party='I'] {
     font-weight: 600; /* Bold font */
     font-size: 12pt;
     color: #474747;
+    z-index: 1;
 }
 
 /* Style past events */
