@@ -193,6 +193,7 @@ img.img-fluid[party='I'] {
     font-size: 12pt;
     color: #474747;
     z-index: 1;
+    position:absolute;
 }
 
 /* Style past events */
