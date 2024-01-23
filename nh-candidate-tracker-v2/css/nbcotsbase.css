@@ -152,17 +152,9 @@ body {
 }
 
 /* Basic style for the images */
-img.img-fluid {
-    max-height: 100px; /* Control height while maintaining aspect ratio */
-    max-width: 100px; /* Set maximum width to prevent images from exceeding their container */
-    border-radius: 50%; /* Create circular border */
-    margin-right: -2.25rem; /* Allow overlap */
-}
-
-/* Visual class images */
-img.img-fluid.visible {
-    max-height: 100px; /* Control height while maintaining aspect ratio */
-    max-width: 100px; /* Set maximum width to prevent images from exceeding their container */
+img.img-fluid, img.img-fluid.visible {
+    max-height: 100px;
+    max-width: 100px;
     border-radius: 50%; /* Create circular border */
     margin-right: -2.25rem; /* Allow overlap */
 }

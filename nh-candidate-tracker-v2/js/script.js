@@ -106,15 +106,58 @@ function createEventCard(eventGroup, maxImages) {
 }
 // Create sub card
 function createSubCard(firstEvent, imageContainer) {
-    const timeData = firstEvent.time.split(' ');
-    const time = $("<div class='time'><p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p></div>");
+    const time = $("<div class='time'></div>");
+
+    // Check if the time is "TBA" and handle it accordingly
+    if (firstEvent.time === 'TBA') {
+        time.addClass('tba'); // Add a class to style "TBA" differently if needed
+        time.text('TBA'); // Set the text to "TBA"
+    } else {
+        const timeData = firstEvent.time.split(' ');
+        time.append("<p class='time-text'>" + timeData[0] + "</p><p class='am-pm'>" + timeData[1] + "</p>");
+    }
+
     const info = $("<div class='info'></div>").append(
         "<p class='type'>" + firstEvent.event_type + "</p>",
-        `<p class="address">${firstEvent.address_line_1}<br>${firstEvent.address_line_2}<br>${firstEvent.city}, ${firstEvent.state} ${firstEvent.zip}</p>`,
+        createAddressHTML(firstEvent),
         "<p class='description'>" + firstEvent.description + "</p>"
     );
 
     return $("<div class='sub-card'></div>").append(time, info, imageContainer);
+}
+// Workaround for no addres given
+function createAddressHTML(firstEvent) {
+    let addressHTML = "";
+    if (firstEvent.address_line_1) {
+        addressHTML += firstEvent.address_line_1;
+    }
+    if (firstEvent.address_line_2) {
+        if (addressHTML) {
+            addressHTML += "<br>";
+        }
+        addressHTML += firstEvent.address_line_2;
+    }
+    if (firstEvent.city || firstEvent.state || firstEvent.zip) {
+        if (addressHTML) {
+            addressHTML += "<br>";
+        }
+        if (firstEvent.city) {
+            addressHTML += firstEvent.city;
+        }
+        if (firstEvent.city && (firstEvent.state || firstEvent.zip)) {
+            addressHTML += ", ";
+        }
+        if (firstEvent.state) {
+            addressHTML += firstEvent.state;
+        }
+        if (firstEvent.state && firstEvent.zip) {
+            addressHTML += " ";
+        }
+        if (firstEvent.zip) {
+            addressHTML += firstEvent.zip;
+        }
+    }
+    return `<p class="address">${addressHTML}</p>`;
 }
 // Create image container
 function createImageContainer(candidateImages, maxImages) {
