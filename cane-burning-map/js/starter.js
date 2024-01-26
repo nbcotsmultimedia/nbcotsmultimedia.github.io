@@ -9,43 +9,65 @@ function init() {
 
 // create D3 map
 async function createMap() {
-	const svg = d3.select("#map"),
-		width = +svg.attr("width"),
-		height = +svg.attr("height");
+	// map container and chart conatiner resposive to window size
+	const mapContainer = d3.select("#map-container");
+	let containerWidth = mapContainer.node().closest('div').offsetWidth;
+	const chartContainer = d3.select("#bar-chart-container");
+	// NOTE: when setting width/height for svg elements, use attr()
+		// when setting width/height for html elements, use style()
+	mapContainer.style("width", containerWidth + "px");
+	chartContainer.style("width", containerWidth + "px")
 
-	const chartSvg = d3.select("#bar-chart"),
-		chartOgWidth = +chartSvg.attr("width"),
-		chartOgHeight = +chartSvg.attr("height");
-	const margin = { top: 40, right: 65, bottom: 20, left: 30 },
-		chartWidth = chartOgWidth - margin.left - margin.right,
-		chartHeight = chartOgHeight - margin.top - margin.bottom;
-	const finalChartSvg = chartSvg.append("svg")
-		.attr("width", chartWidth + margin.left + margin.right)
-		.attr("height", chartHeight + margin.top + margin.bottom)
+	// map needs to be slightly larger than container to hide edges of smoke filter
+	// (specific to the smoke filter on this map, not true for all maps)
+	const mapCanvas = d3.select("#map");
+	mapCanvas.attr("width", containerWidth + 100);
+
+	// constants for map width/height
+	const mapWidth = +mapCanvas.attr("width"),
+		mapHeight = +mapCanvas.attr("height");
+
+	// chart should be 50px smaller than container to accomodate controls
+	const chartCanvas = d3.select("#bar-chart");
+	chartCanvas.attr("width", containerWidth - 50);
+
+	// constants for chart width/height
+	const chartCanvasWidth = +chartCanvas.attr("width"),
+		chartCanvasHeight = +chartCanvas.attr("height");
+
+	// add margins to chart
+	const chartMargin = { top: 40, right: 65, bottom: 20, left: 30 },
+		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
+		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
+
+	// smaller canvas for bar chart to create margin effect
+	const chart = chartCanvas.append("svg")
+		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
+		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
 		.append("g")
 		.attr("id", "bar-chart-canvas")
-		.attr("transform", `translate(${margin.left},${margin.top})`);;
+		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
 
-	svg.append("rect")
+	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
-		.attr("width", width)
-		.attr("height", height);
+		.attr("width", mapWidth)
+		.attr("height", mapHeight);
 	// defs for filters
-	const defs = svg.append("defs");
+	const defs = mapCanvas.append("defs");
 	// add canvases for different map elements
-	const map = svg.append("g");
-	const water = svg.append("g");
-	const labels = svg.append("g");
-	const roads = svg.append("g");
-	const fires = svg.append("g");
-	const smokeContainer = svg.append("svg")
+	const map = mapCanvas.append("g");
+	const water = mapCanvas.append("g");
+	const labels = mapCanvas.append("g");
+	const roads = mapCanvas.append("g");
+	const fires = mapCanvas.append("g");
+	const smokeContainer = mapCanvas.append("svg")
 		.attr("id", "smoke");
 	const smoke = smokeContainer.append("g");
 
 	// add map contents
-	addBaseMap(width, height, defs, map, water, labels, roads, fires, smoke);
+	addBaseMap(mapWidth, mapHeight, defs, map, water, labels, roads, fires, smoke);
 
-	createBarChart(chartHeight, chartWidth, finalChartSvg);
+	createBarChart(chartHeight, chartWidth, chart);
 
 	await waitforme(1000);
 	animation(firstDay, firstDay, lastDay);

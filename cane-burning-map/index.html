@@ -32,14 +32,16 @@
 </head>
 
 <body>
-  <div id="graphic-container">
-    <div id="map-container"><svg id="map" width="900" height="500"></svg></div>
+  <div id="graphic-container" class="parent">
+    <div id="map-container">
+      <svg id="map" height="500"></svg>
+    </div>
     <div id="bar-chart-container">
       <div id="button-container">
         <button class="control-button" id="pa" onclick="pauseAnimation()"><i class="fa-solid fa-pause"></i></button>
         <button class="control-button" id="pl" disabled="true"><i class="fa-solid fa-play"></i></button>
       </div>
-      <svg id="bar-chart" width="750" height="150"></svg>
+      <svg id="bar-chart" height="150"></svg>
     </div>
   </div>
 

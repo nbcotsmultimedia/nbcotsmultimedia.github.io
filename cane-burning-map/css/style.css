@@ -100,16 +100,29 @@ button[disabled]{
 }
 
 #map-container {
+    overflow: hidden;
+    height: 450px;
+}
+
+#graphic-container {
+    width: 94vw;
+    padding-bottom: 30px;
+    margin: auto;
+}
+
+/*
+#map-container {
     width: 800px;
     height: 450px;
     overflow: hidden;
 }
+*/
 
 #map {
     margin-top: -25px;
     margin-left: -50px;
 }
-
+/*
 @media screen and (max-width: 768px) {
     #graphic-container {
         width: 100vw;
@@ -119,3 +132,4 @@ button[disabled]{
         width: 100% !important;
     }
 }
+*/
