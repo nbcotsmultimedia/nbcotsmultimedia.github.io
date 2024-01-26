@@ -1,7 +1,8 @@
 let paused = 0,
 	firstDay = 1,
 	lastDay = 365,
-	dateSelected = false;
+	dateSelected = false,
+	mobile = window.innerWidth <= 768;
 
 function init() {
 	createMap();
@@ -18,25 +19,28 @@ async function createMap() {
 	mapContainer.style("width", containerWidth + "px");
 	chartContainer.style("width", containerWidth + "px")
 
+	const mapHeight = mobile ? 300 : 500;
+
 	// map needs to be slightly larger than container to hide edges of smoke filter
 	// (specific to the smoke filter on this map, not true for all maps)
 	const mapCanvas = d3.select("#map");
-	mapCanvas.attr("width", containerWidth + 100);
+	mapCanvas.attr("width", containerWidth + 100)
+		.attr("height", mapHeight);
 
 	// constants for map width/height
-	const mapWidth = +mapCanvas.attr("width"),
-		mapHeight = +mapCanvas.attr("height");
+	const mapWidth = +mapCanvas.attr("width");
 
 	// chart should be 50px smaller than container to accomodate controls
 	const chartCanvas = d3.select("#bar-chart");
-	chartCanvas.attr("width", containerWidth - 50);
+	chartCanvas.attr("width", mobile ? containerWidth : containerWidth - 50);
 
 	// constants for chart width/height
 	const chartCanvasWidth = +chartCanvas.attr("width"),
 		chartCanvasHeight = +chartCanvas.attr("height");
 
 	// add margins to chart
-	const chartMargin = { top: 40, right: 65, bottom: 20, left: 30 },
+	const chartMargin = mobile ? { top: 0, right: 30, bottom: 20, left: 10 } 
+		: { top: 40, right: 65, bottom: 20, left: 30 },
 		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
 
@@ -45,8 +49,8 @@ async function createMap() {
 		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
 		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
 		.append("g")
-		.attr("id", "bar-chart-canvas")
-		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+			.attr("id", "bar-chart-canvas")
+			.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
 
 	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
@@ -76,11 +80,13 @@ async function createMap() {
 // function to add florida map + other map contents
 const addBaseMap = (width, height, defs, map, water, labels, roads, fires, smoke) => {
 	d3.json("data/florida_boundary.geojson").then(function (data) {
+		const zoom = mobile ? 12000 : 23000;
+		const rotation = mobile ? [79.5 + 50 / 60, -25.3 - 65 / 60] : [79.5 + 65 / 60, -25.3 - 65 / 60];
 		// create projection for translating coordinates, according to florida data
 		const projection = d3.geoTransverseMercator()
-			.rotate([79.5 + 65 / 60, -25.3 - 65 / 60])
+			.rotate(rotation)
 			.fitExtent([[20, 20], [width - 20, height - 20]], data)
-			.scale(23000);
+			.scale(zoom);
 		// read florida data and add
 		map.selectAll("path")
 			.data(data.features)
@@ -283,6 +289,9 @@ function waitforme(ms) {
 
 const animation = async (firstDay, startDay, endDay) => {
 	await waitforme(600);
+	if (mobile) {
+		await waitforme(600);
+	}
 	for (let i = startDay; i <= endDay; i++) {
 		if (dateSelected) {
 			dateSelected = false;
@@ -315,8 +324,9 @@ const createBarChart = (height, width, svg) => {
 			maxVal = Math.max(maxVal, val);
 		});
 		const firsts = data.filter(row => row.date.slice(-2) === '01');
+		let mobileFirsts = firsts.filter((element, index) => {return index % 2 === 0;});
 		data.map(row => { row.date = d3.timeParse("%Y-%m-%d")(row.date) });
-		const tickDates = firsts.map(row => row.date);
+		const tickDates = mobile ? mobileFirsts.map(row => row.date) : firsts.map(row => row.date);
 
 		// X axis
 		const x = d3.scaleBand()
@@ -354,7 +364,7 @@ const createBarChart = (height, width, svg) => {
 			.attr("y", d => y(d.fire_count))
 			.attr("class", "bar-label hide-content")
 			.attr("fill", "#fc5200")
-			.attr("text-anchor", "middle");
+			.attr("text-anchor", d => textAnchor(d));
 
 		svg.selectAll("label")
 			.data(data)
@@ -364,7 +374,7 @@ const createBarChart = (height, width, svg) => {
 			.attr("dx", x.bandwidth()/2)
 			.attr("x", d => x(d.date))
 			.attr("y", d => y(d.fire_count))
-			.attr("text-anchor", "middle")
+			.attr("text-anchor", d => textAnchor(d))
 			.attr("fill", "#fc5200")
 			.attr("class", "bar-label hide-content");
 
@@ -374,11 +384,21 @@ const createBarChart = (height, width, svg) => {
 	})
 };
 
+const textAnchor = d => {
+	const yearDay = cleanTextData(d);
+	if (yearDay < 11) {
+		return "start";
+	} else if(yearDay > 338) {
+		return "end";
+	} else {
+		return "middle";
+	}
+}
+
 const addYLines = (xScale, yScale, yVals, width) => {
 	let maxY = 0;
 	yVals.map(yVal => maxY = Math.max(maxY, yVal));
 	const maxLine = Math.ceil(maxY/100)*100;
-	console.log(maxLine)
 	const canvas = d3.select("#bar-chart-canvas");
 	j = 0;
 	for (let i = 0; i <= maxLine; i += 100) {
@@ -390,7 +410,7 @@ const addYLines = (xScale, yScale, yVals, width) => {
 			.attr("x", xScale(0));
 		if (i%200 === 0) {
 			canvas.append("text")
-				.text(i === maxLine ? `${i} fires` : i.toString())
+				.text(i === maxLine && !mobile ? `${i} fires` : i.toString())
 				.attr("class", "y-label")
 				.attr("fill", "#a9a9a9")
 				.attr("y", yScale(i) + 3)
@@ -403,7 +423,6 @@ const selectMonth = e => {
 	const selectedDate = e.target.__data__;
 	const bars = d3.selectAll(".bar");
 	const selectedBar = bars.filter(d => d.date === selectedDate);
-	console.log(selectedBar.data()[0])
 	const selectedDay = parseInt(selectedBar.data()[0].year_day.toString().slice(-3));
 	highlightBar(selectedDay);
 	animation(firstDay, selectedDay, lastDay);

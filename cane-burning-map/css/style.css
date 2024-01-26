@@ -110,26 +110,32 @@ button[disabled]{
     margin: auto;
 }
 
-/*
-#map-container {
-    width: 800px;
-    height: 450px;
-    overflow: hidden;
-}
-*/
-
 #map {
     margin-top: -25px;
     margin-left: -50px;
 }
-/*
+
+
 @media screen and (max-width: 768px) {
-    #graphic-container {
-        width: 100vw;
+    #map-container {
+        overflow: hidden;
+        height: 300px;
     }
 
-    #bar-chart-container {
-        width: 100% !important;
+    .control-button {
+        width: 47vw;
+        font-size: 22px !important;
+        margin-left: 0;
     }
+    
+    #bar-chart-container {
+        flex-direction: column-reverse;
+    }
+
+    #button-container {
+        margin-top: 15px;
+        flex-direction: row-reverse;
+        justify-content: start;
+    }
+    
 }
-*/
