@@ -2,7 +2,9 @@ let paused = 0,
 	firstDay = 1,
 	lastDay = 365,
 	dateSelected = false,
-	mobile = window.innerWidth <= 768;
+	mobile = window.innerWidth <= 768
+	numFires = 21836,
+	numSmokePlumes = 864;
 
 function init() {
 	createMap();
@@ -73,8 +75,7 @@ async function createMap() {
 
 	createBarChart(chartHeight, chartWidth, chart);
 
-	await waitforme(1000);
-	animation(firstDay, firstDay, lastDay);
+	awaitContentLoad();
 };
 
 // function to add florida map + other map contents
@@ -188,10 +189,6 @@ const addSmokeFiler = defs => {
 const drawSmokeAndFire = (smoke, fires, projection) => {
 	// read fire and smoke data and add to map
 	d3.json(`data/2022_fires.geojson`).then(function (data) {
-		const firePoints = d3.selectAll(".fire");
-		if (firePoints._groups.length > 0) {
-			firePoints.remove();
-		}
 
 		fires.selectAll("path")
 			.data(data.features)
@@ -203,10 +200,6 @@ const drawSmokeAndFire = (smoke, fires, projection) => {
 			.attr("fill", "#fc5200");
 
 		d3.json(`data/2022_smoke.json`).then(function (data) {
-			const smokePlumes = d3.selectAll(".smoke-plumes");
-			if (smokePlumes._groups.length > 0) {
-				smokePlumes.remove();
-			}
 
 			smoke.selectAll("path")
 				.data(data.features)
@@ -430,10 +423,10 @@ const selectMonth = e => {
 	paused = 0;
 
 	document.getElementById("pl")
-		.setAttribute("disabled", "true")
+		.setAttribute("disabled", "true");
 
 	document.getElementById("pa")
-		.removeAttribute("disabled")
+		.removeAttribute("disabled");
 };
 
 const highlightBar = dayNumber => {
@@ -472,11 +465,24 @@ const pauseAnimation = () => {
 	paused = 1;
 
 	document.getElementById("pa")
-		.setAttribute("disabled", "true")
+		.setAttribute("disabled", "true");
 
 	document.getElementById("pl")
-		.removeAttribute("disabled")
-}
+		.removeAttribute("disabled");
+};
+
+const awaitContentLoad = async() => {
+	while(true) {
+		let numLoadedSmokePlumes = d3.selectAll(".smoke-plume").size();
+		let numLoadedFires = d3.selectAll(".fire").size();
+		await waitforme(1000);
+		if (numLoadedFires === numFires && numLoadedSmokePlumes === numSmokePlumes) {
+			console.log("loaded");
+			break;
+		}
+	}
+	animation(firstDay, firstDay, lastDay);
+};
 
 
 $(document).ready(function () {
