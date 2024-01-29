@@ -281,6 +281,7 @@ function waitforme(ms) {
 }
 
 const animation = async (firstDay, startDay, endDay) => {
+	const dayDuration = mobile ? 1000 : 550;
 	await waitforme(600);
 	if (mobile) {
 		await waitforme(600);
@@ -297,7 +298,7 @@ const animation = async (firstDay, startDay, endDay) => {
 			showToday(dayNumber);
 			hideOtherDays(dayNumber);
 			highlightBar(dayNumber);
-			await waitforme(550);
+			await waitforme(dayDuration);
 			if (paused == 1) await pauser();
 			if (i === endDay) {
 				i = firstDay - 1;
