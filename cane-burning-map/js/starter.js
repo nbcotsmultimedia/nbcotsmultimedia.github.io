@@ -120,7 +120,9 @@ const addBaseMap = (width, height, defs, map, water, labels, roads, fires, smoke
 					);
 
 				// add smoke filter
-				addSmokeFiler(defs);
+				if (!mobile) {
+					addSmokeFiler(defs);
+				}
 
 				drawSmokeAndFire(smoke, fires, projection);
 			});
