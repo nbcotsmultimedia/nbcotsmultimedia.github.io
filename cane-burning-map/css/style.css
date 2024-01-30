@@ -123,20 +123,12 @@ button[disabled]{
         height: 300px;
     }
 
-    .control-button {
-        width: 47vw;
-        font-size: 22px !important;
-        margin-left: 0;
-    }
-    
-    #bar-chart-container {
-        flex-direction: column-reverse;
+    #button-container {
+        margin-bottom: 12px;
     }
 
-    #button-container {
-        margin-top: 15px;
-        flex-direction: row-reverse;
-        justify-content: start;
+    .control-button {
+        margin-left: 0;
     }
     
 }

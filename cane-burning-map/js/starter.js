@@ -34,14 +34,14 @@ async function createMap() {
 
 	// chart should be 50px smaller than container to accomodate controls
 	const chartCanvas = d3.select("#bar-chart");
-	chartCanvas.attr("width", mobile ? containerWidth : containerWidth - 50);
+	chartCanvas.attr("width", mobile ? containerWidth - 35 : containerWidth - 50);
 
 	// constants for chart width/height
 	const chartCanvasWidth = +chartCanvas.attr("width"),
 		chartCanvasHeight = +chartCanvas.attr("height");
 
 	// add margins to chart
-	const chartMargin = mobile ? { top: 0, right: 30, bottom: 20, left: 10 } 
+	const chartMargin = mobile ? { top: 20, right: 30, bottom: 20, left: 10 } 
 		: { top: 40, right: 65, bottom: 20, left: 30 },
 		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
@@ -438,6 +438,11 @@ const highlightBar = dayNumber => {
 	const otherBars = bars.filter(d => parseInt(d.year_day.slice(-3)) !== dayNumber);
 	selectedBar.attr("fill", "#fc5200");
 	otherBars.attr("fill", "#ffb898");
+	if (!mobile) {
+		selectedBar.attr("stroke", "#0C0C0C")
+			.attr("stroke-width", "1px");
+		otherBars.attr("stroke", "none");
+	}
 };
 
 const pauser = () => {
