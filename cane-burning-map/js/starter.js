@@ -347,7 +347,7 @@ const createBarChart = (height, width, svg) => {
 			.attr("y", d => y(d.fire_count))
 			.attr("width", x.bandwidth())
 			.attr("height", d => height - y(d.fire_count))
-			.attr("fill", "#ffc1a4")
+			.attr("fill", "#ffb898")
 			.attr("class", "bar");
 
 		svg.selectAll("label")
@@ -401,14 +401,14 @@ const addYLines = (xScale, yScale, yVals, width) => {
 		canvas.append("rect")
 			.attr("width", width)
 			.attr("height", "0.45px")
-			.attr("fill", "#cfcfcf")
+			.attr("fill", "#767676")
 			.attr("y", yScale(i))
 			.attr("x", xScale(0));
 		if (i%200 === 0) {
 			canvas.append("text")
 				.text(i === maxLine && !mobile ? `${i} fires` : i.toString())
 				.attr("class", "y-label")
-				.attr("fill", "#a9a9a9")
+				.attr("fill", "#767676")
 				.attr("y", yScale(i) + 3)
 				.attr("x", width + 8);
 		}
@@ -437,7 +437,7 @@ const highlightBar = dayNumber => {
 	const selectedBar = bars.filter(d => parseInt(d.year_day.slice(-3)) === dayNumber);
 	const otherBars = bars.filter(d => parseInt(d.year_day.slice(-3)) !== dayNumber);
 	selectedBar.attr("fill", "#fc5200");
-	otherBars.attr("fill", "#ffc1a4");
+	otherBars.attr("fill", "#ffb898");
 };
 
 const pauser = () => {
