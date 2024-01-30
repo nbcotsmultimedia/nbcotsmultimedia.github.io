@@ -1,12 +1,32 @@
+const detectSafari = () => {
+	let userAgentString = navigator.userAgent;
+
+	// Detect Chrome 
+	let chromeAgent =
+		userAgentString.indexOf("Chrome") > -1;
+
+	// Detect Safari 
+	let safariAgent =
+		userAgentString.indexOf("Safari") > -1;
+
+	// Discard Safari since it also matches Chrome 
+	if ((chromeAgent) && (safariAgent))
+		safariAgent = false;
+
+	return safariAgent;
+};
+
 let paused = 0,
 	firstDay = 1,
 	lastDay = 365,
 	dateSelected = false,
-	mobile = window.innerWidth <= 768
+	mobile = window.innerWidth <= 768,
+	safari = detectSafari(),
 	numFires = 21836,
 	numSmokePlumes = 864;
 
 function init() {
+	console.log(safari);
 	createMap();
 };
 
@@ -17,7 +37,7 @@ async function createMap() {
 	let containerWidth = mapContainer.node().closest('div').offsetWidth;
 	const chartContainer = d3.select("#bar-chart-container");
 	// NOTE: when setting width/height for svg elements, use attr()
-		// when setting width/height for html elements, use style()
+	// when setting width/height for html elements, use style()
 	mapContainer.style("width", containerWidth + "px");
 	chartContainer.style("width", containerWidth + "px")
 
@@ -41,7 +61,7 @@ async function createMap() {
 		chartCanvasHeight = +chartCanvas.attr("height");
 
 	// add margins to chart
-	const chartMargin = mobile ? { top: 20, right: 30, bottom: 20, left: 10 } 
+	const chartMargin = mobile ? { top: 20, right: 30, bottom: 20, left: 10 }
 		: { top: 40, right: 65, bottom: 20, left: 30 },
 		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
@@ -51,8 +71,8 @@ async function createMap() {
 		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
 		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
 		.append("g")
-			.attr("id", "bar-chart-canvas")
-			.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+		.attr("id", "bar-chart-canvas")
+		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
 
 	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
@@ -66,9 +86,14 @@ async function createMap() {
 	const labels = mapCanvas.append("g");
 	const roads = mapCanvas.append("g");
 	const fires = mapCanvas.append("g");
-	const smokeContainer = mapCanvas.append("svg")
-		.attr("id", "smoke");
-	const smoke = smokeContainer.append("g");
+	let smoke;
+	if (safari) {
+		smoke = mapCanvas.append("g");
+	} else {
+		const smokeContainer = mapCanvas.append("svg")
+			.attr("id", "smoke");
+		smoke = smokeContainer.append("g");
+	}
 
 	// add map contents
 	addBaseMap(mapWidth, mapHeight, defs, map, water, labels, roads, fires, smoke);
@@ -120,7 +145,7 @@ const addBaseMap = (width, height, defs, map, water, labels, roads, fires, smoke
 					);
 
 				// add smoke filter
-				if (!mobile) {
+				if (!safari) {
 					addSmokeFiler(defs);
 				}
 
@@ -283,9 +308,9 @@ function waitforme(ms) {
 }
 
 const animation = async (firstDay, startDay, endDay) => {
-	const dayDuration = mobile ? 1000 : 550;
+	const dayDuration = safari ? 1000 : 550;
 	await waitforme(600);
-	if (mobile) {
+	if (safari) {
 		await waitforme(600);
 	}
 	for (let i = startDay; i <= endDay; i++) {
@@ -320,7 +345,7 @@ const createBarChart = (height, width, svg) => {
 			maxVal = Math.max(maxVal, val);
 		});
 		const firsts = data.filter(row => row.date.slice(-2) === '01');
-		let mobileFirsts = firsts.filter((element, index) => {return index % 2 === 0;});
+		let mobileFirsts = firsts.filter((element, index) => { return index % 2 === 0; });
 		data.map(row => { row.date = d3.timeParse("%Y-%m-%d")(row.date) });
 		const tickDates = mobile ? mobileFirsts.map(row => row.date) : firsts.map(row => row.date);
 
@@ -336,7 +361,7 @@ const createBarChart = (height, width, svg) => {
 		const y = d3.scaleLinear()
 			.domain([0, maxVal])
 			.range([height, 0]);
-		
+
 		addYLines(x, y, data.map(d => d.fire_count), width);
 
 		// Bars
@@ -355,7 +380,7 @@ const createBarChart = (height, width, svg) => {
 			.join("text")
 			.text(d => d3.timeFormat("%b %d")(d.date))
 			.attr("dy", "-1.5em")
-			.attr("dx", x.bandwidth()/2)
+			.attr("dx", x.bandwidth() / 2)
 			.attr("x", d => x(d.date))
 			.attr("y", d => y(d.fire_count))
 			.attr("class", "bar-label hide-content")
@@ -367,7 +392,7 @@ const createBarChart = (height, width, svg) => {
 			.join("text")
 			.text(d => d.fire_count + " fires")
 			.attr("dy", "-0.5em")
-			.attr("dx", x.bandwidth()/2)
+			.attr("dx", x.bandwidth() / 2)
 			.attr("x", d => x(d.date))
 			.attr("y", d => y(d.fire_count))
 			.attr("text-anchor", d => textAnchor(d))
@@ -384,7 +409,7 @@ const textAnchor = d => {
 	const yearDay = cleanTextData(d);
 	if (yearDay < 11) {
 		return "start";
-	} else if(yearDay > 338) {
+	} else if (yearDay > 338) {
 		return "end";
 	} else {
 		return "middle";
@@ -394,7 +419,7 @@ const textAnchor = d => {
 const addYLines = (xScale, yScale, yVals, width) => {
 	let maxY = 0;
 	yVals.map(yVal => maxY = Math.max(maxY, yVal));
-	const maxLine = Math.ceil(maxY/100)*100;
+	const maxLine = Math.ceil(maxY / 100) * 100;
 	const canvas = d3.select("#bar-chart-canvas");
 	j = 0;
 	for (let i = 0; i <= maxLine; i += 100) {
@@ -404,7 +429,7 @@ const addYLines = (xScale, yScale, yVals, width) => {
 			.attr("fill", "#767676")
 			.attr("y", yScale(i))
 			.attr("x", xScale(0));
-		if (i%200 === 0) {
+		if (i % 200 === 0) {
 			canvas.append("text")
 				.text(i === maxLine && !mobile ? `${i} fires` : i.toString())
 				.attr("class", "y-label")
@@ -479,8 +504,8 @@ const pauseAnimation = () => {
 		.removeAttribute("disabled");
 };
 
-const awaitContentLoad = async() => {
-	while(true) {
+const awaitContentLoad = async () => {
+	while (true) {
 		let numLoadedSmokePlumes = d3.selectAll(".smoke-plume").size();
 		let numLoadedFires = d3.selectAll(".fire").size();
 		await waitforme(1000);

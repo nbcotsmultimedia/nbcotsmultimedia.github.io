@@ -51,7 +51,13 @@ button[disabled]{
 
 .smoke-plume {
     fill: linear-gradient(#fff, #999, #ddd, #888);
-    filter: blur(6px) contrast(120%);
+    -webkit-filter: blur(6px) contrast(120%) !important;
+    -moz-filter: blur(6px) contrast(120%) !important;
+    filter: blur(6px) contrast(120%) !important;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
     opacity: 0.75;
 }
 
