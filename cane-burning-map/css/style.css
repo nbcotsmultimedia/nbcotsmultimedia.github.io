@@ -77,10 +77,6 @@ button[disabled]{
     font-size: 13px;
 }
 
-.bar {
-    cursor: pointer;
-}
-
 .domain {
     stroke: #a9a9a9;
     stroke-width: 1px;
