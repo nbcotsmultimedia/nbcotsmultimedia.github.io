@@ -50,6 +50,8 @@ button[disabled]{
 }
 
 .smoke-plume {
+    filter: blur(6px) contrast(120%) !important;
+    transform: translate3d(0, 0, 0);
     opacity: 0.75;
 }
 
