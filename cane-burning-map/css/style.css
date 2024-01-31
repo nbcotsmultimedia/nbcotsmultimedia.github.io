@@ -50,14 +50,6 @@ button[disabled]{
 }
 
 .smoke-plume {
-    fill: linear-gradient(#fff, #999, #ddd, #888);
-    -webkit-filter: blur(6px) contrast(120%) !important;
-    -moz-filter: blur(6px) contrast(120%) !important;
-    filter: blur(6px) contrast(120%) !important;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
     opacity: 0.75;
 }
 
@@ -107,13 +99,28 @@ button[disabled]{
     height: 450px;
 }
 
+#smoke-container {
+    overflow: hidden;
+    height: 450px;
+    position: absolute;
+    left: 0; 
+    right: 0; 
+    margin-left: auto; 
+    margin-right: auto; 
+    top: 0;
+    z-index: 9999;
+    filter: blur(6px) contrast(120%) !important;
+    transform: translate3d(0, 0, 0);
+}
+
 #graphic-container {
     width: 94vw;
     padding-bottom: 30px;
     margin: auto;
 }
 
-#map {
+#map,
+#smoke-canvas {
     margin-top: -25px;
     margin-left: -50px;
 }

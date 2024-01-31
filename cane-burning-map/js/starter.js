@@ -26,7 +26,6 @@ let paused = 0,
 	numSmokePlumes = 864;
 
 function init() {
-	console.log(safari);
 	createMap();
 };
 
@@ -86,11 +85,19 @@ async function createMap() {
 	const labels = mapCanvas.append("g");
 	const roads = mapCanvas.append("g");
 	const fires = mapCanvas.append("g");
-	let smoke;
+	let smoke,
+		smokeContainer;
 	if (safari) {
-		smoke = mapCanvas.append("g");
+		smokeContainer = mapContainer.append("div")
+			.attr("id", "smoke-container")
+			.style("width", containerWidth + "px")
+			.append("svg")
+			.attr("id", "smoke-canvas")
+			.attr("width", containerWidth + 100)
+			.attr("height", mapHeight);
+		smoke = smokeContainer.append("g");
 	} else {
-		const smokeContainer = mapCanvas.append("svg")
+		smokeContainer = mapCanvas.append("svg")
 			.attr("id", "smoke");
 		smoke = smokeContainer.append("g");
 	}
@@ -390,7 +397,7 @@ const createBarChart = (height, width, svg) => {
 		svg.selectAll("label")
 			.data(data)
 			.join("text")
-			.text(d => d.fire_count + " fires")
+			.text(d => d.fire_count === 1 ? d.fire_count + " fire" : d.fire_count + " fires")
 			.attr("dy", "-0.5em")
 			.attr("dx", x.bandwidth() / 2)
 			.attr("x", d => x(d.date))
@@ -510,7 +517,6 @@ const awaitContentLoad = async () => {
 		let numLoadedFires = d3.selectAll(".fire").size();
 		await waitforme(1000);
 		if (numLoadedFires === numFires && numLoadedSmokePlumes === numSmokePlumes) {
-			console.log("loaded");
 			break;
 		}
 	}
