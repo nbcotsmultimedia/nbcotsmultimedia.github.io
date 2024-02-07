@@ -4,7 +4,11 @@
 }
 
 #legend {
-    padding: 1em;
+    margin: 0px 5px 5px;
+}
+
+#filter {
+    margin: 0 5px;
 }
 
 .marker-cluster {
@@ -97,10 +101,6 @@
     margin-right: 0.25em;
 }
 
-.legend-label {
-    font-size: 14px;
-}
-
 .cluster-label {
     background-color: transparent !important;
     color: #ffffff !important;
@@ -110,6 +110,23 @@
 
 .map-container {
     display: flex;
+}
+
+.checkbox-label {
+    margin-left: 2px;
+}
+
+p {
+    font-size: 14px;
+}
+
+label p{
+    margin-bottom: 0;
+}
+
+h5 {
+    font-size: 16px;
+    font-weight: normal;
 }
 
 @media screen and (max-width: 768px) {

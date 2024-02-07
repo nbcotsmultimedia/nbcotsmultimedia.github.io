@@ -1,9 +1,13 @@
-var ds;
-var totalEntries;
-var noRepeatData;
-var config;
+let ds;
+let totalEntries;
+let allNoRepeatData,
+	allWithRepeatsData;
+let currentNoRepeatData,
+	currentWithRepeatsData
+let config;
 const markerList = [];
 const map = L.map('map', { preferCanvas: true, zoomControl: false }).setView(coords, zoom);
+const filterValues = {};
 
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	maxZoom: 19,
@@ -16,49 +20,57 @@ let legendItems = [
 		"color": "#e81416",
 		"size": "10px",
 		"label": "Fatal injury",
-		"severity": 'FATAL INJURY'
+		"severity": 'FATAL INJURY',
+		"id": "fatal"
 	},
 	{
 		"color": "#ffa500",
 		"size": "10px",
 		"label": "Suspected serious injury",
-		"severity": 'SUSPECTED SERIOUS INJURY'
+		"severity": 'SUSPECTED SERIOUS INJURY',
+		"id": "serious"
 	},
 	{
 		"color": "#70369d",
 		"size": "10px",
 		"label": "Other injury/ Not injured",
-		"severity": 'OTHER INJURY'
+		"severity": 'OTHER INJURY',
+		"id": "other"
 	},
 	{
 		"color": "#79c314",
 		"size": "10px",
 		"label": "Suspected minor injury",
-		"severity": 'SUSPECTED MINOR INJURY'
+		"severity": 'SUSPECTED MINOR INJURY',
+		"id": "minor"
 	},
 	{
 		"color": "#008000",
 		"size": "10px",
 		"label": "Possible injury",
-		"severity": 'POSSIBLE INJURY'
+		"severity": 'POSSIBLE INJURY',
+		"id": "possible"
 	}, 
 	{
 		"color": "#487de7",
 		"size": "10px",
 		"label": "Not injured",
-		"severity": 'NOT INJURED'
+		"severity": 'NOT INJURED',
+		"id": "not-injured"
 	}, 
 	{
 		"color": "#70369d",
 		"size": "10px",
 		"label": "Unknown injury",
-		"severity": 'UNKNOWN'
+		"severity": 'UNKNOWN',
+		"id": "unknown"
 	},
 	{
 		"color": "#FF69B4",
 		"size": "15px",
 		"label": "Multiple crashes",
-		"severity": ''
+		"severity": '',
+		"id": ""
 	}
 ];
 if (categories.length > 0) {
@@ -76,8 +88,6 @@ const handleMarkerClick = marker => {
 };
 
 const marker = row => {
-	console.log(row.severity)
-	console.log(legendItems.find(legendItem => legendItem.severity === row.severity))
 	const fillColor = row.repeat === "TRUE" ? "#FF69B4" : legendItems.find(legendItem => legendItem.severity === row.severity).color;
 	const radius = row.repeat === "TRUE" ? row.num_crashes < 5 ? 8 : 14 : 6;
 	const strokeWeight = row.repeat === "TRUE" ? 0 : 0.5;
@@ -91,6 +101,7 @@ const marker = row => {
 		repeat: row.repeat,
 		num_crashes: row.num_crashes
 	}).bindPopup(row.tooltip).on('click', e => handleMarkerClick(row));
+	$(marker).addClass("single-marker");
 	marker.addTo(markers);
 	markerList.push(marker);
 	if (row.repeat === "TRUE") {
@@ -156,6 +167,7 @@ function init() {
 	loadData(sheets[1], 'no repeats');
 
 	fillLegend(legendItems);
+	fillFilter(legendItems);
 };
 
 function buildConfig() {
@@ -196,30 +208,31 @@ function loadData(url, dataset) {
 		config,
 		complete: function (results) {
 			if (dataset === "no repeats") {
-				noRepeatData = results.data;
-				if (noRepeatData) {
+				allNoRepeatData = results.data;
+				currentNoRepeatData = allNoRepeatData;
+				if (allNoRepeatData) {
 					L.control.zoom().addTo(map);
 				}
 				if (zoom > 10) {
-					parseData();
+					parseData(allNoRepeatData, "noRepeats");
 				}
 			} else {
-				withRepeatsData = results.data;
+				allWithRepeatsData = results.data;
+				currentWithRepeatsData = allWithRepeatsData;
 				if (zoom <= 10) {
-					parseData();
+					parseData(allWithRepeatsData, "withRepeats");
 				}
 			}
 		}
 	});
 };
 
-function parseData() {
-	zoomLevel = map.getZoom();
-	if (zoomLevel < 12) {
-		addClusters(withRepeatsData);
+function parseData(data, dataType) {
+	if (dataType === "withRepeats") {
+		addClusters(data);
 		styleClusters();
-	} else {
-		addMarkers(noRepeatData);
+	} else if (dataType === "noRepeats") {
+		addMarkers(data);
 		styleMarkerOnZoom();
 	}
 
@@ -315,7 +328,7 @@ map.on('zoom', () => {
 	if (mapClustered) {
 		if (zoomLevel >= 12) {
 			clusters.clearLayers();
-			addMarkers(noRepeatData);
+			addMarkers(currentNoRepeatData);
 			styleMarkerOnZoom();
 		} else {
 			setTimeout(styleClusters, 50);
@@ -323,7 +336,7 @@ map.on('zoom', () => {
 	} else {
 		if (zoomLevel < 12) {
 			map.removeLayer(markers);
-			addClusters(withRepeatsData);
+			addClusters(currentWithRepeatsData);
 			setTimeout(styleClusters, 50);
 		} else {
 			styleMarkerOnZoom();
@@ -333,15 +346,51 @@ map.on('zoom', () => {
 
 
 const fillLegend = legendItems => {
-	let innerHtml = '';
+	const legend = $('#legend');
+	let innerHtml = legend.html();
 	for (let i = 0; i < legendItems.length; i++) {
 		const thisLegendItem = legendItems[i]
 		const itemHtml = `<div class="legend-item"><div class="legend-icon" `
 		+ `style="background-color:${thisLegendItem.color};height:${thisLegendItem.size};width:${thisLegendItem.size}"></div><p class="legend-label">${thisLegendItem.label}</p></div>`
 		innerHtml += itemHtml;
 	}
-	$('#legend').html(innerHtml);
-}
+	legend.html(innerHtml);
+};
+
+const fillFilter = legendItems => {
+	const filterContainer = $('#filter');
+	if (filterContainer.length > 0) {
+		let innerHtml = filterContainer.html();
+		for (let i = 0; i < legendItems.length; i++) {
+			const thisLegendItem = legendItems[i];
+			if (thisLegendItem.id.length > 0) {
+				filterValues[thisLegendItem.severity] = true;
+				const itemHtml = `<div class="filter-item"><input type="checkbox" id="${thisLegendItem.id}" name="${thisLegendItem.label}" value="${thisLegendItem.severity}" `
+				+ `onchange="filterInjuryTypes(event)" checked><label for="${thisLegendItem.label}" class="checkbox-label"><p>${thisLegendItem.label}</p></label><br/></div>`
+				innerHtml += itemHtml;
+			}
+		}
+		filterContainer.html(innerHtml);
+	}
+};
+
+const filterInjuryTypes = e => {
+	filterValues[e.target.value] = !filterValues[e.target.value];
+	let exclude = {...filterValues};
+	exclude = Object.keys(exclude).filter(key => !exclude[key]);
+	currentNoRepeatData = [...allNoRepeatData].filter(row => !exclude.includes(row.severity));
+	currentWithRepeatsData = [...allWithRepeatsData].filter(row => !exclude.includes(row.severity));
+	zoomLevel = map.getZoom();
+	if (mapClustered) {
+		clusters.clearLayers();
+		addClusters(currentWithRepeatsData);
+		setTimeout(styleClusters, 50);
+	} else {
+		map.removeLayer(markers);
+		addMarkers(currentNoRepeatData);
+		setTimeout(styleMarkerOnZoom, 50);
+	}
+};
 
 
 $(document).ready(function () {
