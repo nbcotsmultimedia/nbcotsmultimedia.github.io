@@ -228,7 +228,8 @@ function loadData(url, dataset) {
 };
 
 function parseData(data, dataType) {
-	if (dataType === "withRepeats") {
+	zoomLevel = map.getZoom();
+	if (zoomLevel >= 10 && dataType === "withRepeats") {
 		addClusters(data);
 		styleClusters();
 	} else if (dataType === "noRepeats") {
