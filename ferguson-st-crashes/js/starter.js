@@ -166,8 +166,11 @@ function init() {
 	loadData(sheets[0], 'with repeats');
 	loadData(sheets[1], 'no repeats');
 
-	fillLegend(legendItems);
-	fillFilter(legendItems);
+	if ($('#filter-legend').length > 0) {
+		fillFilter(legendItems);
+	} else {
+		fillLegend(legendItems);
+	}
 };
 
 function buildConfig() {
@@ -359,24 +362,29 @@ const fillLegend = legendItems => {
 };
 
 const fillFilter = legendItems => {
-	const filterContainer = $('#filter');
+	const filterContainer = $('#filter-legend');
 	if (filterContainer.length > 0) {
 		let innerHtml = filterContainer.html();
 		for (let i = 0; i < legendItems.length; i++) {
 			const thisLegendItem = legendItems[i];
 			if (thisLegendItem.id.length > 0) {
 				filterValues[thisLegendItem.severity] = true;
-				const itemHtml = `<div class="filter-item"><input type="checkbox" id="${thisLegendItem.id}" name="${thisLegendItem.label}" value="${thisLegendItem.severity}" `
-				+ `onchange="filterInjuryTypes(event)" checked><label for="${thisLegendItem.label}" class="checkbox-label"><p>${thisLegendItem.label}</p></label><br/></div>`
+				const itemHtml = `<div class="form-check form-switch">
+					<input class="form-check-input" onchange="filterInjuryTypes(event, '${thisLegendItem.color}')" type="checkbox" checked id="${thisLegendItem.id}" value="${thisLegendItem.severity}" style="background-color:${thisLegendItem.color};border-color:${thisLegendItem.color};">
+					<label class="form-check-label" for="${thisLegendItem.id}"><p>${thisLegendItem.label}</p></label>
+				</div>`
 				innerHtml += itemHtml;
 			}
 		}
 		filterContainer.html(innerHtml);
+		const checkBoxes = filterContainer.children().children("input");
+		//checkBoxes.change(event => filterInjuryTypes(event));
 	}
 };
 
-const filterInjuryTypes = e => {
-	filterValues[e.target.value] = !filterValues[e.target.value];
+const filterInjuryTypes = (e, color) => {
+	const val = e.target.value;
+	filterValues[val] = !filterValues[val];
 	let exclude = {...filterValues};
 	exclude = Object.keys(exclude).filter(key => !exclude[key]);
 	currentNoRepeatData = [...allNoRepeatData].filter(row => !exclude.includes(row.severity));
@@ -391,6 +399,7 @@ const filterInjuryTypes = e => {
 		addMarkers(currentNoRepeatData);
 		setTimeout(styleMarkerOnZoom, 50);
 	}
+	$(e.target).css("background-color", filterValues[val] ? color : "#ffffff");
 };
 
 
