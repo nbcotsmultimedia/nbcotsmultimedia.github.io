@@ -215,6 +215,7 @@ function loadData(url, dataset) {
 				currentNoRepeatData = allNoRepeatData;
 				if (allNoRepeatData) {
 					L.control.zoom().addTo(map);
+					$('.form-check-input').removeAttr("disabled");
 				}
 				if (zoom > 10) {
 					parseData(allNoRepeatData, "noRepeats");
@@ -370,15 +371,13 @@ const fillFilter = legendItems => {
 			if (thisLegendItem.id.length > 0) {
 				filterValues[thisLegendItem.severity] = true;
 				const itemHtml = `<div class="form-check form-switch">
-					<input class="form-check-input" onchange="filterInjuryTypes(event, '${thisLegendItem.color}')" type="checkbox" checked id="${thisLegendItem.id}" value="${thisLegendItem.severity}" style="background-color:${thisLegendItem.color};border-color:${thisLegendItem.color};">
+					<input class="form-check-input" onchange="filterInjuryTypes(event, '${thisLegendItem.color}')" type="checkbox" checked id="${thisLegendItem.id}" value="${thisLegendItem.severity}" style="background-color:${thisLegendItem.color};border-color:${thisLegendItem.color};" disabled>
 					<label class="form-check-label" for="${thisLegendItem.id}"><p>${thisLegendItem.label}</p></label>
 				</div>`
 				innerHtml += itemHtml;
 			}
 		}
 		filterContainer.html(innerHtml);
-		const checkBoxes = filterContainer.children().children("input");
-		//checkBoxes.change(event => filterInjuryTypes(event));
 	}
 };
 
