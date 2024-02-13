@@ -4,6 +4,8 @@
 	gap: 0px; /* No space between cards */
 	border-left: 1px solid #ccc; /* Border on the left edge of the grid */
   	border-top: 1px solid #ccc; /* Border on the top edge of the grid */
+	min-height: 100vh;
+	height: auto;
   }
   
   .accuser-card {
@@ -11,6 +13,7 @@
   	border-bottom: 1px solid #ccc; /* Bottom border for each card */
 	padding: 0;
 	position: relative;
+	overflow: hidden;
   }
   
   .accuser-card img {
@@ -41,9 +44,11 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
 	background-color: black; /* Black background */
 	color: white; /* White text */
-	display: flex;
 	flex-direction: column;
   	justify-content: center;
   	padding: 10px;
