@@ -55,6 +55,32 @@ function loadAccusersData(url) {
 	  // Append the overlay to the card
 	  card.appendChild(overlay);
 
+	  // Additional information div
+	  const moreInfo = document.createElement('div');
+      moreInfo.className = 'more-info';
+      moreInfo.style.display = 'none'; // Hidden by default
+      
+	  // Formatting the additional information
+	  moreInfo.innerHTML = `
+      <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
+      <p>${accuser.assignment}</p>
+      <p class="location-date">
+        ${accuser.locationOfAccusation} 
+        <span class="right-aligned">${accuser.dateOfAccusation}</span>
+      </p>
+      <p class="nature">${accuser.natureOfAccusation}</p>
+    `;
+
+      card.appendChild(moreInfo);
+
+	  // Click event to toggle visibility
+	  card.addEventListener('click', function() {
+		const isInfoVisible = moreInfo.style.display === 'block';
+		overlay.style.display = isInfoVisible ? 'flex' : 'none';
+		image.style.display = isInfoVisible ? 'block' : 'none';
+		moreInfo.style.display = isInfoVisible ? 'none' : 'block';
+	  });
+
 	  // Append the card to the grid container
 	  gridContainer.appendChild(card);
 	});

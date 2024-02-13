@@ -34,4 +34,36 @@
 	padding: 0; /* Adjust if necessary */
 	font-size: 14px; /* Adjust based on your design */
   }
+
+  .more-info {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: black; /* Black background */
+	color: white; /* White text */
+	display: flex;
+	flex-direction: column;
+  	justify-content: center;
+  	padding: 10px;
+  	text-align: left; /* Ensure content is left-aligned */
+  	overflow-y: auto; /* In case content overflows */
+  }
+
+  .more-info p {
+	margin: 5px 0; /* Adjust spacing between paragraphs */
+  }
   
+  .location-date {
+	display: flex;
+	justify-content: space-between;
+  }
+  
+  .right-aligned {
+	margin-left: auto; /* Pushes the date to the right */
+  }
+  
+  .nature {
+	margin-top: 10px; /* Extra spacing before the nature of accusation */
+  }
