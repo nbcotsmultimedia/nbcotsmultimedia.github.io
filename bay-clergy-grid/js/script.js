@@ -1,4 +1,41 @@
+let globalData;
 let currentlyVisibleInfo = null; // Define it outside any function
+
+// Utility function to calculate cells per row
+function getCellsPerRow() {
+    const gridContainerWidth = document.getElementById('accusersGrid').offsetWidth;
+    const cardWidth = 200; // Adjust this based on your actual card width
+    return Math.floor(gridContainerWidth / cardWidth);
+}
+
+// Check if cell is an orphan
+function isOrphan(index, total, cellsPerRow) {
+	const rows = Math.ceil(total / cellsPerRow);
+	const fullRows = Math.floor(total / cellsPerRow);
+	const itemsInLastRow = total % cellsPerRow;
+  
+	// An orphan cell is one that's in the last row when that row isn't full
+	const inLastRow = index >= (fullRows * cellsPerRow);
+	return inLastRow && itemsInLastRow === 1;
+  }
+
+function adjustOrphanCells(data) {
+    // Ensure this function is defined before the first call in createGrid
+    const cellsPerRow = getCellsPerRow();
+    const cells = document.querySelectorAll('.accuser-card');
+    cells.forEach((cell, index) => {
+        const moreInfo = cell.querySelector('.more-info');
+        if (isOrphan(index, data.length, cellsPerRow)) {
+            // Apply specific adjustments
+            moreInfo.style.minHeight = '500px';
+            moreInfo.style.overflowY = 'auto';
+        } else {
+            // Reset adjustments if not an orphan
+            moreInfo.style.minHeight = '';
+            moreInfo.style.overflowY = '';
+        }
+    });
+}
 
 function init() {
 	// console.log("ready");
@@ -8,27 +45,29 @@ function init() {
 // Store sheet URL
 const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
 
+// Load data
 function loadAccusersData(url) {
 	Papa.parse(url, {
 	  download: true,
 	  header: true,
 	  skipEmptyLines: true,
 	  complete: function(results) {
-		// Now that you have your data, you can call a function to process this data
-		createGrid(results.data);
+		globalData = results.data // Store the loaded data globally
+		createGrid(globalData); // Create the grid using global data
 	  },
 	  error: function(error) {
-		// Handle errors if necessary
 		console.error('Error while fetching and parsing CSV:', error);
 	  }
 	});
   }
 
-function createGrid(data, index) {
+// Create grid
+function createGrid(data) {
+	// console.log(data);
 	const gridContainer = document.getElementById('accusersGrid');
 	gridContainer.innerHTML = ''; // Clear existing content
   
-	data.forEach(accuser => {
+	data.forEach((accuser, index) => {
 	  // Create the card container
 	  const card = document.createElement('div');
 	  card.className = 'accuser-card';
@@ -105,6 +144,8 @@ function createGrid(data, index) {
 		  currentlyVisibleInfo = moreInfo;
 		}
 
+		const cellsPerRow = getCellsPerRow();
+
 		if (isOrphan(index, data.length, cellsPerRow)) { // Assuming you know cellsPerRow
 			// Apply specific adjustments to the card or moreInfo
 			// This might involve setting a max height, adjusting alignment, etc.
@@ -112,24 +153,26 @@ function createGrid(data, index) {
 			moreInfo.style.overflowY = 'auto'; // Allow scrolling within moreInfo
 		  }
 
+		// Check isOrphan function
+		// console.log(index, data.length, cellsPerRow, isOrphan(index, data.length, cellsPerRow));
+
 	  });
 
 	  // Append the card to the grid container
 	  gridContainer.appendChild(card);
-	});
-  }  
 
-function isOrphan(index, total, cellsPerRow) {
-	const rows = Math.ceil(total / cellsPerRow);
-	const fullRows = Math.floor(total / cellsPerRow);
-	const itemsInLastRow = total % cellsPerRow;
-  
-	// An orphan cell is one that's in the last row when that row isn't full
-	const inLastRow = index >= (fullRows * cellsPerRow);
-	return inLastRow && itemsInLastRow === 1;
+	});
+
+	// After the grid is fully created:
+	adjustOrphanCells(data);
   }
-  
-// Using jQuery to call init when the document is ready
-$(document).ready(function(){
+
+window.addEventListener('resize', function() {
+	adjustOrphanCells(globalData);
+  });
+
+// Call init when the document is ready
+document.addEventListener('DOMContentLoaded', function() {
 	init();
-});
+  });
+  
