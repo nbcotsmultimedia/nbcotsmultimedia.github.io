@@ -1,33 +1,28 @@
+// Configuration and global variables
 let globalData;
-let currentlyVisibleInfo = null; // Define it outside any function
+
+const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
+
+document.addEventListener('DOMContentLoaded', init);
 
 function init() {
-	// console.log("ready");
 	loadAccusersData(googleSheetCSVURL);
 }
 
-// Store sheet URL
-const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
-
-// Load data
 function loadAccusersData(url) {
 	Papa.parse(url, {
 	  download: true,
 	  header: true,
 	  skipEmptyLines: true,
-	  complete: function(results) {
-		globalData = results.data // Store the loaded data globally
-		createGrid(globalData); // Create the grid using global data
+	  complete: results => {
+		globalData = results.data;
+		createGrid(globalData);
 	  },
-	  error: function(error) {
-		console.error('Error while fetching and parsing CSV:', error);
-	  }
+	  error: error => console.error('Error while fetching and parsing CSV:', error)
 	});
   }
 
-// Create grid
 function createGrid(data) {
-	// console.log(data);
 	const gridContainer = document.getElementById('accusersGrid');
 	gridContainer.innerHTML = ''; // Clear existing content
   
