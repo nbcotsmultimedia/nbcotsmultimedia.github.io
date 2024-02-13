@@ -14,7 +14,6 @@
 	padding: 0;
 	position: relative;
 	overflow: hidden;
-	/* min-height: 200px; */
   }
   
   .accuser-card img {
@@ -32,6 +31,12 @@
 	color: white; /* Text color */
 	padding: 5px; /* Adjust based on your design */
   }
+
+  .overlay {
+    display: flex;
+    flex-direction: column; /* Explicitly set to maintain layout */
+    align-items: start; /* Align items to the start of the flex container */
+}
   
   .overlay p {
 	margin: 0; /* Remove default margin */
@@ -55,6 +60,7 @@
   	padding: 10px;
   	text-align: left; /* Ensure content is left-aligned */
   	overflow-y: auto; /* In case content overflows */
+	visibility: hidden;
   }
 
   .more-info p {
