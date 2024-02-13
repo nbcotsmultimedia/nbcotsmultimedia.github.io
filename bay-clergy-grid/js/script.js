@@ -24,7 +24,7 @@ function loadAccusersData(url) {
 	});
   }
 
-  function createGrid(data, index) {
+function createGrid(data, index) {
 	const gridContainer = document.getElementById('accusersGrid');
 	gridContainer.innerHTML = ''; // Clear existing content
   
@@ -104,6 +104,14 @@ function loadAccusersData(url) {
 		  moreInfo.style.display = 'block';
 		  currentlyVisibleInfo = moreInfo;
 		}
+
+		if (isOrphan(index, data.length, cellsPerRow)) { // Assuming you know cellsPerRow
+			// Apply specific adjustments to the card or moreInfo
+			// This might involve setting a max height, adjusting alignment, etc.
+			moreInfo.style.minHeight = '500px'; // Example adjustment
+			moreInfo.style.overflowY = 'auto'; // Allow scrolling within moreInfo
+		  }
+
 	  });
 
 	  // Append the card to the grid container
@@ -111,6 +119,16 @@ function loadAccusersData(url) {
 	});
   }  
 
+function isOrphan(index, total, cellsPerRow) {
+	const rows = Math.ceil(total / cellsPerRow);
+	const fullRows = Math.floor(total / cellsPerRow);
+	const itemsInLastRow = total % cellsPerRow;
+  
+	// An orphan cell is one that's in the last row when that row isn't full
+	const inLastRow = index >= (fullRows * cellsPerRow);
+	return inLastRow && itemsInLastRow === 1;
+  }
+  
 // Using jQuery to call init when the document is ready
 $(document).ready(function(){
 	init();
