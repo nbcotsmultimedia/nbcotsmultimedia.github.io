@@ -1,5 +1,6 @@
 // Configuration and global variables
 let globalData;
+let activeCard = null; // Globally track the active card
 
 const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
 const gridContainer = document.getElementById('accusersGrid');
@@ -15,6 +16,7 @@ function init() {
     loadAccusersData(googleSheetCSVURL);
     updateEventListeners(); // Set initial event listeners based on current viewport width
     window.addEventListener('resize', debounce(updateEventListeners, 250)); // Debounce the resize event
+    closeButton.addEventListener('click', closeModal);
 }
 
 // Debounce function to limit the rate at which a function can fire.
@@ -33,6 +35,7 @@ function debounce(func, wait, immediate) {
     };
 }
 
+// Function to refresh page on resize past breakpoint (prevent duplication of 'more info' displays)
 (function() {
     var widthThreshold = 768; // Set this to your mobile/desktop breakpoint
     var wasBelowThreshold = window.innerWidth < widthThreshold;
@@ -73,12 +76,25 @@ function handleClick(event) {
 function handleDesktopClick(event) {
     const target = event.target.closest('.accuser-card');
     if (target) {
-        // Preventing default action and stopping propagation to ensure no other handlers are executed
+        // Check if the target is already the active card
+        if (activeCard === target) {
+            // If it's the active card, toggle its visibility
+            toggleVisibility(target);
+        } else {
+            // If there's a different active card, hide its more-info
+            if (activeCard) {
+                toggleVisibility(activeCard, false);
+            }
+            // Show the more-info of the new active card
+            toggleVisibility(target, true);
+            // Update the activeCard reference to the new card
+            activeCard = target;
+        }
         event.preventDefault();
         event.stopPropagation();
-        toggleVisibility(target);
     }
 }
+
 
 function createCard(accuser, index) {
     const card = document.createElement('div');
