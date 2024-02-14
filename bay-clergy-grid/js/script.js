@@ -102,13 +102,16 @@ function createCard(accuser, index) {
     card.innerHTML = `
         <img src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
         <div class="overlay">
-            <p>ACCUSER</p>
+            <p class="accuser-head">ACCUSER</p>
             <p class="accuser-name">${accuser.name}</p>
         </div>
         <div class="more-info" style="display: none;">
-            <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
+            <p class="accused-head">ACCUSED</p>
+            <br />
+            <p class="accused-name">${accuser.clergyMemberAccused}</p>
             <p class="assignment">${accuser.assignment}</p>
             <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
+            <div class='line'></div>
             <p class="nature">${accuser.natureOfAccusation}</p>
         </div>
     `;

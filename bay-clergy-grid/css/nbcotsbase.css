@@ -1,3 +1,32 @@
+body {
+	background-color: #000000 !important;
+	font-size: 1rem; /* 16 px */
+}
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-size: 1.0625rem; /* 17px/16px assuming the default font size is 16px */
+	color: #FFFFFF;
+  }
+
+.overlay .accuser-head {
+	font-family: 'Arthouse Owned Rounded', sans-serif; /* Fallback font */
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.8rem; /* 10px/16px */
+    letter-spacing: 0.1em; /* Typically, em is used for letter-spacing */
+    text-transform: uppercase;
+	line-height: 18px;
+	margin-left: .3rem;
+}
+
+.overlay .accuser-name {
+	font-family: 'Georgia';
+	font-size: 1.1rem;
+	letter-spacing: 0.02em;
+	margin-left: .3rem;
+}
+
 .grid-container {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -16,12 +45,14 @@
 	padding: 0;
 	position: relative;
 	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
   }
   
   .accuser-card img {
 	width: 100%; /* Make images responsive */
 	height: auto;
-	display: block;
+	/* display: block; */
   }
 
   .overlay {
@@ -31,7 +62,7 @@
 	right: 0;
 	background-color: rgba(0, 0, 0, 0.5); /* Partially transparent black */
 	color: white; /* Text color */
-	padding: 5px; /* Adjust based on your design */
+	padding: .3rem;
   }
 
   .overlay {
@@ -47,6 +78,9 @@
   }
 
   .more-info {
+	background-color: #000; /* Black background */
+	color: #FFFFFF; /* White text */
+	padding: 1rem;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -55,39 +89,67 @@
 	width: 100%;
 	height: 100%;
 	display: none;
-	background-color: black; /* Black background */
-	color: white; /* White text */
-	flex-direction: column;
-  	justify-content: center;
-  	padding: 10px;
+	visibility: hidden;	
   	text-align: left; /* Ensure content is left-aligned */
   	overflow-y: auto; /* In case content overflows */
-	visibility: hidden;
+	align-self: flex-end;
   }
 
-  .more-info p {
-	margin: 5px 0; /* Adjust spacing between paragraphs */
+  .more-info .accused-head {
+	font-family: 'Arthouse Owned Rounded', sans-serif; /* Fallback font */
+    font-style: normal;
+    font-weight: 600;
+    font-size: 0.8rem; /* 10px/16px */
+    letter-spacing: 0.1em; /* Typically, em is used for letter-spacing */
+    text-transform: uppercase;
+	line-height: 18px;
+}
+
+.more-info .accused-name {
+	font-family: 'Georgia';
+	font-size: 1.1rem;
+	letter-spacing: 0.02em;
+}
+
+  .more-info .assignment {
+	font-family: 'Arthouse Owned';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 0.8rem; /* 10px/16px */
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
   }
   
   .location-date {
 	display: flex;
 	justify-content: space-between;
+	font-family: 'Arthouse Owned';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 0.8rem; /* 10px/16px */
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	margin-top: 0.8rem;
   }
   
   .right-aligned {
 	margin-left: auto; /* Pushes the date to the right */
   }
+
+  .line {
+	border-bottom: 0.5px solid #888;
+  }
   
   .nature {
-	margin-top: 10px; /* Extra spacing before the nature of accusation */
-  }
-
-  /* Mobile styles */
-
-  @media only screen and (max-width: 600px) { /* Adjust the max-width as needed for your design */
-	.grid-container {
-	  grid-template-columns: repeat(2, 1fr); /* Sets the grid to 2 columns */
-	}
+	margin-top: 20px;
+	font-family: 'Arthouse Owned';
+	font-size: 0.9rem; /* 10px/16px */
+	line-height: 17px;
+	text-align: justify;
+	letter-spacing: 0.03em;
+	align-items: flex-end;
+	display: flex;
+	margin-bottom: 0;
   }
 
   .modal {
@@ -124,32 +186,24 @@
 	text-decoration: none;
 	cursor: pointer;
   }
-  
-  .modal-content {
-	background-color: #fefefe;
-	margin: 15% auto; /* 15% from the top and centered */
-	padding: 20px;
-	border: 1px solid #888;
-	width: 80%; /* Could be more or less, depending on screen size */
-  }
-  
-  .close {
-	color: #aaa;
-	float: right;
-	font-size: 28px;
-	font-weight: bold;
-  }
-  
-  .close:hover,
-  .close:focus {
-	color: black;
-	text-decoration: none;
-	cursor: pointer;
-  }
 
   * {
 	box-sizing: border-box;
   }
   
+  /* Mobile styles */
+
+  @media only screen and (max-width: 600px) { /* Adjust the max-width as needed for your design */
+	.grid-container { /* Sets the grid to 2 columns */
+	  grid-template-columns: repeat(2, 1fr);
+	}
+	p { /* Adjust font size for small devices */
+		font-size: 0.9375rem; /* Adjust the size as needed */
+	  }
+  }
   
-  
+  @media (min-width: 1201px) {
+	p { /* Adjust font size for large devices */
+	  font-size: 1.25rem; /* Adjust the size as needed */
+	}
+  }
