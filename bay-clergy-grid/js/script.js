@@ -95,11 +95,11 @@ function handleDesktopClick(event) {
     }
 }
 
-
 function createCard(accuser, index) {
     const card = document.createElement('div');
     card.className = 'accuser-card';
-    card.innerHTML = `
+    
+    let innerHTML = `
         <img src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
         <div class="overlay">
             <p class="accuser-head">ACCUSER</p>
@@ -113,12 +113,24 @@ function createCard(accuser, index) {
             <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
             <div class='line'></div>
             <p class="nature">${accuser.natureOfAccusation}</p>
-        </div>
-    `;
+            <div class="footer">`; // Opening div tag for footer
+            
+            // Add footnote if accused is defrocked or deceased
+            if (accuser.isDefrocked === "yes") {
+                innerHTML += '<p class="footnote">**Defrocked</p>';
+            }
+            if (accuser.isDeceased === "yes") {
+                innerHTML += '<p class="footnote">*Deceased</p>';
+            }
+            
+    innerHTML += `</div></div>`; // Closing div tags for footer and more-info
+    
+    card.innerHTML = innerHTML;
     card.setAttribute('data-id', `card-${index}`);
-    // Removed the click event listener that was here for opening the modal
+    
     return card;
 }
+
 
 function loadAccusersData(url) {
     Papa.parse(url, {
@@ -145,20 +157,6 @@ function createGrid(data) {
 function openModal(accuser) {
     console.log('Opening modal for:', accuser);
     // modalName.textContent = accuser.name;
-    modalBody.innerHTML = `
-        <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
-        <p class="assignment">${accuser.assignment}</p>
-        <p class="location">${accuser.locationOfAccusation}</p>
-        <p class="date">${accuser.dateOfAccusation}</p>
-        <p class="nature">${accuser.natureOfAccusation}</p>
-    `;
-    modal.style.display = 'block';
-}
-
-function openModal(accuser) {
-    console.log('Opening modal for:', accuser);
-    // Hide the accuser's name element
-    modalName.style.display = 'none';
     modalBody.innerHTML = `
         <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
