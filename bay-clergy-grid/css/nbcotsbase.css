@@ -107,8 +107,7 @@ body {
   visibility: hidden;
 }
 
-.location-date,
-.more-info, .assignment {
+.location-date, .assignment {
   font-style: normal;
   font-weight: 400;
   letter-spacing: 0.06em;
