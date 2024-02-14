@@ -152,6 +152,18 @@ p {
 	margin-bottom: 0;
   }
 
+  .more-info .footnote {
+	font-family: 'Arthouse Owned';
+	font-size: 0.8rem;
+	line-height: 17px;
+	letter-spacing: 0.03em;
+	margin-top: 20px;
+	margin-bottom: 0;
+	opacity: 0.80;
+	text-align: right;
+	font-style: italic;
+  }
+
   .modal {
 	display: none; /* Hidden by default */
 	position: fixed; /* Stay in place */
