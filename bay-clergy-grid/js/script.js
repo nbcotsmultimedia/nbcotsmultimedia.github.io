@@ -2,52 +2,91 @@
 let globalData;
 
 const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
+const gridContainer = document.getElementById('accusersGrid');
+const modal = document.getElementById('myModal');
+const modalName = document.getElementById('modal-accuser-name');
+const modalBody = document.getElementById('modalBody');
+const closeButton = document.querySelector('.close');
 
+// Event listeners
 document.addEventListener('DOMContentLoaded', init);
 
 function init() {
     loadAccusersData(googleSheetCSVURL);
-
-	// Check if the device is a touchscreen device
-    const isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
-
-    const gridContainer = document.getElementById('accusersGrid');
-    if (isTouchDevice) {
-        // For touchscreen devices, add touchstart event listener
-        gridContainer.addEventListener('touchstart', handleTouchStart);
-    } else {
-        // For non-touchscreen devices (e.g., desktop), add click event listener
-        gridContainer.addEventListener('click', handleClick);
-    }
+    updateEventListeners(); // Set initial event listeners based on current viewport width
+    window.addEventListener('resize', debounce(updateEventListeners, 250)); // Debounce the resize event
 }
 
-function handleTouchStart(event) {
-	event.stopPropagation();
-    const target = event.target.closest('.accuser-card');
-    if (target) {
-        const accuser = getAccuserInfo(target);
-        openModal(accuser);
+// Debounce function to limit the rate at which a function can fire.
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+}
+
+function updateEventListeners() {
+    // Remove all current event listeners to avoid duplicates
+    gridContainer.removeEventListener('click', handleClick);
+    gridContainer.removeEventListener('click', handleDesktopClick);
+
+    const isMobileView = window.matchMedia('(max-width: 768px)').matches;
+
+    // Add the appropriate event listener based on the viewport width
+    if (isMobileView) {
+        gridContainer.addEventListener('click', handleClick);
+    } else {
+        gridContainer.addEventListener('click', handleDesktopClick);
     }
 }
 
 function handleClick(event) {
-	event.stopPropagation();
     const target = event.target.closest('.accuser-card');
     if (target) {
+        event.stopPropagation(); // Stop propagation here to prevent desktop handler from firing
         const accuser = getAccuserInfo(target);
         openModal(accuser);
     }
 }
 
-function getAccuserInfo(element) {
-    // Retrieve accuser information from the clicked card element
-    const accuser = {
-        name: element.querySelector('p').innerText,
-        // Add other properties as needed
-    };
-    return accuser;
+function handleDesktopClick(event) {
+    const target = event.target.closest('.accuser-card');
+    if (target) {
+        // Preventing default action and stopping propagation to ensure no other handlers are executed
+        event.preventDefault();
+        event.stopPropagation();
+        toggleVisibility(target);
+    }
 }
 
+function createCard(accuser, index) {
+    const card = document.createElement('div');
+    card.className = 'accuser-card';
+    card.innerHTML = `
+        <img src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
+        <div class="overlay">
+            <p>ACCUSER</p>
+            <p class="accuser-name">${accuser.name}</p>
+        </div>
+        <div class="more-info" style="display: none;">
+            <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
+            <p class="assignment">${accuser.assignment}</p>
+            <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
+            <p class="nature">${accuser.natureOfAccusation}</p>
+        </div>
+    `;
+    card.setAttribute('data-id', `card-${index}`);
+    // Removed the click event listener that was here for opening the modal
+    return card;
+}
 
 function loadAccusersData(url) {
     Papa.parse(url, {
@@ -57,75 +96,52 @@ function loadAccusersData(url) {
         complete: results => {
             globalData = results.data;
             createGrid(globalData);
+            document.dispatchEvent(new Event('gridLoaded')); // Dispatch the custom event after grid creation
         },
         error: error => console.error('Error while fetching and parsing CSV:', error)
     });
 }
 
 function createGrid(data) {
-    const gridContainer = document.getElementById('accusersGrid');
     gridContainer.innerHTML = ''; // Clear existing content
-
     data.forEach((accuser, index) => {
-        const card = createCard(accuser, index, gridContainer);
-        // Add the event listener to open the modal
-        card.addEventListener('click', function () {
-            openModal(accuser);
-        });
+        const card = createCard(accuser, index);
         gridContainer.appendChild(card);
     });
 }
 
-function createCard(accuser, index, container) {
-    const card = document.createElement('div');
-    card.className = 'accuser-card';
-    card.innerHTML = `
-        <img src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
-        <div class="overlay">
-            <p>ACCUSER</p>
-            <p>${accuser.name}</p>
-        </div>
-        <div class="more-info" style="display: none;">
-            <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
-            <p>${accuser.assignment}</p>
-            <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
-            <p class="nature">${accuser.natureOfAccusation}</p>
-        </div>
-    `;
-    card.setAttribute('data-id', `card-${index}`);
-    card.addEventListener('click', () => toggleVisibility(card));
-    container.appendChild(card);
-	return card;
-}
-
 function openModal(accuser) {
-    const modal = document.getElementById('myModal');
-    const modalBody = document.getElementById('modalBody');
-
-    // Set the content inside the modal
+    console.log('Opening modal for:', accuser);
+    // modalName.textContent = accuser.name;
     modalBody.innerHTML = `
         <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
-        <p>${accuser.assignment}</p>
-        <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
+        <p class="assignment">${accuser.assignment}</p>
+        <p class="location">${accuser.locationOfAccusation}</p>
+        <p class="date">${accuser.dateOfAccusation}</p>
         <p class="nature">${accuser.natureOfAccusation}</p>
     `;
-
-    // Show the modal
     modal.style.display = 'block';
 }
 
-// Get the element that closes the modal
-const closeButton = document.querySelector('.close');
+function openModal(accuser) {
+    console.log('Opening modal for:', accuser);
+    // Hide the accuser's name element
+    modalName.style.display = 'none';
+    modalBody.innerHTML = `
+        <p class="accused">ACCUSED<br />${accuser.clergyMemberAccused}</p>
+        <p class="assignment">${accuser.assignment}</p>
+        <p class="location">${accuser.locationOfAccusation}</p>
+        <p class="date">${accuser.dateOfAccusation}</p>
+        <p class="nature">${accuser.natureOfAccusation}</p>
+    `;
+    modal.style.display = 'block';
+}
 
-// When the user clicks on (x), close the modal
-closeButton.onclick = function () {
-    const modal = document.getElementById('myModal');
+function closeModal() {
     modal.style.display = 'none';
 }
 
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function (event) {
-    const modal = document.getElementById('myModal');
+function closeOutsideModal(event) {
     if (event.target == modal) {
         modal.style.display = 'none';
     }
@@ -135,9 +151,30 @@ function toggleVisibility(card) {
     const moreInfo = card.querySelector('.more-info');
     const overlay = card.querySelector('.overlay');
     if (moreInfo && overlay) {
-        const isVisible = moreInfo.style.visibility === "visible";
-        overlay.style.visibility = isVisible ? "visible" : "hidden";
-        moreInfo.style.visibility = isVisible ? "hidden" : "visible";
-        moreInfo.style.display = isVisible ? "none" : "block";
+        const isVisible = moreInfo.style.visibility === 'visible';
+        overlay.style.visibility = isVisible ? 'visible' : 'hidden';
+        moreInfo.style.visibility = isVisible ? 'hidden' : 'visible';
+        moreInfo.style.display = isVisible ? 'none' : 'block';
     }
+}
+
+function getAccuserInfo(element) {
+    // Retrieve accuser information from the clicked card element
+    const name = element.querySelector('.accuser-name').textContent;
+    const clergyMemberAccused = element.querySelector('.accused').textContent.split('ACCUSED')[1].trim();
+    const assignment = element.querySelector('.assignment').textContent;
+    const locationOfAccusation = element.querySelector('.location-date').childNodes[0].textContent.trim();
+    const dateOfAccusation = element.querySelector('.right-aligned').textContent;
+    const natureOfAccusation = element.querySelector('.nature')?.textContent.trim();
+
+    // Construct the accuser object
+    const accuser = {
+        name,
+        clergyMemberAccused,
+        assignment,
+        locationOfAccusation,
+        dateOfAccusation,
+        natureOfAccusation
+    };
+    return accuser;
 }
