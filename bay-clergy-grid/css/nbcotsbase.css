@@ -18,6 +18,7 @@ p {
     text-transform: uppercase;
 	line-height: 18px;
 	margin-left: .3rem;
+	margin-top: .2rem;
 }
 
 .overlay .accuser-name {
@@ -25,6 +26,8 @@ p {
 	font-size: 1.1rem;
 	letter-spacing: 0.02em;
 	margin-left: .3rem;
+	margin-bottom: .2rem;
+	margin-top: .2rem;
 }
 
 .grid-container {
@@ -60,7 +63,7 @@ p {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background-color: rgba(0, 0, 0, 0.5); /* Partially transparent black */
+	background-color: rgba(0, 0, 0, 0.7); /* Partially transparent black */
 	color: white; /* Text color */
 	padding: .3rem;
   }
