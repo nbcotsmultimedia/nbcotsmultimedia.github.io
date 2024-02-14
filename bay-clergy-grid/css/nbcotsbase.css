@@ -3,10 +3,12 @@
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	gap: 0px; /* No space between cards */
 	border-left: 1px solid #ccc; /* Border on the left edge of the grid */
-  	border-top: 1px solid #ccc; /* Border on the top edge of the grid */
-	min-height: 100vh;
+	border-top: 1px solid #ccc; /* Border on the top edge of the grid */
 	height: auto;
-  }
+	max-width: 1200px; /* Example max-width, adjust as needed */
+	margin-left: auto; /* Center the grid horizontally */
+	margin-right: auto; /* Center the grid horizontally */
+  }  
   
   .accuser-card {
 	border-right: 1px solid #ccc; /* Right border for each card */
@@ -144,7 +146,10 @@
 	text-decoration: none;
 	cursor: pointer;
   }
+
+  * {
+	box-sizing: border-box;
+  }
   
-  /* Add any additional modal styling you need here */
   
   

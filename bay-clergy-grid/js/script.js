@@ -33,6 +33,19 @@ function debounce(func, wait, immediate) {
     };
 }
 
+(function() {
+    var widthThreshold = 768; // Set this to your mobile/desktop breakpoint
+    var wasBelowThreshold = window.innerWidth < widthThreshold;
+  
+    window.addEventListener('resize', function() {
+      var isBelowThreshold = window.innerWidth < widthThreshold;
+      if (isBelowThreshold !== wasBelowThreshold) {
+        window.location.reload(); // Refresh the page
+        wasBelowThreshold = isBelowThreshold; // Update the threshold flag
+      }
+    });
+  })();  
+
 function updateEventListeners() {
     // Remove all current event listeners to avoid duplicates
     gridContainer.removeEventListener('click', handleClick);
@@ -178,3 +191,4 @@ function getAccuserInfo(element) {
     };
     return accuser;
 }
+
