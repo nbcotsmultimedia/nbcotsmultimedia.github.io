@@ -204,7 +204,6 @@ function openModal(accuser) {
         <p class="accuser-name">${accuser.name}</p>
         <img id="accuserImage" src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
         <p class="accused-head">ACCUSED</p>
-        <br />
         <p class="accused-name">${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
         <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
