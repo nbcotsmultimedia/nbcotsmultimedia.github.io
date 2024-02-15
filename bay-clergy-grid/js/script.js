@@ -193,25 +193,27 @@ function createGrid(data) {
 
 // Populate the modal with accuser info and display it
 function openModal(accuser) {
-    // Get the existing image element
-    const accuserImage = document.getElementById('accuserImage');
+    // Construct the image source path based on the accuser's index
+    const imageIndex = accuser.img.substring(accuser.img.lastIndexOf("-") + 1, accuser.img.lastIndexOf("."));
+    const imagePath = `images/landscape-${imageIndex}.png`;
 
-    // Set the source attribute of the image element
-    accuserImage.src = accuser.img;
+    // Log the generated image path to the console for debugging
+    console.log("Generated image path:", imagePath);
 
     // Set the content of the modal body with information from the accuser
-	modalBody.innerHTML = `
+    modalBody.innerHTML = `
         <p class="accuser-head">ACCUSER</p>
         <p class="accuser-name">${accuser.name}</p>
-        <img id="accuserImage" src="${accuser.img}" alt="${accuser.name}" class="img-fluid">
+        <img id="accuserImage" src="${imagePath}" alt="${accuser.name}" class="img-fluid">
         <p class="accused-head">ACCUSED</p>
         <p class="accused-name">${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
         <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
         <p class="nature">${accuser.natureOfAccusation}</p>
     `;
-	modal.style.display = 'block';
+    modal.style.display = 'block';
 }
+
 
 // Hide the modal
 function closeModal() {

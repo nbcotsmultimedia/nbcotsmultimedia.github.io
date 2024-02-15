@@ -22,7 +22,8 @@ body {
 
 .accuser-head, .accused-head {
   letter-spacing: 0.075em;
-  font-weight: 600;
+  font-weight: 450;
+  margin-bottom: 0;
 }
 
 .overlay .accused-head {
@@ -30,10 +31,12 @@ body {
 }
 
 .accuser-name, .accused-name {
-  font-family: Georgia;
+  font-family: 'Georgia', serif;
+  font-weight: 300;
   letter-spacing: 0.02em;
-  margin-bottom: .25rem;
-  font-size: 1.25rem;
+  margin-bottom: 0;
+  font-size: 1.20rem;
+  -webkit-font-smoothing: antialiased;
 }
 
 .grid-container {
@@ -94,7 +97,7 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
-  padding: 0.675rem;
+  padding: 0.55rem;
 }
 
 .more-info {
@@ -145,7 +148,7 @@ body {
 }
 
 .modal {
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.7);
   display: none;
   left: 0;
   overflow: auto;
