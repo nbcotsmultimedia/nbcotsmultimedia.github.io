@@ -13,9 +13,20 @@
     <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
     <link href="css/nbcotsbase.css" rel="stylesheet">
 
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+
   </head>
 
   <body>
+
+    <div id="victimContainer" class="parent" style="width:100%; padding-bottom:30px;"><!--crosstalk container div-->
+
     <div id="accusersGrid" class="grid-container"></div>
 
     <!-- Modal Structure -->
@@ -26,7 +37,9 @@
           <img id="accuserImage" class="img-fluid" alt="Accuser Image">
         </div>
       </div>
-    </div>    
+    </div>
+
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

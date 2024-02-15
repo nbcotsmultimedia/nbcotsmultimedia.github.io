@@ -188,6 +188,7 @@ function createGrid(data) {
 		const card = createCard(accuser, index);
 		gridContainer.appendChild(card);
 	});
+    xtalk.signalIframe();
 }
 
 // Populate the modal with accuser info and display it
