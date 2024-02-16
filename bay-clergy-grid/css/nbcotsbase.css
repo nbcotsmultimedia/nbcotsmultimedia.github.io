@@ -127,7 +127,7 @@ body {
 .nature {
   letter-spacing: 0.03em;
   line-height: 17px;
-  margin-bottom: 0;
+  margin-bottom: 2rem;
   margin-top: 20px;
 }
 
@@ -168,16 +168,43 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #aaa;
+  color: #FFF;
   float: right;
-  font-weight: 700;
+  font-weight: 100;
+  text-shadow: none !important; /* Remove text shadow */
+  opacity: .75 !important; /* Remove text shadow */
 }
 
 .close:focus,
 .close:hover {
-  color: #000;
   cursor: pointer;
-  text-decoration: none;
+  opacity: 1 !important; /* Remove text shadow */
+}
+
+/* CSS for arrow buttons */
+.arrow {
+  position: absolute;
+  bottom: 10px; /* Adjust the distance from the bottom of the modal */
+  cursor: pointer;
+  font-size: 22px; /* Adjust the font size as needed */
+  color: white;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 1; /* Ensure arrows appear above other content */
+  font-weight: 100; /* Make thinner */
+  opacity: .75;
+}
+
+.arrow-left {
+  left: 10px; /* Adjust the distance from the left edge */
+}
+
+.arrow-right {
+  right: 10px; /* Adjust the distance from the right edge */
 }
 
 @media only screen and (max-width: 600px) {

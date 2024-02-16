@@ -16,7 +16,6 @@ document.body.addEventListener('click', closeOutsideModal);
 
 // Load accuser data from csv, set up event listeners, and attach resize event
 function init() {
-    // console.log("DOMContentLoaded event fired")
 	loadAccusersData(googleSheetCSVURL);
 	updateEventListeners(); // Set initial event listeners based on current viewport width
 	window.addEventListener('resize', debounce(updateEventListeners, 250)); // Debounce the resize event
@@ -73,8 +72,6 @@ function updateEventListeners() {
 // Click event handlers
 // Mobile
 function handleClick(event) {
-    console.log("Clicked on accuser card")
-
     const target = event.target.closest('.accuser-card');
     if (target) {
         const accuser = getAccuserInfo(target);
@@ -195,24 +192,89 @@ function createGrid(data) {
 function openModal(accuser) {
     // Construct the image source path based on the accuser's index
     const imageIndex = accuser.img.substring(accuser.img.lastIndexOf("-") + 1, accuser.img.lastIndexOf("."));
-    const imagePath = `images/landscape-${imageIndex}.png`;
-
-    // Log the generated image path to the console for debugging
-    console.log("Generated image path:", imagePath);
+    const imagePath = `/images/landscape-${imageIndex}.png`;
 
     // Set the content of the modal body with information from the accuser
     modalBody.innerHTML = `
         <p class="accuser-head">ACCUSER</p>
         <p class="accuser-name">${accuser.name}</p>
-        <img id="accuserImage" src="${imagePath}" alt="${accuser.name}" class="img-fluid">
+        <img id="accuserImage" src="${imagePath}" alt="${accuser.name}" class="img-fluid" data-index="${parseInt(imageIndex) - 1}">
         <p class="accused-head">ACCUSED</p>
         <p class="accused-name">${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
         <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
         <p class="nature">${accuser.natureOfAccusation}</p>
+        <div id="arrowLeft" class="arrow arrow-left">&lt;</div>
+        <div id="arrowRight" class="arrow arrow-right">&gt;</div>
     `;
     modal.style.display = 'block';
+
+    // Add event listeners for arrow buttons
+    const arrowLeft = document.getElementById('arrowLeft');
+    const arrowRight = document.getElementById('arrowRight');
+
+    arrowLeft.addEventListener('click', navigateImage.bind(null, -1)); // Navigate to previous image
+    arrowRight.addEventListener('click', navigateImage.bind(null, 1)); // Navigate to next image
 }
+
+// Function to navigate through images
+function navigateImage(direction) {
+    // Find the current image element
+    const accuserImage = document.getElementById('accuserImage');
+    const currentImageIndex = parseInt(accuserImage.getAttribute('data-index'));
+    let nextImageIndex = currentImageIndex + direction;
+
+    // Ensure the next image index is within bounds
+    if (nextImageIndex < 0) {
+        nextImageIndex = globalData.length - 1; // Wrap around to the last image
+    } else if (nextImageIndex >= globalData.length) {
+        nextImageIndex = 0; // Wrap around to the first image
+    }
+
+    // Get the next image path
+    const paddedImageIndex = String(nextImageIndex + 1).padStart(2, '0'); // Ensure two digits with leading zero if necessary
+    const nextImageSrc = `/images/landscape-${paddedImageIndex}.png`; // Construct the image path
+
+    // Update the image source and data-index attribute
+    accuserImage.src = nextImageSrc;
+    accuserImage.setAttribute('data-index', nextImageIndex);
+
+    // Retrieve the accuser information for the next image
+    const nextAccuser = globalData[nextImageIndex];
+
+    // Update the modal content with the information of the next accuser
+    const modalAccuserName = document.querySelector('.accuser-name');
+    const modalAccusedName = document.querySelector('.accused-name');
+    const modalAssignment = document.querySelector('.assignment');
+    const modalLocationDate = document.querySelector('.location-date');
+    const modalNature = document.querySelector('.nature');
+
+    modalAccuserName.textContent = nextAccuser.name;
+    modalAccusedName.textContent = nextAccuser.clergyMemberAccused;
+    modalAssignment.textContent = nextAccuser.assignment;
+    modalLocationDate.innerHTML = `${nextAccuser.locationOfAccusation} <span class="right-aligned">${nextAccuser.dateOfAccusation}</span>`;
+    modalNature.textContent = nextAccuser.natureOfAccusation;
+}
+
+
+
+// Function to update the modal content with information from an accuser
+function updateModalContent(accuser) {
+    // Set the content of the modal body with information from the accuser
+    modalBody.innerHTML = `
+        <p class="accuser-head">ACCUSER</p>
+        <p class="accuser-name">${accuser.name}</p>
+        <img id="accuserImage" src="${accuser.img}" alt="${accuser.name}" class="img-fluid" data-index="${accuser.index}">
+        <p class="accused-head">ACCUSED</p>
+        <p class="accused-name">${accuser.clergyMemberAccused}</p>
+        <p class="assignment">${accuser.assignment}</p>
+        <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
+        <p class="nature">${accuser.natureOfAccusation}</p>
+        <div id="arrowLeft" class="arrow arrow-left">&lt;</div>
+        <div id="arrowRight" class="arrow arrow-right">&gt;</div>
+    `;
+}
+
 
 
 // Hide the modal
