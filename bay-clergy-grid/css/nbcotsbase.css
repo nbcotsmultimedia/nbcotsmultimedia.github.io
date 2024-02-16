@@ -184,19 +184,19 @@ body {
 /* CSS for arrow buttons */
 .arrow {
   position: absolute;
-  bottom: 10px; /* Adjust the distance from the bottom of the modal */
+  bottom: 10px; /* Adjust if necessary to ensure visibility */
   cursor: pointer;
-  font-size: 22px; /* Adjust the font size as needed */
-  color: white;
+  font-size: 22px;
+  color: white; /* Ensure visibility against the modal's background */
   width: 30px;
   height: 30px;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   border-radius: 50%;
-  z-index: 1; /* Ensure arrows appear above other content */
-  font-weight: 100; /* Make thinner */
-  opacity: .75;
+  z-index: 100; /* Increase to ensure it's on top */
+  opacity: 1; /* Set to 1 for full opacity */
+  
 }
 
 .arrow-left {
@@ -205,6 +205,34 @@ body {
 
 .arrow-right {
   right: 10px; /* Adjust the distance from the right edge */
+}
+
+#arrowLeft::before, #arrowRight::before {
+  content: '\f104'; /* FontAwesome Unicode for left arrow */
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 300;
+}
+
+#arrowLeft::before {
+  content: '←'; /* Standard Unicode left arrow */
+}
+
+#arrowRight::before {
+  content: '→'; /* Standard Unicode right arrow */
+}
+
+#arrowLeft, #arrowRight {
+  position: absolute;
+  left: 10px; /* Adjust as necessary */
+  bottom: 10px;
+  z-index: 100;
+}
+
+#arrowRight {
+  position: absolute;
+  right: 10px; /* Adjust as necessary */
+  bottom: 10px;
+  z-index: 100;
 }
 
 @media only screen and (max-width: 600px) {

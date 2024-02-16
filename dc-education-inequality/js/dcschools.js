@@ -78,7 +78,7 @@ function parseData() {
 		if (allData[i].type == "video") {
 			prompt = "Watch";
 		} else {
-			prompt = "Read";
+			prompt = "Watch";
 		}
 
 		$("#theNav").append("<div class=\"thCon\" id=\"th" + i + "\" data-type=\"" + allData[i].type + "\">" +
