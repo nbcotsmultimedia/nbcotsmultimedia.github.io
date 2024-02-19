@@ -61,7 +61,7 @@ function handleClick(event) {
         openModal(accuser);
         event.stopPropagation();
     }
-    console.log('Card clicked in mobile view');
+    // console.log('Card clicked in mobile view');
 }
 
 function handleDesktopClick(event) {
@@ -80,7 +80,7 @@ function handleDesktopClick(event) {
         event.preventDefault();
         event.stopPropagation();
     }
-    console.log('Card clicked in desktop view');
+    // console.log('Card clicked in desktop view');
 }
 
 // Dynamically create HTML for each accuser card
@@ -238,13 +238,13 @@ function navigateAccuser(direction) {
 
 // Close the modal
 function closeModal() {
-    console.log("Modal is being closed");
+    // console.log("Modal is being closed");
     modal.style.display = 'none';
 }
 
 // Close the modal when clicking outside of it
 function closeOutsideModal(event) {
-    console.log("Clicked outside modal");
+    // console.log("Clicked outside modal");
     if (event.target == modal) {
         closeModal();
     }
@@ -256,7 +256,7 @@ function toggleVisibility(card, show = null) {
     const overlay = card.querySelector('.overlay');
     if (moreInfo && overlay) {
         const isVisible = show !== null ? show : moreInfo.style.visibility !== 'visible';
-        overlay.style.visibility = isVisible ? 'visible' : 'hidden';
+        // overlay.style.visibility = isVisible ? 'visible' : 'hidden';
         moreInfo.style.visibility = isVisible ? 'visible' : 'hidden';
         moreInfo.style.display = isVisible ? 'block' : 'none';
     }
