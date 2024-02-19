@@ -191,7 +191,7 @@ body {
   width: 30px;
   height: 30px;
   display: flex;
-  justify-content: flex-end;
+  /* justify-content: flex-end; */
   align-items: center;
   border-radius: 50%;
   z-index: 100; /* Increase to ensure it's on top */
@@ -223,7 +223,6 @@ body {
 
 #arrowLeft, #arrowRight {
   position: absolute;
-  left: 10px; /* Adjust as necessary */
   bottom: 10px;
   z-index: 100;
 }

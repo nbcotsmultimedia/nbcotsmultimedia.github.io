@@ -61,6 +61,7 @@ function handleClick(event) {
         openModal(accuser);
         event.stopPropagation();
     }
+    console.log('Card clicked in mobile view');
 }
 
 function handleDesktopClick(event) {
@@ -79,6 +80,7 @@ function handleDesktopClick(event) {
         event.preventDefault();
         event.stopPropagation();
     }
+    console.log('Card clicked in desktop view');
 }
 
 // Dynamically create HTML for each accuser card
@@ -184,6 +186,20 @@ function openModal(accuser) {
     arrowRight.id = 'arrowRight';
     arrowRight.alt = 'Next';
     arrowRight.className = 'arrow right-arrow';
+
+    // Make sure you have the index of the accuser here
+    const accuserIndex = globalData.findIndex((a) => a.name === accuser.name);
+    modalBody.querySelector('#accuserImage').setAttribute('data-index', accuserIndex);
+
+    // Assuming accuser has an id or index that matches the image number
+    // If your accuser object has an 'id' property that matches the image number
+    const imageNumber = accuser.id; // Replace 'id' with the correct property if different
+
+    // Construct the image path with the image number
+    const imagePath = `images/landscape-${String(imageNumber).padStart(2, '0')}.png`;
+
+    // Set the image source to the new path
+    modalBody.querySelector('#accuserImage').src = imagePath;
 
     // When clicked, these arrows trigger the 'navigateAccuser' function
 
