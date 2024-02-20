@@ -3,4 +3,134 @@ body {
   font-size: 1rem;
   color: #fff;
   font-family: Roboto, sans-serif;
+  /* -webkit-font-smoothing: antialiased; */
+}
+
+.container {
+  max-width: 700px;
+}
+
+p {
+  font-family: 'Arthouse Owned Rounded';
+  font-weight: 300;
+}
+
+.center {
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 2rem;
+  margin-top: 4rem;
+}
+
+.big-h1, .small-h1 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.big-h1 {
+  font-size: 80px;
+  margin-top: 2rem;
+}
+
+.small-h1 {
+  font-size: 32px;
+}
+
+.subhead {
+  font-family: 'Arthouse Owned Rounded';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.serif-subhead {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 20px;
+}
+
+.space-below {
+  margin-bottom: 2rem;
+}
+
+/* Style for the two-column sections */
+.two-up {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+  
+.two-up .left, .two-up .right {
+  flex: 1; /* Each column takes up half the width */
+  padding: 1rem;
+}
+
+/* Style for image containers (bishops, priests, dioceses) */
+.image-container {
+  text-align: center; /* Center align the images and text */
+  margin-bottom: 1.5rem; /* Add some space below each image container */
+}
+
+.image-container img {
+  width: 100px;
+  height: 120px;
+  border-radius: 50%; /* Rounded corners relative to the size of the oval */
+  object-fit: cover; /* Ensure the images cover the area without stretching */
+  border: 3px solid #fff; /* Optional: Add a white border around the image */
+  margin-bottom: 0.5rem; /* Space between image and caption */
+}
+
+/* Style for the captions under the images */
+.img-caption {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: .95rem;
+}
+
+.img-sub-caption {
+  font-size: 0.8rem;
+  font-family: 'Arthouse Owned Rounded';
+  font-style: normal;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.img-sub-sub-caption {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* CSS for the bishops, priests, and dioceses lists */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col {
+  flex: 1; /* Each .col element will take up equal space */
+  min-width: 160px; /* Minimum width for each column to maintain a consistent look */
+  word-wrap: break-word; /* Allows long words to be broken and wrapped to the next line */
+}
+
+.bishop-info, .priest-info, .diocese-info {
+  padding: 0 15px; /* Add some padding on the sides */
+}
+
+.bishop-info h3, .priest-info h3, .diocese-info h3 {
+  white-space: normal; /* Override any other white-space settings that prevent wrapping */
+  hyphens: auto; /* Automatically add hyphens where appropriate */
+}
+
+.section-divider {
+  height: .25px;
+  background-color: #fff;
+  opacity: 40%;
+  width:  100%;
+  margin: 20px auto;
 }
