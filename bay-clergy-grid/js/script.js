@@ -61,7 +61,6 @@ function handleClick(event) {
         openModal(accuser);
         event.stopPropagation();
     }
-    // console.log('Card clicked in mobile view');
 }
 
 function handleDesktopClick(event) {
@@ -80,7 +79,6 @@ function handleDesktopClick(event) {
         event.preventDefault();
         event.stopPropagation();
     }
-    // console.log('Card clicked in desktop view');
 }
 
 // Dynamically create HTML for each accuser card
@@ -117,6 +115,20 @@ function createCard(accuser, index) {
     card.appendChild(img);
     card.appendChild(overlay);
     card.appendChild(moreInfo);
+
+    // Check if moreInfo data is available and create a read more link
+    if (accuser.moreInfo && accuser.moreInfo.trim() !== "") {
+        const readMoreLink = document.createElement('a');
+        readMoreLink.href = accuser.moreInfo; // Set the href attribute to the moreInfo URL
+        readMoreLink.textContent = 'Read more'; // Text to display
+        readMoreLink.target = '_blank'; // Open in a new tab
+        readMoreLink.className = 'read-more-link'; // Optional: add a class for styling
+        moreInfo.appendChild(readMoreLink); // Append the read more link to the moreInfo div
+
+        readMoreLink.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+    }
 
     if (accuser.isDefrocked === "yes") {
         const footnote1 = document.createElement('p');
@@ -164,6 +176,7 @@ function createGrid(data) {
 // MODAL
 // Populate the modal with accuser info and display it
 function openModal(accuser) {
+
     // Set the content of the modal body with information from the accuser
     modalBody.innerHTML = `
         <p class="accuser-head">ACCUSER</p>
@@ -175,40 +188,65 @@ function openModal(accuser) {
         <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
         <p class="nature">${accuser.natureOfAccusation}</p>
     `;
-    
-    // Create arrow buttons
-    const arrowLeft = document.createElement('div');
-    arrowLeft.id = 'arrowLeft';
-    arrowLeft.alt = 'Previous';
-    arrowLeft.className = 'arrow left-arrow';
 
-    const arrowRight = document.createElement('div');
-    arrowRight.id = 'arrowRight';
-    arrowRight.alt = 'Next';
-    arrowRight.className = 'arrow right-arrow';
+    // Add defrocked or deceased footnotes if applicable
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    if (accuser.isDefrocked === "yes") {
+        const footnote1 = document.createElement('p');
+        footnote1.className = 'footnote';
+        footnote1.textContent = '**Defrocked';
+        footer.appendChild(footnote1);
+    }
+    if (accuser.isDeceased === "yes") {
+        const footnote2 = document.createElement('p');
+        footnote2.className = 'footnote';
+        footnote2.textContent = '*Deceased';
+        footer.appendChild(footnote2);
+    }
+
+    // Append the footer to the modal body if it has any child nodes (footnotes)
+    if (footer.hasChildNodes()) {
+        modalBody.appendChild(footer);
+    }
+
+    // Check if moreInfo URL is available and add a "Read more" link
+    if (accuser.moreInfo && accuser.moreInfo.trim() !== "") {
+        modalBody.innerHTML += `
+            <p class="modal-read-more"><a href="${accuser.moreInfo}" target="_blank">Read more</a></p>
+        `;
+    }
+
+    // Create arrow container with arrows inside it
+    const arrowsContainer = document.createElement('div');
+    arrowsContainer.className = 'arrows-container';
+    arrowsContainer.innerHTML = `
+        <div id="arrowLeft" class="arrow left-arrow" alt="Previous"></div>
+        <div id="arrowRight" class="arrow right-arrow" alt="Next"></div>
+    `;
+
+    // Append the arrow container to the modal body
+    modalBody.appendChild(arrowsContainer);
+
+    // Attach event listeners to the arrows within the arrowsContainer
+    const arrowLeftButton = arrowsContainer.querySelector('#arrowLeft');
+    const arrowRightButton = arrowsContainer.querySelector('#arrowRight');
+
+    arrowLeftButton.addEventListener('click', () => navigateAccuser(-1));
+    arrowRightButton.addEventListener('click', () => navigateAccuser(1));
 
     // Make sure you have the index of the accuser here
     const accuserIndex = globalData.findIndex((a) => a.name === accuser.name);
     modalBody.querySelector('#accuserImage').setAttribute('data-index', accuserIndex);
 
-    // Assuming accuser has an id or index that matches the image number
-    // If your accuser object has an 'id' property that matches the image number
-    const imageNumber = accuser.id; // Replace 'id' with the correct property if different
+    // Set image number
+    const imageNumber = accuser.id;
 
     // Construct the image path with the image number
     const imagePath = `images/landscape-${String(imageNumber).padStart(2, '0')}.png`;
 
     // Set the image source to the new path
     modalBody.querySelector('#accuserImage').src = imagePath;
-
-    // When clicked, these arrows trigger the 'navigateAccuser' function
-
-    arrowLeft.addEventListener('click', () => navigateAccuser(-1)); // Navigate to previous accuser
-    arrowRight.addEventListener('click', () => navigateAccuser(1)); // Navigate to next accuser
-    
-    // Append arrow buttons to modal body
-    modalBody.appendChild(arrowLeft);
-    modalBody.appendChild(arrowRight);
 
     // Display the modal
     modal.style.display = 'block';
