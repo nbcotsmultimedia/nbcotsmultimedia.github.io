@@ -43,14 +43,20 @@ function addBishops(bishops) {
     });
   }
   
-  // Function to add priests to the priest-section
   function addPriests(priests) {
-    const priestsList = document.getElementById('priests-list');
-    priestsList.className = 'row'; // Add the 'row' class to the container
-    priests.forEach(priest => {
+    const container = document.getElementById('priests-list');
+    let row; // Declare a variable for the row outside the loop
+  
+    priests.forEach((priest, index) => {
+      // For every third priest, create a new row
+      if (index % 3 === 0) {
+        row = document.createElement('div');
+        row.className = 'row';
+        container.appendChild(row); // Append the new row to the container
+      }
+  
       const priestDiv = document.createElement('div');
-      priestDiv.className = 'priest';
-      priestDiv.className = 'col'; // Using 'col' will divide the space equally among columns
+      priestDiv.className = 'col'; // Using 'col' will divide the space equally among columns within a row
       priestDiv.innerHTML = `
         <div class="image-container">
         <img src="${priest.img}" alt="Photo of ${priest.priestName}" class="img-fluid">
@@ -58,7 +64,8 @@ function addBishops(bishops) {
         <p class="img-sub-caption">${priest.diocese}</p>
         <p class="img-sub-sub-caption">${priest.newAccusations} new accusations</p>
         </div>`;
-      priestsList.appendChild(priestDiv);
+  
+      row.appendChild(priestDiv); // Append the priestDiv to the current row
     });
   }
   
