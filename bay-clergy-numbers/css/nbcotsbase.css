@@ -45,6 +45,7 @@ p {
   font-weight: 400;
   font-size: 18px;
   text-transform: uppercase;
+  letter-spacing: 0.05rem;
 }
 
 .serif-subhead {
@@ -100,7 +101,6 @@ p {
   margin-bottom: 0.5rem; /* Space between image and caption */
 }
 
-
 /* Style for the captions under the images */
 .img-caption {
   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -116,11 +116,14 @@ p {
   font-style: normal;
   font-weight: 400;
   text-transform: uppercase;
+  margin-bottom: 0;
+  letter-spacing: 0.05rem;
 }
 
 .img-sub-sub-caption {
   font-size: 0.8rem;
   font-style: italic;
+  margin-top: 0.25rem;
 }
 
 /* CSS for the bishops, priests, and dioceses lists */
