@@ -57,7 +57,7 @@ function addBishops(bishops) {
         <h3 class="img-caption">${priest.priestName}</h3>
         <p class="img-sub-caption">${priest.diocese}</p>
         <p class="img-sub-sub-caption">${priest.newAccusations} new accusations</p>
-        <div class="image-container">`;
+        </div>`;
       priestsList.appendChild(priestDiv);
     });
   }
@@ -71,10 +71,10 @@ function addBishops(bishops) {
       dioceseDiv.className = 'diocese';
       dioceseDiv.className = 'col'; // Using 'col' will divide the space equally among columns
       dioceseDiv.innerHTML = `
-        <div class="image-container">
+        <div class="arms-container">
         <img src="${diocese.img}" alt="Emblem of ${diocese.diocese}" class="img-fluid">
         <h3 class="img-caption">${diocese.diocese}</h3>
-        <div class="image-container">`;
+        </div>`;
       diocesesList.appendChild(dioceseDiv);
     });
   }

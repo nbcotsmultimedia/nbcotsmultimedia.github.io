@@ -3,7 +3,6 @@ body {
   font-size: 1rem;
   color: #fff;
   font-family: Roboto, sans-serif;
-  /* -webkit-font-smoothing: antialiased; */
 }
 
 .container {
@@ -26,6 +25,7 @@ p {
 
 .big-h1, .small-h1 {
   font-family: Georgia, 'Times New Roman', Times, serif;
+  -webkit-font-smoothing: antialiased;
   font-style: normal;
   font-weight: 400;
 }
@@ -49,6 +49,7 @@ p {
 
 .serif-subhead {
   font-family: Georgia, 'Times New Roman', Times, serif;
+  -webkit-font-smoothing: antialiased;
   font-style: normal;
   font-weight: 300;
   font-size: 20px;
@@ -70,7 +71,7 @@ p {
   padding: 1rem;
 }
 
-/* Style for image containers (bishops, priests, dioceses) */
+/* Style for image containers (bishops and priests) */
 .image-container {
   text-align: center; /* Center align the images and text */
   margin-bottom: 1.5rem; /* Add some space below each image container */
@@ -81,16 +82,32 @@ p {
   height: 120px;
   border-radius: 50%; /* Rounded corners relative to the size of the oval */
   object-fit: cover; /* Ensure the images cover the area without stretching */
-  border: 3px solid #fff; /* Optional: Add a white border around the image */
+  border: 2px solid #fff; /* Optional: Add a white border around the image */
   margin-bottom: 0.5rem; /* Space between image and caption */
 }
+
+/* Style for coats of arms */
+.arms-container {
+  text-align: center; /* Center align the images and text */
+  margin-bottom: 1.5rem; /* Add some space below each image container */
+}
+
+.arms-container img {
+  width: 100px;
+  height: 120px;
+  border-radius: 50%; /* Rounded corners relative to the size of the oval */
+  object-fit: cover; /* Ensure the images cover the area without stretching */
+  margin-bottom: 0.5rem; /* Space between image and caption */
+}
+
 
 /* Style for the captions under the images */
 .img-caption {
   font-family: Georgia, 'Times New Roman', Times, serif;
+  -webkit-font-smoothing: antialiased;
   font-style: normal;
   font-weight: 300;
-  font-size: .95rem;
+  font-size: 1rem;
 }
 
 .img-sub-caption {
@@ -114,8 +131,8 @@ p {
 
 .col {
   flex: 1; /* Each .col element will take up equal space */
-  min-width: 160px; /* Minimum width for each column to maintain a consistent look */
-  word-wrap: break-word; /* Allows long words to be broken and wrapped to the next line */
+  min-width: 160px; /* Minimum width for each column */
+  word-wrap: break-word; /* Wrap long text */
 }
 
 .bishop-info, .priest-info, .diocese-info {
