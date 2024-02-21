@@ -103,7 +103,6 @@ function createCard(accuser, index) {
     moreInfo.style.display = 'none';
     moreInfo.innerHTML = `
         <p class="accused-head">ACCUSED</p>
-        <br />
         <p class="accused-name">${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
         <div class="location-date">
@@ -113,8 +112,8 @@ function createCard(accuser, index) {
         <div class='line'></div>
         <p class="nature">${accuser.natureOfAccusation}</p>
         <div class="footer"></div>
-`;
-
+    `;
+    
     // Count the number of characters in the location
     const locationText = accuser.locationOfAccusation;
     const locationCharacterCount = locationText.length;
@@ -127,27 +126,34 @@ function createCard(accuser, index) {
         moreInfo.querySelector('.location-date').classList.add('location-stacked');
     } else {
         moreInfo.querySelector('.location-date').classList.add('location-side-by-side');
-        moreInfo.querySelector('.date').classList.add('.right-aligned');
+        moreInfo.querySelector('.date').classList.add('right-aligned');
     }
 
+    // Append image, overlay, more info
     card.appendChild(img);
     card.appendChild(overlay);
     card.appendChild(moreInfo);
 
     // Check if moreInfo data is available and create a read more link
     if (accuser.moreInfo && accuser.moreInfo.trim() !== "") {
+        const readMoreContainer = document.createElement('div');
+        readMoreContainer.className = 'read-more-container right-aligned'; // Add both classes for styling and alignment
+
         const readMoreLink = document.createElement('a');
         readMoreLink.href = accuser.moreInfo; // Set the href attribute to the moreInfo URL
         readMoreLink.textContent = 'Read more'; // Text to display
         readMoreLink.target = '_blank'; // Open in a new tab
-        readMoreLink.className = 'read-more-link'; // Optional: add a class for styling
-        moreInfo.appendChild(readMoreLink); // Append the read more link to the moreInfo div
+        readMoreLink.className = 'read-more-link'; // Optional: add a class for additional styling
 
         readMoreLink.addEventListener('click', (event) => {
             event.stopPropagation();
         });
+
+        readMoreContainer.appendChild(readMoreLink); // Append the read more link to the container
+        moreInfo.appendChild(readMoreContainer); // Append the container to the moreInfo div
     }
 
+    // Check if defrocked or deceased; if so, append footer
     if (accuser.isDefrocked === "yes") {
         const footnote1 = document.createElement('p');
         footnote1.className = 'footnote';
@@ -161,6 +167,7 @@ function createCard(accuser, index) {
         moreInfo.querySelector('.footer').appendChild(footnote2);
     }
 
+    // Set id for card
     card.setAttribute('data-id', `card-${index}`);
 
     return card;
