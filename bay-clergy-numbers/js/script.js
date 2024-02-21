@@ -35,9 +35,11 @@ function addBishops(bishops) {
       bishopDiv.className = 'col'; // Using 'col' will divide the space equally among columns
       bishopDiv.innerHTML = `
         <div class="image-container">
-        <img src="${bishop.img}" alt="Photo of ${bishop.bishopName}" class="img-fluid">
-        <h3 class="img-caption">${bishop.bishopName}</h3>
-        <p class="img-sub-caption">${bishop.diocese}</p>
+          <div class="image-wrapper">
+            <img src="${bishop.img}" alt="Photo of ${bishop.bishopName}" class="img-fluid">
+          </div>
+          <h3 class="img-caption">${bishop.bishopName}</h3>
+          <p class="img-sub-caption">${bishop.diocese}</p>
         </div>`;
       bishopsList.appendChild(bishopDiv);
     });
@@ -59,10 +61,12 @@ function addBishops(bishops) {
       priestDiv.className = 'col'; // Using 'col' will divide the space equally among columns within a row
       priestDiv.innerHTML = `
         <div class="image-container">
-        <img src="${priest.img}" alt="Photo of ${priest.priestName}" class="img-fluid">
-        <h3 class="img-caption">${priest.priestName}</h3>
-        <p class="img-sub-caption">${priest.diocese}</p>
-        <p class="img-sub-sub-caption">${priest.newAccusations} new accusations</p>
+          <div class="image-wrapper">
+            <img src="${priest.img}" alt="Photo of ${priest.priestName}" class="img-fluid">
+          </div>
+          <h3 class="img-caption">${priest.priestName}</h3>
+          <p class="img-sub-caption">${priest.diocese}</p>
+          <p class="img-sub-sub-caption">${priest.newAccusations} new accusations</p>
         </div>`;
   
       row.appendChild(priestDiv); // Append the priestDiv to the current row
@@ -79,8 +83,8 @@ function addBishops(bishops) {
       dioceseDiv.className = 'col'; // Using 'col' will divide the space equally among columns
       dioceseDiv.innerHTML = `
         <div class="arms-container">
-        <img src="${diocese.img}" alt="Emblem of ${diocese.diocese}" class="img-fluid">
-        <h3 class="img-caption">${diocese.diocese}</h3>
+          <img src="${diocese.img}" alt="Emblem of ${diocese.diocese}" class="img-fluid">
+          <h3 class="img-caption">${diocese.diocese}</h3>
         </div>`;
       diocesesList.appendChild(dioceseDiv);
     });

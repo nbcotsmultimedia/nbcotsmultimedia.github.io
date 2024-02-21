@@ -60,6 +60,10 @@ p {
   margin-bottom: 2rem;
 }
 
+.space-above {
+  margin-top: 2.25rem;
+}
+
 /* Style for the two-column sections */
 .two-up {
     display: flex;
@@ -72,21 +76,82 @@ p {
   padding: 1rem;
 }
 
-/* Style for image containers (bishops and priests) */
-.image-container {
-  text-align: center; /* Center align the images and text */
-  margin-bottom: 1.5rem; /* Add some space below each image container */
+/* IMAGES */
+
+/* Define image dimensions as CSS variables */
+:root {
+  --image-width: 150px;
+  --image-height: 190px;
 }
 
+/* Style for image containers (bishops and priests) */
+.image-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Use CSS variables for image dimensions */
 .image-container img {
-  width: 100px;
-  height: 120px;
-  border-radius: 50%; /* Rounded corners relative to the size of the oval */
-  object-fit: cover; /* Ensure the images cover the area without stretching */
-  border: 2px solid #fff; /* Optional: Add a white border around the image */
-  margin-bottom: 0.5rem; /* Space between image and caption */
+  width: var(--image-width);
+  height: var(--image-height);
+  object-fit: cover;
+  margin-bottom: 0.5rem;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
 }
+
+/* Style for image wrappers */
+.image-wrapper {
+  display: inline-block;
+  width: var(--image-width);
+  height: var(--image-height);
+  border-radius: 50%;
+  position: relative; /* Set position to relative */
+}
+
+/* Use CSS variables for image dimensions */
+.image-wrapper img {
+  display: block;
+  width: 100%; /* Ensure image fills wrapper */
+  height: 100%; /* Ensure image fills wrapper */
+  object-fit: cover;
+  box-shadow: 0 0 10px #0008;
+  border-radius: 50%;
+}
+
+/* Add box-shadow to create border outline */
+/* .image-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-sizing: border-box;
+} */
+
+/* Adjust the size of the pseudo-element to match the image wrapper */
+.image-wrapper:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  opacity: 0.6;
+  mask: 
+    linear-gradient(to bottom, black 0 0.3rem, transparent 0.8rem calc(100% - 0.8rem), black calc(100% - 0.3rem) 100%) no-repeat center / calc(100% - 0.6rem) 100%,
+    linear-gradient(to right, black 0 0.3rem, transparent 0.8rem calc(100% - 0.8rem), black calc(100% - 0.3rem) 100%) no-repeat center / 100% calc(100% - 0.6rem),
+    radial-gradient(at bottom right, transparent, black 0.5rem) no-repeat top left / 0.8rem 0.8rem,
+    radial-gradient(at bottom left, transparent, black 0.5rem) no-repeat top right / 0.8rem 0.8rem,
+    radial-gradient(at top right, transparent, black 0.5rem) no-repeat bottom left / 0.8rem 0.8rem,
+    radial-gradient(at top left, transparent, black 0.5rem) no-repeat bottom right / 0.8rem 0.8rem;
+  pointer-events: none;
+  border-radius: 0.3rem;
+}
+
 
 /* Style for coats of arms */
 .arms-container {
