@@ -55,23 +55,28 @@ function getPositionIndex(position) {
   return positionOrder[position];
 }
 
-// Function to generate the waffle chart
-function WaffleChart(data, width, height, containerId) {
-
+// Function to generate the waffle chart with a horizontal orientation
+function WaffleChart(data, totalWidth, totalHeight, containerId) {
   // Calculate the total value of all data points
   const totalValue = data.reduce((acc, d) => acc + d.lawsuits, 0);
 
-  // Define the number of rows and columns for the waffle chart
-  const numRows = Math.ceil(Math.sqrt(totalValue)); // Adjusted to keep it as a square
-  const numCols = Math.ceil(totalValue / numRows);
+  // Define the aspect ratio for a more horizontal waffle chart
+  const aspectRatio = 4 / 2;
 
-  // Calculate the size of each square
-  const squareSize = Math.min(width / numCols, height / numRows);
+  // Calculate the total number of squares based on the aspect ratio
+  const totalSquares = Math.ceil(totalValue * aspectRatio);
 
-  // Calculate the total number of squares based on the width and height
-  const totalSquares = numRows * numCols;
+  // Define the number of rows and columns for the waffle chart based on the aspect ratio
+  const numCols = Math.round(Math.sqrt(totalSquares * aspectRatio));
+  const numRows = Math.round(totalSquares / numCols);
 
-  // Sort the data by position
+  // Calculate the size of each square based on the width and height
+  const squareSize = Math.min(totalWidth / numCols, totalHeight / numRows);
+
+  // Define the size of the gap between squares (stroke width)
+  const gapSize = .25;
+
+  // Sort the data by position using the getPositionIndex function
   data.sort((a, b) => {
     return getPositionIndex(a.position) - getPositionIndex(b.position);
   });
@@ -81,39 +86,46 @@ function WaffleChart(data, width, height, containerId) {
 
   // Append an SVG element to the container
   const svg = container.append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("width", totalWidth)
+    .attr("height", totalHeight);
 
   // Initialize variables for tracking the current row and column
   let currentRow = 0;
   let currentCol = 0;
 
+  // We need to keep track of how many squares we've filled
+  let filledSquares = 0;
+
   // Iterate over the data to draw the waffle chart
   data.forEach(d => {
-    // Calculate the number of squares for the current data point
     const numSquares = Math.round(d.lawsuits / totalValue * totalSquares);
-
-    // Draw the squares for the current data point
+  
     for (let i = 0; i < numSquares; i++) {
-      // Calculate the position of the current square
-      const x = currentCol * squareSize;
-      const y = currentRow * squareSize;
+      const x = currentCol * (squareSize + gapSize);
+      const y = currentRow * (squareSize + gapSize);
 
       // Append a rectangle representing the square to the SVG
       svg.append("rect")
         .attr("x", x)
         .attr("y", y)
-        .attr("width", squareSize)
-        .attr("height", squareSize)
-        .attr("fill", getColor(d.position));
+        .attr("width", squareSize - gapSize) // Subtract the gapSize to create the gap
+        .attr("height", squareSize - gapSize) // Subtract the gapSize to create the gap
+        .attr("fill", getColor(d.position))
+        .attr("stroke", "#ffffff") // This is the color of the lines between the squares
+        .attr("stroke-width", gapSize); // This sets the thickness of the lines
 
-      // Move to the next column
-      currentCol++;
+        currentCol++;
+        if (currentCol >= numCols) {
+          currentCol = 0;
+          currentRow++;
+        }
 
-      // If we reach the end of a row, move to the next row
-      if (currentCol >= numCols) {
-        currentCol = 0;
-        currentRow++;
+      // Increment the filledSquares counter
+      filledSquares++;
+
+      // Check if we've filled the entire chart
+      if (filledSquares >= totalSquares) {
+        break; // Stop drawing squares if the chart is full
       }
     }
   });
@@ -139,11 +151,13 @@ function WaffleChart(data, width, height, containerId) {
   return svg;
 }
 
+
 // Call the WaffleChart function to generate the chart
-const containerId = 'waffle-chart-container';
-const width = 800; // Increased width for better visibility
-const height = 300; // Height of the chart
-WaffleChart(waffleData, width, height, containerId);
+const containerId = 'waffle-chart-container'; // The ID of the container element
+const totalWidth = 800; // Width of the chart in pixels
+const totalHeight = 400; // Height of the chart in pixels, based on the aspect ratio
+WaffleChart(waffleData, totalWidth, totalHeight, containerId);
+
 
 // Function to add bishops to the bishop-section
 function addBishops(bishops) {
