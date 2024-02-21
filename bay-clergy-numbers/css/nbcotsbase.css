@@ -85,6 +85,7 @@ p {
   object-fit: cover; /* Ensure the images cover the area without stretching */
   border: 2px solid #fff; /* Optional: Add a white border around the image */
   margin-bottom: 0.5rem; /* Space between image and caption */
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* Style for coats of arms */
