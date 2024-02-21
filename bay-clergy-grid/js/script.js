@@ -106,11 +106,29 @@ function createCard(accuser, index) {
         <br />
         <p class="accused-name">${accuser.clergyMemberAccused}</p>
         <p class="assignment">${accuser.assignment}</p>
-        <p class="location-date">${accuser.locationOfAccusation} <span class="right-aligned">${accuser.dateOfAccusation}</span></p>
+        <div class="location-date">
+            <p class="location">${accuser.locationOfAccusation}</p>
+            <p class="date">${accuser.dateOfAccusation}</p>
+        </div>
         <div class='line'></div>
         <p class="nature">${accuser.natureOfAccusation}</p>
         <div class="footer"></div>
-    `;
+`;
+
+    // Count the number of characters in the location
+    const locationText = accuser.locationOfAccusation;
+    const locationCharacterCount = locationText.length;
+
+    // Determine if the location should be stacked
+    const isLocationStacked = locationCharacterCount > 13;
+
+    // Apply the classes accordingly
+    if (isLocationStacked) {
+        moreInfo.querySelector('.location-date').classList.add('location-stacked');
+    } else {
+        moreInfo.querySelector('.location-date').classList.add('location-side-by-side');
+        moreInfo.querySelector('.date').classList.add('.right-aligned');
+    }
 
     card.appendChild(img);
     card.appendChild(overlay);
