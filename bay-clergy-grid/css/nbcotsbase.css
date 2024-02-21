@@ -24,6 +24,7 @@ body {
     text-align: right;
     font-style: italic;
     opacity: 0.75;
+	letter-spacing: normal;
 }
 
 .modal-content .footnote p {
@@ -168,6 +169,7 @@ body {
     display: flex;
     text-align: justify;
 	font-size: 0.85rem;
+	margin-bottom: .25rem;
 }
 
 /* Modal */
@@ -187,6 +189,10 @@ body {
     margin: 15% auto;
     padding: 20px;
     width: 90%;
+}
+
+.modal .accused-head {
+	margin-top: 2rem;
 }
 
 .close {
