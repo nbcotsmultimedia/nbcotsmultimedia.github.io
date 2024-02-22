@@ -61,6 +61,7 @@ function parseData() {
 	var $len = allData.length;
 	totalEntries = $len;
 	addTableContent();
+	setTimeout(function(){ xtalk.signalIframe(); }, 2000);
 }
 
 const addTableContent = () => {
