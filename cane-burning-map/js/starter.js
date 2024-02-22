@@ -66,14 +66,6 @@ async function createMap() {
 		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
 
-	// smaller canvas for bar chart to create margin effect
-	/*const chart = chartCanvas.append("svg")
-		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
-		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
-		.append("g")
-		.attr("id", "bar-chart-canvas")
-		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);*/
-
 	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
 		.attr("width", mapWidth)
@@ -354,6 +346,7 @@ const animation = async (firstDay, startDay, endDay) => {
 			i = seasons[0][1] * 1000;
 		}
 	}
+	hideOtherDays(10000);
 };
 
 const addYearTabs = () => {
@@ -380,6 +373,9 @@ const changeYear = e => {
 	lastDay = (years[1] * 1000) + 120;
 	hideOtherDays(1000000);
 	switchChart(years);
+	if (paused === 1) {
+		document.getElementById('pl').click();
+	}
 	waitforme(6000);
 	animation(firstDay, firstDay, lastDay);
 };
@@ -421,6 +417,7 @@ const createBarChart = (height, width, svg, years) => {
 		let mobileFirsts = firsts.filter((element, index) => { return index % 2 === 0; });
 		data.map(row => { row.date = d3.timeParse("%Y-%m-%d")(row.date) });
 		const tickDates = mobile ? mobileFirsts.map(row => row.date) : firsts.map(row => row.date);
+		console.log(tickDates)
 
 		// X axis
 		const x = d3.scaleBand()
@@ -504,7 +501,7 @@ const textAnchor = d => {
 	} else {
 		return "middle";
 	}
-}
+};
 
 const addYLines = (xScale, yScale, yVals, width, canvas) => {
 	let maxY = 0;
@@ -527,10 +524,11 @@ const addYLines = (xScale, yScale, yVals, width, canvas) => {
 				.attr("x", width + 8);
 		}
 	}
-}
+};
 
 const selectMonth = e => {
-	const selectedDate = e.target.__data__;
+	const selectedDate = e.currentTarget.__data__;
+	console.log(selectedDate)
 	const bars = d3.selectAll(".bar");
 	const selectedBar = bars.filter(d => d.date === selectedDate);
 	const selectedDay = parseInt(selectedBar.data()[0].year_day.toString());
@@ -572,14 +570,16 @@ const pauser = () => {
 				.removeEventListener("click",
 					playbuttonclick);
 
-			d3.selectAll('.bar')
-				.style("cursor", "pointer");
+			d3.selectAll(".tick")
+				.style("cursor", "pointer")
+				.attr("onclick", "selectMonth(event)");
 
 			paused = 0;
 			resolve("resolved");
 		}
 		document.getElementById("pl")
-			.addEventListener("click", playbuttonclick)
+			.addEventListener("click", playbuttonclick);
+			
 	})
 };
 
@@ -591,6 +591,10 @@ const pauseAnimation = () => {
 
 	document.getElementById("pl")
 		.removeAttribute("disabled");
+
+	d3.selectAll(".tick")
+		.attr("onclick", null)
+		.style("cursor", "default");
 };
 
 const awaitContentLoad = async () => {
