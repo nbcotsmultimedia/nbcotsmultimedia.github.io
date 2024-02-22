@@ -118,19 +118,6 @@ p {
   border-radius: 50%;
 }
 
-/* Add box-shadow to create border outline */
-/* .image-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  box-sizing: border-box;
-} */
-
 /* Adjust the size of the pseudo-element to match the image wrapper */
 .image-wrapper:after {
   content: '';
@@ -151,7 +138,6 @@ p {
   pointer-events: none;
   border-radius: 0.3rem;
 }
-
 
 /* Style for coats of arms */
 .arms-container {
@@ -219,4 +205,34 @@ p {
   opacity: 40%;
   width:  100%;
   margin: 20px auto;
+}
+
+#waffle-chart-container svg {
+  width: 100%; /* Make SVG responsive */
+  height: auto; /* Adjust height automatically */
+}
+
+.legend-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.legend-container text {
+  font-family: 'Arthouse Owned Rounded';
+  font-weight: 200;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border: 1px solid #000000; /* for colors that are hard to see against white */
 }
