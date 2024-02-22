@@ -16,14 +16,15 @@ const detectSafari = () => {
 	return safariAgent;
 };
 
-let paused = 0,
-	firstDay = 1,
-	lastDay = 365,
-	dateSelected = false,
+let seasons = [[2022, 2023], [2021, 2022]],
+	paused = 0,
+	firstDay = (seasons[0][0] * 1000) + 275,
+	lastDay = (seasons[0][1] * 1000) + 120,
+	stopAnimation = false,
 	mobile = window.innerWidth <= 768,
 	safari = detectSafari(),
-	numFires = 21836,
-	numSmokePlumes = 864;
+	numFires = 7050 + 13794,
+	numSmokePlumes = 493 + 549;
 
 function init() {
 	createMap();
@@ -66,12 +67,12 @@ async function createMap() {
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
 
 	// smaller canvas for bar chart to create margin effect
-	const chart = chartCanvas.append("svg")
+	/*const chart = chartCanvas.append("svg")
 		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
 		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
 		.append("g")
 		.attr("id", "bar-chart-canvas")
-		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);*/
 
 	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
@@ -105,7 +106,9 @@ async function createMap() {
 	// add map contents
 	addBaseMap(mapWidth, mapHeight, defs, map, water, labels, roads, fires, smoke);
 
-	createBarChart(chartHeight, chartWidth, chart);
+	addYearTabs();
+
+	seasons.map(season => seasonChart(chartHeight, chartWidth, chartMargin, chartCanvas, season));
 
 	awaitContentLoad();
 };
@@ -156,7 +159,7 @@ const addBaseMap = (width, height, defs, map, water, labels, roads, fires, smoke
 					addSmokeFiler(defs);
 				}
 
-				drawSmokeAndFire(smoke, fires, projection);
+				seasons.map(season => drawSmokeAndFire(fires, smoke, projection, season));
 			});
 		});
 	});
@@ -220,9 +223,14 @@ const addSmokeFiler = defs => {
 	window.requestAnimationFrame(freqAnimation);
 };
 
-const drawSmokeAndFire = (smoke, fires, projection) => {
+const drawSmokeAndFire = (fires, smoke, projection, years) => {
+	drawFire(fires, projection, years);
+	drawSmoke(smoke, projection, years);
+}
+
+const drawFire = (fires, projection, years) => {
 	// read fire and smoke data and add to map
-	d3.json(`data/2022_fires.geojson`).then(function (data) {
+	d3.json(`data/1001${years[0]}_0430${years[1]}_fires.geojson`).then(function (data) {
 
 		fires.selectAll("path")
 			.data(data.features)
@@ -232,19 +240,21 @@ const drawSmokeAndFire = (smoke, fires, projection) => {
 			.attr("r", 3)
 			.attr("class", "fire hide-content")
 			.attr("fill", "#fc5200");
+	});
+};
 
-		d3.json(`data/2022_smoke.json`).then(function (data) {
+const drawSmoke = (smoke, projection, years) => {
+	d3.json(`data/1001${years[0]}_0430${years[1]}_smoke.json`).then(function (data) {
 
-			smoke.selectAll("path")
-				.data(data.features)
-				.join("path")
-				// color by density
-				.attr("fill", d => smokeColor(d.properties.Density))
-				.attr("d", d3.geoPath()
-					.projection(projection)
-				)
-				.attr("class", "smoke-plume hide-content");
-		});
+		smoke.selectAll("g")
+			.data(data.features)
+			.join("path")
+			// color by density
+			.attr("fill", d => smokeColor(d.properties.Density))
+			.attr("d", d3.geoPath()
+				.projection(projection)
+			)
+			.attr("class", "smoke-plume hide-content");
 	});
 };
 
@@ -261,15 +271,15 @@ const hideOtherDays = dayNumber => {
 }
 
 const cleanFireDate = data => {
-	return parseInt(data.properties.YearDay.toString().slice(-3));
+	return parseInt(data.properties.YearDay.toString());
 };
 
 const cleanSmokeDate = data => {
-	return parseInt(data.properties.Start.toString().split(" ")[0].slice(-3));
+	return parseInt(data.properties.Start.toString().split(" ")[0]);
 };
 
-const cleanTextData = data => {
-	return parseInt(data.year_day.slice(-3));
+const cleanTextData = data => { 
+	return parseInt(data.year_day);
 }
 
 const showFire = dayNumber => {
@@ -321,8 +331,8 @@ const animation = async (firstDay, startDay, endDay) => {
 		await waitforme(600);
 	}
 	for (let i = startDay; i <= endDay; i++) {
-		if (dateSelected) {
-			dateSelected = false;
+		if (stopAnimation) {
+			stopAnimation = false;
 			break;
 		}
 		if (i === startDay - 1) {
@@ -340,12 +350,68 @@ const animation = async (firstDay, startDay, endDay) => {
 				await pauser();
 			}
 		}
+		if (i === (seasons[0][0] * 1000) + 365) {
+			i = seasons[0][1] * 1000;
+		}
 	}
+};
+
+const addYearTabs = () => {
+	const buttonContainer = d3.select('#year-button-container');
+	let innerHtml = '';
+	for (let i = 0; i < seasons.length; i++) {
+		const thisSeason = seasons[i];
+		let classes = "year-button";
+		if (i === 0) {
+			classes += " selected-year";
+		}
+		const button = `<button id="${thisSeason[0]}-season" class="${classes}" onclick="changeYear(event)">${thisSeason[0]}-${thisSeason[1]}</button>`
+		innerHtml += button;
+	}
+	buttonContainer.html(innerHtml);
+};
+
+const changeYear = e => {
+	selectTab(e);
+	const yearRange = e.target.textContent;
+	const years = yearRange.split("-");
+	stopAnimation = true;
+	firstDay = (years[0] * 1000) + 275;
+	lastDay = (years[1] * 1000) + 120;
+	hideOtherDays(1000000);
+	switchChart(years);
+	waitforme(6000);
+	animation(firstDay, firstDay, lastDay);
+};
+
+const selectTab = e => {
+	const selectedTabId = e.target.id;
+	const tabs = d3.selectAll('.year-button').nodes();
+	tabs.map(tab => updateSelectedStatus(tab, selectedTabId));
 }
 
+const updateSelectedStatus = (tab, selectedTabId) => {
+	if (tab.id === selectedTabId) {
+		tab.classList.add("selected-year");
+	} else {
+		tab.classList.remove("selected-year");
+	}
+};
 
-const createBarChart = (height, width, svg) => {
-	d3.csv("./data/2022_fire_count.csv").then(function (data) {
+const seasonChart = (chartHeight, chartWidth, chartMargin, chartCanvas, years) => {
+	const chart = chartCanvas.append("svg")
+		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
+		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
+		.append("g")
+		.attr("id", `bar-chart-canvas-${years[0]}`)
+		.attr("class", years[0] === seasons[0][0] ? "bar-chart show-content-full" : "bar-chart hide-content")
+		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+
+	createBarChart(chartHeight, chartWidth, chart, years);
+}
+
+const createBarChart = (height, width, svg, years) => {
+	d3.csv(`./data/1001${years[0]}_0430${years[1]}_fire_count.csv`).then(function (data) {
 		let maxVal = 0;
 		data.map(row => {
 			const val = row.fire_count;
@@ -369,7 +435,7 @@ const createBarChart = (height, width, svg) => {
 			.domain([0, maxVal])
 			.range([height, 0]);
 
-		addYLines(x, y, data.map(d => d.fire_count), width);
+		addYLines(x, y, data.map(d => d.fire_count), width, svg);
 
 		// Bars
 		svg.selectAll("mybar")
@@ -412,31 +478,47 @@ const createBarChart = (height, width, svg) => {
 	})
 };
 
+const switchChart = years => {
+	const charts = d3.selectAll('.bar-chart').nodes();
+	charts.map(chart => updateSelectedChart(chart, years));
+};
+
+const updateSelectedChart = (chart, years) => {
+	const chartId = chart.id;
+	const selectedChartId = `bar-chart-canvas-${years[0]}`;
+	if (chartId === selectedChartId) {
+		chart.classList.add("show-content-full");
+		chart.classList.remove("hide-content");
+	} else {
+		chart.classList.add("hide-content");
+		chart.classList.remove("show-content-full");
+	}
+};
+
 const textAnchor = d => {
 	const yearDay = cleanTextData(d);
-	if (yearDay < 11) {
+	if (yearDay < ((seasons[0][0] * 1000) + 280)) {
 		return "start";
-	} else if (yearDay > 338) {
+	} else if (yearDay > ((seasons[0][1] * 1000) + 115)) {
 		return "end";
 	} else {
 		return "middle";
 	}
 }
 
-const addYLines = (xScale, yScale, yVals, width) => {
+const addYLines = (xScale, yScale, yVals, width, canvas) => {
 	let maxY = 0;
 	yVals.map(yVal => maxY = Math.max(maxY, yVal));
-	const maxLine = Math.ceil(maxY / 100) * 100;
-	const canvas = d3.select("#bar-chart-canvas");
+	const maxLine = Math.ceil(maxY / 20) * 20;
 	j = 0;
-	for (let i = 0; i <= maxLine; i += 100) {
+	for (let i = 0; i <= maxLine; i += 20) {
 		canvas.append("rect")
 			.attr("width", width)
 			.attr("height", "0.45px")
 			.attr("fill", "#767676")
 			.attr("y", yScale(i))
 			.attr("x", xScale(0));
-		if (i % 200 === 0) {
+		if (i % 40 === 0) {
 			canvas.append("text")
 				.text(i === maxLine && !mobile ? `${i} fires` : i.toString())
 				.attr("class", "y-label")
@@ -451,10 +533,10 @@ const selectMonth = e => {
 	const selectedDate = e.target.__data__;
 	const bars = d3.selectAll(".bar");
 	const selectedBar = bars.filter(d => d.date === selectedDate);
-	const selectedDay = parseInt(selectedBar.data()[0].year_day.toString().slice(-3));
+	const selectedDay = parseInt(selectedBar.data()[0].year_day.toString());
 	highlightBar(selectedDay);
 	animation(firstDay, selectedDay, lastDay);
-	dateSelected = true;
+	stopAnimation = true;
 	paused = 0;
 
 	document.getElementById("pl")
@@ -466,8 +548,8 @@ const selectMonth = e => {
 
 const highlightBar = dayNumber => {
 	const bars = d3.selectAll(".bar");
-	const selectedBar = bars.filter(d => parseInt(d.year_day.slice(-3)) === dayNumber);
-	const otherBars = bars.filter(d => parseInt(d.year_day.slice(-3)) !== dayNumber);
+	const selectedBar = bars.filter(d => parseInt(d.year_day) === dayNumber);
+	const otherBars = bars.filter(d => parseInt(d.year_day) !== dayNumber);
 	selectedBar.attr("fill", "#fc5200");
 	otherBars.attr("fill", "#ffb898");
 	if (!mobile) {

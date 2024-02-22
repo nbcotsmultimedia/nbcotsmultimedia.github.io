@@ -41,6 +41,11 @@ button[disabled]{
     transition: opacity 0.5s ease-in-out !important;
 }
 
+.show-content-full {
+    opacity: 1 !important;
+    transition: opacity 0.5s ease-in-out !important;
+}
+
 .hide-text {
     visibility: hidden;
 }
@@ -76,12 +81,25 @@ button[disabled]{
     stroke-width: 1px;
 }
 
+.year-button {
+    padding: 2px 10px;
+    font-size: 14px;
+    background-color: #a9a9a9;
+    border-radius: 6px;
+    color: #0C0C0C;
+    margin: 10px 5px 0;
+}
+
+.selected-year {
+    background-color: #f2f2f2;
+}
+
 .y-label {
     font-size: 12px;
     color: #a9a9a9 !important;
 }
 
-#button-container {
+#play-button-container {
     display: flex;
     justify-content: end;
     flex-direction: column;
