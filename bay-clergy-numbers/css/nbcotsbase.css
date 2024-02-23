@@ -68,7 +68,7 @@ p {
 .two-up {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 2rem;
+    margin-bottom: .6rem;
 }
   
 .two-up .left, .two-up .right {
@@ -117,6 +117,58 @@ p {
   box-shadow: 0 0 10px #0008;
   border-radius: 50%;
 }
+
+/* Priest images */
+
+/* Style for image containers (bishops and priests) */
+.image-container-priest {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+/* Use CSS variables for image dimensions */
+.image-container-priest img {
+  width: var(--image-width);
+  height: var(--image-height);
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+}
+
+#priests-list .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* This will help center the items and manage spacing */
+  gap: 10px; /* This property creates a gap between flex items */
+}
+
+#priests-list .col {
+  flex: 1; /* Each .col element will take up equal space */
+  min-width: 160px; /* Minimum width for each column */
+  padding: 0 7.5px; /* Reduced padding on the sides */
+  word-wrap: break-word; /* Wrap long text */
+}
+
+/* Style for image wrappers */
+.image-wrapper-priest {
+  display: inline-block;
+  width: 150px; /* Set a specific size */
+  height: 150px; /* Ensure width and height are equal for a circle */
+  border-radius: 50%;
+  position: relative; /* Set position to relative */
+  margin: 0; /* Remove any default margins */
+}
+
+/* Use CSS variables for image dimensions - ensure they are equal for a circle */
+.image-wrapper-priest img {
+  display: block;
+  width: 100%; /* Ensure image fills wrapper */
+  height: 100%; /* Ensure image fills wrapper */
+  object-fit: cover;
+  box-shadow: 0 0 10px #0008;
+  border-radius: 50%;
+}
+
 
 /* Adjust the size of the pseudo-element to match the image wrapper */
 .image-wrapper:after {
@@ -212,6 +264,8 @@ p {
   height: auto; /* Adjust height automatically */
 }
 
+/* Waffle chart legend */
+
 .legend-container {
   display: flex;
   justify-content: center;
@@ -219,7 +273,7 @@ p {
   margin-top: 20px;
 }
 
-.legend-container text {
+text {
   font-family: 'Arthouse Owned Rounded';
   font-weight: 200;
 }
@@ -234,5 +288,13 @@ p {
   width: 20px;
   height: 20px;
   margin-right: 5px;
-  border: 1px solid #000000; /* for colors that are hard to see against white */
+}
+
+@media (max-width: 768px) {
+  .legend-container {
+    flex-direction: column;
+  }
+  .legend-item {
+    margin-bottom: 10px;
+  }
 }

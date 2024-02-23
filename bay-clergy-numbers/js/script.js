@@ -25,167 +25,91 @@ function loadCSVData(url, callback) {
   });
 }
 
-// /////////////////////////////////////////////////////// //
+// Create waffle chart //
 
-// Declare class (blueprint) for generating waffle chart
 class WaffleChartGenerator {
-
-  // Takes three parameters that specify what kind of values the constructor expects to receive
   constructor(data, containerId, totalSquares) {
-
-    // Store the data used to generate the waffle chart
+    // Store the provided parameters
     this.data = data;
-
-    // Store the ID of the HTML container element where the chart will be rendered
     this.containerId = containerId;
-
-    // Define the aspect ratio of the chart
-    this.aspectRatio = 4 / 2;
-
-    // Define the gap size between waffle chart squares
-    this.gapSize = 3;
-
-    // Define margins for the chart
-    this.margin = { top: 10, right: 10, bottom: 10, left: 10 };
-
-    // Store the total number of squares in the waffle chart
     this.totalSquares = totalSquares;
 
-    // Calculate the total value by summing up the lawsuits of each item in the data array
+    // Default properties
+    this.aspectRatio = 4 / 2;
+    this.gapSize = 1;
+    this.margin = { top: 10, right: 10, bottom: 10, left: 10 };
     this.totalValue = this.data.reduce((total, item) => total + item.lawsuits, 0);
 
-    // Call the initializeChart method to set up the chart
+    // Initialize the chart
     this.initializeChart();
-
   }
-  
-  // Define getColor method within the chart generator class
-  getColor(position) {
 
-    // Create object colorMap to map each position to its corresponding color
+  getColor(position) {
     const colorMap = {
       "Priest": "#ff7f0e",
       "Religious brother": "#2ca02c",
       "Unknown or other": "#9467bd",
       "Nun": "#1f77b4"
     };
-
-    // Default color to gray if position not found
-    return colorMap[position] || "gray"; 
-  
+    return colorMap[position] || "gray";
   }
 
   initializeChart() {
-    
-    // Get HTML element for the container
     const containerElement = document.getElementById(this.containerId);
-    
-    // Get width of container element
     const containerWidth = containerElement.clientWidth;
+    this.containerWidth = containerWidth;
 
-    // Set desired number of columns for the chart
-    const desiredNumberOfColumns = 40;
+    const desiredNumberOfColumns = 54;
+    this.squareSize = Math.floor((containerWidth - (desiredNumberOfColumns - 1) * this.gapSize) / desiredNumberOfColumns);
+    this.numberOfRows = Math.ceil(this.totalSquares / desiredNumberOfColumns);
+    this.containerHeight = this.numberOfRows * (this.squareSize + this.gapSize) + this.margin.top + this.margin.bottom;
 
-    // Calculate size of each square based on total number of squares and desired number of columns
-    const squareSize = Math.floor((containerWidth - (desiredNumberOfColumns - 1) * this.gapSize) / desiredNumberOfColumns); // Adjust square size considering gaps
-    
-    // Calculate number of rows needed based on total number of squares and desired number of columns
-    const numberOfRows = Math.ceil(this.totalSquares / desiredNumberOfColumns);
-
-    // Calculate the total height of the waffle chart grid including margins
-    const containerHeight = numberOfRows * (squareSize + this.gapSize) + this.margin.top + this.margin.bottom;
-
-    // Remove any existing SVG elements within the container to avoid duplication
     d3.select(`#${this.containerId}`).selectAll('svg').remove();
-    
-    // Create a new SVG element within the container and set its attributes and styles
-    const svg =
-      // Select the HTML element
-      d3.select(`#${this.containerId}`)
-        // Append svg
-        .append("svg")
-        // Set viewBox attribute that defines the position and dimensions of the content of the svg viewport
-        .attr(
-          "viewBox",
-          `0 0 ${
-            containerWidth + this.margin.left + this.margin.right
-          } ${
-            containerHeight
-          }`)
-        // Determine how the svg should scale
-        .attr("preserveAspectRatio", "xMinYMin meet")
-        // Set CSS property width to full width of container
-        .style("width", "100%")
-        // Adjust height automatically
-        .style("height", "auto")
-        // Display on own line
-        .style("display", "block")
-        // Center the svg horizontally
-        .style("margin", "auto");
 
-    // Call the drawChart method to render the waffle chart within the SVG element
-    this.drawChart(svg, squareSize, desiredNumberOfColumns);
+    const svg = d3.select(`#${this.containerId}`)
+      .append("svg")
+      .attr("viewBox", `0 0 ${containerWidth + this.margin.left + this.margin.right} ${this.containerHeight}`)
+      .attr("preserveAspectRatio", "xMinYMin meet")
+      .style("width", "100%")
+      .style("height", "auto")
+      .style("display", "block")
+      .style("margin", "auto");
+
+    this.drawChart(svg, this.squareSize, desiredNumberOfColumns);
   }
 
-  // Generate the chart within the svg container
   drawChart(svg, squareSize, numCols) {
-    
-    // Initialize three variables
-    let currentRow = 0, // current row position
-      currentCol = 0, // current column position
-      filledSquares = 0; // count total filled squares
-
-    // totalValue stores the sum of all lawsuit values in the dataset, representing the total number of lawsuits
+    let currentRow = 0, currentCol = 0, filledSquares = 0;
     const totalValue = this.totalValue;
-
-    // Access totalSquares (total number of squares in the chart) from the class instance
     const totalSquares = this.totalSquares;
+    const margin = this.margin;
 
-    // Initialize the margin object
-    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
-
-    // Iterate over each item in the data set 'this.data'
     this.data.forEach(item => {
-
-      // Check if lawsuits property is valid number
       if (!isNaN(item.lawsuits)) {
-
-        // Calculate number of squares to draw for current item
         const itemSquares = totalValue !== 0 ? Math.round(item.lawsuits / totalValue * totalSquares) : 0;
-
-        // Iterate over each square to be drawn for current item
         for (let i = 0; i < itemSquares && filledSquares < totalSquares; i++) {
-          
-          // Calculate x and y coordinates for the top-left corner of the current square
           const x = (currentCol * (squareSize + this.gapSize)) + margin.left;
           const y = (currentRow * (squareSize + this.gapSize)) + margin.top;
-          
-          // Append a rectangle element to the svg container, representing an individual square of the waffle chart
+
           svg.append("rect")
             .attr("x", x)
             .attr("y", y)
             .attr("width", squareSize - this.gapSize)
             .attr("height", squareSize - this.gapSize)
-            .attr("fill", this.getColor(item.position))
-            .attr("stroke-width", this.gapSize)
-            .attr("transform", `rotate(45, ${x}, ${y}) translate(-${squareSize / 2}, -${squareSize / 2})`);
-          
-          // Update the curent column and row indices
-          currentCol++;
+            .attr("fill", this.getColor(item.position));
 
-          // If the current column exceeds the specified number of columns (numCols), reset to 0 and increment the row index
-          if (currentCol >= numCols) {
-            currentCol = 0;
-            currentRow++;
+          currentRow++;
+          if (currentRow >= Math.ceil(totalSquares / numCols)) {
+            currentRow = 0;
+            currentCol++;
           }
-
-          // Increment the count of filled squares
           filledSquares++;
         }
       }
     });
   }
 }
+
 
 // Define and initialize the waffleData variable
 const waffleData = [
@@ -195,8 +119,7 @@ const waffleData = [
   { position: "Nun", lawsuits: 22 }
 ];
 
-// Sort waffleData by lawsuits in descending order
-// Ensure "Unknown or other" is last
+// Sort waffleData by lawsuits in descending order, ensure "Unknown or other" is last
 waffleData.sort((a, b) => {
   return a.position === "Unknown or other" ? 1 :
     b.position === "Unknown or other" ? -1 :
@@ -207,21 +130,18 @@ waffleData.sort((a, b) => {
 const totalSquares = 1597;
 
 // Instantiate the class WaffleChartGenerator
-const waffleChart = new WaffleChartGenerator(
-  waffleData, // data for the waffle chart
-  'waffle-chart-container', // id of the container element in html
-  totalSquares // total number of squares in the chart
-  );
+const waffleChart = new WaffleChartGenerator(waffleData, 'waffle-chart-container', totalSquares);
 
 // Declare global reference to the chart instance
 let waffleChartInstance;
 
-// Event listener that fires on load
+// Set event listener that fires init waffle chart on load
 document.addEventListener('DOMContentLoaded', () => {
   // Correct the containerId according to your actual container's ID
   initWaffleChart('waffle-chart-container');
 });
 
+// Function to initialize a waffle chart instance within the specified HTML element
 function initWaffleChart(containerId) {
   
   // Check if an element with the provided containerId exists in the DOM
@@ -240,31 +160,33 @@ function initWaffleChart(containerId) {
 
 }
 
-// When the window is resized, the provided arrow function is executed
 window.addEventListener('resize', () => {
+  // Get the new container width based on the resized window
+  const containerElement = document.getElementById(waffleChart.containerId);
+  const newContainerWidth = containerElement.clientWidth;
 
-  // Check if waffleChartInstance exists
-  if (waffleChartInstance) {
-    // Re-initializes the waffle chart with the updated dimensions of the container element
-    initWaffleChart(waffleChartInstance.containerId);
-  }
+  // Clear the SVG to redraw
+  d3.select(`#${waffleChart.containerId}`).selectAll("*").remove();
+
+  // Update the waffle chart with the new width
+  waffleChart.containerWidth = newContainerWidth;
+  waffleChart.initializeChart();
+
+  // Since the initializeChart method re-creates the SVG, we need to select it again
+  const svg = d3.select(`#${waffleChart.containerId}`).select("svg");
 
 });
 
-// /////////////////////////////////////////////////////// //
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadAllData();
-});
+// End create waffle chart //
 
 // Function to add bishops to the bishop-section
 function addBishops(bishops) {
+
   const bishopsList = document.getElementById('bishops-list');
   bishopsList.className = 'row'; // Add the 'row' class to the container
   bishops.forEach(bishop => {
     const bishopDiv = document.createElement('div');
-    bishopDiv.className = 'bishop';
-    bishopDiv.className = 'col'; // Using 'col' will divide the space equally among columns
+    bishopDiv.className = 'bishop col';
     bishopDiv.innerHTML = `
       <div class="image-container">
         <div class="image-wrapper">
@@ -275,6 +197,7 @@ function addBishops(bishops) {
       </div>`;
     bishopsList.appendChild(bishopDiv);
   });
+
 }
 
 // Function to add priests to the bishop-section
@@ -293,8 +216,8 @@ function addPriests(priests) {
     const priestDiv = document.createElement('div');
     priestDiv.className = 'col'; // Using 'col' will divide the space equally among columns within a row
     priestDiv.innerHTML = `
-      <div class="image-container">
-        <div class="image-wrapper">
+      <div class="image-container-priest">
+        <div class="image-wrapper-priest">
           <img src="${priest.img}" alt="Photo of ${priest.priestName}" class="img-fluid">
         </div>
         <h3 class="img-caption">${priest.priestName}</h3>
@@ -312,8 +235,7 @@ function addDioceses(dioceses) {
   diocesesList.className = 'row'; // Add the 'row' class to the container
   dioceses.forEach(diocese => {
     const dioceseDiv = document.createElement('div');
-    dioceseDiv.className = 'diocese';
-    dioceseDiv.className = 'col'; // Using 'col' will divide the space equally among columns
+    dioceseDiv.className = 'diocese col';
     dioceseDiv.innerHTML = `
       <div class="arms-container">
         <img src="${diocese.img}" alt="Emblem of ${diocese.diocese}" class="img-fluid">
@@ -325,6 +247,7 @@ function addDioceses(dioceses) {
 
 // Modify the loadAllData function to call these new functions
 function loadAllData() {
+  console.log("loadAllData function called");
   let loadedCount = 0;
   Object.keys(urls).forEach(key => {
     loadCSVData(urls[key], data => {
