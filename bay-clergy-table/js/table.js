@@ -71,7 +71,7 @@ const addTableContent = () => {
 };
 
 const assignCols = () => {
-	colsToShow = mobile ? ["Accused Name", "Number Of Accusations"] : ["Accused Name", "Years of Alleged Abuse", "Position With Diocese", "Number Of Accusations"];
+	colsToShow = mobile ? ["Accused Name", "Number Of Accusations"] : ["Accused Name", "Years of Alleged Abuse", "Position With Diocese","Diocese(s)", "Number Of Accusations"];
 	colsToHide = Object.keys(allData[0]).filter(col => !colsToShow.includes(col));
 };
 
@@ -80,7 +80,7 @@ const fillTable = () => {
 	fillBody();
 	const options = {
 		columnDefs: [{ 'orderable': false, 'targets': 0 }],
-		order: [[4, 'desc']]
+		order: mobile ? [[2, 'desc']] : [[5, 'desc']]
 	};
 	table = table.DataTable(options);
 	makeExpandable();
