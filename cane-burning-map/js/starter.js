@@ -66,6 +66,16 @@ async function createMap() {
 		chartWidth = chartCanvasWidth - chartMargin.left - chartMargin.right,
 		chartHeight = chartCanvasHeight - chartMargin.top - chartMargin.bottom;
 
+	chartCanvas.append("svg")
+		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
+		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
+		.append("g")
+		.attr("id", `bar-chart-canvas`)
+		.attr("class", "bar-chart")
+		.attr("chartWidth", chartWidth)
+		.attr("chartHeight", chartHeight)
+		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
+
 	mapCanvas.append("rect")
 		.attr("fill", "#d4ebf2")
 		.attr("width", mapWidth)
@@ -100,7 +110,7 @@ async function createMap() {
 
 	addYearTabs();
 
-	seasons.map(season => seasonChart(chartHeight, chartWidth, chartMargin, chartCanvas, season));
+	createBarChart(seasons[0]);
 
 	awaitContentLoad();
 };
@@ -371,8 +381,8 @@ const changeYear = e => {
 	stopAnimation = true;
 	firstDay = (years[0] * 1000) + 275;
 	lastDay = (years[1] * 1000) + 120;
-	hideOtherDays(1000000);
 	switchChart(years);
+	hideOtherDays(1000000);
 	if (paused === 1) {
 		document.getElementById('pl').click();
 	}
@@ -394,19 +404,13 @@ const updateSelectedStatus = (tab, selectedTabId) => {
 	}
 };
 
-const seasonChart = (chartHeight, chartWidth, chartMargin, chartCanvas, years) => {
-	const chart = chartCanvas.append("svg")
-		.attr("width", chartWidth + chartMargin.left + chartMargin.right)
-		.attr("height", chartHeight + chartMargin.top + chartMargin.bottom)
-		.append("g")
-		.attr("id", `bar-chart-canvas-${years[0]}`)
-		.attr("class", years[0] === seasons[0][0] ? "bar-chart show-content-full" : "bar-chart hide-content")
-		.attr("transform", `translate(${chartMargin.left},${chartMargin.top})`);
-
-	createBarChart(chartHeight, chartWidth, chart, years);
-}
-
-const createBarChart = (height, width, svg, years) => {
+const createBarChart = years => {
+	let canvas = d3.select('#bar-chart-canvas'),
+		height = +canvas.attr("chartHeight"),
+		width = +canvas.attr("chartWidth"),
+		svg = canvas.append("g")
+			.attr("id", "disposable-chart")
+			.attr("class", "hide-content");
 	d3.csv(`./data/1001${years[0]}_0430${years[1]}_fire_count.csv`).then(function (data) {
 		let maxVal = 0;
 		data.map(row => {
@@ -417,7 +421,6 @@ const createBarChart = (height, width, svg, years) => {
 		let mobileFirsts = firsts.filter((element, index) => { return index % 2 === 0; });
 		data.map(row => { row.date = d3.timeParse("%Y-%m-%d")(row.date) });
 		const tickDates = mobile ? mobileFirsts.map(row => row.date) : firsts.map(row => row.date);
-		console.log(tickDates)
 
 		// X axis
 		const x = d3.scaleBand()
@@ -471,13 +474,16 @@ const createBarChart = (height, width, svg, years) => {
 
 		d3.selectAll(".tick")
 			.attr("onclick", "selectMonth(event)");
-
+		
+		svg.attr("class", "show-content-full");
 	})
 };
 
 const switchChart = years => {
-	const charts = d3.selectAll('.bar-chart').nodes();
-	charts.map(chart => updateSelectedChart(chart, years));
+	const chart = d3.select('#disposable-chart');
+	chart.attr("class", "hide-content");
+	chart.remove();
+	createBarChart(years);
 };
 
 const updateSelectedChart = (chart, years) => {
@@ -528,7 +534,6 @@ const addYLines = (xScale, yScale, yVals, width, canvas) => {
 
 const selectMonth = e => {
 	const selectedDate = e.currentTarget.__data__;
-	console.log(selectedDate)
 	const bars = d3.selectAll(".bar");
 	const selectedBar = bars.filter(d => d.date === selectedDate);
 	const selectedDay = parseInt(selectedBar.data()[0].year_day.toString());
