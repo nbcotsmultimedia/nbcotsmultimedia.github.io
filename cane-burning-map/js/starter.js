@@ -368,14 +368,14 @@ const addYearTabs = () => {
 		if (i === 0) {
 			classes += " selected-year";
 		}
-		const button = `<button id="${thisSeason[0]}-season" class="${classes}" onclick="changeYear(event)">${thisSeason[0]}-${thisSeason[1]}</button>`
+		const button = `<button id="season-${thisSeason[0]}" class="${classes}" onclick="changeYear(event)">${thisSeason[0]}-${thisSeason[1]}</button>`
 		innerHtml += button;
 	}
 	buttonContainer.html(innerHtml);
 };
 
 const changeYear = e => {
-	d3.select("#graphic-container").style("background-color", "#ffffff");
+	d3.select(e.target).text(e.target.id);
 	/*
 	selectTab(e);
 	const yearRange = e.target.textContent;
