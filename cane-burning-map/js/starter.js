@@ -375,8 +375,6 @@ const addYearTabs = () => {
 };
 
 const changeYear = e => {
-	d3.select(e.target).text(e.target.id);
-	/*
 	selectTab(e);
 	const yearRange = e.target.textContent;
 	const years = yearRange.split("-");
@@ -390,7 +388,6 @@ const changeYear = e => {
 	}
 	waitforme(6000);
 	animation(firstDay, firstDay, lastDay);
-	*/
 };
 
 const selectTab = e => {
