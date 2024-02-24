@@ -375,6 +375,7 @@ const addYearTabs = () => {
 };
 
 const changeYear = e => {
+	d3.select("#graphic-container").style("background-color", "#ffffff");
 	selectTab(e);
 	const yearRange = e.target.textContent;
 	const years = yearRange.split("-");
