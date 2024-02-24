@@ -145,6 +145,10 @@ button[disabled]{
     margin-left: -50px;
 }
 
+#year-button-container {
+    margin-left: 25px;
+}
+
 
 @media screen and (max-width: 768px) {
     #map-container {
