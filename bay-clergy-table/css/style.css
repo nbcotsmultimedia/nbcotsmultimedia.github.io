@@ -1,5 +1,6 @@
 body {
     background-color: #0C0C0C !important;
+    overflow: hidden;
 }
 
 #accusations-table {

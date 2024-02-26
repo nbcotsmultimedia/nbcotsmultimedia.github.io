@@ -68,6 +68,7 @@ const addTableContent = () => {
 	// which columns to show/hide (mobile vs. desktop)
 	assignCols();
 	fillTable();
+	resizeWhenRowsChange();
 };
 
 const assignCols = () => {
@@ -146,8 +147,7 @@ const makeExpandable = () => {
 		else {
 			// Open this row
 			row.child(tr.getAttribute("hidden-data")).show();
-
-			xtalk.signalIframe();
+			setTimeout(function(){ xtalk.signalIframe(); }, 2000);
 		}
 
 
@@ -156,8 +156,8 @@ const makeExpandable = () => {
 
 const resizeWhenRowsChange = () => {
 	const rowNumSelect = $("#dt-length-0");
-	rowNumSelect.on('click', e => {
-		xtalk.signalIframe();
+	rowNumSelect.on('change', e => {
+		setTimeout(function(){ xtalk.signalIframe(); }, 2000);
 	});
 }
 	
