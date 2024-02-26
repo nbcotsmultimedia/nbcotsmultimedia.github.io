@@ -61,7 +61,7 @@ function parseData() {
 	var $len = allData.length;
 	totalEntries = $len;
 	addTableContent();
-	setTimeout(function(){ xtalk.signalIframe(); }, 2000);
+	setTimeout(function(){ xtalk.signalIframe(); }, 1000);
 }
 
 const addTableContent = () => {
@@ -147,7 +147,7 @@ const makeExpandable = () => {
 		else {
 			// Open this row
 			row.child(tr.getAttribute("hidden-data")).show();
-			setTimeout(function(){ xtalk.signalIframe(); }, 2000);
+			setTimeout(function(){ xtalk.signalIframe(); }, 1000);
 		}
 
 
@@ -157,7 +157,7 @@ const makeExpandable = () => {
 const resizeWhenRowsChange = () => {
 	const rowNumSelect = $("#dt-length-0");
 	rowNumSelect.on('change', e => {
-		setTimeout(function(){ xtalk.signalIframe(); }, 2000);
+		setTimeout(function(){ xtalk.signalIframe(); }, 1000);
 	});
 }
 	
