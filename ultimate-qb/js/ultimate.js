@@ -197,12 +197,21 @@ function showParts(which) {
 			//console.log(allData[currentPlayer].imgpre + "//" + $(this).attr("data-id") + "//" + $(this).attr("data-part"));
 		//	$("#bodyParts").append("<div id='placed" + $(this).attr("data-part") + "' class='placedParts'><img src='images/" + allData[currentPlayer].imgpre + "-" + $(this).attr("data-part") + ".png' /></div>");
 
+			let str = allData[currentPlayer].last_name;
+			let res = str.charAt(str.length - 1);
+			let add = "";
+			if (res == "s") {
+				add = "' ";
+			} else {
+				add = "'s ";
+			}
+
 			switch ($(this).attr("data-part")) {
 				case "head":
 					$("#placedhead").css("opacity", 0);
 					$("#placedhead").html("<img src='images/" + allData[currentPlayer].imgpre + "-" + $(this).attr("data-part") + ".png' />");
 					if (lang == "eng") {
-						$("#labelhead").html(allData[currentPlayer].last_name + "'s " + headHeader);
+						$("#labelhead").html(allData[currentPlayer].last_name + add + headHeader);
 					} else {
 						$("#labelhead").html(headHeader + " de " + allData[currentPlayer].last_name);
 					}
@@ -216,7 +225,7 @@ function showParts(which) {
 					$("#placedtorso").html("<img src='images/" + allData[currentPlayer].imgpre + "-" + $(this).attr("data-part") + ".png' />");
 					//$("#labeltorso").html(allData[currentPlayer].last_name + " " + torsoHeader);
 					if (lang == "eng") {
-						$("#labeltorso").html(allData[currentPlayer].last_name + "'s " + torsoHeader);
+						$("#labeltorso").html(allData[currentPlayer].last_name + add + torsoHeader);
 					} else {
 						$("#labeltorso").html(torsoHeader + " de " + allData[currentPlayer].last_name);
 					}
@@ -230,7 +239,7 @@ function showParts(which) {
 					$("#placedlegs").html("<img src='images/" + allData[currentPlayer].imgpre + "-" + $(this).attr("data-part") + ".png' />");
 					//$("#labellegs").html(allData[currentPlayer].last_name + " " + legsHeader);
 					if (lang == "eng") {
-						$("#labellegs").html(allData[currentPlayer].last_name + "'s " + legsHeader);
+						$("#labellegs").html(allData[currentPlayer].last_name + add + legsHeader);
 					} else {
 						$("#labellegs").html(legsHeader + " de " + allData[currentPlayer].last_name);
 					}
@@ -244,7 +253,7 @@ function showParts(which) {
 					$("#placedfeet").html("<img src='images/" + allData[currentPlayer].imgpre + "-" + $(this).attr("data-part") + ".png' />");
 					//$("#labelrf").html(allData[currentPlayer].last_name + " " + rfHeader);
 					if (lang == "eng") {
-						$("#labelfeet").html(allData[currentPlayer].last_name + "'s " + ftHeader);
+						$("#labelfeet").html(allData[currentPlayer].last_name + add + ftHeader);
 					} else {
 						$("#labelfeet").html(rfHeader + " de " + allData[currentPlayer].last_name);
 					}

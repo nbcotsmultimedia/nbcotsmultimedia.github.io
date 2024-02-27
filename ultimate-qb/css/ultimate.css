@@ -163,7 +163,7 @@ body {
 #labelhead {
   text-align: right;
   top: 80px;
-  left: 50px;
+  left: 130px;
 }
 
 #labeltorso {
@@ -256,12 +256,12 @@ body {
 
   #partsScroll {
     margin: 15px 0;
-    height: 230px;
+    height: 160px;
     overflow-x: scroll;
     overflow-y: hidden;
   }
   #allParts {
-    width: 1150px;
+    width: 900px;
     position: relative;
   }
 
@@ -295,14 +295,14 @@ body {
     width: 100%;
     margin: 25px auto 0px auto;
     position: relative;
-    zoom: .66;
+    zoom: .75;
     top: -75px;
     left: -20px;
   }
   #outline {
     position: relative;
-    top: 95px;
-    left: 65px;
+    top: 99px;
+    left: 70px;
   }
 
   #scoreBox {
@@ -320,20 +320,20 @@ body {
       height: 210px;
       width: 5em;
       background: -webkit-linear-gradient( 90deg,
-          rgba( 50,  50,  50, 0) 0%,
-          rgba( 50,  50,  50, 1) 100%
+          rgba( 0,  51,  0, 0) 0%,
+          rgba( 0,  51,  0, 1) 100%
       );
       background-image: -moz-linear-gradient( 90deg,
-          rgba( 50,  50,  50, 0) 0%,
-          rgba( 50,  50,  50, 1) 100%
+          rgba( 0,  51,  0, 0) 0%,
+          rgba( 0,  51,  0, 1) 100%
       );
       background-image: -o-linear-gradient( 90deg,
-          rgba( 50,  50,  50, 0) 0%,
-          rgba( 50,  50,  50, 1) 100%
+          rgba( 0,  51,  0, 0) 0%,
+          rgba( 0,  51,  0, 1) 100%
       );
       background-image: linear-gradient( 90deg,
-          rgba( 50,  50,  50, 0) 0%,
-          rgba( 50,  50,  50, 1) 100%
+          rgba( 0,  51,  0, 0) 0%,
+          rgba( 0,  51,  0, 1) 100%
       );
       background-image: -ms-linear-gradient( 90deg,
           rgba( 50,  50,  50, 0) 0%,
@@ -348,8 +348,8 @@ body {
 
   #labelhead {
     text-align: right;
-    top: 80px;
-    left: 125px;
+    top: 85px;
+    left: 110px;
   }
 
   #labeltorso {
@@ -359,8 +359,8 @@ body {
   }
 
   #labellegs {
-    top: 235px;
-    left: 365px;
+    top: 275px;
+    left: 380px;
     width: 200px;
   }
 
