@@ -1,6 +1,8 @@
 // Configuration and global variables
 let globalData;
 let activeCard = null; // Globally track the active card
+let mouseY = 0;
+
 
 const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
 const gridContainer = document.getElementById('accusersGrid');
@@ -62,6 +64,8 @@ function handleClick(event) {
         event.stopPropagation();
     }
 }
+
+
 
 function handleDesktopClick(event) {
     const target = event.target.closest('.accuser-card');
@@ -195,6 +199,19 @@ function createGrid(data) {
         const card = createCard(accuser, index);
         gridContainer.appendChild(card);
     });
+
+    $(".accuser-card").click(function(){
+        // console.log($(this))
+        mouseY = $(this).position().top;
+        
+
+        if (mouseY > 1400) {
+            // mouseY -= 1000;
+        }
+
+        console.log(mouseY);
+    })
+
     xtalk.signalIframe();
 }
 
@@ -275,6 +292,8 @@ function openModal(accuser) {
 
     // Display the modal
     modal.style.display = 'block';
+
+    $(".modal-content").css("top",mouseY);
 }
 
 // Function to navigate through accusers
