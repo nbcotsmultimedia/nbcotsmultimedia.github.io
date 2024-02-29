@@ -72,7 +72,7 @@ const addTableContent = () => {
 };
 
 const assignCols = () => {
-	colsToShow = mobile ? ["Accused Name", "Number Of Accusations"] : ["Accused Name", "Years of Alleged Abuse", "Position With Diocese","Diocese(s)", "Number Of Accusations"];
+	colsToShow = mobile ? ["Accused Name", "Number Of Accusations"] : ["Accused Name", "Years of Alleged Abuse", "Position","Diocese(s)", "Number Of Accusations"];
 	colsToHide = Object.keys(allData[0]).filter(col => !colsToShow.includes(col));
 };
 
