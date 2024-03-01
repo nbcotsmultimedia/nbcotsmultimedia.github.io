@@ -201,16 +201,20 @@ function createGrid(data) {
     });
 
     $(".accuser-card").click(function(){
-        // console.log($(this))
         mouseY = $(this).position().top;
-        
 
-        if (mouseY > 1400) {
-            // mouseY -= 1000;
+        if (mouseY < 10) {
+            mouseY += 20;
+        } else {
+          mouseY -= 20;
         }
-
-        console.log(mouseY);
-    })
+        if (mouseY > 1100) {
+            mouseY -= 100;
+        }
+        if (mouseY > 1400) {
+            mouseY -= 175;
+        }
+    });
 
     xtalk.signalIframe();
 }
