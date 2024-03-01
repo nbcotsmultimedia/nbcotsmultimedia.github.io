@@ -2,6 +2,7 @@
 let globalData;
 let activeCard = null; // Globally track the active card
 let mouseY = 0;
+let inArticle;
 
 
 const googleSheetCSVURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSRcgsrKaBpkNRe2mxvHVF3t5FsepLD9_ZrpdLJcJ236tyHX28uXbBuPDFkljyosiHbYEBpMMa1VuOe/pub?gid=0&single=true&output=csv';
@@ -45,6 +46,13 @@ document.addEventListener('DOMContentLoaded', init);
 
 // Initialize function
 function init() {
+    var myparent = xtalk.parentDomain;
+    if (myparent == undefined || myparent == null || myparent == "" || myparent == "http" ) {
+      inArticle = false;
+    } else {
+      inArticle = true;
+    }
+
     arrowLeft.addEventListener('click', () => navigateAccuser(-1));
     arrowRight.addEventListener('click', () => navigateAccuser(1));
 
@@ -53,6 +61,8 @@ function init() {
     window.addEventListener('resize', debounce(updateEventListeners, 250));
     closeButton.addEventListener('click', closeModal);
     document.body.addEventListener('click', closeOutsideModal);
+
+
 }
 
 // Click event handlers
@@ -117,7 +127,7 @@ function createCard(accuser, index) {
         <p class="nature">${accuser.natureOfAccusation}</p>
         <div class="footer"></div>
     `;
-    
+
     // Count the number of characters in the location
     const locationText = accuser.locationOfAccusation;
     const locationCharacterCount = locationText.length;
@@ -174,7 +184,17 @@ function createCard(accuser, index) {
     // Set id for card
     card.setAttribute('data-id', `card-${index}`);
 
+    if (inArticle) {
+  		const myTimeout = setTimeout(resizeIframe, 3000);
+  	} 
+
     return card;
+
+
+}
+
+function resizeIframe() {
+  xtalk.signalIframe();
 }
 
 // Fetch accuser data from csv url using Papa Parse, call createGrid()
@@ -216,7 +236,7 @@ function createGrid(data) {
         }
     });
 
-    xtalk.signalIframe();
+    //setTimeout(xtalk.signalIframe(), 4000);
 }
 
 // MODAL
