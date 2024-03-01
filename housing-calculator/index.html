@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Housing affordability calculator</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+    <body>
+        <div class="calculator-container">
+            <h1>Can you afford a home in your area?</h1>
+            <form id="affordabilityForm">
+                <div class="form-group">
+                    <label for="zipCode">Zip code</label>
+                    <input type="text" id="zipCode" name="zipCode">
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="calculateButton">Submit</button>
+                </div>
+            </form>
+            <div id="resultsContainer">
+                <!-- Results here -->
+            </div>
+        </div>
+
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Javascript -->
+        <script src="js/script.js" async defer></script>
+    </body>
+</html>
