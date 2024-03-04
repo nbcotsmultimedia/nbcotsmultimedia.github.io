@@ -1,9 +1,18 @@
+//TODO - 
+// make the property tax rate input and insurance rate optional, fill with default
+// compare user DTI to the median home price, and rank the median price on a scale to show if its affordable, stretch, or out of reach
+
 //ANCHOR - Set global variables
+//#region - Set global variables
 const affordable_threshold = 0.36;
 const stretch_threshold = 0.42
 let medianSalePricesData = []; // Global variable to store data from sheet
 
-//ANCHOR - Get data
+const defaultPropertyTaxRate = 1.10; // Average property tax rate as a percentage
+const defaultInsuranceAmount = 2417; // Default annual home insurance amount in dollars
+//#endregion
+
+//ANCHOR - Get and process housing data
 
 // Function to load data using Papa Parse
 function loadDataFromGoogleSheet(url) {
@@ -19,7 +28,7 @@ function loadDataFromGoogleSheet(url) {
             medianSalePricesData = results.data;
 
             // Call function to process data and perform calculations
-            processAndCalculate(results.data);
+            processAndCalculate();
         },
         error: function(error) {
             console.error('Error while fetching and parsing CSV:', error);
@@ -39,53 +48,116 @@ function processAndCalculate(data) {
 function performCalculations() {
     // Capture the zip code input by the user
     const zipCode = $('#zipCode').val().trim();
-
-    // Find the data for the provided zip code
     const zipCodeData = medianSalePricesData.find(data => data.zip === zipCode);
 
+    // Check if zip code is found in housing data
     if (!zipCodeData) {
         displayErrorMessage('zipCode', 'Data for this zip code is not available.');
         return;
     }
 
-    // Capture and convert form values
+    // Retrieve and parse data specific to the zip code
+    const mortgageRate = parseFloat(zipCodeData.mortgage_30_rate);
+    const loanTerm = 30;
+
+    // Capture and parse other form values
     const income = parseFloat($('#income').val());
     const downPayment = parseFloat($('#downPayment').val());
     const monthlyExpenses = parseFloat($('#monthlyExpenses').val());
-    const propertyTaxRate = parseFloat($('#propertyTax').val());
-    const insuranceRate = parseFloat($('#insuranceRate').val());
 
-    // Retrieve the mortgage rate from the data
-    // Here, you need to find the relevant row in medianSalePricesData based on the user's zip code
-    // You might need to loop through the data or use another method to find the correct row
-    const mortgageRate = 4.5; // Example value, replace with the actual value from your data
-    const loanTerm = 30; // default loan term in years
+    // Use default value if property tax rate is not provided
+    const propertyTaxRate = $('#propertyTax').val() ? parseFloat($('#propertyTax').val()) : defaultPropertyTaxRate;
 
-    // Perform calculations
-    const affordableHomePrice = calculateAffordableHomePrice(monthlyExpenses, income, downPayment, propertyTaxRate, insuranceRate, mortgageRate, loanTerm);
+    // Use annual insurance cost in dollars
+    const insuranceAmount = $('#insuranceRate').val() ? parseFloat($('#insuranceRate').val()) : defaultInsuranceAmount;
+
+    // Calculate affordable home price
+    const affordableHomePrice = calculateAffordableHomePrice(
+        monthlyExpenses, 
+        income, 
+        downPayment, 
+        propertyTaxRate, 
+        insuranceAmount, // Use annual insurance cost
+        mortgageRate, 
+        loanTerm
+    );
+
+    // Retrieve the median home price for the provided zip code
+    const medianHomePrice = parseFloat(zipCodeData.median_sale_price);
+
+    // Calculate user's debt-to-income ratio (DTI)
     const dti = calculateDTI(monthlyExpenses, income);
-    const affordabilityCategory = categorizeAffordability(dti);
+
+    // Determine affordability category based on comparison of affordableHomePrice and medianHomePrice
+    let affordabilityCategory;
+    if (affordableHomePrice < medianHomePrice) {
+        affordabilityCategory = 'Consider Adjusting Budget or Area';
+    } else {
+        affordabilityCategory = categorizeAffordability(dti);
+    }
 
     // Display results
-    $('#resultsContainer').text(`Based on your input, an affordable home price for you would be up to $${affordableHomePrice.toFixed(2)}. Category: ${affordabilityCategory}`).show();
+    $('#resultsContainer').html(`
+        <p>Median Home Price in ${zipCode}: $${medianHomePrice.toLocaleString()}</p>
+        <p>Your Maximum Affordable Home Price: $${affordableHomePrice.toFixed(2)}</p>
+        <p>Your Debt-to-Income Ratio (DTI): ${dti.toFixed(2)}</p>
+        <p>Affordability Category: ${affordabilityCategory}</p>
+    `);
 }
 
-// Call the function to load data from the sheet URL
+//#region Call the function to load data from the sheet URL
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJdqWTqaUeXFahjvUBRnKpK9ABl9fI7PHwjMxWNzT7gmd0Krg9uida9V21u90TjT2zoNVFggF038RX/pub?gid=0&single=true&output=csv'
 loadDataFromGoogleSheet(url);
+//#endregion
 
 //ANCHOR - Capture user input via form and perform calculations
 
 $(document).ready(function() {
+
+    //#region - Autofill form fields for debugging
+    $('#zipCode').val('78749');
+    $('#income').val('75000');
+    $('#downPayment').val('10000');
+    $('#monthlyExpenses').val('600');
+    $('#propertyTax').val(''); // Optional field, leave empty for autofill
+    $('#insuranceRate').val(''); // Optional field, leave empty for autofill
+    //#endregion
+
     $('#affordabilityForm').on('submit', function(event) {
         event.preventDefault(); // Prevent the default form behavior
         $('.error-message').remove(); // Clear any existing error messages
-        validateInputs(); // Perform input validation
+    
+        // Capture and parse user input
+        const zipCode = $('#zipCode').val().trim();
+        const income = parseFloat($('#income').val());
+        const downPayment = parseFloat($('#downPayment').val());
+        const monthlyExpenses = parseFloat($('#monthlyExpenses').val());
+
+        // Retrieve the mortgage rate for the provided zip code
+        const zipCodeData = medianSalePricesData.find(data => data.zip === zipCode);
+        if (!zipCodeData) {
+            displayErrorMessage('zipCode', 'Data for this zip code is not available.');
+            return;
+        }
+        mortgageRate = parseFloat(zipCodeData.mortgage_30_rate); // Ensure this is declared in the same scope
+        const loanTerm = 30; // Default loan term in years
+
+        // Use default values if property tax rate or insurance rate are not provided
+        const propertyTaxRate = $('#propertyTax').val() ? parseFloat($('#propertyTax').val()) : defaultPropertyTaxRate;
+        const insuranceAmount = $('#insuranceRate').val() ? parseFloat($('#insuranceRate').val()) : defaultInsuranceAmount;
+
+        // Call performCalculations here so that it has access to the latest form values
+        performCalculations(
+            income, downPayment, monthlyExpenses, propertyTaxRate, insuranceAmount
+        );
+
     });
+    
 });
 
 //ANCHOR - Validation check functions
 
+//#region - Validate inputs
 function validateInputs() {
     let isValid = true;
     // Check each input field
@@ -111,8 +183,9 @@ function validateInputs() {
         performCalculations();
     }
 }
+//#endregion
 
-
+//#region - Display error messages
 function displayErrorMessage(fieldName, message) {
     // First, clear any previous error messages
     $(`.error-message`).remove();
@@ -123,7 +196,7 @@ function displayErrorMessage(fieldName, message) {
     // Display the error message below the corresponding input field
     $(`#${fieldName}`).after(errorMessage);
 }
-
+//#endregion
 
 //ANCHOR - Calculation functions
 
@@ -144,38 +217,54 @@ function calculateMonthlyMortgage(principal, annualInterestRate, loanTerm) {
 //#endregion
 
 //#region - Calculate affordable home price
-function calculateAffordableHomePrice(monthlyExpenses, income, downPayment, propertyTaxRate, insuranceRate, mortgageRate, loanTerm) {
+function calculateAffordableHomePrice(monthlyExpenses, income, downPayment, propertyTaxRate, defaultInsuranceAmount, mortgageRate, loanTerm) {
     const monthlyIncome = income / 12;
-    const availableForMortgageMonthly = (monthlyIncome * affordable_threshold) - monthlyExpenses;
+    console.log(`Calculated Monthly Income: ${monthlyIncome}`);
 
-    // Calculate monthly property tax and insurance
-    const monthlyPropertyTax = downPayment * (propertyTaxRate / 100) / 12;
-    const monthlyInsurance = downPayment * (insuranceRate / 100) / 12;
-    const totalMonthlyCosts = availableForMortgageMonthly - (monthlyPropertyTax + monthlyInsurance);
+    // Calculate monthly insurance cost based on the default annual amount
+    const monthlyInsuranceCost = defaultInsuranceAmount / 12;
 
-    // If the total monthly costs are negative, the user cannot afford a home in this zip code
-    if (totalMonthlyCosts <= 0) {
-        return 0; // This could alternatively return a string or handle it differently in your UI
+    // Calculate monthly property tax based on the annual property tax rate and down payment
+    const monthlyPropertyTax = (downPayment * (propertyTaxRate / 100)) / 12;
+
+    // Adjust available monthly income for mortgage by subtracting monthly debts, property tax, and insurance
+    const availableForMortgageMonthly = (monthlyIncome * affordable_threshold) - monthlyExpenses - monthlyPropertyTax - monthlyInsuranceCost;
+
+    console.log(`Monthly Property Tax: ${monthlyPropertyTax}`);
+    console.log(`Monthly Insurance Cost: ${monthlyInsuranceCost}`);
+    console.log(`Available For Mortgage Monthly: ${availableForMortgageMonthly}`);
+
+    // If the amount available for mortgage monthly is negative, the user cannot afford a home
+    if (availableForMortgageMonthly <= 0) {
+        console.log('The available monthly amount for mortgage is negative, indicating the user cannot afford a home.');
+        return 0; // Handle this appropriately in your UI
     }
 
-    // Use the totalMonthlyCosts to find out how much mortgage the user can afford
-    const principal = calculateMaximumMortgage(totalMonthlyCosts, mortgageRate, loanTerm);
+    // Calculate the maximum mortgage principal the user can afford
+    const principal = calculateMaximumMortgage(availableForMortgageMonthly, mortgageRate, loanTerm);
+    console.log(`Maximum Mortgage Principal: ${principal}`);
 
-    // The affordable home price is the sum of the maximum mortgage and the down payment
+    // The affordable home price is the sum of the maximum mortgage principal and the down payment
     const affordableHomePrice = principal + downPayment;
+    console.log(`Affordable Home Price: ${affordableHomePrice}`);
+
     return affordableHomePrice;
 }
 
+//#endregion
+
+//#region - Calculate maximum affordable mortgage price
 function calculateMaximumMortgage(monthlyPayment, annualInterestRate, loanTerm) {
     const monthlyInterestRate = annualInterestRate / 100 / 12;
     const numberOfPayments = loanTerm * 12;
+    console.log(`Monthly Interest Rate: ${monthlyInterestRate}`);
+    console.log(`Number of Payments: ${numberOfPayments}`);
 
-    // Calculate the principal of the loan based on the annuity formula
     const principal = (monthlyPayment * (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1)) / (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments));
+    console.log(`Calculated Principal: ${principal}`);
 
     return principal;
 }
-
 //#endregion
 
 //#region - Affordability range based on DTI

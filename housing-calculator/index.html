@@ -12,7 +12,7 @@
             <form id="affordabilityForm">
                 <!-- User inputs -->
                 <div class="form-group">
-                    <label for="zipCode">Zip code</label>
+                    <label for="zipCode">Zip code (Texas only for testing)</label>
                     <input type="number" id="zipCode" name="zipCode" class="form-control" required>
                 </div>
                 <div class="form-group">
@@ -28,17 +28,20 @@
                     <input type="number" id="monthlyExpenses" name="monthlyExpenses" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label for="propertyTax">Property Tax Rate (%)</label>
-                    <input type="number" id="propertyTax" name="propertyTax" class="form-control" required>
+                    <label for="propertyTax">Property tax (%)</label>
+                    <input type="text" id="propertyTax" name="propertyTax" placeholder="Property Tax Rate (optional)">
                 </div>
                 <div class="form-group">
-                    <label for="insuranceRate">Homeowner's Insurance Rate (%)</label>
-                    <input type="number" id="insuranceRate" name="insuranceRate" class="form-control" required>
+                    <label for="insuranceRate">Homeowner's insurance costs (annual $)</label>
+                    <input type="text" id="insuranceRate" name="insuranceRate" placeholder="Homeowner's Insurance Rate (optional)">
                 </div>
                 <div class="form-group">
                     <button type="submit" id="calculateButton" class="btn">Calculate</button>
                 </div>                
             </form>
+            <div id="medianHomePriceContainer">
+                <!-- This is where the median home price will be displayed -->
+            </div>            
             <div id="resultsContainer">
                 <!-- Results here -->
             </div>
