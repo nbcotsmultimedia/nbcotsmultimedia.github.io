@@ -10,13 +10,34 @@
         <div class="calculator-container">
             <h1>Can you afford a home in your area?</h1>
             <form id="affordabilityForm">
+                <!-- User inputs -->
                 <div class="form-group">
                     <label for="zipCode">Zip code</label>
-                    <input type="text" id="zipCode" name="zipCode">
+                    <input type="number" id="zipCode" name="zipCode" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <button type="submit" id="calculateButton">Submit</button>
+                    <label for="income">Annual Income ($)</label>
+                    <input type="number" id="income" name="income" class="form-control" required>
                 </div>
+                <div class="form-group">
+                    <label for="downPayment">Down Payment ($)</label>
+                    <input type="number" id="downPayment" name="downPayment" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="monthlyExpenses">Monthly Debt Payments ($)</label>
+                    <input type="number" id="monthlyExpenses" name="monthlyExpenses" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="propertyTax">Property Tax Rate (%)</label>
+                    <input type="number" id="propertyTax" name="propertyTax" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="insuranceRate">Homeowner's Insurance Rate (%)</label>
+                    <input type="number" id="insuranceRate" name="insuranceRate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" id="calculateButton" class="btn">Calculate</button>
+                </div>                
             </form>
             <div id="resultsContainer">
                 <!-- Results here -->
@@ -25,6 +46,8 @@
 
         <!-- jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Papa Parse -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
         <!-- Javascript -->
         <script src="js/script.js" async defer></script>
     </body>
