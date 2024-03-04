@@ -1,5 +1,10 @@
+/* /////////////////////////////////////////////////////////////////// */
+
+/* GENERAL */
+
 body {
-  background-color: #000 !important;
+  background-color: #0C0C0C; /* Match NBC page */
+  overflow: hidden;
   font-size: 1rem;
   color: #fff;
   font-family: Roboto, sans-serif;
@@ -9,9 +14,14 @@ body {
   max-width: 700px;
 }
 
+/* /////////////////////////////////////////////////////////////////// */
+
+/* TEXT */
+
 p {
   font-family: 'Arthouse Owned Rounded';
   font-weight: 300;
+  font-size: .9rem;
 }
 
 .center {
@@ -54,7 +64,66 @@ p {
   font-style: normal;
   font-weight: 300;
   font-size: 20px;
+  line-height: 1.75rem;
 }
+
+.bishop-info, .priest-info, .diocese-info {
+  padding: 0 15px; /* Add some padding on the sides */
+}
+
+.bishop-info h3, .priest-info h3, .diocese-info h3 {
+  white-space: normal; /* Override any other white-space settings that prevent wrapping */
+  hyphens: auto; /* Automatically add hyphens where appropriate */
+}
+
+/* Image captions */
+
+.img-caption {
+  margin-top: .5rem;
+}
+
+/* Common style for captions */
+.img-caption, .img-sub-caption, .img-sub-sub-caption {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  -webkit-font-smoothing: antialiased;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 1rem;
+}
+
+.img-sub-caption, .img-sub-sub-caption {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.img-sub-caption {
+  font-family: 'Arthouse Owned Rounded';
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+  font-weight: 450;
+}
+
+.img-sub-sub-caption {
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Two-column sections */
+
+.two-up {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: .6rem;
+}
+
+.two-up .left, .two-up .right {
+flex: 1; /* Each column takes up half the width */
+padding: 1rem;
+}
+
+/* /////////////////////////////////////////////////////////////////// */
+
+/* Spacers */
 
 .space-below {
   margin-bottom: 2rem;
@@ -64,134 +133,42 @@ p {
   margin-top: 2.25rem;
 }
 
-/* Style for the two-column sections */
-.two-up {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: .6rem;
-}
-  
-.two-up .left, .two-up .right {
-  flex: 1; /* Each column takes up half the width */
-  padding: 1rem;
-}
+/* Section divider line */
 
-/* IMAGES */
-
-/* Define image dimensions as CSS variables */
-:root {
-  --image-width: 150px;
-  --image-height: 190px;
-}
-
-/* Style for image containers (bishops and priests) */
-.image-container {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-/* Use CSS variables for image dimensions */
-.image-container img {
-  width: var(--image-width);
-  height: var(--image-height);
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
-}
-
-/* Style for image wrappers */
-.image-wrapper {
-  display: inline-block;
-  width: var(--image-width);
-  height: var(--image-height);
-  border-radius: 50%;
-  position: relative; /* Set position to relative */
-}
-
-/* Use CSS variables for image dimensions */
-.image-wrapper img {
-  display: block;
-  width: 100%; /* Ensure image fills wrapper */
-  height: 100%; /* Ensure image fills wrapper */
-  object-fit: cover;
-  box-shadow: 0 0 10px #0008;
-  border-radius: 50%;
-}
-
-/* Priest images */
-
-/* Style for image containers (bishops and priests) */
-.image-container-priest {
-  text-align: center;
-  margin-bottom: 0.75rem;
-}
-
-/* Use CSS variables for image dimensions */
-.image-container-priest img {
-  width: var(--image-width);
-  height: var(--image-height);
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
-}
-
-#priests-list .row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* This will help center the items and manage spacing */
-  gap: 10px; /* This property creates a gap between flex items */
-}
-
-#priests-list .col {
-  flex: 1; /* Each .col element will take up equal space */
-  min-width: 160px; /* Minimum width for each column */
-  padding: 0 7.5px; /* Reduced padding on the sides */
-  word-wrap: break-word; /* Wrap long text */
-}
-
-/* Style for image wrappers */
-.image-wrapper-priest {
-  display: inline-block;
-  width: 150px; /* Set a specific size */
-  height: 150px; /* Ensure width and height are equal for a circle */
-  border-radius: 50%;
-  position: relative; /* Set position to relative */
-  margin: 0; /* Remove any default margins */
-}
-
-/* Use CSS variables for image dimensions - ensure they are equal for a circle */
-.image-wrapper-priest img {
-  display: block;
-  width: 100%; /* Ensure image fills wrapper */
-  height: 100%; /* Ensure image fills wrapper */
-  object-fit: cover;
-  box-shadow: 0 0 10px #0008;
-  border-radius: 50%;
-}
-
-
-/* Adjust the size of the pseudo-element to match the image wrapper */
-.image-wrapper:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
+.section-divider {
+  height: .25px;
+  background-color: #fff;
+  opacity: 40%;
   width: 100%;
-  height: 100%;
-  backdrop-filter: blur(5px);
-  opacity: 0.6;
-  mask: 
-    linear-gradient(to bottom, black 0 0.3rem, transparent 0.8rem calc(100% - 0.8rem), black calc(100% - 0.3rem) 100%) no-repeat center / calc(100% - 0.6rem) 100%,
-    linear-gradient(to right, black 0 0.3rem, transparent 0.8rem calc(100% - 0.8rem), black calc(100% - 0.3rem) 100%) no-repeat center / 100% calc(100% - 0.6rem),
-    radial-gradient(at bottom right, transparent, black 0.5rem) no-repeat top left / 0.8rem 0.8rem,
-    radial-gradient(at bottom left, transparent, black 0.5rem) no-repeat top right / 0.8rem 0.8rem,
-    radial-gradient(at top right, transparent, black 0.5rem) no-repeat bottom left / 0.8rem 0.8rem,
-    radial-gradient(at top left, transparent, black 0.5rem) no-repeat bottom right / 0.8rem 0.8rem;
-  pointer-events: none;
-  border-radius: 0.3rem;
+  margin: 20px auto;
 }
 
-/* Style for coats of arms */
+/* /////////////////////////////////////////////////////////////////// */
+
+/* WAFFLE CHART */
+
+#waffle-chart-container svg {
+  width: 100%; /* Make SVG responsive */
+  height: auto; /* Adjust height automatically */
+}
+
+/* Waffle chart legend */
+
+#legend-container {
+  display: flex;
+  flex-wrap: wrap; /* Wrap onto the next line if there's not enough space */
+  justify-content: space-evenly;
+  align-items: center; /* Align items vertically in the center */
+  margin-top: 1rem;
+}
+
+.legend-item text {
+  font-size: .85rem;
+  font-family: 'Arthouse Owned Rounded';
+}
+
+/* Coats of arms */
+
 .arms-container {
   text-align: center; /* Center align the images and text */
   margin-bottom: 1.5rem; /* Add some space below each image container */
@@ -205,96 +182,131 @@ p {
   margin-bottom: 0.5rem; /* Space between image and caption */
 }
 
-/* Style for the captions under the images */
-.img-caption {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  -webkit-font-smoothing: antialiased;
-  font-style: normal;
-  font-weight: 300;
-  font-size: 1rem;
-}
+/* /////////////////////////////////////////////////////////////////// */
 
-.img-sub-caption {
-  font-size: 0.8rem;
-  font-family: 'Arthouse Owned Rounded';
-  font-style: normal;
-  font-weight: 400;
-  text-transform: uppercase;
-  margin-bottom: 0;
-  letter-spacing: 0.05rem;
-}
+/* PRIESTS AND BISHOPS SECTIONS */
 
-.img-sub-sub-caption {
-  font-size: 0.8rem;
-  font-style: italic;
-  margin-top: 0.25rem;
-}
+/* Rows and columns */
 
 /* CSS for the bishops, priests, and dioceses lists */
 .row {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start; /* Align items to top */
 }
 
+/* Base styles for .col */
 .col {
-  flex: 1; /* Each .col element will take up equal space */
-  min-width: 160px; /* Minimum width for each column */
-  word-wrap: break-word; /* Wrap long text */
-}
-
-.bishop-info, .priest-info, .diocese-info {
-  padding: 0 15px; /* Add some padding on the sides */
-}
-
-.bishop-info h3, .priest-info h3, .diocese-info h3 {
-  white-space: normal; /* Override any other white-space settings that prevent wrapping */
-  hyphens: auto; /* Automatically add hyphens where appropriate */
-}
-
-.section-divider {
-  height: .25px;
-  background-color: #fff;
-  opacity: 40%;
-  width:  100%;
-  margin: 20px auto;
-}
-
-#waffle-chart-container svg {
-  width: 100%; /* Make SVG responsive */
-  height: auto; /* Adjust height automatically */
-}
-
-/* Waffle chart legend */
-
-.legend-container {
+  flex-grow: 0; /* Do not allow the columns to grow */
+  flex-shrink: 1; /* Allow the columns to shrink if necessary */
+  flex-basis: 20%; /* Start with 5 columns */
+  max-width: 20%; /* Match flex-basis to start */
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  text-align: center;
 }
 
-text {
-  font-family: 'Arthouse Owned Rounded';
-  font-weight: 200;
+/* IMAGES */
+
+/* Define the --image-size variable */
+:root {
+  --image-size: 120px; /* Adjust the size as needed */
+  --image-size-small: 60px; /* Smaller image size for small screens */
 }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  margin-right: 15px;
+/* Adjust image and container sizes */
+.image-wrapper, .image-container img {
+  width: 100%; /* Set width relative to the parent container */
+  height: auto; /* Maintain the aspect ratio of the images */
 }
 
-.legend-color {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
+/* Common style for image containers */
+.image-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: inline-block;
 }
 
-@media (max-width: 768px) {
-  .legend-container {
-    flex-direction: column;
+/* Common style for image */
+.image-container img {
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Common style for image wrapper images */
+.image-wrapper {
+  display: inline-block;
+  width: var(--image-size); /* Use the variable for size */
+  height: var(--image-size); /* Ensure a 1:1 aspect ratio */
+  border-radius: 50%; /* Ensure the wrapper is circular */
+  overflow: hidden; /* Ensure that anything outside the circle is clipped */
+  position: relative;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the area of the wrapper */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the image within the wrapper */
+}
+
+/* /////////////////////////////////////////////////////////////////// */
+
+/* MEDIA QUERIES */
+
+/* Media query for medium screens, adjust to 4 columns */
+@media screen and (max-width: 768px) {
+  .col {
+    flex-basis: 25%; /* 4 columns in medium screens */
+    max-width: 25%;
+    margin: .125rem 0;
   }
-  .legend-item {
-    margin-bottom: 10px;
+
+  /* Adjust image size if necessary */
+  .image-wrapper {
+    width: var(--image-size-small); /* Adjust image size for medium screens */
+    height: var(--image-size-small); /* Keep it the same as width for a circle */
+  }
+
+  /* Adjust font sizes for captions as needed */
+  .img-sub-caption, .img-sub-sub-caption {
+    font-size: 0.7rem; /* Smaller font size for captions on small screens */
   }
 }
+
+/* Media query for small screens, adjust to 3 columns */
+@media screen and (max-width: 480px) {
+  .row {
+    flex-wrap: wrap; /* Wrap columns to a new line */
+  }
+  
+  .col {
+    flex-basis: 25%; /* 3 columns per row in small screens */
+    max-width: 25%;
+    margin: .5rem;
+  }
+
+  .image-container {
+    margin: .025rem;
+  }
+
+  .image-wrapper {
+    width: 25vw; /* Adjust image size for small screens */
+    height: 25vw; /* Maintain aspect ratio for circle shape */
+  }
+
+  /* Adjust font sizes for captions as needed */
+  .img-sub-caption, .img-sub-sub-caption {
+    font-size: 0.7rem; /* Smaller font size for captions on small screens */
+  }
+
+}
+
+/* /////////////////////////////////////////////////////////////////// */
