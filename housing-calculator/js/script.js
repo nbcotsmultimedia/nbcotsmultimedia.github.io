@@ -5,7 +5,7 @@ const stretch_threshold = 0.42
 let medianSalePricesData = []; // Global variable to store data from sheet
 
 const defaultPropertyTaxRate = 1.10; // Average property tax rate as a percentage
-const defaultInsuranceAmount = 2000; // Default annual home insurance amount in dollars
+const defaultInsuranceAmount = 1000; // Default annual home insurance amount in dollars
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJdqWTqaUeXFahjvUBRnKpK9ABl9fI7PHwjMxWNzT7gmd0Krg9uida9V21u90TjT2zoNVFggF038RX/pub?gid=0&single=true&output=csv'
 //#endregion
 
@@ -112,12 +112,10 @@ function performCalculations() {
     console.log(`DTI: ${dti}%`);
     //#endregion
 
-    //#region - Calculate affordable home price
+    //#region - Calculate the price at the top of the user's "affordable" range
 
-    // Calculate funds available to pay monthly mortgage payments
+    // Calculate the price at the top of the user's "affordable" range
     const availableForMortgageMonthly = monthlyIncome * affordable_threshold - totalMonthlyExpenses + estimatedMonthlyMortgage;
-
-    // Calculate max loan possible considering available funds, mortgage rate, and loan term
     const maxLoanAmount = calculateMaximumMortgage(availableForMortgageMonthly, mortgageRate, loanTerm);
     const affordableHomePrice = maxLoanAmount + downPayment;
 
@@ -126,22 +124,36 @@ function performCalculations() {
     console.log(`Affordable home price: ${affordableHomePrice}`);
     //#endregion
 
+    //#region - Calculate the price at the top of the user's "stretch" range
+
+    // Calculate funds available to pay monthly mortgage payments with a slightly higher DTI
+    const availableForStretchMonthly = monthlyIncome * stretch_threshold - totalMonthlyExpenses + estimatedMonthlyMortgage;
+
+    // Calculate max loan possible considering available funds, mortgage rate, and loan term for the stretch range
+    const maxLoanAmountStretch = calculateMaximumMortgage(availableForStretchMonthly, mortgageRate, loanTerm);
+    const stretchHomePrice = maxLoanAmountStretch + downPayment;
+
+    console.log(`Available monthly for stretch mortgage: ${availableForStretchMonthly}`);
+    console.log(`Maximum loan amount for stretch: ${maxLoanAmountStretch}`);
+    console.log(`Stretch home price: ${stretchHomePrice}`);
+    //#endregion
+
     //#region - Determine where median home price sits in user's affordability categories
     let homePriceCategory;
 
     if (affordableHomePrice >= medianHomePrice) {
-    homePriceCategory = 'Affordable';
-    } else if (dti <= stretch_threshold * 100) {
-    homePriceCategory = 'Stretch';
+        homePriceCategory = 'Affordable';
+    } else if (stretchHomePrice >= medianHomePrice) {
+        homePriceCategory = 'Stretch';
     } else {
-    homePriceCategory = 'Out of reach';
+        homePriceCategory = 'Out of reach';
     }
 
-    console.log(`Home price category: ${homePriceCategory}`);
+    console.log(`Home price category in target zip: ${homePriceCategory}`);
     //#endregion
 
     // Prepare result message
-    const resultMessage = generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePriceCategory);
+    const resultMessage = generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePriceCategory, stretchHomePrice);
 
     // Update the UI with the result message
     updateUI(resultMessage);
@@ -155,11 +167,23 @@ function updateUI(resultMessage) {
 }
 
 // Function to generate the result message
-function generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePriceCategory) {
+function generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePriceCategory, stretchHomePrice) {
+    let message = "";
+
+    if (homePriceCategory === 'Affordable') {
+        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
+        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are within your budget.`;
+    } else if (homePriceCategory === 'Stretch') {
+        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
+        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are a bit challenging, but still feasible.`;
+    } else {
+        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
+        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. If you wanted to stretch your budget, you could go up to $${stretchHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are currently not affordable for you.`;
+    }
+
     return `
-    <p>You can afford a home up to: $${affordableHomePrice.toLocaleString()}</p>
-    <p>The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. Based on your DTI, this is considered: ${homePriceCategory}</p>
-    <p>Your debt-to-income ratio (DTI) would be ${dti.toFixed(2)}%, meaning ${dti.toFixed(2)}% of your pre-tax income would go toward mortgage and other debts. A lower DTI ratio is generally advisable for better financial stability.</p>
+    <p>${message}</p>
+    <p>Your debt-to-income ratio (DTI) would be ${dti !== undefined ? dti.toFixed(2) : 'N/A'}%, meaning ${dti !== undefined ? dti.toFixed(2) : 'N/A'}% of your pre-tax income would go toward mortgage and other debts. A lower DTI ratio is generally advisable for better financial stability.</p>
     `;
 }
 
@@ -210,12 +234,10 @@ loadDataFromGoogleSheet(url);
 $(document).ready(function() {
 
     //#region - Autofill form fields for debugging
-    $('#zipCode').val('78749');
+    // $('#zipCode').val('78749');
     $('#income').val('75000');
     $('#downPayment').val('10000');
     $('#monthlyExpenses').val('600');
-    $('#propertyTax').val(''); // Optional field, leave empty for autofill
-    $('#insuranceRate').val(''); // Optional field, leave empty for autofill
     //#endregion
 
     // Form submission event handler
