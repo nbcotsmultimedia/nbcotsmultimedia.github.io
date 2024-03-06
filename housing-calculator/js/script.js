@@ -9,6 +9,11 @@ const defaultInsuranceAmount = 1000; // Default annual home insurance amount in 
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSJdqWTqaUeXFahjvUBRnKpK9ABl9fI7PHwjMxWNzT7gmd0Krg9uida9V21u90TjT2zoNVFggF038RX/pub?gid=0&single=true&output=csv'
 //#endregion
 
+//#region - Get and organize data
+
+// Call the function to load data from the sheet URL
+loadDataFromGoogleSheet(url);
+
 // Function to get and parse housing data
 function loadDataFromGoogleSheet(url) {
 
@@ -27,6 +32,10 @@ function loadDataFromGoogleSheet(url) {
 
             // Call function to process data and perform calculations
             calculateAffordability();
+
+            // Initialize autofill functionality after data is loaded
+            const uniqueZipCodes = parseUniqueZipCodes(results.data);
+            initializeAutofill(uniqueZipCodes);
         },
 
         // If there is an error during parsing, log error to console
@@ -35,6 +44,34 @@ function loadDataFromGoogleSheet(url) {
         }
     });
 }
+
+// Function to parse unique zip codes from data
+function parseUniqueZipCodes(data) {
+    const zipCodes = new Set(); // Create a new set to store unique zip codes
+    data.forEach(entry => {
+        zipCodes.add(entry.zip); // Add each zip code to the set
+    });
+    return Array.from(zipCodes); // Convert the set to an array and return
+}
+
+// Function to initialize autofill functionality
+function initializeAutofill(zipCodes) {
+    const zipCodeInput = document.getElementById('zipCode');
+    zipCodeInput.addEventListener('input', function() {
+        const input = this.value;
+        const matchingZipCodes = zipCodes.filter(zip => zip.startsWith(input));
+        if (matchingZipCodes.length > 0) {
+            const suggestions = matchingZipCodes.map(zip => `<option value="${zip}"></option>`).join('');
+            zipCodeInput.setAttribute('list', 'zipCodeSuggestions');
+            const dataList = document.getElementById('zipCodeSuggestions');
+            dataList.innerHTML = suggestions;
+        } else {
+            zipCodeInput.removeAttribute('list');
+        }
+    });
+}
+
+//#endregion
 
 // Function to trigger perform calculations
 function calculateAffordability() {
@@ -66,29 +103,30 @@ function performCalculations() {
 
     // Optional fields - if input values not provided, use OR (||) to provide default values
     const propertyTaxRate = parseFloat($('#propertyTax').val()) || defaultPropertyTaxRate / 100;
-    const insuranceCost = parseFloat($('#insuranceRate').val()) || defaultInsuranceAmount / 12; // Ensure this is the monthly cost
+    const insuranceCost = parseFloat($('#insuranceCost').val()) || defaultInsuranceAmount;
+    const insuranceCostMonthly = insuranceCost / 12; // Convert annual insurance cost to monthly
 
-    console.log(`Zip code: ${zipCode}`);
-    console.log(`Income: ${income}`);
-    console.log(`Down payment: ${downPayment}`);
-    console.log(`Monthly expenses input: ${monthlyExpenses}`);
-    console.log(`Property tax rate: ${propertyTaxRate}`);
-    console.log(`Insurance cost (monthly): ${insuranceCost}`);
+    console.log(`Zip code from input: ${zipCode}`);
+    console.log(`Annual income from input: ${income}`);
+    console.log(`Down payment from input: ${downPayment}`);
+    console.log(`Monthly expenses from input: ${monthlyExpenses}`);
+    console.log(`Property tax rate from input or default: ${propertyTaxRate}`);
+    console.log(`Annual insurance cost from input or default: ${insuranceCost}`);
     //#endregion
 
-    //#region - Retrieve and parse the mortgage rate and median home price
+    //#region - Retrieve and parse the mortgage rate and zip median home price
     const mortgageRate = parseFloat(zipCodeData.mortgage_30_rate);
     const loanTerm = 30; // Assuming a 30-year loan term
 
     const medianHomePrice = parseFloat(zipCodeData.median_sale_price);
 
-    console.log(`Mortgage rate: ${mortgageRate}`);
-    console.log(`Median home price in zip: ${medianHomePrice}`);
+    console.log(`Mortgage rate from data: ${mortgageRate}`);
+    console.log(`Zip median home price from data: ${medianHomePrice}`);
     //#endregion
     
     //#region - Calculate monthly income
     const monthlyIncome = income / 12;
-    console.log(`User monthly income: ${monthlyIncome}`);
+    console.log(`User monthly income calculated: ${monthlyIncome}`);
     //#endregion
 
     //#region - Calculate monthly expenses, including est. mortgage payment
@@ -99,11 +137,11 @@ function performCalculations() {
         mortgageRate,
         loanTerm
     );
-    console.log(`Estimated monthly mortgage costs: ${estimatedMonthlyMortgage}`);
+    console.log(`Monthly mortgage costs calculated: ${estimatedMonthlyMortgage}`);
 
     // Monthly expenses
-    const totalMonthlyExpenses = monthlyExpenses + estimatedMonthlyMortgage + (medianHomePrice * propertyTaxRate / 12) + insuranceCost;
-    console.log(`Total monthly expenses incl. mortgage: ${totalMonthlyExpenses}`);
+    const totalMonthlyExpenses = monthlyExpenses + estimatedMonthlyMortgage + (medianHomePrice * propertyTaxRate / 12) + insuranceCostMonthly;
+    console.log(`Total monthly expenses incl. mortgage calculated: ${totalMonthlyExpenses}`);
 
     //#endregion
 
@@ -119,9 +157,9 @@ function performCalculations() {
     const maxLoanAmount = calculateMaximumMortgage(availableForMortgageMonthly, mortgageRate, loanTerm);
     const affordableHomePrice = maxLoanAmount + downPayment;
 
-    console.log(`Available monthly for mortgage: ${availableForMortgageMonthly}`);
-    console.log(`Maximum loan amount: ${maxLoanAmount}`);
-    console.log(`Affordable home price: ${affordableHomePrice}`);
+    console.log(`Available monthly for mortgage calculated: ${availableForMortgageMonthly}`);
+    console.log(`Maximum loan amount calculated: ${maxLoanAmount}`);
+    console.log(`Affordable home price calculated: ${affordableHomePrice}`);
     //#endregion
 
     //#region - Calculate the price at the top of the user's "stretch" range
@@ -133,9 +171,9 @@ function performCalculations() {
     const maxLoanAmountStretch = calculateMaximumMortgage(availableForStretchMonthly, mortgageRate, loanTerm);
     const stretchHomePrice = maxLoanAmountStretch + downPayment;
 
-    console.log(`Available monthly for stretch mortgage: ${availableForStretchMonthly}`);
-    console.log(`Maximum loan amount for stretch: ${maxLoanAmountStretch}`);
-    console.log(`Stretch home price: ${stretchHomePrice}`);
+    console.log(`Available monthly for stretch mortgage calculated: ${availableForStretchMonthly}`);
+    console.log(`Maximum loan amount for stretch calculated: ${maxLoanAmountStretch}`);
+    console.log(`Stretch home price calculated: ${stretchHomePrice}`);
     //#endregion
 
     //#region - Determine where median home price sits in user's affordability categories
@@ -158,7 +196,7 @@ function performCalculations() {
     // Update the UI with the result message
     updateUI(resultMessage);
 
-    console.log(resultMessage);
+    // console.log(resultMessage);
 }
 
 // Function to update the UI with the result message
@@ -171,19 +209,22 @@ function generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePr
     let message = "";
 
     if (homePriceCategory === 'Affordable') {
-        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
-        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are within your budget.`;
+        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
+        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are within your budget.`;
     } else if (homePriceCategory === 'Stretch') {
-        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
-        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are a bit challenging, but still feasible.`;
+        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
+        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are a bit challenging, but still feasible.`;
     } else {
-        message = `You can comfortably afford a home up to $${affordableHomePrice.toLocaleString()}.`;
-        message += ` The median sale price of homes in this area is $${medianHomePrice.toLocaleString()}. If you wanted to stretch your budget, you could go up to $${stretchHomePrice.toLocaleString()}. Based on your inputs, the prices of homes in this area are currently not affordable for you.`;
+        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
+        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are currently not affordable for you.`;
     }
 
     return `
     <p>${message}</p>
-    <p>Your debt-to-income ratio (DTI) would be ${dti !== undefined ? dti.toFixed(2) : 'N/A'}%, meaning ${dti !== undefined ? dti.toFixed(2) : 'N/A'}% of your pre-tax income would go toward mortgage and other debts. A lower DTI ratio is generally advisable for better financial stability.</p>
+    <p>TK message</p>
     `;
 }
 
@@ -216,19 +257,17 @@ function calculateMonthlyMortgage(principal, annualInterestRate, loanTerm) {
 function calculateMaximumMortgage(monthlyPayment, annualInterestRate, loanTerm) {
     const monthlyInterestRate = annualInterestRate / 100 / 12;
     const numberOfPayments = loanTerm * 12;
-    console.log(`Monthly Interest Rate: ${monthlyInterestRate}`);
-    console.log(`Number of Payments: ${numberOfPayments}`);
 
-    const principal = (monthlyPayment * (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1)) / (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments));
-    console.log(`Calculated Principal: ${principal}`);
+    const presentValue = monthlyPayment * ((1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments)) / monthlyInterestRate);
+    console.log(`Calculated principal: ${presentValue}`);
 
-    return principal;
+    return presentValue;
 }
+
 
 //#endregion
 
-// Call the function to load data from the sheet URL
-loadDataFromGoogleSheet(url);
+
 
 // Capture user input via form and perform calculations
 $(document).ready(function() {

@@ -13,7 +13,8 @@
                 <!-- User inputs -->
                 <div class="form-group">
                     <label for="zipCode">Zip code (Texas only for testing)</label>
-                    <input type="number" id="zipCode" name="zipCode" class="form-control" required>
+                    <input type="text" id="zipCode" name="zipCode" list="zipCodeSuggestions" class="form-control" required>
+                    <datalist id="zipCodeSuggestions"></datalist>
                 </div>
                 <div class="form-group">
                     <label for="income">Annual income ($)</label>
@@ -29,11 +30,11 @@
                 </div>
                 <div class="form-group">
                     <label for="propertyTax">Property tax pct (%)</label>
-                    <input type="text" id="propertyTax" name="propertyTax" placeholder="Property Tax Rate (optional)">
+                    <input type="text" id="propertyTax" name="propertyTax" placeholder="Property tax rate (optional)">
                 </div>
                 <div class="form-group">
-                    <label for="insuranceRate">Annual homeowner's insurance costs (est, $)</label>
-                    <input type="text" id="insuranceRate" name="insuranceRate" placeholder="Homeowner's Insurance Rate (optional)">
+                    <label for="insuranceCost">Annual homeowner's insurance costs (est, $)</label>
+                    <input type="text" id="insuranceCost" name="insuranceCost" placeholder="Homeowner's annual insurance costs (optional)">
                 </div>
                 <div class="form-group">
                     <button type="submit" id="calculateButton" class="btn">Calculate</button>
