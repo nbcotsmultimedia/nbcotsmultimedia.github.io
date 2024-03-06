@@ -209,17 +209,17 @@ function generateResultMessage(affordableHomePrice, medianHomePrice, dti, homePr
     let message = "";
 
     if (homePriceCategory === 'Affordable') {
-        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message = `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are within your budget.`;
+        message += `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
         message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
-        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are within your budget.`;
     } else if (homePriceCategory === 'Stretch') {
-        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message = `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are a bit challenging, but still feasible.`;
+        message += `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
         message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
-        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are a bit challenging, but still feasible.`;
     } else {
-        message = `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
+        message = `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are currently not affordable for you.`;
+        message += `You can comfortably afford a home up to $${Math.round(affordableHomePrice).toLocaleString()}.<br>`;
         message += `If you wanted to stretch your budget, you could go up to $${Math.round(stretchHomePrice).toLocaleString()}.<br>`;
-        message += `The median sale price of homes in this area is $${Math.round(medianHomePrice).toLocaleString()}. Based on your inputs, the prices of homes in this area are currently not affordable for you.`;
     }
 
     return `
@@ -263,17 +263,14 @@ function calculateMaximumMortgage(monthlyPayment, annualInterestRate, loanTerm) 
 
     return presentValue;
 }
-
-
 //#endregion
-
 
 
 // Capture user input via form and perform calculations
 $(document).ready(function() {
 
     //#region - Autofill form fields for debugging
-    // $('#zipCode').val('78749');
+    $('#zipCode').val('78749');
     $('#income').val('75000');
     $('#downPayment').val('10000');
     $('#monthlyExpenses').val('600');
