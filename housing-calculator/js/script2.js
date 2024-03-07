@@ -5,7 +5,29 @@
 //#region - Global variables
 let housingData; // Store housing data
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv';
+const bufferRadius = 5; // Define buffer radius
 //#endregion
+
+// Define function to generate buffer zones around zip code centroids
+function generateBufferZones(zipCodesData, bufferRadius) {
+    const bufferZones = [];
+
+    zipCodesData.forEach(zipCodeData => {
+        const latitude = parseFloat(zipCodeData.Latitude);
+        const longitude = parseFloat(zipCodeData.Longitude);
+
+        // Check if latitude and longitude are valid numbers
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+            const centroid = [longitude, latitude]; // Make sure to swap the order
+            const bufferZone = turf.buffer(turf.point(centroid), bufferRadius, { units: 'miles' });
+            bufferZones.push(bufferZone);
+        } else {
+            console.error('Invalid latitude or longitude:', zipCodeData);
+        }
+    });
+
+    return bufferZones;
+}
 
 // When DOM is ready...
 $(document).ready(function() {
@@ -128,6 +150,10 @@ $(document).ready(function() {
 
         // Perform calculations
         const results = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
+
+        // Generate buffer zones
+        const bufferZones = generateBufferZones(housingData, bufferRadius);
+        console.log("buffer zones:", bufferZones);
 
         // Display results
         displayResults(results);
