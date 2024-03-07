@@ -1,4 +1,5 @@
 //TODO - Add drop-down validator for user input zip code
+//FIXME - Error reading in h3, despite bundled script called in html
 
 //NOTE - Will have to somehow combine data with geocode in processing
 
@@ -7,6 +8,41 @@ let housingData; // Store housing data
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv';
 const bufferRadius = 5; // Define buffer radius
 //#endregion
+
+// Check if the H3 library is accessible
+if (typeof h3 !== 'undefined') {
+    console.log('H3 library is accessible!');
+} else {
+    console.log('H3 library is not accessible!');
+}
+
+// Function to generate H3 hexagons covering the buffer zones around zip code centroids
+function generateH3Hexagons(bufferZones) {
+    const h3Hexagons = [];
+    const k = 3; // Adjust to change size of hexagons
+
+    bufferZones.forEach(bufferZone => {
+        // Get centroid point of the buffer zone
+        const centroid = calculateCentroid(bufferZone); // Implement this function to calculate centroid
+
+        // Generate H3 hexagons covering the buffer zone around the centroid
+        const hexagons = h3.kRing(centroid, k); // Adjust k value as needed
+
+        // Log generated hexagons
+        console.log('Generated H3 hexagons:', hexagons);
+
+        // Store the generated H3 hexagons
+        h3Hexagons.push(hexagons);
+    });
+
+    return h3Hexagons;
+}
+
+// Function to calculate centroid of a polygon (buffer zone)
+function calculateCentroid(polygon) {
+    const centroid = turf.centerOfMass(polygon);
+    return [centroid.geometry.coordinates[0], centroid.geometry.coordinates[1]];
+}
 
 // Define function to generate buffer zones around zip code centroids
 function generateBufferZones(zipCodesData, bufferRadius) {
@@ -151,9 +187,19 @@ $(document).ready(function() {
         // Perform calculations
         const results = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
 
+        if (typeof h3 !== 'undefined') {
+            console.log('H3 library is accessible!');
+        } else {
+            console.log('H3 library is not accessible!');
+        };
+
         // Generate buffer zones
         const bufferZones = generateBufferZones(housingData, bufferRadius);
         console.log("buffer zones:", bufferZones);
+
+        // Generate H3 hexagons covering the buffer zones
+        const h3Hexagons = generateH3Hexagons(bufferZones);
+        console.log(h3Hexagons);
 
         // Display results
         displayResults(results);
