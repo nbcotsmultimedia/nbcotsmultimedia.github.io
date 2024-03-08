@@ -1,5 +1,6 @@
 //TODO - Add drop-down validator for user input zip code
 //NOTE - Will have to somehow combine data with geocode in processing
+//TODO - Add insurance costs
 
 //#region - Global variables
 let housingData; // Store housing data
@@ -8,6 +9,7 @@ const defaultResolution = 6; // Set a default H3 resolution
 const bufferRadius = 5; // Define buffer radius
 //#endregion
 
+//#region - Spatial functions
 // Function to calculate the H3 index of the centroid of a given area
 function calculateCentroidIndex(bufferZone, resolution) {
     
@@ -70,6 +72,7 @@ function generateBufferZone(zipCodeData, bufferRadius) {
         console.error('Invalid latitude or longitude for zip code:', zipCodeData.zip);
     }
 }
+//#endregion
 
 // When DOM is ready...
 $(document).ready(function() {
@@ -189,20 +192,46 @@ $(document).ready(function() {
         const downPayment = parseFloat($('#downPayment').val());
         const monthlyExpenses = parseFloat($('#monthlyExpenses').val());
         const mortgageTerm = parseInt($('#mortgageTerm').val());
+        
+        // Calculate user's budget parameters
+        const userBudget = {
+            annualIncome,
+            downPayment,
+            monthlyExpenses,
+            mortgageTerm,
+            interestRate
+        };
 
         // Perform calculations only for the selected zip code
         const results = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
 
-        // Find the housing data for the selected zip code
+        // Load housing data for the selected zip code
         const selectedZipCodeData = housingData.find(data => data.zip === zipCode);
-
         if (!selectedZipCodeData) {
             console.error("Zip code data not found for:", zipCode);
             return;
         }
 
-        // Generate buffer zone for the selected zip code
-        const selectedBufferZone = generateBufferZone(selectedZipCodeData, 100); // Using 100 miles as the buffer radius
+        // Generate buffer zone and H3 hexagons for the selected zip code
+        const selectedBufferZone = generateBufferZone(selectedZipCodeData, 100); // Adjust buffer radius if necessary
+        const h3Hexagons = generateH3Hexagons([selectedBufferZone], defaultResolution);
+
+        // Flatten the array of arrays of hexagons
+        const flatHexagons = h3Hexagons.flat();
+
+        // Estimate median prices and assess affordability for each hexagon
+        const affordabilityResults = flatHexagons.map(hexId => {
+            // This example assumes a simplified approach where the median home price of the selected zip code is applied to each hexagon
+            const affordabilityCategory = calculateAffordabilityCategory(selectedZipCodeData.median_sale_price, userBudget);
+            return { hexId, affordabilityCategory };
+        });
+
+        // Display the overall affordability results for the selected zip code
+        const overallResults = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
+        displayResults(overallResults);
+
+        // Optional: Display affordability results for each hexagon
+        displayHexagonAffordabilityResults(affordabilityResults);
 
         // Generate H3 hexagons covering the buffer zone for the selected zip code
         const h3HexagonsForSelectedZip = generateH3Hexagons([selectedBufferZone]);
