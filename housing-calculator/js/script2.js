@@ -1,68 +1,74 @@
 //TODO - Add drop-down validator for user input zip code
-//FIXME - Error reading in h3, despite bundled script called in html
-
 //NOTE - Will have to somehow combine data with geocode in processing
 
 //#region - Global variables
 let housingData; // Store housing data
 const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv';
+const defaultResolution = 6; // Set a default H3 resolution
 const bufferRadius = 5; // Define buffer radius
 //#endregion
 
-// Check if the H3 library is accessible
-if (typeof h3 !== 'undefined') {
-    console.log('H3 library is accessible!');
-} else {
-    console.log('H3 library is not accessible!');
+// Function to calculate the H3 index of the centroid of a given area
+function calculateCentroidIndex(bufferZone, resolution) {
+    
+    // Use turf.js to calculate geographic center of the mass of bufferZone
+    const centroid = turf.centerOfMass(bufferZone);
+
+    // Extract lat and long from the calculated center
+    const lat = centroid.geometry.coordinates[1];
+    const lng = centroid.geometry.coordinates[0];
+
+    // Convert the latitude and longitude to an H3 index at the provided resolution
+    // H3 index represents the hexagonal cell on the H3 grid that contains the centroid
+    const centroidIndex = h3.latLngToCell(lat, lng, resolution);
+    
+    return centroidIndex;
 }
 
-// Function to generate H3 hexagons covering the buffer zones around zip code centroids
-function generateH3Hexagons(bufferZones) {
+// Function to create hexagonal grids for a list of areas
+function generateH3Hexagons(bufferZones, resolution = defaultResolution) {
+
+    // Initialize an empty array to store H3 hexagons
     const h3Hexagons = [];
-    const k = 3; // Adjust to change size of hexagons
 
-    bufferZones.forEach(bufferZone => {
-        // Get centroid point of the buffer zone
-        const centroid = calculateCentroid(bufferZone); // Implement this function to calculate centroid
+    // Define the number of rings of hexagons to generate around each area's center
+    const k = 3;
 
-        // Generate H3 hexagons covering the buffer zone around the centroid
-        const hexagons = h3.kRing(centroid, k); // Adjust k value as needed
+    console.log(`Generating H3 hexagons with resolution ${resolution} and k value ${k}`);
 
-        // Log generated hexagons
-        console.log('Generated H3 hexagons:', hexagons);
+    // Iterate over each entry in bufferZones
+    bufferZones.forEach((bufferZone, index) => {
 
-        // Store the generated H3 hexagons
+        // Calculate the H3 index of the centroid of the centroid
+        const centroidIndex = calculateCentroidIndex(bufferZone, resolution);
+
+        console.log(`Generating hexagons for centroids`);
+
+        // Generate a cluster of hexagons around the center index
+        const hexagons = h3.gridDisk(centroidIndex, k);
+
+        // Store the generated H3 hexagons in the h3Hexagons array
         h3Hexagons.push(hexagons);
+
     });
 
-    return h3Hexagons;
+    console.log('All H3 hexagons generated');
+
+    return h3Hexagons; // When function complete, output the array h3Hexagons
 }
 
-// Function to calculate centroid of a polygon (buffer zone)
-function calculateCentroid(polygon) {
-    const centroid = turf.centerOfMass(polygon);
-    return [centroid.geometry.coordinates[0], centroid.geometry.coordinates[1]];
-}
+// Function to create circular buffer zones around a list of geographic coordinates
+function generateBufferZone(zipCodeData, bufferRadius) {
+    const latitude = parseFloat(zipCodeData.Latitude);
+    const longitude = parseFloat(zipCodeData.Longitude);
 
-// Define function to generate buffer zones around zip code centroids
-function generateBufferZones(zipCodesData, bufferRadius) {
-    const bufferZones = [];
-
-    zipCodesData.forEach(zipCodeData => {
-        const latitude = parseFloat(zipCodeData.Latitude);
-        const longitude = parseFloat(zipCodeData.Longitude);
-
-        // Check if latitude and longitude are valid numbers
-        if (!isNaN(latitude) && !isNaN(longitude)) {
-            const centroid = [longitude, latitude]; // Make sure to swap the order
-            const bufferZone = turf.buffer(turf.point(centroid), bufferRadius, { units: 'miles' });
-            bufferZones.push(bufferZone);
-        } else {
-            console.error('Invalid latitude or longitude:', zipCodeData);
-        }
-    });
-
-    return bufferZones;
+    if (!isNaN(latitude) && !isNaN(longitude)) {
+        const centroid = [longitude, latitude]; // Make sure to swap the order
+        const bufferZone = turf.buffer(turf.point(centroid), bufferRadius, { units: 'miles' });
+        return bufferZone;
+    } else {
+        console.error('Invalid latitude or longitude for zip code:', zipCodeData.zip);
+    }
 }
 
 // When DOM is ready...
@@ -126,7 +132,6 @@ $(document).ready(function() {
         }
 
         // Log affordability details
-        console.log("Affordability details:");
         console.log("Median home price ($):", medianHomePrice);
         console.log("User input for down payment ($):", downPayment);
         console.log("Loan amount (median sale price less down payment) ($):", loanAmount);
@@ -177,6 +182,7 @@ $(document).ready(function() {
 
     // Function to handle form submission
     function handleFormSubmission() {
+        
         // Get form inputs
         const zipCode = $('#zipCode').val();
         const annualIncome = parseFloat($('#income').val());
@@ -184,25 +190,27 @@ $(document).ready(function() {
         const monthlyExpenses = parseFloat($('#monthlyExpenses').val());
         const mortgageTerm = parseInt($('#mortgageTerm').val());
 
-        // Perform calculations
+        // Perform calculations only for the selected zip code
         const results = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
 
-        if (typeof h3 !== 'undefined') {
-            console.log('H3 library is accessible!');
-        } else {
-            console.log('H3 library is not accessible!');
-        };
+        // Find the housing data for the selected zip code
+        const selectedZipCodeData = housingData.find(data => data.zip === zipCode);
 
-        // Generate buffer zones
-        const bufferZones = generateBufferZones(housingData, bufferRadius);
-        console.log("buffer zones:", bufferZones);
+        if (!selectedZipCodeData) {
+            console.error("Zip code data not found for:", zipCode);
+            return;
+        }
 
-        // Generate H3 hexagons covering the buffer zones
-        const h3Hexagons = generateH3Hexagons(bufferZones);
-        console.log(h3Hexagons);
+        // Generate buffer zone for the selected zip code
+        const selectedBufferZone = generateBufferZone(selectedZipCodeData, 100); // Using 100 miles as the buffer radius
+
+        // Generate H3 hexagons covering the buffer zone for the selected zip code
+        const h3HexagonsForSelectedZip = generateH3Hexagons([selectedBufferZone]);
+        console.log('hexagons for this zips buffer zone:', h3HexagonsForSelectedZip);
 
         // Display results
         displayResults(results);
+
     }
 
     // Function to load data from Google Sheet
