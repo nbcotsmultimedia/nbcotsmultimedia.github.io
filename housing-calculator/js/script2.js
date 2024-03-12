@@ -165,7 +165,6 @@ function loadDataFromGoogleSheet(url) {
     skipEmptyLines: true,
     complete: function (results) {
       console.log("Parsed housing data:", results.data); // This line logs the data
-      console.log("Column names:", Object.keys(results.data[0])); // This line logs the column names
       housingData = results.data;
       $("#calculateButton").prop("disabled", false);
     },
