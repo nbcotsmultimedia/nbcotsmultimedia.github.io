@@ -1,283 +1,481 @@
 //TODO - Add drop-down validator for user input zip code
 //NOTE - Will have to somehow combine data with geocode in processing
 //TODO - Add insurance costs
+//TODO - Calculate distance of hexagon from target zip
+//TODO - Compare monthly mortgage costs of hexagon to user affordability thresholds
+//TODO - Check for redundant functions (calculate monthly mortgage costs)
 
 //#region - Global variables
 let housingData; // Store housing data
-const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv';
-const defaultResolution = 6; // Set a default H3 resolution
-const bufferRadius = 5; // Define buffer radius
+const url =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv";
+const defaultResolution = 6; // Set a default H3 grid resolution
+const bufferRadius = 5; // Define buffer radius for buffer zones
+let affordableHousingCosts;
+let stretchedHousingCosts;
+let maxAllowableDebtForMortgages;
 //#endregion
 
 //#region - Spatial functions
 // Function to calculate the H3 index of the centroid of a given area
 function calculateCentroidIndex(bufferZone, resolution) {
-    
-    // Use turf.js to calculate geographic center of the mass of bufferZone
-    const centroid = turf.centerOfMass(bufferZone);
+  // Use turf.js to calculate geographic center of the mass of bufferZone
+  const centroid = turf.centerOfMass(bufferZone);
 
-    // Extract lat and long from the calculated center
-    const lat = centroid.geometry.coordinates[1];
-    const lng = centroid.geometry.coordinates[0];
+  // Extract lat and long from the calculated center
+  const lat = centroid.geometry.coordinates[1];
+  const lng = centroid.geometry.coordinates[0];
 
-    // Convert the latitude and longitude to an H3 index at the provided resolution
-    // H3 index represents the hexagonal cell on the H3 grid that contains the centroid
-    const centroidIndex = h3.latLngToCell(lat, lng, resolution);
-    
-    return centroidIndex;
+  // Convert the latitude and longitude to an H3 index at the provided resolution
+  // H3 index represents the hexagonal cell on the H3 grid that contains the centroid
+  const centroidIndex = h3.latLngToCell(lat, lng, resolution);
+
+  return centroidIndex;
 }
 
-// Function to create hexagonal grids for a list of areas
+// Function to create hexagonal grids for a list of areas using the H3 system
 function generateH3Hexagons(bufferZones, resolution = defaultResolution) {
+  // Initialize an empty array to store H3 hexagons
+  const h3Hexagons = [];
 
-    // Initialize an empty array to store H3 hexagons
-    const h3Hexagons = [];
+  // Define the number of rings of hexagons to generate around each area's center
+  const k = 3;
 
-    // Define the number of rings of hexagons to generate around each area's center
-    const k = 3;
+  //   console.log(
+  //     `Generating H3 hexagons with resolution ${resolution} and k value ${k}`
+  //   );
 
-    console.log(`Generating H3 hexagons with resolution ${resolution} and k value ${k}`);
+  // Iterate over each entry in bufferZones
+  bufferZones.forEach((bufferZone, index) => {
+    // Calculate the H3 index of the centroid of the centroid
+    const centroidIndex = calculateCentroidIndex(bufferZone, resolution);
 
-    // Iterate over each entry in bufferZones
-    bufferZones.forEach((bufferZone, index) => {
+    console.log(`Generating hexagons for centroids`);
 
-        // Calculate the H3 index of the centroid of the centroid
-        const centroidIndex = calculateCentroidIndex(bufferZone, resolution);
+    // Generate a cluster of hexagons around the center index
+    const hexagons = h3.gridDisk(centroidIndex, k);
 
-        console.log(`Generating hexagons for centroids`);
+    // Store the generated H3 hexagons in the h3Hexagons array
+    h3Hexagons.push(hexagons);
+  });
 
-        // Generate a cluster of hexagons around the center index
-        const hexagons = h3.gridDisk(centroidIndex, k);
+  console.log("All H3 hexagons generated");
 
-        // Store the generated H3 hexagons in the h3Hexagons array
-        h3Hexagons.push(hexagons);
-
-    });
-
-    console.log('All H3 hexagons generated');
-
-    return h3Hexagons; // When function complete, output the array h3Hexagons
+  return h3Hexagons; // When function complete, output the array h3Hexagons
 }
 
 // Function to create circular buffer zones around a list of geographic coordinates
 function generateBufferZone(zipCodeData, bufferRadius) {
-    const latitude = parseFloat(zipCodeData.Latitude);
-    const longitude = parseFloat(zipCodeData.Longitude);
+  const latitude = parseFloat(zipCodeData.Latitude);
+  const longitude = parseFloat(zipCodeData.Longitude);
 
-    if (!isNaN(latitude) && !isNaN(longitude)) {
-        const centroid = [longitude, latitude]; // Make sure to swap the order
-        const bufferZone = turf.buffer(turf.point(centroid), bufferRadius, { units: 'miles' });
-        return bufferZone;
-    } else {
-        console.error('Invalid latitude or longitude for zip code:', zipCodeData.zip);
+  if (!isNaN(latitude) && !isNaN(longitude)) {
+    const centroid = [longitude, latitude]; // Make sure to swap the order
+    const bufferZone = turf.buffer(turf.point(centroid), bufferRadius, {
+      units: "miles",
+    });
+    return bufferZone;
+  } else {
+    console.error(
+      "Invalid latitude or longitude for zip code:",
+      zipCodeData.zip
+    );
+  }
+}
+
+// Function to calculate distance between two coordinates in miles
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  var R = 3959; // Radius of the Earth in miles
+  var dLat = ((lat2 - lat1) * Math.PI) / 180;
+  var dLon = ((lon2 - lon1) * Math.PI) / 180;
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var distance = R * c;
+  return distance;
+}
+
+// Function to obtain the geographic center points of a list of H3 hexagons
+function getHexagonCentroids(hexagons) {
+  return hexagons.map((hexId) => h3.cellToLatLng(hexId));
+}
+
+// Function to map zip codes to the closest hexagonal cell based on geographic proximity
+function mapZipCodesToHexagons(zipCodes, hexagons) {
+  let hexagonCentroids = getHexagonCentroids(hexagons.flat());
+  let zipToHexMap = {}; // To store mapping of zip codes to closest hexagon
+
+  zipCodes.forEach((zip) => {
+    let zipLat = parseFloat(zip.Latitude);
+    let zipLng = parseFloat(zip.Longitude);
+    let closestHex = null;
+    let minDistance = Infinity;
+
+    hexagonCentroids.forEach((centroid, index) => {
+      let distance = calculateDistance(
+        zipLat,
+        zipLng,
+        centroid[0],
+        centroid[1]
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestHex = hexagons.flat()[index];
+      }
+    });
+
+    // Assign zip code to the closest hexagon
+    zipToHexMap[zip.zip] = closestHex;
+  });
+
+  return zipToHexMap;
+}
+
+// Function to identify affordable or stretched hexagons
+function identifyAffordableOrStretchedHexagons(hexagonAggregatedData) {
+  const affordableOrStretchedHexagons = [];
+
+  Object.entries(hexagonAggregatedData).forEach(([hexagon, data]) => {
+    if (
+      data.affordability === "Affordable" ||
+      data.affordability === "Stretched"
+    ) {
+      affordableOrStretchedHexagons.push({
+        hexagon: hexagon,
+        affordability: data.affordability,
+      });
     }
+  });
+
+  return affordableOrStretchedHexagons;
+}
+
+//#endregion
+
+//#region - Functions to retrieve data
+// Function to fetch and parse data from Google Sheet
+function loadDataFromGoogleSheet(url) {
+  Papa.parse(url, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      console.log("Parsed housing data:", results.data); // This line logs the data
+      console.log("Column names:", Object.keys(results.data[0])); // This line logs the column names
+      housingData = results.data;
+      $("#calculateButton").prop("disabled", false);
+    },
+    error: function (error) {
+      console.error("Error while fetching and parsing CSV:", error);
+      alert("Failed to load housing data. Please try again later.");
+    },
+  });
+}
+
+// Function to retrieve data from form
+function getFormData() {
+  return {
+    zipCode: $("#zipCode").val(),
+    annualIncome: parseFloat($("#income").val()),
+    downPayment: parseFloat($("#downPayment").val()),
+    monthlyExpenses: parseFloat($("#monthlyExpenses").val()),
+    mortgageTerm: parseInt($("#mortgageTerm").val()),
+  };
 }
 //#endregion
 
-// When DOM is ready...
-$(document).ready(function() {
-    
-    // Function to calculate housing affordability
-    function calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm) {
-            
-        console.log("Calculating housing affordability...");
-        console.log("Housing data:", housingData);
+//#region - Affordability calculations
+// Function to calculate housing affordability
+function calculateHousingAffordability(
+  zipCode,
+  annualIncome,
+  downPayment,
+  monthlyExpenses,
+  mortgageTerm
+) {
+  // Initialize results object to store various calculations
+  const results = {
+    affordability: "",
+    medianHomePrice: 0,
+    monthlyZipMortgagePayment: 0,
+    interestRate: 0,
+    mortgageTerm: mortgageTerm, // Directly assign since it's an input parameter
+  };
 
-        // Placeholder for calculations
-        const results = {};
+  // Find housing data for the given zip code
+  const zipCodeData = housingData.find((row) => row.zip === zipCode);
+  if (!zipCodeData) {
+    console.error("Housing data not found for zip code:", zipCode);
+    return null;
+  }
 
-        // Find housing data for the given zip code
-        const zipCodeData = housingData.find(row => row.zip === zipCode);
+  //#region - Retrieve data points
+  results.medianHomePrice = parseFloat(zipCodeData.median_sale_price);
+  results.interestRate =
+    mortgageTerm === 15
+      ? parseFloat(zipCodeData.mortgage_15_rate)
+      : parseFloat(zipCodeData.mortgage_30_rate);
+  //#endregion
 
-        if (!zipCodeData) {
-            console.error("Housing data not found for zip code:", zipCode);
-            return null;
-        }
+  //#region - Calculate monthly costs
+  const loanAmount = results.medianHomePrice - downPayment; // Determine loan amount by subtracting down payment from home price
+  const monthlyInterestRate = results.interestRate / 100 / 12; // Convert annual interest rate percentage to monthly decimal rate
+  const totalNumberOfPayments = mortgageTerm * 12; // Convert loan term from years to months
+  results.monthlyZipMortgagePayment =
+    (loanAmount * monthlyInterestRate) /
+    (1 - Math.pow(1 + monthlyInterestRate, -totalNumberOfPayments));
+  //#endregion
 
-        // Retrieve median sales price and interest rates from the housing data
-        const medianHomePrice = parseFloat(zipCodeData.median_sale_price);
-        const interestRate30Year = parseFloat(zipCodeData.mortgage_30_rate);
-        const interestRate15Year = parseFloat(zipCodeData.mortgage_15_rate);
+  //#region - Calculate maximum allowable housing costs based on DTI
+  const monthlyGrossIncome = annualIncome / 12;
+  affordableHousingCosts = monthlyGrossIncome * 0.28;
+  stretchedHousingCosts = monthlyGrossIncome * 0.36 - monthlyExpenses;
+  maxAllowableDebtForMortgages = monthlyGrossIncome * 0.43 - monthlyExpenses;
+  //#endregion
 
-        // Determine loan amount by subtracting down payment from home price
-        const loanAmount = medianHomePrice - downPayment;
+  //#region - Compare user's affordability to monthly housing costs in target zip
+  if (results.monthlyZipMortgagePayment <= affordableHousingCosts) {
+    results.affordability = "Affordable";
+  } else if (results.monthlyZipMortgagePayment <= stretchedHousingCosts) {
+    results.affordability = "Stretched";
+  } else if (
+    results.monthlyZipMortgagePayment <= maxAllowableDebtForMortgages
+  ) {
+    results.affordability = "Aggressive";
+  } else {
+    results.affordability = "Out of reach";
+  }
+  //#endregion
 
-        // Determine interest rate based on mortgage term
-        let interestRate;
-        if (mortgageTerm === 15) {
-            interestRate = interestRate15Year;
-        } else {
-            interestRate = interestRate30Year;
-        }
+  // Return an object that includes all necessary details
+  return results;
+}
 
-        // Calculate monthly mortgage payment for median home using loan amortization formula
-        const monthlyInterestRate = (interestRate / 100) / 12; // Convert annual interest rate percentage to monthly decimal rate
-        const totalNumberOfPayments = mortgageTerm * 12; // Convert loan term from years to months
-        const monthlyZipMortgagePayment = (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -totalNumberOfPayments));
+// Function to calculate monthly mortgage payment
+function calculateMonthlyMortgagePayment(
+  loanAmount,
+  annualInterestRate,
+  mortgageTerm
+) {
+  const monthlyInterestRate = annualInterestRate / 100 / 12;
+  const totalNumberOfPayments = mortgageTerm * 12;
+  return (
+    (loanAmount * monthlyInterestRate) /
+    (1 - Math.pow(1 + monthlyInterestRate, -totalNumberOfPayments))
+  );
+}
+//#endregion
 
-        // Calculate user's monthly gross income
-        const monthlyGrossIncome = annualIncome / 12;
+// Initialize the application once the DOM is fully loaded
+$(document).ready(function () {
+  // Function to manage the form submission process
+  function handleFormSubmission() {
+    event.preventDefault(); // Prevent default form submission behavior
 
-        // Calculate maximum allowable housing costs based on DTI
-        const affordableHousingCosts = monthlyGrossIncome * 0.28;
-        const stretchedHousingCosts = (monthlyGrossIncome * 0.36) - monthlyExpenses;
-        const maxAllowableDebtForMortgages = (monthlyGrossIncome * 0.43) - monthlyExpenses;
+    // Step 1: Retrieve form data
+    const formData = getFormData();
 
-        // Compare user's affordability to monthly housing costs in target zip
-        if (monthlyZipMortgagePayment <= affordableHousingCosts) {
-            results.affordability = "Affordable";
-        } else if (monthlyZipMortgagePayment <= stretchedHousingCosts) {
-            results.affordability = "Stretched";
-        } else if (monthlyZipMortgagePayment <= maxAllowableDebtForMortgages) {
-            results.affordability = "Aggressive";
-        } else {
-            results.affordability = "Out of reach";
-        }
+    // Step 2: Perform main affordability calculation for the selected zip
+    const affordabilityData = calculateHousingAffordability(
+      formData.zipCode,
+      formData.annualIncome,
+      formData.downPayment,
+      formData.monthlyExpenses,
+      formData.mortgageTerm
+    );
 
-        // Log affordability details
-        console.log("Median home price ($):", medianHomePrice);
-        console.log("User input for down payment ($):", downPayment);
-        console.log("Loan amount (median sale price less down payment) ($):", loanAmount);
-        console.log("Interest rate (%):", interestRate);
-        console.log("Zip monthly payment ($):", monthlyZipMortgagePayment);
-        console.log("Monthly gross income ($):", monthlyGrossIncome);
-        console.log("Maximum affordable housing costs based on DTI ($):", affordableHousingCosts);
-        console.log("Stretched housing costs based on DTI ($):", stretchedHousingCosts);
-        console.log("Maximum allowable debt for mortgages based on DTI ($):", maxAllowableDebtForMortgages);
-        console.log("Affordability category:", results.affordability);
+    // Step 2a: Update UI with affordability data
+    updateUIWithResults(affordabilityData);
 
-        // Add calculated values to the results object
-        results.medianHomePrice = medianHomePrice;
-        results.maxAffordableHousingCosts = affordableHousingCosts;
-        results.monthlyZipMortgagePayment = monthlyZipMortgagePayment;
+    // Step 3: Geospatial analysis and additional affordability calculations
+    const hexagonAggregatedData = performGeospatialAnalysis(
+      formData.zipCode,
+      affordabilityData.interestRate,
+      formData.downPayment,
+      formData.mortgageTerm
+    );
 
-        // Return results
-        return results;
+    // Step 3a: Update UI with geospatial analysis results
+    updateUIWithGeospatialAnalysis(hexagonAggregatedData);
+  }
+
+  // Placeholder function for updating UI with affordability results
+  function updateUIWithResults(affordabilityData) {
+    // Check if affordabilityData is not null or undefined
+    if (affordabilityData) {
+      console.log(
+        `Affordability Analysis Results:\n` +
+          `- Affordability Status: ${affordabilityData.affordability}\n` +
+          `- Median Home Price in ZIP: $${affordabilityData.medianHomePrice.toLocaleString()}\n` +
+          `- Estimated Monthly Mortgage Payment: $${affordabilityData.monthlyZipMortgagePayment}\n` +
+          `- Affordable Monthly Payment: $${affordableHousingCosts}\n` + // Console log affordable monthly payment
+          `- Stretched Monthly Payment: $${stretchedHousingCosts}\n` + // Console log stretched monthly payment
+          `- Interest Rate: ${affordabilityData.interestRate}% for a ${affordabilityData.mortgageTerm}-year mortgage\n` +
+          `- Mortgage Term: ${affordabilityData.mortgageTerm} years\n\n`
+      );
+    } else {
+      console.log("No affordability data available.");
+    }
+  }
+
+  // Function to generate buffer, create hexagons, and aggregate data
+  function performGeospatialAnalysis(
+    zipCode,
+    interestRate,
+    downPayment,
+    mortgageTerm
+  ) {
+    const selectedZipCodeData = housingData.find(
+      (data) => data.zip === zipCode
+    );
+    if (
+      !selectedZipCodeData ||
+      isNaN(selectedZipCodeData.Latitude) ||
+      isNaN(selectedZipCodeData.Longitude)
+    ) {
+      console.error(
+        "Valid latitude or longitude not found for ZIP code:",
+        zipCode
+      );
+      return;
     }
 
-    // Function to display results
-    function displayResults(results) {
-        // Construct the message
-        let message = "The median sale price of homes in this area is $" + results.medianHomePrice.toLocaleString() + "<br />";
+    const targetLat = parseFloat(selectedZipCodeData.Latitude);
+    const targetLng = parseFloat(selectedZipCodeData.Longitude);
 
-        // Include how much these homes in this area cost per month given sales price, down payment, mortgage term, and interest rates
-        message += "The monthly mortgage payment for these homes in this area is $" + results.monthlyZipMortgagePayment.toLocaleString() + " based on the sales price, your down payment, mortgage term, and interest rates.<br/>";
+    // Generate a buffer zone for the selected ZIP code
+    const bufferZone = generateBufferZone(selectedZipCodeData, bufferRadius);
 
-        message += "Based on your inputs, the prices of homes in this area are ";
+    // Generate H3 hexagons based on the buffer zone
+    const h3Hexagons = generateH3Hexagons([bufferZone], defaultResolution);
 
-        // Determine affordability category and include it in the message
-        if (results.affordability === "Affordable") {
-            message += "within your budget.<br />";
-        } else if (results.affordability === "Stretched") {
-            message += "a bit challenging, but still feasible.<br />";
-        } else if (results.affordability === "Aggressive") {
-            message += "at the top of the limit for qualifying for a mortgage.<br />";
+    // Map housing data to the closest hexagon
+    const zipToHexMap = mapZipCodesToHexagons(housingData, h3Hexagons.flat());
+
+    // Aggregate and analyze data for each hexagon
+    let hexagonAggregatedData = {}; // Initialize an empty object
+
+    h3Hexagons.flat().forEach((hexagon) => {
+      const hexZipCodes = Object.keys(zipToHexMap).filter(
+        (zip) => zipToHexMap[zip] === hexagon
+      );
+      let totalMedianPrice = 0;
+      let count = 0;
+      const centroid = h3.cellToLatLng(hexagon); // Get the centroid of the hexagon
+      const distanceToTargetZip = calculateDistance(
+        targetLat,
+        targetLng,
+        centroid[0],
+        centroid[1]
+      );
+
+      hexZipCodes.forEach((zip) => {
+        const zipData = housingData.find((data) => data.zip === zip);
+        if (zipData && zipData.median_sale_price) {
+          totalMedianPrice += parseFloat(zipData.median_sale_price);
+          count++;
+        }
+      });
+
+      if (count > 0) {
+        const averageMedianPrice = totalMedianPrice / count;
+        const loanAmount = averageMedianPrice - downPayment;
+        const monthlyMortgagePayment = calculateMonthlyMortgagePayment(
+          loanAmount,
+          interestRate,
+          mortgageTerm
+        );
+
+        // Determine affordability classification based on monthly mortgage payment
+        let affordability;
+        if (monthlyMortgagePayment <= affordableHousingCosts) {
+          affordability = "Affordable";
+        } else if (monthlyMortgagePayment <= stretchedHousingCosts) {
+          affordability = "Stretched";
+        } else if (monthlyMortgagePayment <= maxAllowableDebtForMortgages) {
+          affordability = "Aggressive";
         } else {
-            message += "out of reach for you.<br />";
+          affordability = "Out of reach";
         }
 
-        // Calculate housing costs given selections and debt-to-income ratio
-        message += "You should spend no more than $" + results.maxAffordableHousingCosts.toLocaleString() + " on housing per month.<br />";
-
-        // Display the message in a specific HTML element
-        $('#resultsMessage').html(message);
-    }
-
-    // Function to handle form submission
-    function handleFormSubmission() {
-        
-        // Get form inputs
-        const zipCode = $('#zipCode').val();
-        const annualIncome = parseFloat($('#income').val());
-        const downPayment = parseFloat($('#downPayment').val());
-        const monthlyExpenses = parseFloat($('#monthlyExpenses').val());
-        const mortgageTerm = parseInt($('#mortgageTerm').val());
-        
-        // Calculate user's budget parameters
-        const userBudget = {
-            annualIncome,
-            downPayment,
-            monthlyExpenses,
-            mortgageTerm,
-            interestRate
+        hexagonAggregatedData[hexagon] = {
+          averageMedianPrice: averageMedianPrice,
+          zipCodes: hexZipCodes,
+          monthlyMortgagePayment: monthlyMortgagePayment,
+          distanceToTargetZip: distanceToTargetZip,
+          affordability: affordability,
         };
-
-        // Perform calculations only for the selected zip code
-        const results = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
-
-        // Load housing data for the selected zip code
-        const selectedZipCodeData = housingData.find(data => data.zip === zipCode);
-        if (!selectedZipCodeData) {
-            console.error("Zip code data not found for:", zipCode);
-            return;
-        }
-
-        // Generate buffer zone and H3 hexagons for the selected zip code
-        const selectedBufferZone = generateBufferZone(selectedZipCodeData, 100); // Adjust buffer radius if necessary
-        const h3Hexagons = generateH3Hexagons([selectedBufferZone], defaultResolution);
-
-        // Flatten the array of arrays of hexagons
-        const flatHexagons = h3Hexagons.flat();
-
-        // Estimate median prices and assess affordability for each hexagon
-        const affordabilityResults = flatHexagons.map(hexId => {
-            // This example assumes a simplified approach where the median home price of the selected zip code is applied to each hexagon
-            const affordabilityCategory = calculateAffordabilityCategory(selectedZipCodeData.median_sale_price, userBudget);
-            return { hexId, affordabilityCategory };
-        });
-
-        // Display the overall affordability results for the selected zip code
-        const overallResults = calculateHousingAffordability(zipCode, annualIncome, downPayment, monthlyExpenses, mortgageTerm);
-        displayResults(overallResults);
-
-        // Optional: Display affordability results for each hexagon
-        displayHexagonAffordabilityResults(affordabilityResults);
-
-        // Generate H3 hexagons covering the buffer zone for the selected zip code
-        const h3HexagonsForSelectedZip = generateH3Hexagons([selectedBufferZone]);
-        console.log('hexagons for this zips buffer zone:', h3HexagonsForSelectedZip);
-
-        // Display results
-        displayResults(results);
-
-    }
-
-    // Function to load data from Google Sheet
-    function loadDataFromGoogleSheet(url) {
-        // Parse data from the Google sheet
-        Papa.parse(url, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            complete: function(results) {
-                // console.log('Parsed housing data:', results.data);
-                // Store parsed data in the global variable
-                housingData = results.data;
-                // Once data is loaded, call the function to handle form submission
-                $('#calculateButton').prop('disabled', false);
-            },
-            error: function(error) {
-                console.error('Error while fetching and parsing CSV:', error);
-            }
-        });
-    }
-
-    // Call the function to load data from the Google Sheet
-    loadDataFromGoogleSheet(url);
-
-    // Handle form submission
-    $('#affordabilityForm').submit(function(event) {
-        // Prevent the default form submission behavior
-        event.preventDefault();
-        // Handle the form submission
-        handleFormSubmission();
+      }
     });
 
-    // Auto-populate form fields with debug values
-    $('#zipCode').val('78745');
-    $('#income').val('75000');
-    $('#downPayment').val('10000');
-    $('#monthlyExpenses').val('600');
-    $('#mortgageTerm').val('30');
+    return hexagonAggregatedData; // This could be used for additional processing or to update the UI
+  }
 
+  // Placeholder function for updating UI with spatial analysis results
+  function updateUIWithGeospatialAnalysis(hexagonAggregatedData) {
+    // Detailed console log for geospatial analysis results
+    console.log("Geospatial Analysis Results:");
+
+    // Flag variables to track if any hexagons classify as affordable, stretch, or aggressive
+    let affordableFound = false;
+    let stretchedFound = false;
+    let aggressiveFound = false;
+
+    // Iterate through hexagon aggregated data
+    Object.entries(hexagonAggregatedData).forEach(([hexagon, data]) => {
+      console.log(
+        `Hexagon ID: ${hexagon}\n` +
+          `Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
+          `Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
+            2
+          )}\n` +
+          `Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
+            2
+          )} miles\n`
+      );
+
+      // Check the affordability classification of the hexagon
+      if (data.affordability === "Affordable") {
+        affordableFound = true;
+      } else if (data.affordability === "Stretched") {
+        stretchedFound = true;
+      } else if (data.affordability === "Aggressive") {
+        aggressiveFound = true;
+      }
+    });
+
+    // Log if any hexagons classify as affordable, stretch, or aggressive
+    if (affordableFound) {
+      console.log("Some hexagons are classified as affordable.");
+    }
+    if (stretchedFound) {
+      console.log("Some hexagons are classified as stretched.");
+    }
+    if (aggressiveFound) {
+      console.log("Some hexagons are classified as aggressive.");
+    }
+  }
+
+  // Call the function to load data from the Google Sheet
+  loadDataFromGoogleSheet(url);
+
+  // Attach the form submission handler
+  $("#affordabilityForm").submit(function (event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+    // Handle the form submission
+    handleFormSubmission();
+  });
+
+  //#region - Auto-populate form fields with debug values
+  $("#zipCode").val("78745");
+  $("#income").val("75000");
+  $("#downPayment").val("10000");
+  $("#monthlyExpenses").val("600");
+  $("#mortgageTerm").val("30");
+  //#endregion
 });
