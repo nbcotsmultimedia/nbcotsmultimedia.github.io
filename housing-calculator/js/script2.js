@@ -419,44 +419,80 @@ $(document).ready(function () {
     // Detailed console log for geospatial analysis results
     console.log("Geospatial Analysis Results:");
 
-    // Flag variables to track if any hexagons classify as affordable, stretch, or aggressive
-    let affordableFound = false;
-    let stretchedFound = false;
-    let aggressiveFound = false;
+    // Arrays to store hexagons classified as affordable, stretched, and aggressive
+    const affordableHexagons = [];
+    const stretchedHexagons = [];
+    const aggressiveHexagons = [];
 
     // Iterate through hexagon aggregated data
     Object.entries(hexagonAggregatedData).forEach(([hexagon, data]) => {
-      console.log(
-        `Hexagon ID: ${hexagon}\n` +
-          `Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
-          `Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
-            2
-          )}\n` +
-          `Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
-            2
-          )} miles\n`
-      );
-
-      // Check the affordability classification of the hexagon
+      // Check the affordability classification of the hexagon and push it to the corresponding array
       if (data.affordability === "Affordable") {
-        affordableFound = true;
+        affordableHexagons.push(hexagon);
       } else if (data.affordability === "Stretched") {
-        stretchedFound = true;
+        stretchedHexagons.push(hexagon);
       } else if (data.affordability === "Aggressive") {
-        aggressiveFound = true;
+        aggressiveHexagons.push(hexagon);
       }
     });
 
-    // Log if any hexagons classify as affordable, stretch, or aggressive
-    if (affordableFound) {
-      console.log("Some hexagons are classified as affordable.");
-    }
-    if (stretchedFound) {
-      console.log("Some hexagons are classified as stretched.");
-    }
-    if (aggressiveFound) {
-      console.log("Some hexagons are classified as aggressive.");
-    }
+    // Log the hexagons classified as affordable, stretched, and aggressive with details
+    console.log("Hexagons classified as Affordable:");
+    affordableHexagons.forEach((hexagon) => {
+      const data = hexagonAggregatedData[hexagon];
+      if (data) {
+        console.log(
+          `- Hexagon ID: ${hexagon}\n` +
+            `  Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
+            `  Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
+              2
+            )}\n` +
+            `  Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
+              2
+            )} miles\n`
+        );
+      } else {
+        console.log(`- Hexagon ID: ${hexagon}\n  No data available`);
+      }
+    });
+
+    console.log("Hexagons classified as Stretched:");
+    stretchedHexagons.forEach((hexagon) => {
+      const data = hexagonAggregatedData[hexagon];
+      if (data) {
+        console.log(
+          `- Hexagon ID: ${hexagon}\n` +
+            `  Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
+            `  Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
+              2
+            )}\n` +
+            `  Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
+              2
+            )} miles\n`
+        );
+      } else {
+        console.log(`- Hexagon ID: ${hexagon}\n  No data available`);
+      }
+    });
+
+    console.log("Hexagons classified as Aggressive:");
+    aggressiveHexagons.forEach((hexagon) => {
+      const data = hexagonAggregatedData[hexagon];
+      if (data) {
+        console.log(
+          `- Hexagon ID: ${hexagon}\n` +
+            `  Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
+            `  Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
+              2
+            )}\n` +
+            `  Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
+              2
+            )} miles\n`
+        );
+      } else {
+        console.log(`- Hexagon ID: ${hexagon}\n  No data available`);
+      }
+    });
   }
 
   // Call the function to load data from the Google Sheet
