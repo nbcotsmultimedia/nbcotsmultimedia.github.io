@@ -231,7 +231,7 @@ function calculateHousingAffordability(
 
   //#region - Calculate maximum allowable housing costs based on DTI
   const monthlyGrossIncome = annualIncome / 12;
-  affordableHousingCosts = monthlyGrossIncome * 0.28;
+  affordableHousingCosts = monthlyGrossIncome * 0.28 - monthlyExpenses;
   stretchedHousingCosts = monthlyGrossIncome * 0.36 - monthlyExpenses;
   maxAllowableDebtForMortgages = monthlyGrossIncome * 0.43 - monthlyExpenses;
   //#endregion
