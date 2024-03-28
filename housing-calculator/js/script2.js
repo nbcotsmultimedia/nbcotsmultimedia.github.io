@@ -16,7 +16,8 @@ let stretchedHousingCosts;
 let maxAllowableDebtForMortgages;
 //#endregion
 
-//#region - Spatial functions
+//#region - Functions for spatial analysis
+
 // Function to calculate the H3 index of the centroid of a given area
 function calculateCentroidIndex(bufferZone, resolution) {
   // Use turf.js to calculate geographic center of the mass of bufferZone
@@ -197,6 +198,7 @@ function getFormData() {
 
 //#region - Functions to calculate housing affordability
 
+// Function to check if housing is affordable
 function calculateHousingAffordability(
   zipCode,
   annualIncome,
@@ -242,6 +244,12 @@ function calculateHousingAffordability(
   const stretchPayment = monthlyGrossIncome * 0.36; // 36% of income
   const aggressivePayment = monthlyGrossIncome * 0.43 - monthlyExpenses; // 43% of income minus other expenses
 
+  const affordabilityThresholds = {
+    affordable: monthlyGrossIncome * 0.28,
+    stretch: monthlyGrossIncome * 0.36,
+    aggressive: monthlyGrossIncome * 0.43 - monthlyExpenses,
+  };
+
   // Determine affordability based on DTI and payment thresholds
   if (results.monthlyMortgagePayment <= affordablePayment) {
     results.affordabilityCategory = "Affordable";
@@ -253,8 +261,11 @@ function calculateHousingAffordability(
     results.affordabilityCategory = "Out of reach";
   }
 
+  // Include affordability thresholds in the result
+  results.affordabilityThresholds = affordabilityThresholds;
+
   // Log the relevant data
-  console.log("Affordability calculation results:");
+  console.log("~ AFFORDABILITY CALCULATION RESULTS ~");
   console.log("- User affordable payment threshold:", affordablePayment);
   console.log("- User stretch payment threshold:", stretchPayment);
   console.log("- User aggressive payment threshold:", aggressivePayment);
@@ -316,12 +327,17 @@ $(document).ready(function () {
       formData.mortgageTerm
     );
 
-    // Step 3: Geospatial analysis and additional affordability calculations
+    // Extract thresholds from affordability data
+    const { affordable, stretch, aggressive } =
+      affordabilityData.affordabilityThresholds;
+
+    // Call geospatial analysis with thresholds
     const hexagonAggregatedData = performGeospatialAnalysis(
       formData.zipCode,
       affordabilityData.interestRate,
       formData.downPayment,
-      formData.mortgageTerm
+      formData.mortgageTerm,
+      { affordable, stretch, aggressive }
     );
 
     // Step 4: Update UI with geospatial analysis results
@@ -333,7 +349,8 @@ $(document).ready(function () {
     zipCode,
     interestRate,
     downPayment,
-    mortgageTerm
+    mortgageTerm,
+    { affordable, stretch, aggressive }
   ) {
     //#region - Find spatial data for zip
     const selectedZipCodeData = housingData.find(
@@ -398,13 +415,13 @@ $(document).ready(function () {
           mortgageTerm
         );
 
-        // Determine affordability classification based on monthly mortgage payment
+        // Use the thresholds to determine affordability classification
         let affordability;
-        if (monthlyMortgagePayment <= affordableHousingCosts) {
+        if (monthlyMortgagePayment <= affordable) {
           affordability = "Affordable";
-        } else if (monthlyMortgagePayment <= stretchedHousingCosts) {
+        } else if (monthlyMortgagePayment <= stretch) {
           affordability = "Stretched";
-        } else if (monthlyMortgagePayment <= maxAllowableDebtForMortgages) {
+        } else if (monthlyMortgagePayment <= aggressive) {
           affordability = "Aggressive";
         } else {
           affordability = "Out of reach";
@@ -466,7 +483,7 @@ $(document).ready(function () {
     });
 
     // Log the hexagons classified as affordable, stretched, and aggressive with details
-    console.log("Hexagons classified as Affordable:");
+    console.log("Hexagons classified as affordable:");
     affordableHexagons.forEach((hexagon) => {
       const data = hexagonAggregatedData[hexagon];
       if (data) {
@@ -485,7 +502,7 @@ $(document).ready(function () {
       }
     });
 
-    console.log("Hexagons classified as Stretched:");
+    console.log("Hexagons classified as stretch:");
     stretchedHexagons.forEach((hexagon) => {
       const data = hexagonAggregatedData[hexagon];
       if (data) {
@@ -504,7 +521,7 @@ $(document).ready(function () {
       }
     });
 
-    console.log("Hexagons classified as Aggressive:");
+    console.log("Hexagons classified as aggressive:");
     aggressiveHexagons.forEach((hexagon) => {
       const data = hexagonAggregatedData[hexagon];
       if (data) {
