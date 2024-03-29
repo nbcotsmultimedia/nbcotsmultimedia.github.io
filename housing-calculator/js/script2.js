@@ -4,19 +4,18 @@
 //TODO - Calculate distance of hexagon from target zip
 //TODO - Compare monthly mortgage costs of hexagon to user affordability thresholds
 //TODO - Check for redundant functions (calculate monthly mortgage costs)
+//TODO - Expand hexagon classification to include aggressive and out of reach
+//TODO - Assess why aggressive payment counts monthly expenses but others do not
 
 //#region - Set global variables
-let housingData; // Store housing data
+let housingData; // Store housing data in empty variable
 const url =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vRsekIX9YqbqesymI-CT1Yw_B9Iq_BZMNFpNhncYNDwETZLNPCYJ8ivED1m8TvIURG3OzAeWraCloFb/pub?gid=476752314&single=true&output=csv";
 const defaultResolution = 6; // Set a default H3 grid resolution
-const bufferRadius = 5; // Define buffer radius for buffer zones
-let affordableHousingCosts;
-let stretchedHousingCosts;
-let maxAllowableDebtForMortgages;
+const bufferRadius = 5; // Define buffer radius in miles
 //#endregion
 
-//#region - Functions for spatial analysis
+//#region - Spatial analysis
 
 // Function to calculate the H3 index of the centroid of a given area
 function calculateCentroidIndex(bufferZone, resolution) {
@@ -159,7 +158,7 @@ function identifyAffordableOrStretchedHexagons(hexagonAggregatedData) {
 
 //#endregion
 
-//#region - Functions to retrieve data
+//#region - Retrieve and parse data
 
 // Function to fetch and parse data from Google Sheet
 function loadDataFromGoogleSheet(url) {
@@ -196,7 +195,7 @@ function getFormData() {
 
 //#endregion
 
-//#region - Functions to calculate housing affordability
+//#region - Calculate housing affordability
 
 // Function to check if housing is affordable
 function calculateHousingAffordability(
@@ -239,36 +238,42 @@ function calculateHousingAffordability(
   // Calculate monthly gross income
   const monthlyGrossIncome = annualIncome / 12;
 
-  // Calculate affordability thresholds
-  const affordablePayment = monthlyGrossIncome * 0.28; // 28% of income
-  const stretchPayment = monthlyGrossIncome * 0.36; // 36% of income
-  const aggressivePayment = monthlyGrossIncome * 0.43 - monthlyExpenses; // 43% of income minus other expenses
-
+  // Calculate user's monthly cost affordability thresholds
   const affordabilityThresholds = {
-    affordable: monthlyGrossIncome * 0.28,
-    stretch: monthlyGrossIncome * 0.36,
-    aggressive: monthlyGrossIncome * 0.43 - monthlyExpenses,
+    affordable: monthlyGrossIncome * 0.28, // 28% of income
+    stretch: monthlyGrossIncome * 0.36, // 36% of income
+    aggressive: monthlyGrossIncome * 0.43, // 43% of income
   };
 
-  // Determine affordability based on DTI and payment thresholds
-  if (results.monthlyMortgagePayment <= affordablePayment) {
+  // Determine affordability of monthly payment based on payment thresholds
+  if (results.monthlyMortgagePayment <= affordabilityThresholds.affordable) {
     results.affordabilityCategory = "Affordable";
-  } else if (results.monthlyMortgagePayment <= stretchPayment) {
+  } else if (
+    results.monthlyMortgagePayment <= affordabilityThresholds.stretch
+  ) {
     results.affordabilityCategory = "Stretch";
-  } else if (results.monthlyMortgagePayment <= aggressivePayment) {
+  } else if (
+    results.monthlyMortgagePayment <= affordabilityThresholds.aggressive
+  ) {
     results.affordabilityCategory = "Aggressive";
   } else {
     results.affordabilityCategory = "Out of reach";
   }
 
-  // Include affordability thresholds in the result
-  results.affordabilityThresholds = affordabilityThresholds;
-
   // Log the relevant data
   console.log("~ AFFORDABILITY CALCULATION RESULTS ~");
-  console.log("- User affordable payment threshold:", affordablePayment);
-  console.log("- User stretch payment threshold:", stretchPayment);
-  console.log("- User aggressive payment threshold:", aggressivePayment);
+  console.log(
+    "- User affordable payment threshold:",
+    affordabilityThresholds.affordable
+  );
+  console.log(
+    "- User stretch payment threshold:",
+    affordabilityThresholds.stretch
+  );
+  console.log(
+    "- User aggressive payment threshold:",
+    affordabilityThresholds.aggressive
+  );
   console.log("- Median home price in area:", results.medianHomePrice);
   console.log(
     "- Monthly mortgage payment in area:",
@@ -279,7 +284,7 @@ function calculateHousingAffordability(
     results.affordabilityCategory
   );
 
-  // Back-end DTI ratio could still be calculated for logging or additional checks
+  // Back-end DTI ratio calculation for logging
   const backEndDTIRatio =
     ((results.monthlyMortgagePayment + monthlyExpenses) / monthlyGrossIncome) *
     100;
@@ -287,6 +292,9 @@ function calculateHousingAffordability(
     "- User back-end DTI ratio for area housing costs:",
     backEndDTIRatio
   );
+
+  // Include affordability thresholds in the result
+  results.affordabilityThresholds = affordabilityThresholds;
 
   return results;
 }
@@ -307,7 +315,8 @@ function calculateMonthlyMortgagePayment(
 
 //#endregion
 
-// Initialize the application once the DOM is fully loaded
+//#region - Initialize the application
+
 $(document).ready(function () {
   // Function to manage the form submission process
   function handleFormSubmission() {
@@ -428,23 +437,23 @@ $(document).ready(function () {
         }
 
         // Log the details for each hexagon as it's processed
-        console.log(
-          "Hexagon " +
-            hexagon +
-            " details:\n" +
-            "- Average median sale price: $" +
-            averageMedianPrice.toFixed(2) +
-            "\n" +
-            "- Average monthly mortgage payment: $" +
-            monthlyMortgagePayment.toFixed(2) +
-            "\n" +
-            "- Affordability classification for user: " +
-            affordability +
-            "\n" +
-            "- Distance to target zip: " +
-            distanceToTargetZip.toFixed(2) +
-            " miles"
-        );
+        // console.log(
+        //   "Hexagon " +
+        //     hexagon +
+        //     " details:\n" +
+        //     "- Average median sale price: $" +
+        //     averageMedianPrice.toFixed(2) +
+        //     "\n" +
+        //     "- Average monthly mortgage payment: $" +
+        //     monthlyMortgagePayment.toFixed(2) +
+        //     "\n" +
+        //     "- Affordability classification for user: " +
+        //     affordability +
+        //     "\n" +
+        //     "- Distance to target zip: " +
+        //     distanceToTargetZip.toFixed(2) +
+        //     " miles"
+        // );
 
         // Store the calculated data in hexagonAggregatedData
         hexagonAggregatedData[hexagon] = {
@@ -465,24 +474,33 @@ $(document).ready(function () {
     // Detailed console log for geospatial analysis results
     console.log("~ GEOSPATIAL ANALYSIS RESULTS ~");
 
-    // Arrays to store hexagons classified as affordable, stretched, and aggressive
+    // Arrays to store hexagons classified as affordable, stretched, aggressive, and out of reach
     const affordableHexagons = [];
     const stretchedHexagons = [];
     const aggressiveHexagons = [];
+    const outOfReachHexagons = [];
 
     // Iterate through hexagon aggregated data
     Object.entries(hexagonAggregatedData).forEach(([hexagon, data]) => {
-      // Check the affordability classification of the hexagon and push it to the corresponding array
-      if (data.affordability === "Affordable") {
-        affordableHexagons.push(hexagon);
-      } else if (data.affordability === "Stretched") {
-        stretchedHexagons.push(hexagon);
-      } else if (data.affordability === "Aggressive") {
-        aggressiveHexagons.push(hexagon);
+      // Classify the hexagon by affordability and push it to the corresponding array
+      switch (data.affordability) {
+        case "Affordable":
+          affordableHexagons.push(hexagon);
+          break;
+        case "Stretched":
+          stretchedHexagons.push(hexagon);
+          break;
+        case "Aggressive":
+          aggressiveHexagons.push(hexagon);
+          break;
+        case "Out of reach": // Add this case
+          outOfReachHexagons.push(hexagon); // Add this line
+          break;
       }
     });
 
-    // Log the hexagons classified as affordable, stretched, and aggressive with details
+    // Log the hexagons classified, with details
+
     console.log("Hexagons classified as affordable:");
     affordableHexagons.forEach((hexagon) => {
       const data = hexagonAggregatedData[hexagon];
@@ -539,6 +557,26 @@ $(document).ready(function () {
         console.log(`- Hexagon ID: ${hexagon}\n  No data available`);
       }
     });
+
+    console.log("Hexagons classified as Out of reach:");
+    outOfReachHexagons.forEach((hexagon) => {
+      const data = hexagonAggregatedData[hexagon];
+      if (data && data.affordability === "Out of reach") {
+        console.log(
+          `- Hexagon ID: ${hexagon}\n` +
+            `  Average Median Home Price: $${data.averageMedianPrice.toLocaleString()}\n` +
+            `  Calculated Monthly Mortgage Payment: $${data.monthlyMortgagePayment.toFixed(
+              2
+            )}\n` +
+            `  Affordability Classification: Out of reach\n` +
+            `  Distance to Target ZIP Code: ${data.distanceToTargetZip.toFixed(
+              2
+            )} miles\n`
+        );
+      } else {
+        console.log(`- Hexagon ID: ${hexagon}\n  No data available`);
+      }
+    });
   }
 
   // Call the function to load data from the Google Sheet
@@ -560,3 +598,5 @@ $(document).ready(function () {
   $("#mortgageTerm").val("30");
   //#endregion
 });
+
+//#endregion
