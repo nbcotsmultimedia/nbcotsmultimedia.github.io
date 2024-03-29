@@ -198,130 +198,118 @@ function getFormData() {
 
 //#region - Calculate housing affordability
 
-// Function to check if housing is affordable
-function calculateHousingAffordability(
-  zipCode,
-  annualIncome,
-  downPayment,
-  monthlyExpenses,
-  mortgageTerm
+// Function to calculate the monthly mortgage payment
+function calculateMonthlyMortgagePayment(
+  principal, // The principal amount of the loan
+  annualInterestRate, // Annual interest rate
+  termYears // The term of the loan in years
 ) {
-  // Initialize the result object with the properties needed
-  const results = {
-    medianHomePrice: 0,
-    monthlyMortgagePayment: 0,
-    interestRate: 0,
-    affordabilityCategory: "",
-  };
+  // Convert the annual interest rate to a monthly rate.
+  const monthlyInterestRate = annualInterestRate / 100 / 12;
+  // Calculate the total number of monthly payments over the term of the loan.
+  const totalPayments = termYears * 12;
+  // Calculate and return the monthly mortgage payment using the formula for an amortized loan.
+  return (
+    (principal * monthlyInterestRate) /
+    (1 - Math.pow(1 + monthlyInterestRate, -totalPayments))
+  );
+}
 
-  // Find the housing data for the given zip code
+// Function to check if housing is affordable based on user input and housing data
+function calculateHousingAffordability(
+  zipCode, // User's ZIP code
+  annualIncome, // User's annual income
+  downPayment, // User's down payment
+  monthlyExpenses, // User's monthly expenses excluding mortgage
+  mortgageTerm // Desired term of the mortgage in years
+) {
+  //#region - Look up and extract housing data for the given ZIP code
   const zipCodeData = housingData.find((data) => data.zip === zipCode);
   if (!zipCodeData) {
     console.error("Housing data not found for zip code:", zipCode);
-    return null;
+    return null; // Exit if no data found for ZIP code
   }
 
-  // Assign data points from the found data
-  results.medianHomePrice = parseFloat(zipCodeData.median_sale_price);
-  results.interestRate =
+  // Extract necessary data from the ZIP code data.
+  const medianHomePrice = parseFloat(zipCodeData.median_sale_price);
+  const interestRate =
     mortgageTerm === 15
       ? parseFloat(zipCodeData.mortgage_15_rate)
       : parseFloat(zipCodeData.mortgage_30_rate);
+  //#endregion
 
-  // Calculate the monthly mortgage payment
-  const loanAmount = results.medianHomePrice - downPayment;
-  const monthlyInterestRate = results.interestRate / 100 / 12;
-  const totalNumberOfPayments = mortgageTerm * 12;
-  results.monthlyMortgagePayment =
-    (loanAmount * monthlyInterestRate) /
-    (1 - Math.pow(1 + monthlyInterestRate, -totalNumberOfPayments));
+  //#region - Calculate the monthly mortgage payment based on the inputs
+  const monthlyMortgagePayment = calculateMonthlyMortgagePayment(
+    medianHomePrice - downPayment, // Loan amount after down payment
+    interestRate, // Interest rate
+    mortgageTerm // Mortgage term
+  );
+  //#endregion
 
-  // Calculate monthly gross income
+  //#region - Calculate the user's monthly gross income
   const monthlyGrossIncome = annualIncome / 12;
+  //#endregion
 
-  // Calculate user's monthly cost affordability thresholds
-  const affordabilityThresholds = {
-    affordable: monthlyGrossIncome * 0.28, // 28% of income
-    stretch: monthlyGrossIncome * 0.36, // 36% of income
-    aggressive: monthlyGrossIncome * 0.43, // 43% of income
+  //#region - Structure to hold the results of the affordability calculation
+  const results = {
+    medianHomePrice,
+    monthlyMortgagePayment,
+    interestRate,
+    affordabilityCategory: "",
+    // Calculate affordability thresholds based on conventional guidelines.
+    affordabilityThresholds: {
+      affordable: monthlyGrossIncome * 0.28 - monthlyExpenses, // 28% of gross income
+      stretch: monthlyGrossIncome * 0.36 - monthlyExpenses, // 36% of gross income
+      aggressive: monthlyGrossIncome * 0.43 - monthlyExpenses, // 43% minus expenses
+    },
   };
+  //#endregion
 
-  // Determine affordability of monthly payment based on payment thresholds
-  if (results.monthlyMortgagePayment <= affordabilityThresholds.affordable) {
+  //#region - Determine the affordability category based on where the monthly payment falls within the thresholds
+  if (monthlyMortgagePayment <= results.affordabilityThresholds.affordable) {
     results.affordabilityCategory = "Affordable";
   } else if (
-    results.monthlyMortgagePayment <= affordabilityThresholds.stretch
+    monthlyMortgagePayment <= results.affordabilityThresholds.stretch
   ) {
     results.affordabilityCategory = "Stretch";
   } else if (
-    results.monthlyMortgagePayment <= affordabilityThresholds.aggressive
+    monthlyMortgagePayment <= results.affordabilityThresholds.aggressive
   ) {
     results.affordabilityCategory = "Aggressive";
   } else {
     results.affordabilityCategory = "Out of reach";
   }
+  //#endregion
 
-  // Log the relevant data
-  console.log("~ AFFORDABILITY CALCULATION RESULTS ~");
-  console.log(
-    "- User affordable payment threshold:",
-    affordabilityThresholds.affordable
-  );
-  console.log(
-    "- User stretch payment threshold:",
-    affordabilityThresholds.stretch
-  );
-  console.log(
-    "- User aggressive payment threshold:",
-    affordabilityThresholds.aggressive
-  );
-  console.log("- Median home price in area:", results.medianHomePrice);
-  console.log(
-    "- Monthly mortgage payment in area:",
-    results.monthlyMortgagePayment
-  );
-  console.log(
-    "- Area affordability category for user:",
-    results.affordabilityCategory
-  );
-
-  // Back-end DTI ratio calculation for logging
+  //#region - Calculate the back-end debt-to-income ratio for additional insight
   const backEndDTIRatio =
-    ((results.monthlyMortgagePayment + monthlyExpenses) / monthlyGrossIncome) *
-    100;
-  console.log(
-    "- User back-end DTI ratio for area housing costs:",
-    backEndDTIRatio
-  );
+    ((monthlyMortgagePayment + monthlyExpenses) / monthlyGrossIncome) * 100;
+  //#endregion
 
-  // Include affordability thresholds in the result
-  results.affordabilityThresholds = affordabilityThresholds;
+  // Log the calculated results for review
+  console.log(`~ AFFORDABILITY CALCULATION RESULTS ~
+- User affordable payment threshold: ${results.affordabilityThresholds.affordable}
+- User stretch payment threshold: ${results.affordabilityThresholds.stretch}
+- User aggressive payment threshold: ${results.affordabilityThresholds.aggressive}
+- `);
 
+  // Return the results object with all calculated values
   return results;
-}
-
-// Function to calculate monthly mortgage payment
-function calculateMonthlyMortgagePayment(
-  loanAmount,
-  annualInterestRate,
-  mortgageTerm
-) {
-  const monthlyInterestRate = annualInterestRate / 100 / 12;
-  const totalNumberOfPayments = mortgageTerm * 12;
-  return (
-    (loanAmount * monthlyInterestRate) /
-    (1 - Math.pow(1 + monthlyInterestRate, -totalNumberOfPayments))
-  );
 }
 
 // Function to update UI with results
 function displayAffordabilityResults(results) {
   let resultsHtml = `<h3>Housing Affordability</h3>`;
-  resultsHtml += `<p>Median Home Price: $${results.medianHomePrice.toLocaleString()}</p>`;
-  resultsHtml += `<p>Monthly Mortgage Payment: $${results.monthlyMortgagePayment.toFixed(
+  resultsHtml += `<p>Median home price in area: $${results.medianHomePrice.toLocaleString()}</p>`;
+
+  resultsHtml += `<p>Median home price in area: $${results.medianHomePrice.toLocaleString()}</p>`;
+  resultsHtml += `<p>Monthly mortgage payment in area: $${results.monthlyMortgagePayment.toFixed(
     2
   )}</p>`;
-  resultsHtml += `<p>Affordability Category: ${results.affordabilityCategory}</p>`;
+  resultsHtml += `<p>Affordability category for user in area: ${results.affordabilityCategory}</p>`;
+  resultsHtml += `<p>User back-end DTI ratio for area housing costs: ${backEndDTIRatio.toFixed(
+    2
+  )}</p>`;
 
   // Update the inner HTML of the resultsMessage div
   document.getElementById("resultsMessage").innerHTML += resultsHtml;
