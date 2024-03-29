@@ -221,8 +221,11 @@ function calculateHousingAffordability(
   annualIncome, // User's annual income
   downPayment, // User's down payment
   monthlyExpenses, // User's monthly expenses excluding mortgage
-  mortgageTerm // Desired term of the mortgage in years
+  mortgageTerm, // Desired term of the mortgage in years
+  thresholds // Affordability thresholds
 ) {
+  const { affordable, stretch, aggressive } = thresholds; // Destructure the thresholds object
+
   //#region - Look up and extract housing data for the given ZIP code
   const zipCodeData = housingData.find((data) => data.zip === zipCode);
   if (!zipCodeData) {
@@ -250,18 +253,25 @@ function calculateHousingAffordability(
   const monthlyGrossIncome = annualIncome / 12;
   //#endregion
 
+  //#region - Calculate the back-end debt-to-income ratio for additional insight
+  const totalMonthlyDebt = monthlyMortgagePayment + monthlyExpenses; // Including mortgage and other expenses
+  const backEndDTIRatio = Math.round(
+    (totalMonthlyDebt / monthlyGrossIncome) * 100
+  );
+  //#endregion
+
   //#region - Structure to hold the results of the affordability calculation
   const results = {
     medianHomePrice,
     monthlyMortgagePayment,
     interestRate,
     affordabilityCategory: "",
-    // Calculate affordability thresholds based on conventional guidelines.
     affordabilityThresholds: {
-      affordable: monthlyGrossIncome * 0.28 - monthlyExpenses, // 28% of gross income
-      stretch: monthlyGrossIncome * 0.36 - monthlyExpenses, // 36% of gross income
-      aggressive: monthlyGrossIncome * 0.43 - monthlyExpenses, // 43% minus expenses
+      affordable,
+      stretch,
+      aggressive,
     },
+    backEndDTIRatio, // Include the calculated DTI ratio in the results
   };
   //#endregion
 
@@ -281,17 +291,12 @@ function calculateHousingAffordability(
   }
   //#endregion
 
-  //#region - Calculate the back-end debt-to-income ratio for additional insight
-  const backEndDTIRatio =
-    ((monthlyMortgagePayment + monthlyExpenses) / monthlyGrossIncome) * 100;
-  //#endregion
-
-  // Log the calculated results for review
+  //#region - Log the calculated results for review
   console.log(`~ AFFORDABILITY CALCULATION RESULTS ~
 - User affordable payment threshold: ${results.affordabilityThresholds.affordable}
 - User stretch payment threshold: ${results.affordabilityThresholds.stretch}
-- User aggressive payment threshold: ${results.affordabilityThresholds.aggressive}
-- `);
+- User aggressive payment threshold: ${results.affordabilityThresholds.aggressive}`);
+  //#endregion
 
   // Return the results object with all calculated values
   return results;
@@ -301,15 +306,13 @@ function calculateHousingAffordability(
 function displayAffordabilityResults(results) {
   let resultsHtml = `<h3>Housing Affordability</h3>`;
   resultsHtml += `<p>Median home price in area: $${results.medianHomePrice.toLocaleString()}</p>`;
-
-  resultsHtml += `<p>Median home price in area: $${results.medianHomePrice.toLocaleString()}</p>`;
   resultsHtml += `<p>Monthly mortgage payment in area: $${results.monthlyMortgagePayment.toFixed(
-    2
+    0
   )}</p>`;
+  resultsHtml += `<p>Debt-to-income ratio: ${results.backEndDTIRatio.toFixed(
+    0
+  )}%</p>`; // Display the DTI ratio
   resultsHtml += `<p>Affordability category for user in area: ${results.affordabilityCategory}</p>`;
-  resultsHtml += `<p>User back-end DTI ratio for area housing costs: ${backEndDTIRatio.toFixed(
-    2
-  )}</p>`;
 
   // Update the inner HTML of the resultsMessage div
   document.getElementById("resultsMessage").innerHTML += resultsHtml;
@@ -325,18 +328,21 @@ $(document).ready(function () {
     // Prevent default form submission behavior
     event.preventDefault();
 
-    // Step 1: Retrieve form data
+    //#region - Step 1: Retrieve form data
     const formData = getFormData();
     console.log("~ RETRIEVE FORM DATA ~", formData); // Log form data to ensure it's correctly retrieved
+    //#endregion
 
-    // Step 2: Perform main affordability calculation for the selected zip
+    //#region - Step 2: Perform main affordability calculation for the selected zip
     const affordabilityData = calculateHousingAffordability(
       formData.zipCode,
       formData.annualIncome,
       formData.downPayment,
       formData.monthlyExpenses,
-      formData.mortgageTerm
+      formData.mortgageTerm,
+      thresholds
     );
+    //#endregion
 
     // Extract thresholds from affordability data
     const { affordable, stretch, aggressive } =
@@ -608,7 +614,6 @@ $(document).ready(function () {
   loadDataFromGoogleSheet(url);
 
   // Attach the form submission handler
-  // Attach the form submission handler
   $("#affordabilityForm").submit(function (event) {
     // Prevent the default form submission behavior
     event.preventDefault();
@@ -622,13 +627,23 @@ $(document).ready(function () {
     // Log form data to ensure it's correctly retrieved
     console.log("~ RETRIEVE FORM DATA ~", formData);
 
+    // Define the affordability thresholds based on conventional guidelines
+    const thresholds = {
+      affordable:
+        (formData.annualIncome / 12) * 0.28 - formData.monthlyExpenses,
+      stretch: (formData.annualIncome / 12) * 0.36 - formData.monthlyExpenses,
+      aggressive:
+        (formData.annualIncome / 12) * 0.43 - formData.monthlyExpenses,
+    };
+
     // Step 2: Perform main affordability calculation for the selected zip
     const affordabilityData = calculateHousingAffordability(
       formData.zipCode,
       formData.annualIncome,
       formData.downPayment,
       formData.monthlyExpenses,
-      formData.mortgageTerm
+      formData.mortgageTerm,
+      thresholds
     );
 
     // Display affordability results
@@ -644,7 +659,7 @@ $(document).ready(function () {
       affordabilityData.interestRate,
       formData.downPayment,
       formData.mortgageTerm,
-      { affordable, stretch, aggressive }
+      thresholds
     );
 
     // Step 4: Update UI with geospatial analysis results
