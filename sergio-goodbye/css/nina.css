@@ -4,21 +4,21 @@ header {
 }
 
 hr {
-  border-top: 1px solid rgba(255,255,255,.33);
-  margin: .4em 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.33);
+  margin: 0.4em 0;
 }
 .darker {
-  border-top: 1px solid rgba(0,0,0,.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 #nav {
   margin: 20px 0px;
   padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255,255,255,.33);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.33);
 }
 
 #mainStory {
-  background-image: url("../images/main.jpg");
+  background-image: url("../images/la-casa.png");
   background-size: cover;
   height: 360px;
   padding: 20px;
@@ -32,17 +32,17 @@ hr {
 
 .kicker {
   font-size: 11px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
   text-transform: uppercase;
-  color: #FFF;
+  color: #fff;
   margin-bottom: 0px;
 }
 
 .bigHead {
-  font-family: 'ArtHouseBold', sans-serif;
-	font-size: 24px;
-  color: #FFF;
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 24px;
+  color: #fff;
   line-height: 1.2em;
   padding-right: 15px;
 }
@@ -52,23 +52,23 @@ hr {
 }
 
 .medHead {
-  font-family: 'ArtHouseBold', sans-serif;
-	font-size: 17px;
-  color: #FFF;
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 17px;
+  color: #fff;
   line-height: 1.2em;
 }
 
 .regHead {
-  font-family: 'ArtHouseMed', sans-serif;
-	font-size: 15px;
-  color: #FFF;
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 15px;
+  color: #fff;
   line-height: 1.2em;
 }
 
 .sectionHead {
-  font-family: 'ArtHouseBold', sans-serif;
-	font-size: 30px;
-  color: #FFF;
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 30px;
+  color: #fff;
 }
 
 .lightBlue {
@@ -88,7 +88,7 @@ hr {
 }
 
 #topVids {
-  background: linear-gradient(180deg,#383838,#161616);
+  background: linear-gradient(180deg, #383838, #161616);
   min-height: 400px;
   padding: 20px;
   margin-top: 15px;
@@ -106,13 +106,13 @@ hr {
 }
 
 .trendingText {
-  color: #FFF;
+  color: #fff;
   font-size: 13px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 .trendingKicker {
   color: #fcb813;
-  font-family: 'ArtHouseBold', sans-serif;
+  font-family: "ArtHouseBold", sans-serif;
 }
 .trendingItem {
   margin-right: 20px;
@@ -128,7 +128,6 @@ hr {
   header {
     height: auto;
     overflow: visible;
-
   }
   #mainStory {
     height: 225px;
