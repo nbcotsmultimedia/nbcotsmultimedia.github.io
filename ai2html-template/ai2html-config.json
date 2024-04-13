@@ -1,7 +1,7 @@
 {
   "fonts": [
     {
-      "aifont": "Roboto",
+      "aifont": "Roboto-Regular",
       "family": "Roboto",
       "weight": "normal",
       "style": "normal"
@@ -13,27 +13,39 @@
       "style": "normal"
     },
     {
+      "aifont": "Roboto-Medium",
+      "family": "Roboto",
+      "weight": "500",
+      "style": "normal"
+    },
+    {
+      "aifont": "Roboto-Bold",
+      "family": "Roboto",
+      "weight": "700",
+      "style": "normal"
+    },
+    {
       "aifont": "Inter-Regular",
       "family": "Inter",
       "weight": "normal",
       "style": "normal"
     },
     {
-      "aifont": "Helvetica-Light",
-      "family": "Helvetica Neue",
-      "weight": "normal",
+      "aifont": "Inter-Bold",
+      "family": "Inter",
+      "weight": "700",
       "style": "normal"
     },
     {
-      "aifont": "Georgia",
+      "aifont": "Georgia-Regular",
       "family": "Georgia",
       "weight": "normal",
       "style": "normal"
     },
     {
-      "aifont": "ArthouseOwned-Bold",
-      "family": "ArtHouseBold",
-      "weight": "bold",
+      "aifont": "Georgia-Bold",
+      "family": "Georgia",
+      "weight": "700",
       "style": "normal"
     },
     {
@@ -45,22 +57,31 @@
     {
       "aifont": "ArthouseOwned-Medium",
       "family": "ArtHouseMedium",
-      "weight": "normal",
+      "weight": "500",
       "style": "normal"
     },
     {
-      "family": "Helvetica-Bold",
-      "weight": "400",
-      "style": "normal"
-    },
-    {
-      "family": "Helvetica Neue",
+      "aifont": "ArthouseOwned-Bold",
+      "family": "ArtHouseBold",
       "weight": "700",
       "style": "normal"
     },
     {
+      "aifont": "HelveticaNeue",
       "family": "Helvetica Neue",
-      "weight": "400",
+      "weight": "normal",
+      "style": "normal"
+    },
+    {
+      "aifont": "HelveticaNeue-Medium",
+      "family": "Helvetica Neue",
+      "weight": "500",
+      "style": "normal"
+    },
+    {
+      "aifont": "HelveticaNeue-Bold",
+      "family": "Helvetica Neue",
+      "weight": "700",
       "style": "normal"
     }
   ]
