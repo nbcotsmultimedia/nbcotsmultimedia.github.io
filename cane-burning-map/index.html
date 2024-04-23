@@ -18,7 +18,6 @@
   <link href="css/style.css" rel="stylesheet">
 
   <!-- Responsive iFrame stuff -->
-  <!--
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
     <script type="text/javascript">
          document.addEventListener("DOMContentLoaded", function() {
@@ -26,24 +25,25 @@
             xtalk.init();
          });
     </script>
-    -->
 
   </style>
 
 </head>
 
 <body>
-  <div id="map-container">
-    <svg id="map"></svg>
-  </div>
-  <div id="bar-chart-container">
-    <div id="play-button-container">
-      <button class="control-button" id="pa" onclick="pauseAnimation()"><i class="fa-solid fa-pause"></i></button>
-      <button class="control-button" id="pl" disabled="true"><i class="fa-solid fa-play"></i></button>
+  <div id="cane-burning-map">
+    <div id="map-container">
+      <svg id="map"></svg>
     </div>
-    <svg id="bar-chart" height="150"></svg>
+    <div id="bar-chart-container">
+      <div id="play-button-container">
+        <button class="control-button" id="pa" onclick="pauseAnimation()"><i class="fa-solid fa-pause"></i></button>
+        <button class="control-button" id="pl" disabled="true"><i class="fa-solid fa-play"></i></button>
+      </div>
+      <svg id="bar-chart" height="150"></svg>
+    </div>
+    <div id="year-button-container">
   </div>
-  <div id="year-button-container">
   </div>
 
 

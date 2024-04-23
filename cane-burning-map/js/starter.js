@@ -28,6 +28,7 @@ let seasons = [[2022, 2023], [2021, 2022]],
 
 function init() {
 	createMap();
+	setTimeout(() => xtalk.signalIframe(), 1000);
 };
 
 // create D3 map
