@@ -5,25 +5,26 @@ const nodesURL =
 const linksURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=1899076594&single=true&output=csv";
 
-// Load nodes
-d3.csv(nodesURL, (d) => ({
-  id: d.id, // Adjust according to your column names
-  name: d.name,
-  role: d.role,
-  type: d.type,
-  role: d.role,
-})).then((nodes) => {
-  console.log("Nodes loaded:", nodes); // Log the nodes to ensure they are loaded correctly
+// Assuming a simple grid layout
+const numRows = 4; // Total number of rows
+const numCols = 4; // Total number of columns
+const spacingX = width / (numCols + 1); // Spacing between nodes horizontally
+const spacingY = height / (numRows + 1); // Spacing between nodes vertically
 
-  // Load links after nodes have been loaded
+// Load nodes and then links; after loading, initialize the graph
+d3.csv(nodesURL, (d) => ({
+  id: d.id,
+  name: d.name,
+  role: d.role, // Removed duplicate role assignment
+})).then((nodes) => {
+  console.log("Nodes loaded:", nodes); // Log the nodes
+
   d3.csv(linksURL, (d) => ({
     source: d.source,
     target: d.target,
     type: d.type,
   })).then((links) => {
-    console.log("Links loaded:", links); // Log the links to ensure they are loaded correctly
-
-    // Now that both have been loaded, initialize the graph
+    console.log("Links loaded:", links); // Log the links
     initializeGraph({ nodes, links });
   });
 });
@@ -45,55 +46,33 @@ function initializeGraph(graphData) {
     .attr("width", width)
     .attr("height", height);
 
-  // Define a custom force for clustering nodes by their group
-  function forceCluster() {
-    const strength = 0.2; // Strength of the force
-
-    function force(alpha) {
-      const centroids = new Map(); // Keeps track of the centroid of each group
-
-      // Compute the centroid of each group
-      graphData.nodes.forEach(function (node) {
-        if (!centroids.has(node.group)) {
-          centroids.set(node.group, { x: 0, y: 0, count: 0 });
-        }
-        const centroid = centroids.get(node.group);
-        centroid.x += node.x;
-        centroid.y += node.y;
-        centroid.count += 1;
-      });
-
-      centroids.forEach((centroid) => {
-        centroid.x /= centroid.count;
-        centroid.y /= centroid.count;
-      });
-
-      // Apply forces to nodes towards their group's centroid
-      graphData.nodes.forEach(function (node) {
-        if (node.type === "individual" && centroids.has(node.group)) {
-          const centroid = centroids.get(node.group);
-          node.vx += (centroid.x - node.x) * strength * alpha;
-          node.vy += (centroid.y - node.y) * strength * alpha;
-        }
-      });
-    }
-
-    return force;
-  }
-
-  // Add the custom clustering force to the simulation
-  simulation.force("cluster", forceCluster());
-
   // Initialize the simulation with forces
   const simulation = d3
     .forceSimulation(graphData.nodes)
+    // Link force based on loaded links
     .force(
       "link",
       d3.forceLink(graphData.links).id((d) => d.id)
     )
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("cluster", forceCluster());
+    .force("charge", d3.forceManyBody()) // Repelling force between nodes
+    .force("center", d3.forceCenter(width / 2, height / 2)); // Centering force
+
+  // Define the simulation's "tick" event handler
+  simulation.nodes(graphData.nodes).on("tick", ticked);
+  simulation.force(
+    "link",
+    d3
+      .forceLink(graphData.links)
+      .id((d) => d.id)
+      .distance(100)
+  ); // Increase the distance to space out connected nodes
+
+  simulation.force("charge", d3.forceManyBody().strength(-120)); // Increase the magnitude of the negative value for more repulsion
+
+  simulation.force(
+    "collide",
+    d3.forceCollide().radius((d) => d.radius + 10)
+  ); // Adjust the radius for the desired spacing
 
   // Create the links (line elements) and set their properties
   const link = svg
@@ -131,16 +110,7 @@ function initializeGraph(graphData) {
     .data(graphData.nodes)
     .enter()
     .append("text")
-    .text((d) => d.name) // Make sure your nodes data have a 'name' property
-    .attr("x", 8)
-    .attr("y", ".31em");
-
-  // Define the simulation's "tick" event handler which updates the graph elements' positions
-  simulation
-    .nodes(graphData.nodes) // Set the nodes in the simulation
-    .on("tick", ticked); // On each tick, update positions
-
-  simulation.force("link").links(graphData.links); // Set the links in the link force
+    .text((d) => d.name);
 
   // Function to update positions of nodes and links on each tick
   function ticked() {
@@ -156,10 +126,8 @@ function initializeGraph(graphData) {
       .attr("cx", (d) => d.x) // Set the x position of the circle
       .attr("cy", (d) => d.y); // Set the y position of the circle
 
-    // Update label positions
-    labels
-      .attr("x", (d) => d.x) // Set the x position of the label
-      .attr("y", (d) => d.y); // Set the y position of the label
+    // Update label positions based on the node's current position
+    labels.attr("x", (d) => d.x).attr("y", (d) => d.y);
   }
 
   // Function definitions for drag events
