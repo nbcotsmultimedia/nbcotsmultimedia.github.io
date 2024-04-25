@@ -23,5 +23,6 @@
 .link {
   stroke: #999; /* grey color for the links */
   stroke-opacity: 0.6; /* slightly transparent */
-  stroke-width: 1px; /* thickness of the link lines */
+  stroke-width: 2px; /* thickness of the link paths */
+  fill: none; /* paths should not be filled */
 }
