@@ -1,0 +1,26 @@
+/* styles.css */
+
+/* Style for link elements */
+.links line {
+  stroke: #999; /* color of your links */
+  stroke-opacity: 0.6;
+  stroke-width: 2px; /* thickness of your links */
+}
+
+/* Style for node elements */
+.nodes circle {
+  fill: #333; /* color of your nodes */
+  stroke: #fff; /* border color of your nodes */
+  stroke-width: 1.5px; /* border thickness */
+}
+
+/* Style for text labels */
+.labels text {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  pointer-events: none; /* Ignore pointer events */
+  text-anchor: middle; /* Ensure the text is centered on the node */
+  fill: #333; /* color of your text */
+}
+
+/* Additional styles for highlighting or interaction can be added here */
