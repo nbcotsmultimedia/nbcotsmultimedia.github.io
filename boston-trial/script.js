@@ -18,13 +18,27 @@ function updateGraphLayout() {
   // Responsive sizing for nodes and labels
   const isSmallViewport = svgWidth < 600;
   const numCols = isSmallViewport ? 2 : 4;
-  const nodeRadius = isSmallViewport ? 20 : 40; // Smaller radius for smaller viewport
+  const nodeRadius = isSmallViewport ? 24 : 40; // Smaller radius for smaller viewport
   const labelFontSize = isSmallViewport ? "8px" : "12px"; // Smaller font size for smaller viewport
   const labelLineHeight = isSmallViewport ? "1em" : "1.2em"; // Adjust line height for smaller viewport
   const labelPadding = isSmallViewport ? 10 : 20; // Closer labels for smaller viewport
 
+  // Calculate the number of rows required to display all nodes
+  const numRows = Math.ceil(nodesData.length / numCols);
+
+  // Calculate the total height required based on nodes and labels
+  const contentHeight =
+    numRows * (nodeRadius * 2 + labelPadding) + labelPadding;
+
+  // Ensure that the viewBox height is not less than the window height
+  const requiredHeight = Math.max(svgHeight, contentHeight);
+
   const spacingX = svgWidth / (numCols + 1);
-  const spacingY = svgHeight / (Math.ceil(nodesData.length / numCols) + 0.5);
+  // Increase this value to add more space between rows
+  const rowPadding = 50; // Adjust this value as needed
+
+  // Calculate the vertical spacing based on the node size, label size, and row padding
+  const spacingY = nodeRadius * 2 + labelPadding + rowPadding;
 
   nodesData.forEach((node, i) => {
     node.x = (i % numCols) * spacingX + spacingX;
@@ -39,11 +53,13 @@ function updateGraphLayout() {
       .classed("svg-content-responsive", true);
   }
 
-  svg
-    .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
-    .attr("preserveAspectRatio", "xMinYMin meet");
+  svg.attr("preserveAspectRatio", "xMinYMin meet");
 
   const nodeById = new Map(nodesData.map((d) => [d.id, d]));
+
+  svg
+    .attr("viewBox", `0 0 ${svgWidth} ${requiredHeight}`)
+    .attr("preserveAspectRatio", "xMinYMin meet");
 
   svg
     .selectAll(".link")

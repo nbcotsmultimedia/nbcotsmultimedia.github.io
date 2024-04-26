@@ -1,3 +1,7 @@
+svg {
+  margin-top: 0;
+}
+
 /* Style for link elements */
 .links line {
   stroke: #999; /* color of your links */
