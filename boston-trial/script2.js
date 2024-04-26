@@ -31,18 +31,6 @@ d3.csv(nodesURL).then((nodes) => {
     .attr("width", width)
     .attr("height", height);
 
-  // Create SVG circle elements for each node
-  svg
-    .selectAll(".node")
-    .data(nodes)
-    .enter()
-    .append("circle")
-    .attr("class", "node")
-    .attr("r", 50)
-    .attr("cx", (d) => d.x)
-    .attr("cy", (d) => d.y)
-    .style("fill", "#cccccc");
-
   // Create SVG text elements for node labels
   svg
     .selectAll(".label")
@@ -94,6 +82,19 @@ d3.csv(nodesURL).then((nodes) => {
       .attr("d", (d) => d.path)
       .style("stroke", "#999")
       .style("stroke-width", 2)
-      .style("fill", "none");
+      .style("fill", "none")
+      .style("stroke-opacity", 0.5); // Set the opacity of the links
+
+    // Create SVG circle elements for each node
+    svg
+      .selectAll(".node")
+      .data(nodes)
+      .enter()
+      .append("circle")
+      .attr("class", "node")
+      .attr("r", 50)
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
+      .style("fill", "#cccccc");
   });
 });
