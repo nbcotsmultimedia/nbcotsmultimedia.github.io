@@ -86,6 +86,21 @@ function updateGraphLayout() {
     .attr("stroke", "#333333")
     .attr("stroke-width", isSmallViewport ? 1 : 2);
 
+  // First, remove the existing .node elements, so they don't conflict
+  svg.selectAll(".node").remove();
+
+  // Then append the images as node elements
+  svg
+    .selectAll(".node-image") // Changed the class to .node-image
+    .data(nodesData)
+    .join("image")
+    .attr("class", "node-image") // Use the class .node-image
+    .attr("xlink:href", (d) => d.imageUrl)
+    .attr("x", (d) => d.x - nodeRadius)
+    .attr("y", (d) => d.y - nodeRadius)
+    .attr("width", nodeRadius * 2)
+    .attr("height", nodeRadius * 2);
+
   const labels = svg.selectAll(".label").data(nodesData, (d) => d.id);
 
   labels.exit().remove();
