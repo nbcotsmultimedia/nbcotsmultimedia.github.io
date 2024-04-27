@@ -1,5 +1,6 @@
 svg {
   margin-top: 0;
+  overflow: visible;
 }
 
 /* Style for link elements */
