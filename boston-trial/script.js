@@ -1,221 +1,262 @@
 //#region - Universal variables
+
+// URL to nodes tab
 const nodesURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=0&single=true&output=csv";
+
+// URL to links tab
 const linksURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=1899076594&single=true&output=csv";
 
+// Variables to store the loaded node and link data
 let nodesData, linksData;
+
+// Selects the first <svg> element in the doc to operate on
 let svg = d3.select("svg");
+
+// Variable to store tooltip functionality
+let tooltip;
+
+// Variable to store the currently selected node
+let selectedNode = null;
+
 //#endregion
 
 //#region - Get and parse data
 
-// Call 'updateGraphLayout' after data is loaded
-Promise.all([d3.csv(nodesURL), d3.csv(linksURL)]).then(([nodes, links]) => {
-  nodesData = nodes;
-  linksData = links;
-  updateGraphLayout();
-});
-//#endregion
+// Load and link data and process the results
+Promise.all([d3.csv(nodesURL), d3.csv(linksURL)])
+  .then((results) => {
+    nodesData = results[0]; // Store nodes data
+    linksData = results[1]; // Store links data
 
-function updateGraphLayout() {
-  // First, declare and initialize isSmallViewport
-  const svgWidth = document.documentElement.clientWidth;
-  const isSmallViewport = svgWidth < 600;
+    // Create a map of nodes by id
+    let nodeById = new Map(nodesData.map((node) => [node.id, node]));
 
-  const strokeWidth = isSmallViewport ? 1 : 2;
+    // Make sure the rest of your code has access to nodeById
+    // You can do this by passing it to the functions that need it or making it available in a wider scope
 
-  //#region - Get viewport dimensions
-  const svgHeight = window.innerHeight;
-  //#endregion
-
-  //#region - Determine layout based on viewport size
-  const numCols = isSmallViewport ? 3 : 4; // Determine the number of columns
-  const numRows = Math.ceil(nodesData.length / numCols); // Calculate the number of rows
-  const nodeRadius = isSmallViewport ? 24 : 40; // Set the radius for the nodes
-  const labelFontSize = isSmallViewport ? "8px" : "12px"; // Set the font size for labels
-  const labelLineHeight = isSmallViewport ? "1em" : "1.2em"; // Set the line height for labels
-  const labelPadding = isSmallViewport ? 10 : 20; // Set label padding
-  //#endregion
-
-  //#region - Calculate spacing between nodes
-  const spacingX = svgWidth / (numCols + 1); // Horizontal spacing
-  const spacingY = nodeRadius * 2 + labelPadding + 45; // Vertical spacing
-  //#endregion
-
-  //#region - Position nodes and add interactivity
-
-  nodesData.forEach((node, i) => {
-    node.x = (i % numCols) * spacingX + spacingX / 2; // Center nodes in each column
-    node.y = Math.floor(i / numCols) * spacingY + spacingY / 2; // Center nodes in each row
+    if (Array.isArray(nodesData) && Array.isArray(linksData)) {
+      initializeTooltip(); // Initialize tooltip after data is loaded
+      updateGraphicLayout(nodeById); // Initialize graph layout with loaded data
+    } else {
+      console.error("Data is not in expected format:", nodesData, linksData);
+    }
+  })
+  .catch((error) => {
+    console.error("Error loading data: ", error); // Log data loading error if necessary
   });
 
-  function handleMouseOver(d, i) {
-    // Log the node data for the hovered node
-    console.log("Mouseover on node data:", d);
+//#endregion
 
-    // Log all links data for reference
-    console.log("All links data:", linksData);
+//#region - Initialize tooltip
 
-    // Highlight the connected links
-    svg.selectAll(".link").attr("stroke-opacity", (link) => {
-      const isLinked = link.source === d.id || link.target === d.id;
-      // Log the link data and the result of the conditional check
-      console.log(
-        `Link from ${link.source} to ${link.target} is ${
-          isLinked ? "highlighted" : "faded"
-        }`
-      );
-      return isLinked ? 1.0 : 0.1;
-    });
+// Define a function to initialize a tooltip styled as a small pop-up box
+function initializeTooltip() {
+  tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("display", "none")
+    .style("pointer-events", "none")
+    .style("padding", "10px")
+    .style("background", "#fff")
+    .style("border", "1px solid #ddd")
+    .style("border-radius", "5px")
+    .style("text-align", "left");
+}
 
-    // Highlight the connected nodes and their labels
-    svg.selectAll(".node-image, .label").style("opacity", (node) => {
-      const isConnected =
-        node.id === d.id ||
-        linksData.some((link) => {
-          return (
-            (link.source === d.id && link.target === node.id) ||
-            (link.target === d.id && link.source === node.id)
-          );
-        });
-      // Log the node data and the result of the conditional check
-      console.log(
-        `Node ${node.id} is ${isConnected ? "highlighted" : "faded"}`
-      );
-      return isConnected ? 1.0 : 0.1;
-    });
-  }
+//#endregion
 
-  function handleMouseOut(d, i) {
-    // Log the mouseout event
-    console.log("Mouseout on node data:", d);
+//#region - Create graphic
 
-    // Reset the connected links
-    svg.selectAll(".link").attr("stroke-opacity", 0.6);
+// Function to define and update the layout of the graphic
+function updateGraphicLayout(nodeById) {
+  //#region - Set sizing and positions
+  const svgWidth = document.documentElement.clientWidth; // Get width of viewport
+  const svgHeight = window.innerHeight; // Get height of viewport
+  const isSmallViewport = svgWidth < 600; // Determine if viewport is small
+  const numCols = isSmallViewport ? 3 : 4; // Set # of columns
+  const nodeRadius = isSmallViewport ? 24 : 40; // Set node radius
+  const spacingX = svgWidth / (numCols + 1); // Calculate horizontal spacing
+  const spacingY = nodeRadius * 2 + (isSmallViewport ? 10 : 20) + 45; // Calculate vertical spacing
 
-    // Reset the connected nodes and their labels
-    svg.selectAll(".node-image, .label").style("opacity", 1.0);
-  }
+  // Calculate positions for each node based on its index
+  nodesData.forEach((node, i) => {
+    node.x = (i % numCols) * spacingX + spacingX / 2;
+    node.y = Math.floor(i / numCols) * spacingY + spacingY / 2;
+  });
 
-  //#endregion
+  // Clear any existing elements in the SVG to prepare for new drawing
+  svg.selectAll("*").remove();
 
-  //#region - Select the SVG element
-
-  if (svg.empty()) {
-    svg = d3
-      .select("body")
-      .append("svg")
-      .classed("svg-content-responsive", true);
-  }
-  //#endregion
-
-  //#region - Set viewbox dimensions
-  // Compute the width and height required by the nodes
+  // Create variables to store max x and y coordinates to define viewbox
   let maxX = 0,
     maxY = 0;
   nodesData.forEach((node) => {
-    maxX = Math.max(maxX, node.x + nodeRadius + strokeWidth); // Find rightmost edge
-    maxY = Math.max(maxY, node.y + nodeRadius + strokeWidth); // Find bottom edge
+    maxX = Math.max(maxX, node.x + nodeRadius); // Rightmost point
+    maxY = Math.max(maxY, node.y + nodeRadius); // Bottom-most point
   });
 
-  // The viewBox should be large enough to contain all elements
+  // Set the viewbox of the SVG to ensure all elements fit within it
   const viewBoxWidth = maxX + spacingX;
   const viewBoxHeight = maxY + spacingY;
-
-  // Align SVG content to top and center horizontally
   svg
-    .attr(
-      "viewBox",
-      `-${strokeWidth / 2} -${strokeWidth / 2} ${viewBoxWidth} ${viewBoxHeight}`
-    )
+    .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`)
     .attr("preserveAspectRatio", "xMidYMin meet");
+
+  console.log(`viewBox dimensions: ${viewBoxWidth} ${viewBoxHeight}`); // Confirm viewBox dimensions
+
   //#endregion
 
-  //#region - Links
-  const nodeById = new Map(nodesData.map((d) => [d.id, d]));
-
+  //#region - Append links
+  // Append the links before nodes so they appear underneath the nodes
   svg
-    .selectAll(".link")
-    .data(linksData)
-    .join("line")
-    .attr("class", "link")
-    .attr("stroke-width", isSmallViewport ? 1 : 2)
-    .attr("stroke", "#999")
-    .attr("stroke-opacity", 0.6)
-    .attr("x1", (d) => nodeById.get(d.source).x)
-    .attr("y1", (d) => nodeById.get(d.source).y)
-    .attr("x2", (d) => nodeById.get(d.target).x)
-    .attr("y2", (d) => nodeById.get(d.target).y);
+    .selectAll(".link") // Select all elements with the class link
+    .data(linksData) // Bind links data to these elements
+    .enter() // Enter the data join
+    .append("line") // Append a line element for each new data item
+    .attr("class", "link") // Set a CSS class
+    .attr("stroke", "#999") // Set a stroke color
+    .attr("stroke-opacity", 0.6) // Set the opacity of the line
+    .attr("x1", (d) => nodeById.get(d.source).x) // Set starting x coordinate
+    .attr("y1", (d) => nodeById.get(d.source).y) // Set starting y coordinate
+    .attr("x2", (d) => nodeById.get(d.target).x) // Set ending x coordinate
+    .attr("y2", (d) => nodeById.get(d.target).y) // Set ending y coordinate
+    .attr("data-source-id", (d) => d.source)
+    .attr("data-target-id", (d) => d.target);
+
   //#endregion
 
-  //#region - Images
-  svg.selectAll(".node-image").remove();
+  //#region - Append nodes
 
-  svg
-    .selectAll(".node-image")
-    .data(nodesData)
-    .join("image")
-    .attr("class", "node-image")
-    .attr("xlink:href", (d) => d.imageUrl)
-    .attr("x", (d) => d.x - nodeRadius)
-    .attr("y", (d) => d.y - nodeRadius)
-    .attr("width", nodeRadius * 2)
-    .attr("height", nodeRadius * 2)
-    .on("mouseover", function (event, d) {
-      // Make sure to pass both event and d
-      handleMouseOver(d); // Call the event handler with the data `d`
-    })
-    .on("mouseout", function (event, d) {
-      // Make sure to pass both event and d
-      handleMouseOut(d); // Call the event handler with the data `d`
+  // Before appending the groups, check if there are any pre-existing elements that could interfere with the data join.
+  const preExistingNodeGroups = svg.selectAll(".node-group").size();
+  console.log("Pre-existing .node-group elements:", preExistingNodeGroups);
+
+  // Inspect the nodesData just before the data join.
+  console.log("nodesData just before data join:", nodesData);
+
+  // Create groups for each node, which will contain images and labels
+  const nodeGroup = svg
+    .selectAll(".node-group") // Select all elements with class "node-group"
+    .data(nodesData) // Bind node data to these elements
+    .enter() // Enter the data join
+    .append("g") // Append a g ("group") element for each new data item
+    .attr("class", "node-group") // Assign CSS class
+    .attr("transform", (d) => `translate(${d.x},${d.y})`); // Set the transform attribute to translate the group to the position specified by each node's data
+
+  console.log("nodeGroup size:", nodeGroup.size()); // Should log the number of elements appended
+
+  // Append images, text for node names and roles within each group
+  nodeGroup
+    .append("image") // Append an image element to each node group
+    .attr("class", "node-image") // Set the CSS class
+    .attr("xlink:href", (d) => d.imageUrl) // Set the source URL for the image
+    .attr("x", -nodeRadius) // Set the x coordinate of the top left corner
+    .attr("y", -nodeRadius) // Set the y coordinate of the top left corner
+    .attr("width", nodeRadius * 2) // Set the width of the image
+    .attr("height", nodeRadius * 2) // Set the height of the image
+    .on("click", nodeClicked) // Add event listener for the click event
+    .on("mouseover", nodeMouseover) // Add event listener for the mouseover event
+    .on("mouseout", nodeMouseout); // Add event listener for the mouseout event
+
+  nodeGroup
+    .append("text") // Append a text element to each node group
+    .attr("class", "node-name") // Assign the CSS class
+    .attr("y", nodeRadius + 20) // Set the y coordinate for the text
+    .attr("text-anchor", "middle") // Align text to the middle of its x coordinate
+    .text((d) => d.name); // Set the text content to be the "name" property
+
+  nodeGroup
+    .append("text") // Append a text element to each node group
+    .attr("class", "node-role") // Assign the CSS class
+    .attr("y", nodeRadius + 35) // Set the y coordinate for the text
+    .attr("text-anchor", "middle") // Align text to the middle of its x coordinate
+    .text((d) => d.role); // Set the text content to be the "role" property
+  //#endregion
+
+  //#region - Interactivity functions
+
+  // On mouseover
+  function nodeMouseover(event, d) {
+    console.log("Mouseover event triggered:", d); // Log the data associated with the mouseover event
+    tooltip
+      .style("display", "block")
+      .html(`Name: ${d.name}<br/>${d.blurb}`) // Customize as needed
+      .style("left", event.pageX + 10 + "px") // Position slightly right of the cursor
+      .style("top", event.pageY + 10 + "px"); // Position slightly below the cursor
+  }
+
+  // On mouseout
+  function nodeMouseout() {
+    console.log("Mouseout event triggered"); // Log the mouseout event
+    tooltip.style("display", "none");
+  }
+
+  // On click
+  function nodeClicked(event, d) {
+    console.log("Click event triggered:", d); // Log the data associated with the click event
+    if (selectedNode && selectedNode.id === d.id) {
+      selectedNode = null; // Deselect node
+      resetHighlights(); // Reset any visual highlights
+    } else {
+      selectedNode = d;
+      highlightConnected(d);
+    }
+    event.stopPropagation(); // Stop the event from bubbling up to avoid unwanted interactions
+  }
+
+  // Function to reset highlights
+  function resetHighlights() {
+    console.log("Resetting highlights"); // Log that highlights are being reset
+    // Reset all nodes to full opacity
+    svg.selectAll(".node-group").style("opacity", 1);
+
+    // Reset all links to their default opacity
+    svg.selectAll(".link").style("stroke-opacity", 0.6);
+  }
+
+  // Function to highlight connected nodes and links
+  function highlightConnected(node) {
+    console.log("Highlighting connected nodes and links:", node); // Log the node being highlighted
+    if (!node) {
+      resetHighlights();
+      return;
+    }
+
+    // Reduce the opacity of all nodes and links
+    svg.selectAll(".node-group").style("opacity", 0.1);
+    svg.selectAll(".link").style("stroke-opacity", 0.1);
+
+    // Highlight the selected node by setting it to full opacity
+    svg.selectAll(`.node-group#${CSS.escape(node.id)}`).style("opacity", 1);
+
+    // Also highlight all connected links and their associated nodes
+    linksData.forEach((link) => {
+      if (link.source === node.id || link.target === node.id) {
+        svg
+          .selectAll(
+            `.link[data-source-id="${CSS.escape(
+              link.source
+            )}"][data-target-id="${CSS.escape(link.target)}"]`
+          )
+          .style("stroke-opacity", 1);
+        svg
+          .selectAll(`.node-group#${CSS.escape(link.source)}`)
+          .style("opacity", 1);
+        svg
+          .selectAll(`.node-group#${CSS.escape(link.target)}`)
+          .style("opacity", 1);
+      }
     });
-
-  // Assume this is your stroke width
-  const effectiveNodeRadius = nodeRadius + strokeWidth / 2;
-
-  // Create invisible circles that will serve as strokes around the images
-  svg
-    .selectAll(".node-stroke")
-    .data(nodesData)
-    .join("circle")
-    .attr("class", "node-stroke")
-    .attr("cx", (d) => d.x)
-    .attr("cy", (d) => d.y)
-    .attr("r", effectiveNodeRadius) // Use the effective radius
-    .attr("fill", "none")
-    .attr("stroke", "#333333")
-    .attr("stroke-width", strokeWidth);
-
-  //#endregion
-
-  //#region - Labels
-
-  const labelsGroup = svg.selectAll(".label").data(nodesData, (d) => d.id);
-  labelsGroup.exit().remove();
-
-  // Enter new labels
-  const enteredLabels = labelsGroup
-    .enter()
-    .append("text")
-    .attr("class", "label")
-    .attr("text-anchor", "middle");
-
-  // Update existing + newly entered labels
-  enteredLabels
-    .merge(labelsGroup)
-    .attr("x", (d) => d.x)
-    .attr("y", (d) => d.y + nodeRadius + labelPadding)
-    .selectAll("tspan")
-    .data((d) => [d.name].concat(d.role.split(","))) // Split roles and prepend the name
-    .join("tspan")
-    .attr("class", (d, i) => (i === 0 ? "name" : "role")) // Apply class based on whether it's the name or role
-    .attr("x", (d, i, nodes) => d3.select(nodes[i].parentNode).attr("x"))
-    .attr("dy", (d, i) => (i === 0 ? 0 : "1.2em")) // Adjust line height
-    .text((d) => d);
+  }
 
   //#endregion
 }
 
-// Update layout on resize
-window.addEventListener("resize", updateGraphLayout);
+//#endregion
+
+// Resize event handler to update the layout on window resize
+// window.addEventListener("resize", updateGraphicLayout);
