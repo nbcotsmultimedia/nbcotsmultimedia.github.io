@@ -23,7 +23,87 @@ svg {
 
 .link {
   stroke: #999; /* grey color for the links */
-  stroke-opacity: 0.6; /* slightly transparent */
+  stroke-opacity: 0.3; /* slightly transparent */
   stroke-width: 2px; /* thickness of the link paths */
   fill: none; /* paths should not be filled */
+}
+
+/* styles.css */
+
+.label .name {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 17px;
+  text-anchor: middle; /* SVG equivalent of text-align: center */
+  fill: #000000; /* SVG equivalent of color */
+}
+
+.label .role {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 15px;
+  text-anchor: middle; /* SVG equivalent of text-align: center */
+  fill: #000000; /* SVG equivalent of color */
+}
+
+body {
+  background-color: #fff !important;
+}
+
+.headline {
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 24px;
+  color: #191919;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subhead {
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
+  color: #999;
+  margin-bottom: 10px;
+  line-height: 1.4em;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  color: #191919;
+}
+
+.credits {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.5em;
+}
+
+button {
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
+}
+
+@media (max-width: 900px) {
+}
+
+@media (max-width: 500px) {
+  .headline {
+    font-size: 20px;
+  }
+  .subhead {
+    font-size: 16px;
+  }
+  p {
+    font-size: 16px;
+  }
+  .credits {
+    font-size: 12px;
+  }
 }

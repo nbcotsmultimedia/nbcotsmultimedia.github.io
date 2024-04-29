@@ -16,13 +16,17 @@ Promise.all([d3.csv(nodesURL), d3.csv(linksURL)]).then(([nodes, links]) => {
 //#endregion
 
 function updateGraphLayout() {
-  //#region - Get viewport dimensions
+  // First, declare and initialize isSmallViewport
   const svgWidth = document.documentElement.clientWidth;
+  const isSmallViewport = svgWidth < 600;
+
+  const strokeWidth = isSmallViewport ? 1 : 2;
+
+  //#region - Get viewport dimensions
   const svgHeight = window.innerHeight;
   //#endregion
 
   //#region - Determine layout based on viewport size
-  const isSmallViewport = svgWidth < 600;
   const numCols = isSmallViewport ? 3 : 4; // Determine the number of columns
   const numRows = Math.ceil(nodesData.length / numCols); // Calculate the number of rows
   const nodeRadius = isSmallViewport ? 24 : 40; // Set the radius for the nodes
@@ -57,18 +61,21 @@ function updateGraphLayout() {
   let maxX = 0,
     maxY = 0;
   nodesData.forEach((node) => {
-    maxX = Math.max(maxX, node.x + nodeRadius); // Find rightmost edge
-    maxY = Math.max(maxY, node.y + nodeRadius); // Find bottom edge
+    maxX = Math.max(maxX, node.x + nodeRadius + strokeWidth); // Find rightmost edge
+    maxY = Math.max(maxY, node.y + nodeRadius + strokeWidth); // Find bottom edge
   });
 
-  // The viewBox should be large enough to contain all elements, including labels and padding
-  const viewBoxWidth = maxX + spacingX - nodeRadius; // Adjust viewbox width if necessary ***
-  const viewBoxHeight = maxY + spacingY - nodeRadius; // Adjust viewbox height if necessary ***
+  // The viewBox should be large enough to contain all elements
+  const viewBoxWidth = maxX + spacingX;
+  const viewBoxHeight = maxY + spacingY;
 
   // Align SVG content to top and center horizontally
   svg
-    .attr("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`)
-    .attr("preserveAspectRatio", "xMidYMin meet"); // Ensure correct alignment ***
+    .attr(
+      "viewBox",
+      `-${strokeWidth / 2} -${strokeWidth / 2} ${viewBoxWidth} ${viewBoxHeight}`
+    )
+    .attr("preserveAspectRatio", "xMidYMin meet");
 
   //#region - Links
   const nodeById = new Map(nodesData.map((d) => [d.id, d]));
@@ -102,8 +109,7 @@ function updateGraphLayout() {
     .attr("height", nodeRadius * 2);
 
   // Assume this is your stroke width
-  const strokeWidth = isSmallViewport ? 1 : 2;
-  const effectiveNodeRadius = nodeRadius - strokeWidth / 2;
+  const effectiveNodeRadius = nodeRadius + strokeWidth / 2;
 
   // Create invisible circles that will serve as strokes around the images
   svg
@@ -120,23 +126,30 @@ function updateGraphLayout() {
   //#endregion
 
   //#region - Labels
-  const labels = svg.selectAll(".label").data(nodesData, (d) => d.id);
-  labels.exit().remove();
-  labels
+
+  const labelsGroup = svg.selectAll(".label").data(nodesData, (d) => d.id);
+  labelsGroup.exit().remove();
+
+  // Enter new labels
+  const enteredLabels = labelsGroup
     .enter()
     .append("text")
     .attr("class", "label")
-    .attr("text-anchor", "middle")
-    .merge(labels)
+    .attr("text-anchor", "middle");
+
+  // Update existing + newly entered labels
+  enteredLabels
+    .merge(labelsGroup)
     .attr("x", (d) => d.x)
     .attr("y", (d) => d.y + nodeRadius + labelPadding)
     .selectAll("tspan")
-    .data((d) => [d.name, ...d.role.split(",")])
+    .data((d) => [d.name].concat(d.role.split(","))) // Split roles and prepend the name
     .join("tspan")
+    .attr("class", (d, i) => (i === 0 ? "name" : "role")) // Apply class based on whether it's the name or role
     .attr("x", (d, i, nodes) => d3.select(nodes[i].parentNode).attr("x"))
-    .attr("dy", (d, i) => (i === 0 ? 0 : labelLineHeight))
-    .text((d) => d)
-    .style("font-size", labelFontSize);
+    .attr("dy", (d, i) => (i === 0 ? 0 : "1.2em")) // Adjust line height
+    .text((d) => d);
+
   //#endregion
 }
 
