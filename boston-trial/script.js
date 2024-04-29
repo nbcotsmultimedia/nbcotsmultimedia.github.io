@@ -5,9 +5,12 @@ const linksURL =
   "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=1899076594&single=true&output=csv";
 
 let nodesData, linksData;
+let svg = d3.select("svg");
 //#endregion
 
 //#region - Get and parse data
+
+// Call 'updateGraphLayout' after data is loaded
 Promise.all([d3.csv(nodesURL), d3.csv(linksURL)]).then(([nodes, links]) => {
   nodesData = nodes;
   linksData = links;
@@ -40,15 +43,65 @@ function updateGraphLayout() {
   const spacingY = nodeRadius * 2 + labelPadding + 45; // Vertical spacing
   //#endregion
 
-  //#region - Position nodes
+  //#region - Position nodes and add interactivity
+
   nodesData.forEach((node, i) => {
     node.x = (i % numCols) * spacingX + spacingX / 2; // Center nodes in each column
     node.y = Math.floor(i / numCols) * spacingY + spacingY / 2; // Center nodes in each row
   });
+
+  function handleMouseOver(d, i) {
+    // Log the node data for the hovered node
+    console.log("Mouseover on node data:", d);
+
+    // Log all links data for reference
+    console.log("All links data:", linksData);
+
+    // Highlight the connected links
+    svg.selectAll(".link").attr("stroke-opacity", (link) => {
+      const isLinked = link.source === d.id || link.target === d.id;
+      // Log the link data and the result of the conditional check
+      console.log(
+        `Link from ${link.source} to ${link.target} is ${
+          isLinked ? "highlighted" : "faded"
+        }`
+      );
+      return isLinked ? 1.0 : 0.1;
+    });
+
+    // Highlight the connected nodes and their labels
+    svg.selectAll(".node-image, .label").style("opacity", (node) => {
+      const isConnected =
+        node.id === d.id ||
+        linksData.some((link) => {
+          return (
+            (link.source === d.id && link.target === node.id) ||
+            (link.target === d.id && link.source === node.id)
+          );
+        });
+      // Log the node data and the result of the conditional check
+      console.log(
+        `Node ${node.id} is ${isConnected ? "highlighted" : "faded"}`
+      );
+      return isConnected ? 1.0 : 0.1;
+    });
+  }
+
+  function handleMouseOut(d, i) {
+    // Log the mouseout event
+    console.log("Mouseout on node data:", d);
+
+    // Reset the connected links
+    svg.selectAll(".link").attr("stroke-opacity", 0.6);
+
+    // Reset the connected nodes and their labels
+    svg.selectAll(".node-image, .label").style("opacity", 1.0);
+  }
+
   //#endregion
 
-  //#region - Select or create the SVG element
-  let svg = d3.select("svg");
+  //#region - Select the SVG element
+
   if (svg.empty()) {
     svg = d3
       .select("body")
@@ -57,6 +110,7 @@ function updateGraphLayout() {
   }
   //#endregion
 
+  //#region - Set viewbox dimensions
   // Compute the width and height required by the nodes
   let maxX = 0,
     maxY = 0;
@@ -76,6 +130,7 @@ function updateGraphLayout() {
       `-${strokeWidth / 2} -${strokeWidth / 2} ${viewBoxWidth} ${viewBoxHeight}`
     )
     .attr("preserveAspectRatio", "xMidYMin meet");
+  //#endregion
 
   //#region - Links
   const nodeById = new Map(nodesData.map((d) => [d.id, d]));
@@ -106,7 +161,15 @@ function updateGraphLayout() {
     .attr("x", (d) => d.x - nodeRadius)
     .attr("y", (d) => d.y - nodeRadius)
     .attr("width", nodeRadius * 2)
-    .attr("height", nodeRadius * 2);
+    .attr("height", nodeRadius * 2)
+    .on("mouseover", function (event, d) {
+      // Make sure to pass both event and d
+      handleMouseOver(d); // Call the event handler with the data `d`
+    })
+    .on("mouseout", function (event, d) {
+      // Make sure to pass both event and d
+      handleMouseOut(d); // Call the event handler with the data `d`
+    });
 
   // Assume this is your stroke width
   const effectiveNodeRadius = nodeRadius + strokeWidth / 2;
@@ -123,6 +186,7 @@ function updateGraphLayout() {
     .attr("fill", "none")
     .attr("stroke", "#333333")
     .attr("stroke-width", strokeWidth);
+
   //#endregion
 
   //#region - Labels
