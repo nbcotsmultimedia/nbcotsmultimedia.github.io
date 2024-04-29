@@ -181,7 +181,8 @@ function updateGraphicLayout(nodeById) {
 
   // On mouseover
   function nodeMouseover(event, d) {
-    console.log("Mouseover event triggered:", d); // Log the data associated with the mouseover event
+    // Log the data associated with the mouseover event
+    // console.log("Mouseover event triggered:", d);
     tooltip
       .style("display", "block")
       .html(`Name: ${d.name}<br/>${d.blurb}`) // Customize as needed
@@ -191,20 +192,26 @@ function updateGraphicLayout(nodeById) {
 
   // On mouseout
   function nodeMouseout() {
-    console.log("Mouseout event triggered"); // Log the mouseout event
+    // Log the mouseout event
+    // console.log("Mouseout event triggered");
     tooltip.style("display", "none");
   }
 
   // On click
   function nodeClicked(event, d) {
     console.log("Click event triggered:", d); // Log the data associated with the click event
+    console.log("Current selectedNode:", selectedNode); // Log the value of selectedNode
     if (selectedNode && selectedNode.id === d.id) {
       selectedNode = null; // Deselect node
+      console.log("Deselected node:", d);
       resetHighlights(); // Reset any visual highlights
     } else {
       selectedNode = d;
+      console.log("Selected node:", d);
+      console.log("Links data before highlighting:", linksData);
       highlightConnected(d);
     }
+    console.log("highlightConnected function called");
     event.stopPropagation(); // Stop the event from bubbling up to avoid unwanted interactions
   }
 
@@ -220,36 +227,29 @@ function updateGraphicLayout(nodeById) {
 
   // Function to highlight connected nodes and links
   function highlightConnected(node) {
-    console.log("Highlighting connected nodes and links:", node); // Log the node being highlighted
+    // If no node is provided, reset all highlights and return
     if (!node) {
       resetHighlights();
       return;
     }
 
-    // Reduce the opacity of all nodes and links
-    svg.selectAll(".node-group").style("opacity", 0.1);
-    svg.selectAll(".link").style("stroke-opacity", 0.1);
+    const connectedNodeIds = linksData
+      // Filter the linksData array to only include links connected to the selected node
+      .filter((link) => link.source === node.id || link.target === node.id)
+      // Extract the IDs of the connected nodes
+      .flatMap((link) => [link.source, link.target]);
 
-    // Highlight the selected node by setting it to full opacity
-    svg.selectAll(`.node-group#${CSS.escape(node.id)}`).style("opacity", 1);
+    // Adjust the opacity of all nodes based on whether they are connected to the selected node
+    svg
+      .selectAll(".node-group")
+      .style("opacity", (d) => (connectedNodeIds.includes(d.id) ? 1 : 0.1));
 
-    // Also highlight all connected links and their associated nodes
-    linksData.forEach((link) => {
-      if (link.source === node.id || link.target === node.id) {
-        svg
-          .selectAll(
-            `.link[data-source-id="${CSS.escape(
-              link.source
-            )}"][data-target-id="${CSS.escape(link.target)}"]`
-          )
-          .style("stroke-opacity", 1);
-        svg
-          .selectAll(`.node-group#${CSS.escape(link.source)}`)
-          .style("opacity", 1);
-        svg
-          .selectAll(`.node-group#${CSS.escape(link.target)}`)
-          .style("opacity", 1);
-      }
+    // Adjust the opacity of all links based on whether their source or target nodes are connected
+    svg.selectAll(".link").style("stroke-opacity", (link) => {
+      return connectedNodeIds.includes(link.source) &&
+        connectedNodeIds.includes(link.target)
+        ? 1
+        : 0.1;
     });
   }
 
