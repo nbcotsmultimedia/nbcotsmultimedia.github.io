@@ -23,6 +23,23 @@
 
     <!-- <p class="headline">A tangled web</p> -->
     <svg></svg>
+
+    <div
+      id="details-panel"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: white;
+        padding: 20px;
+        z-index: 10;
+      "
+    >
+      <button onclick="closeDetailsPanel()">Close</button>
+      <div id="details-content">Details will appear here.</div>
+    </div>
+
     <script src="script.js" async defer></script>
   </body>
 </html>

@@ -48,60 +48,38 @@ svg {
   fill: #000000; /* SVG equivalent of color */
 }
 
-body {
-  background-color: #fff !important;
-}
-
-.headline {
-  font-family: "ArtHouseBold", sans-serif;
-  font-size: 24px;
-  color: #191919;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.subhead {
-  font-family: "ArtHouseMed", sans-serif;
-  font-size: 17px;
-  color: #999;
-  margin-bottom: 10px;
-  line-height: 1.4em;
-}
-
-p {
-  font-family: "Roboto", sans-serif;
-  font-weight: 300;
-  font-size: 17px;
-  color: #191919;
-}
-
-.credits {
-  font-family: "Roboto", sans-serif;
-  font-size: 14px;
-  color: #666;
-  margin-top: 10px;
-  line-height: 1.5em;
-}
-
-button {
-  font-family: "ArtHouseMed", sans-serif;
-  font-size: 17px;
-}
-
-@media (max-width: 900px) {
-}
-
-@media (max-width: 500px) {
-  .headline {
-    font-size: 20px;
+/* Mobile styles */
+@media (max-width: 600px) {
+  .detail-panel {
+    /* Example: Full-screen overlay */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+    z-index: 100; /* Make sure it's above other content */
+    overflow-y: auto; /* If content is long, make it scrollable */
+    transition: transform 0.3s ease-in-out; /* Smooth transition for sliding in/out */
+    transform: translateY(100%); /* Start off-screen below the view */
   }
-  .subhead {
-    font-size: 16px;
+
+  /* Close button styles */
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px;
+    cursor: pointer;
   }
-  p {
-    font-size: 16px;
-  }
-  .credits {
-    font-size: 12px;
-  }
+}
+
+.highlighted {
+  opacity: 1;
+}
+
+.faded {
+  opacity: 0.3;
 }
