@@ -51,25 +51,27 @@
     />
   </head>
   <body>
-    <!-- <p class="headline">A tangled web</p> -->
+    <div class="header">
+      <h1 class="headline">A tangled web</h1>
+      <h2 class="subhead">Lorem ipsum dolar si amet.</h2>
+    </div>
+
     <svg></svg>
 
     <div
       id="details-panel"
-      style="
-        display: none;
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background-color: white;
-        padding: 20px;
-        z-index: 10;
-      "
+      style="display: none; top: 0; position: fixed; z-index: 10"
     >
       <button class="close-button">×</button>
       <div id="details-content">Details will appear here.</div>
     </div>
 
+    <!-- Scripts -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+      integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+      crossorigin="anonymous"
+    ></script>
     <script src="script.js" async defer></script>
   </body>
 </html>

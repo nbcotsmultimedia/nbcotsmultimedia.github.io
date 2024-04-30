@@ -4,12 +4,11 @@ body {
 
 /* Base SVG styles */
 svg {
-  margin-top: 0;
-  transition: margin-top 300ms ease-in-out;
   height: auto;
-  max-width: 100%;
+  max-width: 90%;
   overflow: visible;
   padding: 0;
+  transition: margin-top 0.3s ease; /* Smooth transition for margin adjustments */
 }
 
 /* Node styles */
@@ -79,13 +78,34 @@ svg {
 
 /* Details panel styles */
 #details-panel {
-  max-width: 80vw;
-  overflow-y: auto;
+  max-width: 90%;
+  background-color: white;
+  padding: 20px;
+  overflow-x: visible;
   display: block;
   margin-bottom: 10px;
   position: relative;
   border-bottom: 1px solid #ccc;
+  height: 140px; /* Default height for mobile */
+  overflow-y: auto; /* Make it scrollable vertically */
 }
+
+/* Media query for tablets */
+@media (min-width: 481px) and (max-width: 736px) {
+  #details-panel {
+    height: 180px; /* Adjusted height for tablets */
+  }
+}
+
+/* Media query for desktops */
+@media (min-width: 737px) {
+  #details-panel {
+    height: 220px;
+  }
+}
+
+/* Styles for text and nodes, etc. */
+/* Add here as needed, avoid duplication */
 
 .details-content {
   font-family: "Inter", sans-serif;
@@ -141,12 +161,13 @@ svg {
   right: 10px;
   background: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 22px;
   cursor: pointer;
+  color: #a0a0a0;
 }
 
 .close-button:hover {
-  color: #555;
+  color: #333;
 }
 
 /* Mobile specific styles */
@@ -173,6 +194,12 @@ svg {
     padding: 5px;
     cursor: pointer;
   }
+}
+
+.header {
+  height: 100px;
+  padding-top: 20px;
+  text-align: center;
 }
 
 .highlighted,
