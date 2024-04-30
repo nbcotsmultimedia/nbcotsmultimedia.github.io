@@ -1,57 +1,149 @@
+/* Base SVG styles */
 svg {
   margin-top: 0;
   overflow: visible;
 }
 
-/* Style for link elements */
-.links line {
-  stroke: #999; /* color of your links */
-  stroke-width: 2px; /* thickness of your links */
-}
-
+/* Node styles */
 .nodes circle {
   stroke: #999;
   stroke-width: 2px;
 }
 
-.labels text {
+/* Link styles */
+.link,
+.highlighted line {
+  stroke: #999;
+  stroke-width: 2px;
+  fill: none;
+}
+
+.link.highlighted {
+  stroke: #18206f;
+  stroke-width: 1px;
+  stroke-opacity: 1;
+}
+
+/* Text labels and details */
+.labels text,
+.label .name,
+#details-panel .person-name,
+#details-panel .person-role,
+#details-panel .person-description,
+#details-panel .connections-title,
+#details-panel .connection-item {
+  font-family: "Inter", sans-serif;
   fill: #333;
-  font-family: "Arial", sans-serif;
-  font-size: 12px;
 }
 
-.link {
-  stroke: #999; /* grey color for the links */
-  stroke-width: 2px; /* thickness of the link paths */
-  fill: none; /* paths should not be filled */
-}
-
-/* styles.css */
-
+.labels text,
 .label .name {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 600;
   font-size: 12px;
   line-height: 17px;
-  text-anchor: middle; /* SVG equivalent of text-align: center */
-  fill: #000000; /* SVG equivalent of color */
+  text-anchor: middle;
 }
 
-.label .role {
-  font-family: "Inter";
+.node-name,
+.node-name-bg,
+.node-selected,
+.connected-node-name {
   font-style: normal;
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 15px;
-  text-anchor: middle; /* SVG equivalent of text-align: center */
-  fill: #000000; /* SVG equivalent of color */
+  text-align: center;
+  font-family: "Inter", sans-serif;
 }
 
-/* Mobile styles */
+.node-name {
+  font-weight: 500;
+  font-size: 11.5px;
+  fill: black;
+}
+
+.node-name-bg {
+  fill: #ffffff; /* Background color for the text */
+  stroke: none;
+}
+
+.node-selected {
+  stroke: red;
+  stroke-width: 8px;
+  fill: none;
+}
+
+/* Details panel styles */
+#details-panel {
+  max-width: 80vw;
+  overflow-y: auto;
+  display: block;
+  margin-bottom: 10px;
+  position: relative;
+  border-bottom: 1px solid #ccc;
+}
+
+.details-content {
+  font-family: "Inter", sans-serif;
+}
+
+.person-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.person-role,
+.person-description,
+.connections-title,
+.connection-item {
+  font-size: 10px;
+  padding-bottom: 15px;
+}
+
+.person-description {
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 10px;
+}
+
+.connections-title,
+.connection-item {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-bottom: 2px;
+}
+
+.connection-category {
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-family: "Inter", sans-serif;
+}
+
+.category-name {
+  font-weight: bold;
+}
+
+.node-names {
+  margin-left: 5px;
+}
+
+/* Close button styles */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: #555;
+}
+
+/* Mobile specific styles */
 @media (max-width: 600px) {
   .detail-panel {
-    /* Example: Full-screen overlay */
     position: fixed;
     top: 0;
     bottom: 0;
@@ -59,14 +151,13 @@ svg {
     right: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
-    z-index: 100; /* Make sure it's above other content */
-    overflow-y: auto; /* If content is long, make it scrollable */
-    transition: transform 0.3s ease-in-out; /* Smooth transition for sliding in/out */
-    transform: translateY(100%); /* Start off-screen below the view */
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(100%);
   }
 
-  /* Close button styles */
   .close-btn {
     position: absolute;
     top: 10px;
@@ -76,8 +167,9 @@ svg {
   }
 }
 
-.highlighted {
-  opacity: 1;
+.highlighted,
+.faded {
+  opacity: 1; /* Adjust as needed */
 }
 
 .faded {

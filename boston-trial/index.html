@@ -11,16 +11,46 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- My CSS -->
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+    <!-- Bootstrap core CSS -->
+    <!-- <link
+      href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css"
+      rel="stylesheet"
+    /> -->
+
+    <!-- NBC CSS -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,500,300,100"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <link href="css/nbcotsbase.css" rel="stylesheet" />
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css"
+    />
   </head>
   <body>
-    <!--[if lt IE 7]>
-      <p class="browsehappy">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="#">upgrade your browser</a> to improve your experience.
-      </p>
-    <![endif]-->
-
     <!-- <p class="headline">A tangled web</p> -->
     <svg></svg>
 
@@ -36,7 +66,7 @@
         z-index: 10;
       "
     >
-      <button onclick="closeDetailsPanel()">Close</button>
+      <button class="close-button">×</button>
       <div id="details-content">Details will appear here.</div>
     </div>
 
