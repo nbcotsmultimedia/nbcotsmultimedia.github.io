@@ -1,7 +1,15 @@
+body {
+  margin: 0;
+}
+
 /* Base SVG styles */
 svg {
   margin-top: 0;
+  transition: margin-top 300ms ease-in-out;
+  height: auto;
+  max-width: 100%;
   overflow: visible;
+  padding: 0;
 }
 
 /* Node styles */
@@ -14,7 +22,7 @@ svg {
 .link,
 .highlighted line {
   stroke: #999;
-  stroke-width: 2px;
+  stroke-width: 1px;
   fill: none;
 }
 
@@ -93,7 +101,7 @@ svg {
 .connections-title,
 .connection-item {
   font-size: 10px;
-  padding-bottom: 15px;
+  padding-bottom: 6px;
 }
 
 .person-description {

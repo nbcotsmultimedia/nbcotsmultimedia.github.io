@@ -35,17 +35,27 @@ function createGraphic() {
   //#region - Setup
 
   const svgWidth = document.documentElement.clientWidth;
-  const svgHeight = window.innerHeight;
   const isSmallViewport = svgWidth < 600;
+
+  // Adjust number of columns dynamically depending on screen size
   const numCols = isSmallViewport ? 3 : 4;
-  const nodeRadius = isSmallViewport ? 28 : 40;
-  const spacingX = svgWidth / (numCols + 1);
-  const spacingY = nodeRadius * 2 + (isSmallViewport ? 10 : 20) + 45;
+
+  // Adjust node radius dynamically
+  const nodeRadius = isSmallViewport ? 36 : 40;
+
+  // Calculate spacing between nodes
+  const spacingX = svgWidth / numCols;
+
+  // Apply an initial offset to the first column to center the grid
+  const initialOffset = (svgWidth - spacingX * (numCols - 1)) / 2;
 
   // Calculate node positions
   nodesData.forEach((node, i) => {
-    node.x = (i % numCols) * spacingX + spacingX / 2;
-    node.y = Math.floor(i / numCols) * spacingY + spacingY / 2;
+    node.x = initialOffset + (i % numCols) * spacingX;
+    node.y =
+      Math.floor(i / numCols) *
+        (nodeRadius * 2 + (isSmallViewport ? 10 : 20) + 45) +
+      45;
   });
 
   // Clear SVG for redrawing
@@ -71,7 +81,7 @@ function createGraphic() {
 
   //#endregion
 
-  //#region - Append nodes and labels
+  //#region - Append nodes
 
   nodeGroup = svg
     .selectAll(".node-group")
@@ -81,6 +91,12 @@ function createGraphic() {
     .attr("class", "node-group")
     .attr("transform", (d) => `translate(${d.x},${d.y})`)
     .on("click", nodeClicked);
+
+  nodeGroup
+    .selectAll("circle")
+    .attr("cx", (d) => d.x)
+    .attr("cy", (d) => d.y)
+    .attr("r", nodeRadius);
 
   // Add border
   nodeGroup
@@ -168,34 +184,40 @@ function nodeClicked(event, d) {
 function highlightConnected(node) {
   const connectedNodes = new Set(); // Initialize a new set object to store IDs of connected nodes
   const connectedLinks = new Set(); // Initialize a new set object to store IDs of connected links
+
+  // Identify connected nodes and links
   linksData.forEach((link) => {
-    // Iterate over each link to see if connected
     if (link.source === node.id || link.target === node.id) {
       connectedNodes.add(link.source);
       connectedNodes.add(link.target);
       connectedLinks.add(link.id || `${link.source}-${link.target}`);
     }
   });
+
   // Adjust label visibility
   nodeGroup.select("text.node-name").style("display", function (d) {
     return connectedNodes.has(d.id) ? "block" : "none"; // Only display labels for connected nodes
   });
+
+  // Highlight or hide nodes based on connection
   nodeGroup
-    .classed("highlighted", (d) => connectedNodes.has(d.id)) // Apply highlighting
-    .classed("faded", (d) => !connectedNodes.has(d.id)); // Apply fading
-  linkGroup
-    .classed("highlighted", (d) =>
-      connectedLinks.has(d.id || `${d.source}-${d.target}`)
-    )
-    .classed(
-      "hidden",
-      (d) => !connectedLinks.has(d.id || `${d.source}-${d.target}`)
-    );
+    .classed("highlighted", (d) => connectedNodes.has(d.id))
+    .classed("faded", (d) => !connectedNodes.has(d.id));
+
+  // Adjust visibility for connected and non-connected links
+  linkGroup.each(function (d) {
+    const linkId = d.id || `${d.source}-${d.target}`;
+    if (connectedLinks.has(linkId)) {
+      d3.select(this).classed("highlighted", true).style("display", "");
+    } else {
+      d3.select(this).classed("highlighted", false).style("display", "none");
+    }
+  });
 }
 
 // Function to reset visual state
 function resetVisualState() {
-  // Reset the classes and styles for nodes and links
+  // Reset the classes and styles for nodes
   nodeGroup
     .classed("highlighted faded", false) // Remove both 'highlighted' and 'faded' classes from all nodes
     .select("image")
@@ -203,23 +225,27 @@ function resetVisualState() {
     .select(".node-border")
     .style("display", "none"); // Hide node borders
 
+  // Reset the classes and styles for links
   linkGroup
-    .classed("highlighted faded hidden", false) // Reset classes for links, including 'hidden'
-    .style("display", null); // Ensure all links are visible
+    .classed("highlighted", false)
+    .style("display", null)
+    .classed("faded", false)
+    .style("display", null);
 
   // Additional check to make sure links reset properly
-  svg
-    .selectAll(".link")
-    .classed("hidden", false) // Specifically remove 'hidden' class from all links
-    .style("display", null); // Ensure all links are visible
+  svg.selectAll(".link").style("display", null);
 
   // Clear selection state
   selectedNode = null;
 
-  // Hide details panel and reset visual elements
-  d3.select("#details-panel").style("display", "none");
+  // Reset visual elements
   svg.selectAll(".node-name").style("display", null); // Show all node names
-  svg.style("margin-top", "0px"); // Reset SVG position
+
+  // Hide the details panel
+  d3.select("#details-panel").style("display", "none");
+
+  // Reset the top margin of the SVG
+  d3.select("svg").style("margin-top", "0px");
 
   // Reset label visibility for all nodes
   nodeGroup.select("text.node-name").style("display", "block");
@@ -271,6 +297,15 @@ function updateDetailsPanel(node) {
 
   // Display the details panel
   d3.select("#details-panel").style("display", "block");
+
+  // Ensure the panel is visible to measure it correctly
+  const detailsPanel = d3.select("#details-panel").style("display", "block");
+
+  // Calculate the height of the details panel
+  const panelHeight = detailsPanel.node().getBoundingClientRect().height;
+
+  // Apply this height as top margin to the SVG
+  d3.select("svg").style("margin-top", `${panelHeight}px`);
 }
 
 // Close details panel function
