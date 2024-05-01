@@ -82,29 +82,32 @@ svg {
   width: 100%;
   padding: 20px;
   position: absolute;
-  top: 110px; /* Adjust based on header height */
   box-sizing: border-box;
   display: none; /* Initially hidden */
   z-index: 10;
   overflow-y: auto; /* Enables vertical scrolling */
   background-color: #ffffff; /* Solid white background */
+  top: 120px;
 }
 
 /* Adjusting heights for different devices */
 @media (max-width: 600px) {
   #details-panel {
-    height: 150px; /* Smaller fixed height with scrolling */
+    top: 120px; /* Smaller screens might have a smaller header */
+    height: 140px; /* Smaller fixed height with scrolling */
   }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
   #details-panel {
-    height: 180px; /* Medium fixed height with scrolling */
+    top: 110px; /* Medium screens */
+    height: 160px; /* Medium fixed height with scrolling */
   }
 }
 
 @media (min-width: 1025px) {
   #details-panel {
+    top: 100px; /* Medium screens */
     height: 220px; /* Larger fixed height with scrolling */
   }
 }
@@ -177,6 +180,7 @@ svg {
   padding-top: 20px;
   padding-bottom: 10px;
   text-align: center;
+  z-index: 5; /* Lower than the details panel to keep it on top */
 }
 
 .highlighted {
