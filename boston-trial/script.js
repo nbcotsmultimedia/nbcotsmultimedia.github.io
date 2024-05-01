@@ -151,94 +151,136 @@ function setupLinks() {
 
 //#region - Interactivity
 
-// Node click event handler
-function nodeClicked(event, d) {
-  event.stopPropagation();
-  const circle = d3.select(this).select("circle");
-  mouseY = $(this).position().top;
-  console.log(mouseY);
+// Helper functions to manage the details panel and SVG's top margin
+function setSvgMargin() {
+  // Retrieve and measure DOM elements
+  const detailsPanel = document.getElementById("details-panel");
+  const svgElement = document.querySelector("svg");
+  const panelHeight = detailsPanel.offsetHeight;
 
-  if (selectedNode !== d) {
-    circle
-      .style("display", "")
-      .attr("stroke", "#18206f")
-      .attr("stroke-width", 3);
-    selectedNode = d;
-    highlightConnected(d);
-    updateDetailsPanel(d);
+  // If the details panel is displayed (block)...
+  if (detailsPanel.style.display === "block") {
+    // Set the SVG's top margin to the sum of the header's height and the panel's height
+    svgElement.style.marginTop = `${panelHeight}px`;
   } else {
-    resetVisualState();
+    // Otherwise, just use margin 0
+    svgElement.style.marginTop = `0px`;
   }
 }
 
-// Function to reset visual state
+// Show and hide the details panel
+function toggleDetailsPanel() {
+  // Retrieve details panel from the DOM
+  const detailsPanel = document.getElementById("details-panel");
+
+  // Toggle the display state of the panel between none and block
+  detailsPanel.style.display =
+    detailsPanel.style.display === "none" ? "block" : "none";
+
+  // Call setSvgMargin to adjust the SVG's margin based on the new state of the details panel
+  setSvgMargin();
+}
+
+// Reset the graphic's visual state
 function resetVisualState() {
-  // Reset all node borders
+  // Reset styles and class attributes for the entire node group
   nodeGroup
-    .selectAll(".node-border")
-    .style("display", "none")
-    .attr("stroke", "none");
+    .style("display", "block") // Ensure groups are visible
+    .classed("highlighted faded node-selected", false); // Remove visual modification classes
 
-  // Reset the classes and styles for nodes
-  nodeGroup
-    .classed("highlighted faded", false) // Remove both 'highlighted' and 'faded' classes from all nodes
-    .select("image")
-    .classed("node-selected", false) // Remove 'node-selected' class from images
-    .select(".node-border")
-    .style("display", "none"); // Hide node borders
+  // Reset styles for individual components if necessary
+  nodeGroup.selectAll("image").style("display", "block"); // Make sure images are visible
 
-  // Reset the classes and styles for links
-  linkGroup
-    .classed("highlighted", false)
-    .style("display", null)
-    .classed("faded", false)
-    .style("display", null);
+  nodeGroup.selectAll(".node-border").style("display", "none"); // Keep node borders hidden when not selected
 
-  // Additional check to make sure links reset properly
-  svg.selectAll(".link").style("display", null);
-
-  // Clear selection state
-  selectedNode = null;
-
-  // Reset visual elements
-  svg.selectAll(".node-name").style("display", null); // Show all node names
+  // Reset links to their default visual state
+  linkGroup.classed("highlighted faded", false).style("display", ""); // Ensure links are set to default display
 
   // Hide the details panel
   d3.select("#details-panel").style("display", "none");
 
-  // Reset the top margin of the SVG
-  d3.select("svg").style("margin-top", "30px");
+  // Reset the SVG margin if it's being adjusted based on the details panel
+  setSvgMargin();
 
-  // Reset label visibility for all nodes
-  nodeGroup.select("text.node-name").style("display", "block");
-
-  // Update svg margins
-  updateSvgMargins();
+  // Clear any selected node reference
+  selectedNode = null;
 }
 
-// Function to handle closing of the details panel
-function closeDetailsPanel() {
-  d3.select("#details-panel").style("display", "none");
-  resetVisualState();
+// Update the details panel with new node info
+function updateDetailsPanel(node) {
+  // Clear details panel and populate it with data about the clicked node
+  const details = d3.select("#details-content").html("");
+  details.append("h1").attr("class", "person-name").text(node.name);
+  if (node.role && node.role.trim()) {
+    details.append("h2").attr("class", "person-role").text(node.role);
+  }
+  details
+    .append("p")
+    .attr("class", "person-description")
+    .text(node.blurb || "No additional information available.");
+
+  // Filter connections for the selected node, group them by type, and append this information to the details panel
+  d3.group(
+    linksData.filter(
+      (link) => link.source === node.id || link.target === node.id
+    ),
+    (d) => d.type
+  ).forEach((connections, type) => {
+    const typeContainer = details
+      .append("div")
+      .attr("class", "connection-category");
+    typeContainer
+      .append("span")
+      .attr("class", "category-name")
+      .text(`${type}: `);
+    typeContainer
+      .append("span")
+      .attr("class", "node-names")
+      .text(
+        connections
+          .map(
+            (link) =>
+              nodesData.find(
+                (n) =>
+                  n.id === (link.source === node.id ? link.target : link.source)
+              )?.name || "Unknown"
+          )
+          .join(", ")
+      );
+  });
+
+  // Make the details panel visible
+  d3.select("#details-panel").style("display", "block");
+  // Update the SVG's margin to accommodate it
+  setSvgMargin();
 }
 
-// Toggle details panel
-function toggleDetailsPanel() {
-  const detailsPanel = document.getElementById("details-panel");
-  const svgElement = document.querySelector("svg");
-  const headerHeight = document.querySelector(".header").offsetHeight;
+// On click, change selected node
+function nodeClicked(event, node) {
+  // Stop the event from propagating further
+  event.stopPropagation();
 
-  if (detailsPanel.style.display === "none") {
-    detailsPanel.style.display = "block";
-    const panelHeight = detailsPanel.offsetHeight;
-    svgElement.style.marginTop = `${headerHeight + panelHeight}px`;
+  // Check if the clicked node is not already selected
+  if (selectedNode !== node) {
+    // If it isn't, highlight the node
+    d3.select(this)
+      .select("circle")
+      .style("display", "")
+      .attr("stroke", "#18206f")
+      .attr("stroke-width", 3);
+    // Update the global selectedNode
+    selectedNode = node;
+    // Highlight connections
+    highlightConnected(node);
+    // Open the details panel
+    updateDetailsPanel(node);
   } else {
-    detailsPanel.style.display = "none";
-    svgElement.style.marginTop = `${headerHeight}px`;
+    // If it is already selected, reset the visual state
+    resetVisualState();
   }
 }
 
-// Apply classes to highlight connected nodes
+// Highlight connected nodes and links
 function highlightConnected(node) {
   const connectedNodes = new Set(); // Initialize a new set object to store IDs of connected nodes
   const connectedLinks = new Set(); // Initialize a new set object to store IDs of connected links
@@ -250,11 +292,6 @@ function highlightConnected(node) {
       connectedNodes.add(link.target);
       connectedLinks.add(link.id || `${link.source}-${link.target}`);
     }
-  });
-
-  // Adjust label visibility
-  nodeGroup.select("text.node-name").style("display", function (d) {
-    return connectedNodes.has(d.id) ? "block" : "none"; // Only display labels for connected nodes
   });
 
   // Highlight or hide nodes based on connection
@@ -273,89 +310,27 @@ function highlightConnected(node) {
   });
 }
 
-// Function to update the details panel with selected node information
-function updateDetailsPanel(node) {
-  // Clear existing contents of the details panel
-  const details = d3.select("#details-content").html("");
+// Event listeners //
 
-  // Append the name of the node
-  details.append("h1").attr("class", "person-name").text(node.name);
-
-  // Conditionally append the role of the node if it exists and is not just whitespace
-  if (node.role && node.role.trim() !== "") {
-    details.append("h2").attr("class", "person-role").text(node.role);
-  }
-
-  // Append a description or a placeholder if none exists
-  details
-    .append("p")
-    .attr("class", "person-description")
-    .text(node.blurb || "No additional information available.");
-
-  // Display connections grouped by their type
-  const connectionsByType = d3.group(
-    linksData.filter(
-      (link) => link.source === node.id || link.target === node.id
-    ),
-    (d) => d.type
-  );
-
-  // Iterate over each connection type and append details
-  connectionsByType.forEach((connections, type) => {
-    const typeContainer = details
-      .append("div")
-      .attr("class", "connection-category");
-    typeContainer
-      .append("span")
-      .attr("class", "category-name")
-      .text(`${type}: `);
-
-    const nameList = connections
-      .map((link) => {
-        const connectedNodeId =
-          link.source === node.id ? link.target : link.source;
-        const connectedNode = nodesData.find((n) => n.id === connectedNodeId);
-        return connectedNode ? connectedNode.name : "Unknown";
-      })
-      .join(", ");
-
-    typeContainer.append("span").attr("class", "node-names").text(nameList);
-  });
-
-  // Make the details panel visible
-  d3.select("#details-panel").style("display", "block");
-
-  // Update the margin of the SVG to accommodate the visible details panel
-  updateSvgMargins();
-}
-
-// Add event listener to detect clicks on the document body
-d3.select("body").on("click", (event) => {
-  // Check if the clicked element is not a node or the details panel
+// When the user clicks on the body, reset the visual state
+d3.select("body").on("click", function (event) {
   if (
-    !d3.select(event.target).classed("node-group") &&
+    !d3.select(event.target).closest(".node-group").node() &&
     !d3.select(event.target).classed("details-panel")
   ) {
-    // Close the details panel and reset the visual state
-    closeDetailsPanel();
     resetVisualState();
-    selectedNode = null; // Reset the selected node
   }
 });
 
-// Add event listener to detect resizing
+// When a new node is selected, redraw graphics and reset the visual state
 window.addEventListener("resize", () => {
-  if (selectedNode) {
-    closeDetailsPanel();
-    resetVisualState();
-    updateSvgMargins();
-    selectedNode = null;
-  }
   createGraphic();
+  if (selectedNode) {
+    resetVisualState();
+  }
 });
 
-d3.select(".close-button").on("click", closeDetailsPanel);
+// Add event listener to the panel's close button to toggle its visibility
+d3.select(".close-button").on("click", () => toggleDetailsPanel());
 
 //#endregion
-
-// $(".modal-content").css("top", mouseY);
