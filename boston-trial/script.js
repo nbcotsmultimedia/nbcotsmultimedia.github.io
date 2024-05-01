@@ -255,27 +255,20 @@ function updateDetailsPanel(node) {
   setSvgMargin();
 }
 
-// On click, change selected node
-function nodeClicked(event, node) {
+// Node click event
+function nodeClicked(event, d) {
   // Stop the event from propagating further
   event.stopPropagation();
 
-  // Check if the clicked node is not already selected
-  if (selectedNode !== node) {
-    // If it isn't, highlight the node
-    d3.select(this)
-      .select("circle")
-      .style("display", "")
-      .attr("stroke", "#18206f")
-      .attr("stroke-width", 3);
-    // Update the global selectedNode
-    selectedNode = node;
-    // Highlight connections
-    highlightConnected(node);
-    // Open the details panel
-    updateDetailsPanel(node);
+  // Calculate position for the details panel
+  updatePanelPosition(event);
+
+  // Highlight the node and connected links
+  if (selectedNode !== d) {
+    selectedNode = d;
+    highlightConnected(d);
+    updateDetailsPanel(d); // Update the panel with content specific to the clicked node
   } else {
-    // If it is already selected, reset the visual state
     resetVisualState();
   }
 }
@@ -308,6 +301,24 @@ function highlightConnected(node) {
       d3.select(this).classed("highlighted", false).style("display", "none");
     }
   });
+}
+
+// Adjust panel position based on scroll location (mobile only)
+function updatePanelPosition() {
+  const detailsPanel = document.getElementById("details-panel");
+  const scrollY = window.scrollY; // Current vertical scroll position of the window
+  const viewportHeight = window.innerHeight; // Height of the viewport
+
+  // Position the panel at the current scroll position + a fraction of the viewport height
+  // This ensures it's always reasonably within the current viewable area.
+  let topPosition = scrollY + viewportHeight * 0.1; // Adjust the multiplier as necessary
+
+  // Cap the position to not go below a certain part of the screen
+  topPosition = Math.min(topPosition, scrollY + viewportHeight * 0.8);
+
+  detailsPanel.style.top = `${topPosition}px`;
+  detailsPanel.style.position = "absolute"; // Make sure it's positioned relative to the nearest positioned ancestor
+  detailsPanel.style.display = "block"; // Show the panel
 }
 
 // Event listeners //

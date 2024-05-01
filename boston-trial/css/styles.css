@@ -86,6 +86,7 @@ svg {
   display: none; /* Initially hidden */
   z-index: 10;
   overflow-y: auto; /* Enables vertical scrolling */
+  background-color: #ffffff; /* Solid white background */
 }
 
 /* Adjusting heights for different devices */
