@@ -74,23 +74,24 @@ function setupNodes() {
     .enter()
     .append("g")
     .attr("class", "node-group")
+    .attr("id", (d) => `node-${d.id}`) // Assign an ID to each node group
     .attr("transform", (d) => `translate(${d.x},${d.y})`)
     .on("click", nodeClicked);
 
+  // Append the node circle
   nodeGroup
-    .selectAll("circle")
-    .attr("cx", (d) => d.x)
-    .attr("cy", (d) => d.y)
-    .attr("r", nodeRadius);
+    .append("circle")
+    .attr("class", "node")
+    .attr("r", nodeRadius)
+    .style("fill", "#fff")
+    .style("stroke", "#999")
+    .style("stroke-width", "1px");
 
-  // Add border
+  // Append the highlight border
   nodeGroup
     .append("circle")
     .attr("class", "node-border")
     .attr("r", nodeRadius + 0.25)
-    .style("fill", "none")
-    .style("stroke", "#18206f")
-    .style("stroke-width", 2)
     .style("display", "none");
 
   // Add image
@@ -126,7 +127,9 @@ function setupNodes() {
       .attr("x", bbox.x - padding)
       .attr("y", bbox.y - padding)
       .attr("width", bbox.width + padding * 2)
-      .attr("height", bbox.height + padding * 2);
+      .attr("height", bbox.height + padding * 2)
+      .attr("rx", 5) // Set the x-axis corner radius
+      .attr("ry", 5); // Set the y-axis corner radius
   });
 }
 
@@ -139,7 +142,7 @@ function setupLinks() {
     .attr("class", "link")
     .attr("stroke", "#999")
     .attr("stroke-width", 1)
-    .attr("stroke-opacity", 0.6)
+    .attr("stroke-opacity", 0.5)
     .lower()
     .attr("x1", (d) => nodeById.get(d.source).x)
     .attr("y1", (d) => nodeById.get(d.source).y)
@@ -185,15 +188,15 @@ function toggleDetailsPanel() {
 
 // Reset the graphic's visual state
 function resetVisualState() {
-  // Reset styles and class attributes for the entire node group
+  // Ensure all node groups are visible
   nodeGroup
-    .style("display", "block") // Ensure groups are visible
-    .classed("highlighted faded node-selected", false); // Remove visual modification classes
+    .style("display", "block")
+    .classed("highlighted faded node-selected", false);
 
   // Reset styles for individual components if necessary
   nodeGroup.selectAll("image").style("display", "block"); // Make sure images are visible
 
-  nodeGroup.selectAll(".node-border").style("display", "none"); // Keep node borders hidden when not selected
+  nodeGroup.selectAll(".node-border").style("display", "none");
 
   // Reset links to their default visual state
   linkGroup.classed("highlighted faded", false).style("display", ""); // Ensure links are set to default display
@@ -210,6 +213,8 @@ function resetVisualState() {
 
 // Update the details panel with new node info
 function updateDetailsPanel(node) {
+  const detailsPanel = document.getElementById("details-panel");
+
   // Clear details panel and populate it with data about the clicked node
   const details = d3.select("#details-content").html("");
   details.append("h1").attr("class", "person-name").text(node.name);
@@ -251,6 +256,9 @@ function updateDetailsPanel(node) {
       );
   });
 
+  // Reset scroll position to the top
+  detailsPanel.scrollTop = 0;
+
   // Make the details panel visible
   d3.select("#details-panel").style("display", "block");
   // Update the SVG's margin to accommodate it
@@ -262,17 +270,26 @@ function nodeClicked(event, d) {
   // Stop the event from propagating further
   event.stopPropagation();
 
-  // Calculate position for the details panel
-  updatePanelPosition(event);
-
   // Highlight the node and connected links
   if (selectedNode !== d) {
     selectedNode = d;
     highlightConnected(d);
+    highlightNode(d);
     updateDetailsPanel(d); // Update the panel with content specific to the clicked node
   } else {
     resetVisualState();
   }
+}
+
+// Function to highlight the clicked node
+function highlightNode(node) {
+  // Hide all borders first
+  nodeGroup.selectAll(".node-border").style("display", "none");
+
+  // Show the border for the selected node
+  d3.select(`#node-${node.id}`)
+    .select(".node-border")
+    .style("display", "block"); // Ensure the border is visible
 }
 
 // Highlight connected nodes and links
@@ -305,34 +322,14 @@ function highlightConnected(node) {
   });
 }
 
-// Adjust panel position based on scroll location (mobile only)
-function updatePanelPosition() {
-  // Check if the viewport width is less than or equal to 460 pixels
-  if (window.innerWidth <= 460) {
-    const detailsPanel = document.getElementById("details-panel");
-    const scrollY = window.scrollY; // Current vertical scroll position of the window
-    const viewportHeight = window.innerHeight; // Height of the viewport
-
-    // Position the panel at the current scroll position + a fraction of the viewport height
-    // This ensures it's always reasonably within the current viewable area.
-    let topPosition = scrollY + viewportHeight * 0.1; // Adjust the multiplier as necessary
-
-    // Cap the position to not go below a certain part of the screen
-    topPosition = Math.min(topPosition, scrollY + viewportHeight * 0.8);
-
-    detailsPanel.style.top = `${topPosition}px`;
-    detailsPanel.style.position = "absolute"; // Make sure it's positioned relative to the nearest positioned ancestor
-    detailsPanel.style.display = "block"; // Show the panel
-  }
-}
-
 // Event listeners //
 
 // When the user clicks on the body, reset the visual state
 d3.select("body").on("click", function (event) {
+  // Convert D3 selection to a DOM element using node() and then use closest
   if (
-    !d3.select(event.target).closest(".node-group").node() &&
-    !d3.select(event.target).classed("details-panel")
+    !d3.select(event.target).node().closest(".node-group") &&
+    !d3.select(event.target).node().closest(".details-panel")
   ) {
     resetVisualState();
   }

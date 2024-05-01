@@ -70,10 +70,10 @@ svg {
   stroke: none;
 }
 
-.node-selected {
-  stroke: red;
-  stroke-width: 8px;
+.node-border {
   fill: none;
+  stroke: #18206f;
+  stroke-width: 3px;
 }
 
 /* Details panel styles */
