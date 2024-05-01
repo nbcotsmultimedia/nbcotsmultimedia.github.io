@@ -1,0 +1,192 @@
+body {
+  margin: 0;
+}
+
+/* Base SVG styles */
+svg {
+  height: auto;
+  max-width: 90%;
+  overflow: visible;
+  padding: 0;
+  transition: margin-top 0.3s ease; /* Smooth transition for margin adjustments */
+}
+
+/* Node styles */
+.nodes circle {
+  stroke: #999;
+  stroke-width: 2px;
+}
+
+/* Link styles */
+.link,
+.highlighted line {
+  stroke: #999;
+  stroke-width: 1px;
+  fill: none;
+}
+
+.link.highlighted {
+  stroke: #18206f;
+  stroke-width: 1px;
+  stroke-opacity: 1;
+}
+
+/* Text labels and details */
+.labels text,
+.label .name,
+#details-panel .person-name,
+#details-panel .person-role,
+#details-panel .person-description,
+#details-panel .connections-title,
+#details-panel .connection-item {
+  font-family: "Inter", sans-serif;
+  fill: #333;
+}
+
+.labels text,
+.label .name {
+  font-size: 12px;
+  line-height: 17px;
+  text-anchor: middle;
+}
+
+.node-name,
+.node-name-bg,
+.node-selected,
+.connected-node-name {
+  font-style: normal;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
+
+.node-name {
+  font-weight: 500;
+  font-size: 11.5px;
+  fill: black;
+}
+
+.node-name-bg {
+  fill: #ffffff; /* Background color for the text */
+  stroke: none;
+}
+
+.node-border {
+  fill: none;
+  stroke: #18206f;
+  stroke-width: 3px;
+}
+
+/* Details panel styles */
+
+#details-panel {
+  width: 100%;
+  padding: 20px;
+  position: absolute;
+  box-sizing: border-box;
+  display: none; /* Initially hidden */
+  z-index: 10;
+  overflow-y: auto; /* Enables vertical scrolling */
+  background-color: #ffffff; /* Solid white background */
+  top: 120px;
+}
+
+/* Adjusting heights for different devices */
+@media (max-width: 600px) {
+  #details-panel {
+    top: 120px; /* Smaller screens might have a smaller header */
+    height: 140px; /* Smaller fixed height with scrolling */
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  #details-panel {
+    top: 110px; /* Medium screens */
+    height: 160px; /* Medium fixed height with scrolling */
+  }
+}
+
+@media (min-width: 1025px) {
+  #details-panel {
+    top: 100px; /* Medium screens */
+    height: 220px; /* Larger fixed height with scrolling */
+  }
+}
+
+.details-content {
+  font-family: "Inter", sans-serif;
+}
+
+.person-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.person-role,
+.person-description,
+.connections-title,
+.connection-item {
+  font-size: 10px;
+  padding-bottom: 6px;
+}
+
+.person-description {
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 10px;
+}
+
+.connections-title,
+.connection-item {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-bottom: 2px;
+}
+
+.connection-category {
+  font-size: 10px;
+  color: #333;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  font-family: "Inter", sans-serif;
+}
+
+.category-name {
+  font-weight: bold;
+}
+
+.node-names {
+  margin-left: 5px;
+}
+
+/* Close button styles */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #a0a0a0;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.header {
+  height: 100px;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  text-align: center;
+  z-index: 5; /* Lower than the details panel to keep it on top */
+}
+
+.highlighted {
+  opacity: 1; /* Adjust as needed */
+}
+
+.faded {
+  opacity: 0.3;
+}
