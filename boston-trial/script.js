@@ -225,6 +225,7 @@ function updateDetailsPanel(node) {
     .append("p")
     .attr("class", "person-description")
     .text(node.blurb || "No additional information available.");
+  details.append("p").attr("class", "connections-title").text("connections");
 
   // Filter connections for the selected node, group them by type, and append this information to the details panel
   d3.group(
@@ -292,7 +293,7 @@ function highlightNode(node) {
     .style("display", "block"); // Ensure the border is visible
 }
 
-// Highlight connected nodes and links
+// Highlight the nodes and links connected to the clicked node
 function highlightConnected(node) {
   const connectedNodes = new Set(); // Initialize a new set object to store IDs of connected nodes
   const connectedLinks = new Set(); // Initialize a new set object to store IDs of connected links
