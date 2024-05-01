@@ -35,7 +35,7 @@
       }
       #note1, #note2 {
         margin-top: 10px;
-        font-size: 14px;
+        font-size: 16px;
       }
       .smTxt {
         font-size: 14px;
@@ -46,6 +46,12 @@
         border-color: #CCC;
         border-radius: 4px;
         margin-top: 3px;
+      }
+      .num {
+        background-color: red;
+        padding: 5px 10px;
+        color: #FFF;
+        border-radius: 50%;
       }
 
     </style>
@@ -62,12 +68,12 @@
 
         <div class="col-12">
           <h1>Vertical Image Tool</h1>
-          <p>Because our Worpress templates automatically crop any image in an image block to a 16:9, you can use this tool to create display the full image. </p>
-          <p><strong>First</strong>, as you normally would, add the image in your article as an Image Block.</p>
-          <p><strong>Then</strong>, right-click on the image and copy the image url or image address. You can delete the Image Block at this point.</p>
+          <p>Because our Worpress templates automatically crop/letterbox any image in an image block to a 16:9, you can use this tool to display the full image. </p>
+          <p><span class="num">1</span> As you normally would, add the image in your article as an Image Block.</p>
+          <p><span class="num">2</span> Right-click on the image and copy the image url or image address. You can delete the Image Block at this point.</p>
 
           <p><strong>Paste copied image url here</strong><input type="text" class="form-control" id="pastedCode" placeholder=""></p>
-          <p><strong>Alt tag</strong><input type="text" class="form-control" id="theAlt" placeholder="short description of image"></p>
+          <p><strong>Alt tag (required)</strong><input type="text" class="form-control" id="theAlt" placeholder="short description of image"></p>
           <p><strong>Caption</strong><input type="text" class="form-control" id="theCaption" placeholder="leave blank if none"></p>
           <p><strong>Credit</strong><input type="text" class="form-control" id="theCredit" placeholder="Photographer/Agency or leave blank if none"></p>
           <button type="button" class="btn btn-primary" id="convert">Get code</button>
@@ -78,7 +84,7 @@
           <div class="output" id="out1"></div>
           <p><a href="javascript:copyCode('#out1');">COPY CODE TO CLIPBOARD</a></p>
 
-          <p id="note1">In Wordpress, create a Custom HTML Block where you want the image to appear and paste the code into it.<p>
+          <p id="note1"><span class="num">3</span> In Wordpress, create a Custom HTML Block where you want the image to appear and paste the code into it.<p>
 
 
 
