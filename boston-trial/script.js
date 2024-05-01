@@ -156,16 +156,18 @@ function setSvgMargin() {
   // Retrieve and measure DOM elements
   const detailsPanel = document.getElementById("details-panel");
   const svgElement = document.querySelector("svg");
-  const panelHeight = detailsPanel.offsetHeight;
 
-  // If the details panel is displayed (block)...
+  // Start with a base margin of 20px
+  let marginTop = 20;
+
+  // If the details panel is displayed, add its height to the base margin
   if (detailsPanel.style.display === "block") {
-    // Set the SVG's top margin to the sum of the header's height and the panel's height
-    svgElement.style.marginTop = `${panelHeight}px`;
-  } else {
-    // Otherwise, just use margin 0
-    svgElement.style.marginTop = `0px`;
+    const panelHeight = detailsPanel.offsetHeight; // Get the current height of the details panel
+    marginTop += panelHeight; // Add the panel's height to the base margin
   }
+
+  // Set the SVG's top margin
+  svgElement.style.marginTop = `${marginTop}px`;
 }
 
 // Show and hide the details panel
@@ -305,20 +307,23 @@ function highlightConnected(node) {
 
 // Adjust panel position based on scroll location (mobile only)
 function updatePanelPosition() {
-  const detailsPanel = document.getElementById("details-panel");
-  const scrollY = window.scrollY; // Current vertical scroll position of the window
-  const viewportHeight = window.innerHeight; // Height of the viewport
+  // Check if the viewport width is less than or equal to 460 pixels
+  if (window.innerWidth <= 460) {
+    const detailsPanel = document.getElementById("details-panel");
+    const scrollY = window.scrollY; // Current vertical scroll position of the window
+    const viewportHeight = window.innerHeight; // Height of the viewport
 
-  // Position the panel at the current scroll position + a fraction of the viewport height
-  // This ensures it's always reasonably within the current viewable area.
-  let topPosition = scrollY + viewportHeight * 0.1; // Adjust the multiplier as necessary
+    // Position the panel at the current scroll position + a fraction of the viewport height
+    // This ensures it's always reasonably within the current viewable area.
+    let topPosition = scrollY + viewportHeight * 0.1; // Adjust the multiplier as necessary
 
-  // Cap the position to not go below a certain part of the screen
-  topPosition = Math.min(topPosition, scrollY + viewportHeight * 0.8);
+    // Cap the position to not go below a certain part of the screen
+    topPosition = Math.min(topPosition, scrollY + viewportHeight * 0.8);
 
-  detailsPanel.style.top = `${topPosition}px`;
-  detailsPanel.style.position = "absolute"; // Make sure it's positioned relative to the nearest positioned ancestor
-  detailsPanel.style.display = "block"; // Show the panel
+    detailsPanel.style.top = `${topPosition}px`;
+    detailsPanel.style.position = "absolute"; // Make sure it's positioned relative to the nearest positioned ancestor
+    detailsPanel.style.display = "block"; // Show the panel
+  }
 }
 
 // Event listeners //
@@ -341,7 +346,14 @@ window.addEventListener("resize", () => {
   }
 });
 
-// Add event listener to the panel's close button to toggle its visibility
-d3.select(".close-button").on("click", () => toggleDetailsPanel());
+document.addEventListener("DOMContentLoaded", function () {
+  setSvgMargin(); // Set initial SVG margin when the document is ready
+});
+
+// Add event listener to the panel's close button to toggle its visibility and reset the visual state
+d3.select(".close-button").on("click", function () {
+  toggleDetailsPanel(); // Toggle the visibility of the details panel
+  resetVisualState(); // Reset the visual state of the SVG and other UI components
+});
 
 //#endregion

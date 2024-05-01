@@ -77,11 +77,12 @@ svg {
 }
 
 /* Details panel styles */
+
 #details-panel {
   width: 100%;
   padding: 20px;
   position: absolute;
-  top: 100px; /* Adjust based on header height */
+  top: 110px; /* Adjust based on header height */
   box-sizing: border-box;
   display: none; /* Initially hidden */
   z-index: 10;
@@ -98,13 +99,13 @@ svg {
 
 @media (min-width: 601px) and (max-width: 1024px) {
   #details-panel {
-    height: 250px; /* Medium fixed height with scrolling */
+    height: 180px; /* Medium fixed height with scrolling */
   }
 }
 
 @media (min-width: 1025px) {
   #details-panel {
-    height: 350px; /* Larger fixed height with scrolling */
+    height: 220px; /* Larger fixed height with scrolling */
   }
 }
 
@@ -174,6 +175,7 @@ svg {
 .header {
   height: 100px;
   padding-top: 20px;
+  padding-bottom: 10px;
   text-align: center;
 }
 
