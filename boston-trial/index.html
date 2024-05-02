@@ -4,53 +4,50 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Boston Trial Network Graph</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- My CSS -->
-    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Boston Trial Network Graph</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap core CSS -->
-    <!-- <link
+  <!-- My CSS -->
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+  <!-- Bootstrap core CSS -->
+  <!-- <link
       href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css"
       rel="stylesheet"
     /> -->
 
-    <!-- NBC CSS -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto:400,500,300,100"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link
-      href="https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css"
-      rel="stylesheet"
-      type="text/css"
-    />
+  <!-- NBC CSS -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,300,100" rel="stylesheet" type="text/css" />
+  <link href="https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css" rel="stylesheet"
+    type="text/css" />
 
-    <link href="css/nbcotsbase.css" rel="stylesheet" />
+  <link href="css/nbcotsbase.css" rel="stylesheet" />
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css"
-    />
-  </head>
-  <body>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
+
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      xtalk.responsive = false;
+      xtalk.init();
+    });
+  </script>
+</head>
+
+<body>
+  <!--crosstalk container div-->
+  <div id="web-graphic" class="parent" style="width: 100%; padding-bottom: 30px">
+
+    <!-- Header -->
     <div class="header">
       <h1 class="headline">A tangled web</h1>
       <h2 class="subhead">
@@ -58,19 +55,26 @@
       </h2>
     </div>
 
+    <!-- Graphic -->
     <svg></svg>
 
+    <!-- Pop up modal -->
     <div id="details-panel">
-      <button class="close-button">×</button>
-      <div id="details-content">Details will appear here.</div>
+      <div id="details-name">
+        <span id="name-span"></span>
+      </div>
+      <div id="scrollbar-div">
+        <div id="details-content"></div>
+      </div>
+      <div class="shadow-bottom"></div>
     </div>
 
-    <!-- Scripts -->
-    <script
-      src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-      integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-      crossorigin="anonymous"
-    ></script>
-    <script src="script.js" async defer></script>
-  </body>
+  </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="script.js" async defer></script>
+</body>
+
 </html>
