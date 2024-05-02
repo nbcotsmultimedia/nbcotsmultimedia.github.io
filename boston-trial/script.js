@@ -8,6 +8,7 @@ const urls = {
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=1899076594&single=true&output=csv",
 };
 let svg = d3.select("svg");
+let nodeGroup;
 
 //#endregion
 
@@ -21,12 +22,7 @@ async function loadData() {
       d3.csv(urls.links),
     ]);
 
-    console.log("Nodes data:", nodesData);
-    console.log("Links data:", linksData);
-
     nodeById = new Map(nodesData.map((node) => [node.id, node]));
-
-    console.log("Node by ID map:", nodeById);
 
     createGraphic();
   } catch (error) {
@@ -69,7 +65,6 @@ function setupLinks() {
     .lower()
     .attr("x1", (d) => {
       const sourceNode = nodeById.get(d.source);
-      console.log("Source node:", sourceNode);
       return sourceNode ? sourceNode.x : 0; // Ensure we're getting the correct x coordinate
     })
     .attr("y1", (d) => {
@@ -78,7 +73,6 @@ function setupLinks() {
     })
     .attr("x2", (d) => {
       const targetNode = nodeById.get(d.target);
-      console.log("Target node:", targetNode);
       return targetNode ? targetNode.x : 0; // Ensure we're getting the correct x coordinate
     })
     .attr("y2", (d) => {
@@ -166,16 +160,15 @@ function positionNode(
 }
 
 // Render the nodes in the SVG container
-function renderNodes(radius) {
-  const nodeGroup = svg
+function renderNodes(nodesData, radius) {
+  nodeGroup = svg
     .selectAll(".node-group")
     .data(nodesData)
     .enter()
     .append("g")
     .attr("class", "node-group")
     .attr("id", (d) => `node-${d.id}`)
-    .attr("transform", (d) => `translate(${d.x},${d.y})`)
-    .on("click", (event, d) => nodeClicked(event, d));
+    .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
   nodeGroup
     .append("circle")
@@ -183,11 +176,18 @@ function renderNodes(radius) {
     .attr("r", radius)
     .style("fill", config.fillColor)
     .style("stroke", config.strokeColor)
-    .style("stroke-width", config.strokeWidth);
+    .style("stroke-width", config.strokeWidth)
+    // Attach a click event listener
+    .on("click", function (event, d) {
+      console.log("Node clicked:", d);
+    });
 
   appendImages(nodeGroup, radius);
   appendText(nodeGroup, radius);
 }
+
+// Call the renderNodes function
+renderNodes(10); // Pass the desired radius as an argument
 
 // Add an image element to each node group
 function appendImages(nodeGroup, radius) {
@@ -225,5 +225,9 @@ function appendText(nodeGroup, radius) {
 }
 
 //#endregion
+
+//#endregion
+
+//#region - Interactivity
 
 //#endregion
