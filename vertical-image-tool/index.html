@@ -250,9 +250,11 @@
           console.log(tmp[0]);
 
 
-          $("#out1").text("<img src=\"" + tmp[0] + "?w=900\" alt=\"" + $("#theAlt").val() + "\" width=\"100%\" />");
+          $("#out1").text("<figure class=\"wp-block-image size-large\"><img style=\"margin-bottom: 0px\" src=\"" + tmp[0] + "?w=900\" alt=\"" + $("#theAlt").val() + "\" width=\"100%\" />");
           if ($("#theCaption").val() != "") {
-            $("#out1").append("&lt;figcaption class=\"wp-element-caption\"&gt;" + $("#theCaption").val() + " (" + $("#theCredit").val() + ")&lt;/figcaption&gt;");
+            $("#out1").append("&lt;figcaption class=\"wp-element-caption\"&gt;" + $("#theCaption").val() + " (" + $("#theCredit").val() + ")&lt;/figcaption&gt;&lt;/figure&gt;");
+          } else {
+            $("#out1").append("&lt;/figure&gt;");
           }
 
           $("#note1").show();
