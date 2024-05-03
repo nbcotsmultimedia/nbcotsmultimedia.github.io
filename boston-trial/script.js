@@ -163,6 +163,8 @@ function positionNode(
 
 // Define the function to render the nodes in the SVG container
 function renderNodes(nodesData, radius) {
+  let freezeHighlights = false; // This flag will control the behavior of mouseleave events
+
   nodeGroup = svg
     .selectAll(".node-group")
     .data(nodesData)
@@ -196,40 +198,32 @@ function renderNodes(nodesData, radius) {
   // Desktop interactions
   nodeGroup
     .on("mouseenter", function (event, d) {
-      if (!("ontouchstart" in window)) {
-        // Ensure it's a non-touch device
+      if (!freezeHighlights) {
         console.log("mouseenter - highlighting", d.id);
-        highlightNode(d.id); // Highlight the hovered node
-        highlightConnected(d.id); // Highlight connected links
+        highlightNode(d.id);
+        highlightConnected(d.id);
       }
     })
     .on("mouseleave", function (event, d) {
-      if (!("ontouchstart" in window)) {
-        // Ensure it's a non-touch device
+      if (!freezeHighlights) {
         console.log("mouseleave - resetting highlights", d.id);
-        resetHighlights(); // Reset the visual state to default when mouse leaves
+        resetHighlights();
       }
     })
     .on("click", function (event, d) {
-      if (!("ontouchstart" in window)) {
-        console.log(
-          "click",
-          d.id,
-          "currentlyHighlighted:",
-          currentlyHighlighted
-        );
-        if (currentlyHighlighted !== d.id) {
-          // New node clicked or no node was previously selected
-          resetHighlights(); // Reset any previous highlights
-          highlightNode(d.id);
-          highlightConnected(d.id);
-          currentlyHighlighted = d.id; // Set the new highlighted node
-          console.log("New node highlighted:", d.id);
-        } else {
-          // Clicking the same node again
-          resetHighlights(); // Reset the highlights
-          console.log("Click on the same node, reset highlights");
-        }
+      event.stopPropagation(); // Prevent event bubbling that might trigger svg click
+      if (!freezeHighlights || currentlyHighlighted !== d.id) {
+        console.log("Mouse click event on node", d.id);
+        resetHighlights();
+        highlightNode(d.id);
+        highlightConnected(d.id);
+        currentlyHighlighted = d.id;
+        freezeHighlights = true; // Freeze highlights until another node is clicked or the same node is clicked again
+      } else {
+        console.log("Click on the same node, reset highlights");
+        resetHighlights();
+        currentlyHighlighted = null;
+        freezeHighlights = false; // Allow hover effects to change highlights again
       }
     });
 
@@ -237,6 +231,15 @@ function renderNodes(nodesData, radius) {
   nodeGroup.on("touchstart", function (event, d) {
     console.log("touchstart", d.id);
     manageNodeClick(this, event, d);
+  });
+
+  svg.on("click", function () {
+    if (currentlyHighlighted && freezeHighlights) {
+      console.log("SVG or non-node area clicked, resetting highlights.");
+      resetHighlights();
+      currentlyHighlighted = null;
+      freezeHighlights = false;
+    }
   });
 }
 
@@ -286,23 +289,25 @@ function manageNodeClick(element, event, d) {
   event.stopPropagation();
 
   const nodeId = d.id;
-
   console.log(
-    "manageNodeClick - Node ID:",
+    "Node clicked:",
     nodeId,
-    "currentlyHighlighted:",
+    "Currently highlighted:",
     currentlyHighlighted
   );
 
   if (currentlyHighlighted === nodeId) {
+    // If the same node is clicked again, reset highlights
     console.log("Click on the same node, reset highlights");
     resetHighlights();
+    currentlyHighlighted = null; // Clear the highlighted node state
   } else {
-    console.log("New node clicked, set highlight");
-    resetHighlights();
-    highlightNode(nodeId);
-    highlightConnected(nodeId);
-    currentlyHighlighted = nodeId; // Update the highlighted node ID
+    // Different node is clicked or no node was previously selected
+    resetHighlights(); // Reset any previous highlights
+    highlightNode(nodeId); // Highlight the newly clicked node
+    highlightConnected(nodeId); // Highlight connected links
+    currentlyHighlighted = nodeId; // Update the currently highlighted node
+    console.log("New node highlighted:", nodeId);
   }
 }
 
