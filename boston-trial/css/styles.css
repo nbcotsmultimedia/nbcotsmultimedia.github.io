@@ -41,22 +41,28 @@ svg {
 
 /* === HIGHLIGHTED STATES === */
 
-.node-group .node-border {
-  fill: none;
-  stroke: #18206f; /* Blue border for highlighted nodes */
-  stroke-width: 3px;
-  display: none; /* Initially hidden */
+.link {
+  stroke: #999; /* default stroke color */
+  stroke-width: 1px; /* default stroke width */
+  stroke-opacity: 0.5; /* default opacity */
 }
 
 .link.highlighted {
-  stroke: #18206f; /* Blue for highlighted links */
-  stroke-width: 2px;
-  stroke-opacity: 1;
+  stroke: #18206f; /* blue for highlighted links */
+  stroke-width: 2px; /* thicker stroke for visibility */
+  stroke-opacity: 1; /* full opacity for highlighted */
 }
 
-.node-group.highlighted .node,
-.node-group.faded .node {
-  opacity: 1; /* Full opacity for highlighted */
+.node-group .node-border {
+  fill: none;
+  stroke: #18206f; /* blue border for highlighted nodes */
+  stroke-width: 3px; /* make border visible */
+  display: none; /* hide by default */
+}
+
+.node-group .node {
+  /* Ensure default non-highlighted state is clearly defined if needed */
+  opacity: 1; /* default opacity for nodes */
 }
 
 .node-group.faded .node {
