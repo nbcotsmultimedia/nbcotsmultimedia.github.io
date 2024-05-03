@@ -1,12 +1,4 @@
-//#region - Interactivity
-
-function nodeClicked(event, node, nodeById, nodesData, linksData) {
-  const selectedNode = node;
-  updateDetailsPanel(node);
-  highlightConnected(node, nodeById, nodesData, linksData);
-}
-
-// Declare 'selectedNode' in a broader scope to manage the state
+/ Declare 'selectedNode' in a broader scope to manage the state
 let selectedNode = null;
 
 function nodeClicked(event, node, nodeById, nodesData, linksData) {
@@ -24,33 +16,6 @@ function nodeClicked(event, node, nodeById, nodesData, linksData) {
   }
 }
 
-// Function to highlight the clicked node
-function highlightNode(node) {
-  // Hide all borders first
-  d3.selectAll(".node-border").style("display", "none");
-
-  // Show the border for the selected node
-  d3.select(`#node-${node.id}`)
-    .select(".node-border")
-    .style("display", "block"); // Ensure the border is visible
-}
-
-// Function to reset the graphic's visual state
-function resetVisualState() {
-  d3.selectAll(".node-group")
-    .style("display", "block")
-    .classed("highlighted faded node-selected", false);
-
-  d3.selectAll("image").style("display", "block"); // Ensure images are visible
-  d3.selectAll(".node-border").style("display", "none");
-
-  d3.selectAll(".link")
-    .classed("highlighted faded", false)
-    .style("display", "");
-
-  d3.select("#details-panel").style("display", "none");
-  setSvgMargin(); // Adjust the SVG margin if it's being adjusted based on the details panel
-}
 
 // Function to set SVG margin based on the details panel's state
 function setSvgMargin() {
@@ -64,50 +29,6 @@ function setSvgMargin() {
   }
 
   svgElement.style.marginTop = `${marginTop}px`;
-}
-
-// Helper functions to manage the details panel and SVG's top margin
-function setSvgMargin() {
-  // Retrieve and measure DOM elements
-  const detailsPanel = document.getElementById("details-panel");
-  const svgElement = document.querySelector("svg");
-
-  // Start with a base margin of 20px
-  let marginTop = 0;
-
-  // If the details panel is displayed, add its height to the base margin
-  if (detailsPanel.style.display === "block") {
-    const panelHeight = detailsPanel.offsetHeight; // Get the current height of the details panel
-    marginTop += panelHeight; // Add the panel's height to the base margin
-  }
-
-  // Set the SVG's top margin
-  svgElement.style.marginTop = `${marginTop}px`;
-}
-
-// Reset the graphic's visual state
-function resetVisualState() {
-  // Ensure all node groups are visible
-  nodeGroup
-    .style("display", "block")
-    .classed("highlighted faded node-selected", false);
-
-  // Reset styles for individual components if necessary
-  nodeGroup.selectAll("image").style("display", "block"); // Make sure images are visible
-
-  nodeGroup.selectAll(".node-border").style("display", "none");
-
-  // Reset links to their default visual state
-  linkGroup.classed("highlighted faded", false).style("display", ""); // Ensure links are set to default display
-
-  // Hide the details panel
-  d3.select("#details-panel").style("display", "none");
-
-  // Reset the SVG margin if it's being adjusted based on the details panel
-  setSvgMargin();
-
-  // Clear any selected node reference
-  selectedNode = null;
 }
 
 // Show and hide the details panel
@@ -183,47 +104,60 @@ function updateDetailsPanel(node) {
   };
 }
 
-// Function to highlight the clicked node
-function highlightNode(node) {
-  // Hide all borders first
-  nodeGroup.selectAll(".node-border").style("display", "none");
 
-  // Show the border for the selected node
-  d3.select(`#node-${node.id}`)
-    .select(".node-border")
-    .style("display", "block"); // Ensure the border is visible
+// Define the function to move the SVG depending on details pane position
+function setSvgMargin() {
+  console.log("set svg margin");
 }
 
-// Highlight the nodes and links connected to the clicked node
-function highlightConnected(node) {
-  const connectedNodes = new Set(); // Initialize a new set object to store IDs of connected nodes
-  const connectedLinks = new Set(); // Initialize a new set object to store IDs of connected links
 
-  // Identify connected nodes and links
-  linksData.forEach((link) => {
-    if (link.source === node.id || link.target === node.id) {
-      connectedNodes.add(link.source);
-      connectedNodes.add(link.target);
-      connectedLinks.add(link.id || `${link.source}-${link.target}`);
-    }
-  });
+// Define the function to reset the graphic's visual state
+function resetVisualState() {
+  d3.selectAll(".node-group")
+    .style("display", "block")
+    .classed("highlighted faded node-selected", false);
 
-  // Highlight or hide nodes based on connection
-  nodeGroup
-    .classed("highlighted", (d) => connectedNodes.has(d.id))
-    .classed("faded", (d) => !connectedNodes.has(d.id));
+  d3.selectAll("image").style("display", "block"); // Ensure images are visible
+  d3.selectAll(".node-border").style("display", "none");
 
-  // Adjust visibility for connected and non-connected links
-  linkGroup.each(function (d) {
-    const linkId = d.id || `${d.source}-${d.target}`;
-    if (connectedLinks.has(linkId)) {
-      d3.select(this).classed("highlighted", true).style("display", "");
+  d3.selectAll(".link")
+    .classed("highlighted faded", false)
+    .style("display", "");
+
+  d3.select("#details-panel").style("display", "none");
+  setSvgMargin(); // Adjust the SVG margin if it's being adjusted based on the details panel
+}
+
+// Define the function to move the SVG depending on details pane position
+function setSvgMargin() {
+  const detailsPanel = document.getElementById("details-panel");
+  const svgElement = document.querySelector("svg");
+  const fromBottom = detailsPanel.classList.contains("from-bottom");
+
+  if (detailsPanel.style.display === "block") {
+    const panelHeight = detailsPanel.offsetHeight;
+
+    if (fromBottom) {
+      // Extend the SVG container downwards by increasing the bottom padding
+      svgElement.style.paddingBottom = `${panelHeight}px`;
+      svgElement.style.marginBottom = `-${panelHeight}px`; // Negative margin to pull the content up
+
+      // Optionally, scroll to ensure SVG is visible above the details panel
+      window.scrollTo({
+        top: svgElement.getBoundingClientRect().top + window.scrollY - 50,
+        behavior: "smooth",
+      });
     } else {
-      d3.select(this).classed("highlighted", false).style("display", "none");
+      // Adjust the top margin normally if the panel is not from the bottom
+      svgElement.style.marginTop = `${panelHeight}px`;
     }
-  });
+  } else {
+    // Reset margins and paddings when the details panel is not displayed
+    svgElement.style.marginTop = "0";
+    svgElement.style.paddingBottom = "0";
+    svgElement.style.marginBottom = "0";
+  }
 }
-
 // Event listeners //
 
 // When the user clicks on the body, reset the visual state
@@ -260,5 +194,3 @@ document
       div.classList.remove("shadow-top");
     }
   });
-
-//#endregion

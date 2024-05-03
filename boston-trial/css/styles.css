@@ -1,15 +1,17 @@
+/* === GLOBAL SETTINGS === */
+
 body {
   margin: 0;
 }
 
-/* Base SVG styles */
 svg {
   height: auto;
   max-width: 90%;
   overflow: visible;
   padding: 0;
-  transition: margin-top 0.3s ease; /* Smooth transition for margin adjustments */
 }
+
+/* === LINKS AND NODES === */
 
 /* Node styles */
 .nodes circle {
@@ -65,20 +67,40 @@ svg {
   fill: none;
   stroke: #18206f;
   stroke-width: 3px;
+  display: none;
 }
 
-/* DETAILS PANEL */
+/* Highlighted nodes and links */
+.highlighted {
+  opacity: 1; /* Adjust as needed */
+}
+
+/* Faded nodes and links */
+.faded {
+  opacity: 0.3;
+}
+
+/* === DETAILS PANEL === */
+
+/* === DETAILS PANEL === */
 
 #details-panel {
-  width: 100%;
-  padding: 20px;
+  display: none;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  opacity: 0;
   position: absolute;
-  box-sizing: border-box;
-  display: none; /* Initially hidden */
-  z-index: 10;
-  overflow-y: hidden;
-  background-color: #ffffff; /* Solid white background */
+  width: 100%;
   top: 120px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  overflow-y: hidden;
+}
+
+#details-panel:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Adjusting heights for different devices */
@@ -166,7 +188,6 @@ svg {
 }
 
 /* Content */
-
 .details-content {
   font-family: "Inter", sans-serif;
 }
@@ -241,12 +262,4 @@ svg {
   z-index: 5; /* Lower than the details panel to keep it on top */
 }
 
-/* Highlighted nodes and links */
-.highlighted {
-  opacity: 1; /* Adjust as needed */
-}
-
-/* Faded nodes and links */
-.faded {
-  opacity: 0.3;
-}
+/* === GLOBAL SETTINGS === */

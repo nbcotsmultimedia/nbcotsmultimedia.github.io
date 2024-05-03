@@ -9,12 +9,13 @@ const urls = {
 };
 let svg = d3.select("svg");
 let nodeGroup;
+let currentlyHighlighted = null; // Keep track of the highlighted node
 
 //#endregion
 
 //#region - Load and process data
 
-// Load and process data using jQuery, then initialize the graphic
+// Define the function to load and process data using jQuery, then initialize the graphic
 async function loadData() {
   try {
     [nodesData, linksData] = await Promise.all([
@@ -30,7 +31,7 @@ async function loadData() {
   }
 }
 
-// When document is fully loaded, run loadData function
+// When document is fully loaded, call the loadData function
 $(document).ready(function () {
   loadData();
 });
@@ -39,7 +40,7 @@ $(document).ready(function () {
 
 //#region - Create graphic
 
-// Trigger the creation of nodes and links by calling setupLinks and setupNodes
+// Define the main function to trigger the creation of nodes and links
 function createGraphic() {
   if (!nodeById) {
     console.error("nodeById is undefined. Cannot create graphic.");
@@ -51,7 +52,7 @@ function createGraphic() {
 
 //#region - Create links
 
-// Bind link data to line elements and configure arrangement
+// Define the function to bind link data to line elements and configure arrangement
 function setupLinks() {
   linkGroup = svg
     .selectAll(".link")
@@ -85,7 +86,7 @@ function setupLinks() {
 
 //#region - Create nodes
 
-// Set constants for styles and configurations
+// Set constants for styles and configurations of nodes
 const config = {
   smallViewportWidth: 600,
   smallNodeRadius: 34,
@@ -98,7 +99,7 @@ const config = {
   fillColor: "#fff",
 };
 
-// Configure and position nodes based on the current viewport size and data
+// Define the function to configure and position nodes based on the current viewport size and data
 function setupNodes() {
   const svgWidth = document.documentElement.clientWidth;
   const isSmallViewport = svgWidth < config.smallViewportWidth;
@@ -126,21 +127,22 @@ function setupNodes() {
     )
   );
 
-  renderNodes(nodeRadius);
+  // Ensure nodesData is passed to renderNodes
+  renderNodes(nodesData, nodeRadius);
 }
 
-// Calculate horizontal pacing between nodes
+// Define the function to calculate horizontal pacing between nodes
 function calculateSpacing(width, numCols) {
   // Divide viewport width by number of columns to get spacing
   return width / numCols;
 }
 
-// Calculate offset spacing to center the nodes grid
+// Define the function to calculate offset spacing (on either side of the group of node columns)
 function calculateInitialOffset(width, spacingX, numCols) {
   return (width - spacingX * (numCols - 1)) / 2;
 }
 
-// Calculate the x and y positions for each node and assign them
+// Define the function to calculate the x and y positions for each node and assign them
 function positionNode(
   node,
   index,
@@ -159,7 +161,7 @@ function positionNode(
     config.basePadding;
 }
 
-// Render the nodes in the SVG container
+// Define the function to render the nodes in the SVG container
 function renderNodes(nodesData, radius) {
   nodeGroup = svg
     .selectAll(".node-group")
@@ -170,26 +172,53 @@ function renderNodes(nodesData, radius) {
     .attr("id", (d) => `node-${d.id}`)
     .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
+  // Append the circle to the node
   nodeGroup
     .append("circle")
     .attr("class", "node")
     .attr("r", radius)
     .style("fill", config.fillColor)
     .style("stroke", config.strokeColor)
-    .style("stroke-width", config.strokeWidth)
-    // Attach a click event listener
-    .on("click", function (event, d) {
-      console.log("Node clicked:", d);
-    });
+    .style("stroke-width", config.strokeWidth);
 
+  // Append the border to the node for hover effect
+  nodeGroup
+    .append("circle")
+    .attr("class", "node-border")
+    .attr("r", radius + 1); // slightly larger radius for the border
+
+  // Append images to the nodes
   appendImages(nodeGroup, radius);
+
+  // Append labels to the nodes
   appendText(nodeGroup, radius);
+
+  // Event handlers
+  nodeGroup
+    // On mouseover, trigger highlightNode and highlightConnected functions
+    .on("mouseover", function (event, d) {
+      console.log("Mouseover triggered", d);
+      if (!currentlyHighlighted) {
+        // Only apply if no node is currently selected
+        highlightNode(d);
+        highlightConnected(d);
+      }
+    })
+    .on("mouseout", function (event, d) {
+      if (!currentlyHighlighted) {
+        // Only reset if no node is currently highlighted
+        resetHighlights(); // Assuming resetVisualState is a function that resets everything
+      }
+    })
+    // On click, trigger the manageNodeClick function
+    .on("click", function (event, d) {
+      console.log("Click triggered", d);
+      event.stopPropagation(); // Stop event from propagating to the body
+      manageNodeClick(this, event, d);
+    });
 }
 
-// Call the renderNodes function
-renderNodes(10); // Pass the desired radius as an argument
-
-// Add an image element to each node group
+// Define the function to add an image element to each node group
 function appendImages(nodeGroup, radius) {
   nodeGroup
     .append("image")
@@ -200,7 +229,7 @@ function appendImages(nodeGroup, radius) {
     .attr("height", radius * 2);
 }
 
-// Add text labels to each node group
+// Define the function to add text labels to each node group
 function appendText(nodeGroup, radius) {
   nodeGroup
     .append("text")
@@ -228,6 +257,169 @@ function appendText(nodeGroup, radius) {
 
 //#endregion
 
-//#region - Interactivity
+//#region - Interactivity functions
+
+// Define the function to manage node click, highlight logic, and details panel
+function manageNodeClick(element, event, d) {
+  const nodeElement = d3.select(element); // The circle element is now directly handled
+
+  if (currentlyHighlighted && currentlyHighlighted.node() === element) {
+    // Toggle off if the same node is clicked again
+    currentlyHighlighted.classed("highlighted", false);
+    currentlyHighlighted = null;
+    resetHighlights(); // Make sure to reset all highlights here
+  } else {
+    if (currentlyHighlighted) {
+      currentlyHighlighted.classed("highlighted", false);
+    }
+    nodeElement.classed("highlighted", true);
+    currentlyHighlighted = nodeElement;
+    highlightConnected(d);
+  }
+}
+
+// Define the function to highlight the primary node
+function highlightNode(node) {
+  // Hide all borders first
+  nodeGroup.selectAll(".node-border").style("display", "none");
+
+  // Show the border for the selected node
+  d3.select(`#node-${node.id}`)
+    .select(".node-border")
+    .style("display", "block"); // Ensure the border is visible
+}
+
+// Define the function to highlight the secondary nodes and links
+function highlightConnected(node) {
+  const connectedNodes = new Set();
+  const connectedLinks = new Set();
+
+  // Identify connected nodes and links
+  linksData.forEach((link) => {
+    if (link.source === node.id || link.target === node.id) {
+      connectedNodes.add(link.source);
+      connectedNodes.add(link.target);
+      connectedLinks.add(link.id || `${link.source}-${link.target}`);
+    }
+  });
+
+  // Highlight or hide nodes based on connection
+  nodeGroup
+    .classed("highlighted", (d) => connectedNodes.has(d.id))
+    .classed("faded", (d) => !connectedNodes.has(d.id));
+
+  // Adjust visibility for connected and non-connected links
+  linkGroup.each(function (d) {
+    const linkId = d.id || `${d.source}-${d.target}`;
+    if (connectedLinks.has(linkId)) {
+      d3.select(this).classed("highlighted", true).style("display", "");
+    } else {
+      d3.select(this).classed("highlighted", false).style("display", "none");
+    }
+  });
+}
+
+// Define the function to reset node highlights
+function resetHighlights() {
+  nodeGroup.selectAll(".node").classed("highlighted", false);
+  nodeGroup.selectAll(".node-border").style("display", "none"); // Ensure all borders are hidden
+  linkGroup
+    .selectAll(".link")
+    .classed("highlighted", false)
+    .style("display", "");
+}
+
+// Define the function to toggle the details pane open / closed
+function toggleDetailsPanel(event, d) {
+  event.stopPropagation(); // Prevent further propagation of the current event
+
+  const detailsPanel = document.getElementById("details-panel");
+  const isVisible = detailsPanel.style.display === "block";
+
+  console.log("Panel is currently visible:", isVisible);
+
+  if (!isVisible) {
+    detailsPanel.style.display = "block";
+    detailsPanel.style.opacity = "1";
+    detailsPanel.style.visibility = "visible";
+    console.log("Showing details panel");
+  } else {
+    detailsPanel.style.opacity = "0";
+    detailsPanel.style.visibility = "hidden";
+    console.log("Hiding details panel");
+    setTimeout(() => {
+      detailsPanel.style.display = "none";
+    }, 300); // 300 miliseconds = 0.3 seconds
+  }
+}
+
+// Define the function to populate information in the details pane
+function updateDetailsPanel(node) {
+  // Set the name in the 'name-container' span
+  d3.select("#name-span").text(node.name);
+
+  const scrollBar = document.getElementById("scrollbar-div");
+  const details = d3.select("#details-content").html("");
+
+  if (node.role && node.role.trim()) {
+    details.append("h2").attr("class", "person-role").text(node.role);
+  }
+
+  details
+    .append("p")
+    .attr("class", "person-description")
+    .text(node.blurb || "No additional information available.");
+
+  details
+    .append("p")
+    .html(`<span class="connections-title">connections</span>`);
+
+  d3.group(
+    linksData.filter(
+      (link) => link.source === node.id || link.target === node.id
+    ),
+    (d) => d.type
+  ).forEach((connections, type) => {
+    const typeContainer = details
+      .append("div")
+      .attr("class", "connection-category");
+    typeContainer
+      .append("span")
+      .attr("class", "category-name")
+      .text(`${type}: `);
+    typeContainer
+      .append("span")
+      .attr("class", "node-names")
+      .text(
+        connections
+          .map(
+            (link) =>
+              nodesData.find(
+                (n) =>
+                  n.id === (link.source === node.id ? link.target : link.source)
+              )?.name || "Unknown"
+          )
+          .join(", ")
+      );
+  });
+
+  scrollBar.scrollTop = 0;
+  d3.select("#details-panel").style("display", "block");
+  // setSvgMargin();
+}
+
+// Event listener for clicks on the body to reset the highlight
+document.body.addEventListener("click", function () {
+  if (currentlyHighlighted) {
+    currentlyHighlighted.classed("highlighted", false);
+    currentlyHighlighted = null;
+  }
+
+  // Optionally hide the details panel
+  const detailsPanel = document.getElementById("details-panel");
+  detailsPanel.style.display = "none";
+  detailsPanel.style.opacity = "0";
+  detailsPanel.style.visibility = "hidden";
+});
 
 //#endregion
