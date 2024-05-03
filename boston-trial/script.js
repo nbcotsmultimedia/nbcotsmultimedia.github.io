@@ -193,29 +193,11 @@ function renderNodes(nodesData, radius) {
   // Append labels to the nodes
   appendText(nodeGroup, radius);
 
-  // Event handlers
-  nodeGroup
-    // On mouseover, trigger highlightNode and highlightConnected functions
-    .on("mouseover", function (event, d) {
-      console.log("Mouseover triggered", d);
-      if (!currentlyHighlighted) {
-        // Only apply if no node is currently selected
-        highlightNode(d);
-        highlightConnected(d);
-      }
-    })
-    .on("mouseout", function (event, d) {
-      if (!currentlyHighlighted) {
-        // Only reset if no node is currently highlighted
-        resetHighlights(); // Assuming resetVisualState is a function that resets everything
-      }
-    })
-    // On click, trigger the manageNodeClick function
-    .on("click", function (event, d) {
-      console.log("Click triggered", d);
-      event.stopPropagation(); // Stop event from propagating to the body
-      manageNodeClick(this, event, d);
-    });
+  nodeGroup.on("click touchstart", function (event, d) {
+    console.log("Interaction triggered", d);
+    event.preventDefault(); // Prevents browser's default behavior, important for touch devices
+    manageNodeClick(this, event, d);
+  });
 }
 
 // Define the function to add an image element to each node group
@@ -261,68 +243,86 @@ function appendText(nodeGroup, radius) {
 
 // Define the function to manage node click, highlight logic, and details panel
 function manageNodeClick(element, event, d) {
-  const nodeElement = d3.select(element); // The circle element is now directly handled
+  event.stopPropagation();
+  const nodeId = d.id;
 
-  if (currentlyHighlighted && currentlyHighlighted.node() === element) {
-    // Toggle off if the same node is clicked again
-    currentlyHighlighted.classed("highlighted", false);
-    currentlyHighlighted = null;
-    resetHighlights(); // Make sure to reset all highlights here
+  if (currentlyHighlighted === nodeId) {
+    // Clear all highlights if the same node is clicked again
+    clearAllHighlights();
   } else {
-    if (currentlyHighlighted) {
-      currentlyHighlighted.classed("highlighted", false);
-    }
-    nodeElement.classed("highlighted", true);
-    currentlyHighlighted = nodeElement;
-    highlightConnected(d);
+    // Clear previous highlights
+    clearAllHighlights();
+
+    // Highlight the new node and its connections
+    highlightNode(nodeId);
+    highlightConnected(nodeId);
+    currentlyHighlighted = nodeId; // Update the highlighted node ID
   }
 }
 
+function clearAllHighlights() {
+  nodeGroup.selectAll(".node-border").style("display", "none");
+  nodeGroup.classed("highlighted", false).classed("faded", false);
+  linkGroup.classed("highlighted", false).classed("faded", false);
+  currentlyHighlighted = null;
+}
+
+function highlightConnectedNodesAndLinks(nodeId) {
+  // This function should handle the highlighting logic for connected nodes and links
+  // You would need to define how nodes and links are considered 'connected'
+  // For example, you could use data attributes or have a map of connections
+  d3.selectAll(`[data-connected-to="${nodeId}"]`).classed("highlighted", true);
+  d3.selectAll(
+    `.link[data-source="${nodeId}"], .link[data-target="${nodeId}"]`
+  ).classed("highlighted", true);
+}
+
+function resetVisualState() {
+  d3.selectAll(".node-group").style("stroke", null).style("stroke-width", null); // Reset styles
+}
+
 // Define the function to highlight the primary node
-function highlightNode(node) {
+function highlightNode(nodeId) {
   // Hide all borders first
   nodeGroup.selectAll(".node-border").style("display", "none");
 
   // Show the border for the selected node
-  d3.select(`#node-${node.id}`)
-    .select(".node-border")
-    .style("display", "block"); // Ensure the border is visible
+  d3.select(`#node-${nodeId}`).select(".node-border").style("display", "block");
 }
 
 // Define the function to highlight the secondary nodes and links
-function highlightConnected(node) {
+function highlightConnected(nodeId) {
   const connectedNodes = new Set();
   const connectedLinks = new Set();
 
   // Identify connected nodes and links
   linksData.forEach((link) => {
-    if (link.source === node.id || link.target === node.id) {
+    if (link.source === nodeId || link.target === nodeId) {
       connectedNodes.add(link.source);
       connectedNodes.add(link.target);
       connectedLinks.add(link.id || `${link.source}-${link.target}`);
     }
   });
 
-  // Highlight or hide nodes based on connection
+  // Highlight or hide nodes and links based on connection
   nodeGroup
     .classed("highlighted", (d) => connectedNodes.has(d.id))
     .classed("faded", (d) => !connectedNodes.has(d.id));
-
-  // Adjust visibility for connected and non-connected links
   linkGroup.each(function (d) {
     const linkId = d.id || `${d.source}-${d.target}`;
-    if (connectedLinks.has(linkId)) {
-      d3.select(this).classed("highlighted", true).style("display", "");
-    } else {
-      d3.select(this).classed("highlighted", false).style("display", "none");
-    }
+    d3.select(this)
+      .classed("highlighted", connectedLinks.has(linkId))
+      .classed("faded", !connectedLinks.has(linkId));
   });
 }
 
 // Define the function to reset node highlights
 function resetHighlights() {
+  // Reset all node highlights
   nodeGroup.selectAll(".node").classed("highlighted", false);
-  nodeGroup.selectAll(".node-border").style("display", "none"); // Ensure all borders are hidden
+  nodeGroup.selectAll(".node-border").style("display", "none"); // Hide node borders
+
+  // If there are any highlighted or faded classes applied to links, reset those as well
   linkGroup
     .selectAll(".link")
     .classed("highlighted", false)
@@ -415,11 +415,7 @@ document.body.addEventListener("click", function () {
     currentlyHighlighted = null;
   }
 
-  // Optionally hide the details panel
-  const detailsPanel = document.getElementById("details-panel");
-  detailsPanel.style.display = "none";
-  detailsPanel.style.opacity = "0";
-  detailsPanel.style.visibility = "hidden";
+  resetHighlights();
 });
 
 //#endregion

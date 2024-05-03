@@ -1,0 +1,215 @@
+/* === LINKS AND NODES === */
+
+/* Node styles */
+
+/* Link styles */
+.link,
+.highlighted line {
+  stroke: #999;
+  stroke-width: 1px;
+  fill: none;
+}
+
+.link.highlighted {
+  stroke: #18206f;
+  stroke-width: 1px;
+  stroke-opacity: 1;
+}
+
+.node-group.highlighted {
+  /* Example style */
+  stroke: #ff0000;
+  stroke-width: 3px;
+}
+
+.node-border {
+  fill: none;
+  stroke: #18206f;
+  stroke-width: 3px;
+  display: none;
+}
+
+/* Highlighted nodes and links */
+.highlighted {
+  opacity: 1; /* Adjust as needed */
+}
+
+/* Faded nodes and links */
+.faded {
+  opacity: 0.3;
+}
+
+/* === DETAILS PANEL === */
+
+/* === DETAILS PANEL === */
+
+#details-panel {
+  display: none;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  top: 120px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  overflow-y: hidden;
+}
+
+#details-panel:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Adjusting heights for different devices */
+@media (max-width: 600px) {
+  #details-panel {
+    top: 130px; /* Smaller screens might have a smaller header */
+    height: 170px; /* Smaller fixed height with scrolling */
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  #details-panel {
+    top: 110px; /* Medium screens */
+    height: 160px; /* Medium fixed height with scrolling */
+  }
+}
+
+@media (min-width: 1025px) {
+  #details-panel {
+    top: 100px; /* Medium screens */
+    height: 200px; /* Larger fixed height with scrolling */
+  }
+}
+
+/* Top div contains the selected node's name */
+#details-name {
+  position: relative; /* Make this container the reference for absolute positioning */
+  padding: 0; /* Add some padding for aesthetics */
+  display: flex; /* Use flexbox to align elements */
+  justify-content: space-between; /* Space out the name and the button */
+  align-items: center; /* Center align the items vertically */
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-right: 15px;
+  margin-bottom: 10px;
+}
+
+#name-span {
+  flex-grow: 1; /* Allows the name to take up the remaining space */
+  /* padding-bottom: 4px; */
+}
+
+/* Scrollbar */
+
+#scrollbar-div {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+  position: relative;
+  padding-right: 10px; /* Add padding to keep the scrollbar separate from the gradient */
+  box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+#scrollbar-div::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}
+
+#scrollbar-div::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+#scrollbar-div::-webkit-scrollbar-thumb {
+  background-color: #a0a0a0;
+}
+
+/* Shadow effect to be applied dynamically */
+.shadow-top {
+  box-shadow: inset 0 10px 10px -10px rgba(33, 35, 38, 0.1); /* Shadow appears at the top */
+}
+
+/* box-shadow: rgba(33, 35, 38, 0.1) 0px 10px 10px -10px; */
+
+.shadow-bottom {
+  /* display: none; */
+  position: absolute;
+  margin-right: 6px;
+  right: 5%;
+  left: 0;
+  bottom: 0;
+  pointer-events: none;
+  height: 50px;
+  background: linear-gradient(to top, #ffffff 0%, transparent 100%);
+}
+
+/* Content */
+.details-content {
+  font-family: "Inter", sans-serif;
+}
+
+/* Add space between content and scroll bar */
+.connection-category,
+.person-name,
+.person-role,
+.person-description {
+  margin-right: 6px;
+}
+
+.person-name {
+  font-weight: 700;
+  font-size: 14px;
+  font-family: "Inter", sans-serif;
+}
+
+.person-role,
+.person-description {
+  font-size: 13px;
+  font-family: "Inter", sans-serif;
+}
+
+.person-description {
+  font-weight: 400;
+  font-style: normal;
+  margin-bottom: 10px;
+}
+
+/* "CONNECTIONS" title */
+.connections-title {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding-bottom: 2px;
+  font-size: 12px;
+}
+
+/* Down caret */
+.caret {
+  font-size: 10px; /* Adjust the size of the caret */
+  margin-left: 5px; /* Add some space between the text and the caret */
+  color: #999; /* Change the color of the caret */
+  vertical-align: middle; /* Aligns the caret vertically with the text */
+}
+
+/* Connection category text */
+.connection-category {
+  margin-bottom: 8px;
+  margin-top: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+}
+
+/* Container div */
+.category-name {
+  font-weight: bold;
+}
+
+/* Names */
+.node-names {
+  margin-left: 3px;
+}
+
+/* === GLOBAL SETTINGS === */
