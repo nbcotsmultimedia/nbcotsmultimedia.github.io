@@ -196,34 +196,37 @@ function renderNodes(nodesData, radius) {
   appendText(nodeGroup, radius);
 
   // Desktop interactions
+  nodeGroup.on("mouseenter", function (event, d) {
+    if (!currentlyHighlighted) {
+      // Only highlight if no node is currently selected
+      console.log("mouseenter - highlighting", d.id);
+      highlightNode(d.id);
+      highlightConnected(d.id);
+    }
+  });
+
   nodeGroup
-    .on("mouseenter", function (event, d) {
-      if (!freezeHighlights) {
-        console.log("mouseenter - highlighting", d.id);
-        highlightNode(d.id);
-        highlightConnected(d.id);
-      }
-    })
     .on("mouseleave", function (event, d) {
-      if (!freezeHighlights) {
+      if (!currentlyHighlighted) {
+        // Only reset highlights if no node is currently selected
         console.log("mouseleave - resetting highlights", d.id);
         resetHighlights();
       }
     })
     .on("click", function (event, d) {
-      event.stopPropagation(); // Prevent event bubbling that might trigger svg click
-      if (!freezeHighlights || currentlyHighlighted !== d.id) {
-        console.log("Mouse click event on node", d.id);
+      event.stopPropagation(); // Prevent event bubbling
+
+      if (currentlyHighlighted !== d.id) {
         resetHighlights();
         highlightNode(d.id);
         highlightConnected(d.id);
         currentlyHighlighted = d.id;
-        freezeHighlights = true; // Freeze highlights until another node is clicked or the same node is clicked again
+        updateDetailsPanel(d); // Update panel content
+        toggleDetailsPanel(true); // Explicitly show the panel
       } else {
-        console.log("Click on the same node, reset highlights");
         resetHighlights();
         currentlyHighlighted = null;
-        freezeHighlights = false; // Allow hover effects to change highlights again
+        toggleDetailsPanel(false); // Explicitly hide the panel
       }
     });
 
@@ -231,8 +234,10 @@ function renderNodes(nodesData, radius) {
   nodeGroup.on("touchstart", function (event, d) {
     console.log("touchstart", d.id);
     manageNodeClick(this, event, d);
+    toggleDetailsPanel(event, d);
   });
 
+  // Body click event
   svg.on("click", function () {
     if (currentlyHighlighted && freezeHighlights) {
       console.log("SVG or non-node area clicked, resetting highlights.");
@@ -312,28 +317,148 @@ function manageNodeClick(element, event, d) {
 }
 
 function highlightNode(nodeId) {
+  nodeGroup.selectAll(".node").classed("faded", (d) => d.id !== nodeId);
   // Hide all borders
   nodeGroup.selectAll(".node-border").style("display", "none");
   // Show border for the active node
   d3.select(`#node-${nodeId}`).select(".node-border").style("display", "block");
   // Add highlighted class for styling (if needed)
-  d3.select(`#node-${nodeId}`).classed("highlighted", true);
+  d3.select(`#node-${nodeId}`)
+    .classed("highlighted", true)
+    .classed("faded", false);
 }
 
+// function highlightConnected(nodeId) {
+//   linkGroup.classed("highlighted", function (d) {
+//     // Assuming d.source and d.target are either node objects or IDs
+//     const sourceId = typeof d.source === "object" ? d.source.id : d.source;
+//     const targetId = typeof d.target === "object" ? d.target.id : d.target;
+//     return sourceId === nodeId || targetId === nodeId;
+//   });
+// }
+
 function highlightConnected(nodeId) {
-  linkGroup.classed("highlighted", function (d) {
-    // Assuming d.source and d.target are either node objects or IDs
-    const sourceId = typeof d.source === "object" ? d.source.id : d.source;
-    const targetId = typeof d.target === "object" ? d.target.id : d.target;
-    return sourceId === nodeId || targetId === nodeId;
+  // Reset all nodes and links to faded state first
+  nodeGroup.classed("highlighted", false).classed("faded", true);
+  linkGroup.classed("highlighted", false).classed("faded", true);
+
+  // Set to store IDs of connected nodes
+  const connectedNodes = new Set();
+
+  // Iterate over links to find connections
+  linksData.forEach((link) => {
+    let sourceId = link.source;
+    let targetId = link.target;
+
+    // If the link source/target are objects, extract the ID
+    if (typeof link.source === "object") sourceId = link.source.id;
+    if (typeof link.target === "object") targetId = link.target.id;
+
+    if (sourceId === nodeId || targetId === nodeId) {
+      connectedNodes.add(sourceId);
+      connectedNodes.add(targetId);
+      // Select the link and apply classes
+      d3.selectAll(`.link`)
+        .filter(
+          (d) =>
+            (d.source === sourceId && d.target === targetId) ||
+            (d.source === targetId && d.target === sourceId)
+        )
+        .classed("highlighted", true)
+        .classed("faded", false);
+    }
   });
+
+  // Highlight the connected nodes and remove fade
+  nodeGroup
+    .classed("highlighted", (d) => connectedNodes.has(d.id))
+    .classed("faded", (d) => !connectedNodes.has(d.id));
 }
 
 function resetHighlights() {
-  // Hide all borders
   nodeGroup.selectAll(".node-border").style("display", "none");
-  // Remove highlighted class from nodes
-  nodeGroup.classed("highlighted", false);
-  // Reset all links to unhighlighted state
-  linkGroup.classed("highlighted", false);
+  nodeGroup.classed("highlighted", false).classed("faded", false);
+  linkGroup.classed("highlighted", false).classed("faded", false);
 }
+
+//#endregion
+
+//#region - Details panel
+
+// Define the function to toggle the details panel open and closed
+function toggleDetailsPanel(show) {
+  const detailsPanel = document.getElementById("details-panel");
+
+  if (show) {
+    // Show the panel with a clear setting to visible
+    detailsPanel.style.display = "block";
+    requestAnimationFrame(() => {
+      detailsPanel.style.opacity = 1;
+      detailsPanel.style.visibility = "visible";
+    });
+  } else {
+    // Hide the panel with a transition
+    detailsPanel.style.opacity = 0;
+    detailsPanel.style.visibility = "hidden";
+    setTimeout(() => {
+      detailsPanel.style.display = "none";
+    }, 300); // Assume there's a CSS transition that matches this duration
+  }
+}
+
+// Define the function to populate information in the details pane
+function updateDetailsPanel(node) {
+  // Set the name in the 'name-container' span
+  d3.select("#name-span").text(node.name);
+
+  const scrollBar = document.getElementById("scrollbar-div");
+  const details = d3.select("#details-content").html("");
+
+  if (node.role && node.role.trim()) {
+    details.append("h2").attr("class", "person-role").text(node.role);
+  }
+
+  details
+    .append("p")
+    .attr("class", "person-description")
+    .text(node.blurb || "No additional information available.");
+
+  details
+    .append("p")
+    .html(`<span class="connections-title">connections</span>`);
+
+  d3.group(
+    linksData.filter(
+      (link) => link.source === node.id || link.target === node.id
+    ),
+    (d) => d.type
+  ).forEach((connections, type) => {
+    const typeContainer = details
+      .append("div")
+      .attr("class", "connection-category");
+    typeContainer
+      .append("span")
+      .attr("class", "category-name")
+      .text(`${type}: `);
+    typeContainer
+      .append("span")
+      .attr("class", "node-names")
+      .text(
+        connections
+          .map(
+            (link) =>
+              nodesData.find(
+                (n) =>
+                  n.id === (link.source === node.id ? link.target : link.source)
+              )?.name || "Unknown"
+          )
+          .join(", ")
+      );
+  });
+
+  scrollBar.scrollTop = 0;
+  d3.select("#details-panel").style("display", "block");
+  // setSvgMargin();
+}
+
+//#endregion

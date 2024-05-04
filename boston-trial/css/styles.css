@@ -65,6 +65,32 @@ svg {
   opacity: 1; /* default opacity for nodes */
 }
 
-.node-group.faded .node {
-  opacity: 0.3; /* Reduced opacity for non-connected nodes */
+.node.faded,
+.link.faded {
+  opacity: 0.1;
+}
+
+.node.highlighted,
+.link.highlighted {
+  opacity: 1;
+}
+
+/* === DETAILS PANEL === */
+
+#details-panel {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50%; /* Center the panel */
+  transform: translateX(-50%); /* Ensure it centers exactly */
+  top: 10%; /* Adjust based on your layout, maybe just below the header */
+  width: 100%; /* Responsive width */
+  background-color: #ffffff;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 20; /* Make sure it's above all other elements */
+  transition: opacity 0.3s, visibility 0.3s; /* Smooth transitions */
+  top: 120px;
+  overflow-y: hidden;
 }
