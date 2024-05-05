@@ -1,4 +1,4 @@
-//#region - Universal variables
+// #region - Universal variables
 
 // Set global variables for data and SVG element
 const urls = {
@@ -8,8 +8,9 @@ const urls = {
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vT98sc8Mt60Xt-fMGPrX2YkECtVrHEL6nCf36kq0SzePOUugsvotOM2tnDFmV7L7TGGaSvn19aoQ0av/pub?gid=1899076594&single=true&output=csv",
 };
 let svg = d3.select("svg");
-let nodeGroup;
+let nodeGroup, linkGroup;
 let currentlyHighlighted = null; // Keep track of the highlighted node
+let nodesData, linksData, nodeById;
 
 //#endregion
 
@@ -31,7 +32,7 @@ async function loadData() {
   }
 }
 
-// When document is fully loaded, call the loadData function
+// When the document is fully loaded, call the loadData function
 $(document).ready(function () {
   loadData();
 });
@@ -133,7 +134,7 @@ function setupNodes() {
 
 // Define the function to calculate horizontal pacing between nodes
 function calculateSpacing(width, numCols) {
-  // Divide viewport width by number of columns to get spacing
+  // Divide viewport width by the number of columns to get spacing
   return width / numCols;
 }
 
@@ -163,8 +164,6 @@ function positionNode(
 
 // Define the function to render the nodes in the SVG container
 function renderNodes(nodesData, radius) {
-  let freezeHighlights = false; // This flag will control the behavior of mouseleave events
-
   nodeGroup = svg
     .selectAll(".node-group")
     .data(nodesData)
@@ -195,56 +194,16 @@ function renderNodes(nodesData, radius) {
   // Append labels to the nodes
   appendText(nodeGroup, radius);
 
-  // Desktop interactions
-  nodeGroup.on("mouseenter", function (event, d) {
-    if (!currentlyHighlighted) {
-      // Only highlight if no node is currently selected
-      console.log("mouseenter - highlighting", d.id);
-      highlightNode(d.id);
-      highlightConnected(d.id);
-    }
+  // Add event listeners for interactivity
+  nodeGroup.on("click", function (event, d) {
+    event.stopPropagation(); // Prevent event bubbling
+    manageNodeClick(this, event, d);
   });
-
-  nodeGroup
-    .on("mouseleave", function (event, d) {
-      if (!currentlyHighlighted) {
-        // Only reset highlights if no node is currently selected
-        console.log("mouseleave - resetting highlights", d.id);
-        resetHighlights();
-      }
-    })
-    .on("click", function (event, d) {
-      event.stopPropagation(); // Prevent event bubbling
-
-      if (currentlyHighlighted !== d.id) {
-        resetHighlights();
-        highlightNode(d.id);
-        highlightConnected(d.id);
-        currentlyHighlighted = d.id;
-        updateDetailsPanel(d); // Update panel content
-        toggleDetailsPanel(true); // Explicitly show the panel
-      } else {
-        resetHighlights();
-        currentlyHighlighted = null;
-        toggleDetailsPanel(false); // Explicitly hide the panel
-      }
-    });
 
   // Mobile interactions
   nodeGroup.on("touchstart", function (event, d) {
     console.log("touchstart", d.id);
     manageNodeClick(this, event, d);
-    toggleDetailsPanel(event, d);
-  });
-
-  // Body click event
-  svg.on("click", function () {
-    if (currentlyHighlighted && freezeHighlights) {
-      console.log("SVG or non-node area clicked, resetting highlights.");
-      resetHighlights();
-      currentlyHighlighted = null;
-      freezeHighlights = false;
-    }
   });
 }
 
@@ -289,35 +248,8 @@ function appendText(nodeGroup, radius) {
 
 //#region - Interactivity functions
 
-function manageNodeClick(element, event, d) {
-  event.preventDefault();
-  event.stopPropagation();
-
-  const nodeId = d.id;
-  console.log(
-    "Node clicked:",
-    nodeId,
-    "Currently highlighted:",
-    currentlyHighlighted
-  );
-
-  if (currentlyHighlighted === nodeId) {
-    // If the same node is clicked again, reset highlights
-    console.log("Click on the same node, reset highlights");
-    resetHighlights();
-    currentlyHighlighted = null; // Clear the highlighted node state
-  } else {
-    // Different node is clicked or no node was previously selected
-    resetHighlights(); // Reset any previous highlights
-    highlightNode(nodeId); // Highlight the newly clicked node
-    highlightConnected(nodeId); // Highlight connected links
-    currentlyHighlighted = nodeId; // Update the currently highlighted node
-    console.log("New node highlighted:", nodeId);
-  }
-}
-
 function highlightNode(nodeId) {
-  nodeGroup.selectAll(".node").classed("faded", (d) => d.id !== nodeId);
+  nodeGroup.classed("faded", (d) => d.id !== nodeId);
   // Hide all borders
   nodeGroup.selectAll(".node-border").style("display", "none");
   // Show border for the active node
@@ -327,15 +259,6 @@ function highlightNode(nodeId) {
     .classed("highlighted", true)
     .classed("faded", false);
 }
-
-// function highlightConnected(nodeId) {
-//   linkGroup.classed("highlighted", function (d) {
-//     // Assuming d.source and d.target are either node objects or IDs
-//     const sourceId = typeof d.source === "object" ? d.source.id : d.source;
-//     const targetId = typeof d.target === "object" ? d.target.id : d.target;
-//     return sourceId === nodeId || targetId === nodeId;
-//   });
-// }
 
 function highlightConnected(nodeId) {
   // Reset all nodes and links to faded state first
@@ -381,34 +304,41 @@ function resetHighlights() {
   linkGroup.classed("highlighted", false).classed("faded", false);
 }
 
-//#endregion
+const HEADER_HEIGHT = 100; // Adjust according to your header height
+const DETAILS_PANEL_HEIGHT = 250; // Set the static height for the details panel
+const PANEL_SVG_MARGIN = 10; // Adjust this value to control spacing between panel and SVG
 
-//#region - Details panel
-
-// Define the function to toggle the details panel open and closed
 function toggleDetailsPanel(show) {
   const detailsPanel = document.getElementById("details-panel");
+  const header = document.querySelector(".header");
+  const svgElement = d3.select("svg");
+
+  const headerHeight = header.getBoundingClientRect().height;
 
   if (show) {
-    // Show the panel with a clear setting to visible
     detailsPanel.style.display = "block";
+    detailsPanel.style.top = `${headerHeight}px`; // Position below the header
+    detailsPanel.style.height = `${DETAILS_PANEL_HEIGHT}px`; // Fixed panel height
+    detailsPanel.style.bottom = "auto";
     requestAnimationFrame(() => {
       detailsPanel.style.opacity = 1;
       detailsPanel.style.visibility = "visible";
+      svgElement.style(
+        "margin-top",
+        `${DETAILS_PANEL_HEIGHT + PANEL_SVG_MARGIN}px`
+      );
     });
   } else {
-    // Hide the panel with a transition
     detailsPanel.style.opacity = 0;
     detailsPanel.style.visibility = "hidden";
     setTimeout(() => {
       detailsPanel.style.display = "none";
+      svgElement.style("margin-top", "0");
     }, 300); // Assume there's a CSS transition that matches this duration
   }
 }
 
-// Define the function to populate information in the details pane
 function updateDetailsPanel(node) {
-  // Set the name in the 'name-container' span
   d3.select("#name-span").text(node.name);
 
   const scrollBar = document.getElementById("scrollbar-div");
@@ -457,8 +387,40 @@ function updateDetailsPanel(node) {
   });
 
   scrollBar.scrollTop = 0;
-  d3.select("#details-panel").style("display", "block");
-  // setSvgMargin();
+
+  toggleDetailsPanel(true); // Show the panel
 }
 
-//#endregion
+// Node click handler with positioning logic
+function manageNodeClick(element, event, d) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  const nodeId = d.id;
+  console.log(
+    "Node clicked:",
+    nodeId,
+    "Currently highlighted:",
+    currentlyHighlighted
+  );
+
+  if (currentlyHighlighted === nodeId) {
+    console.log("Click on the same node, reset highlights");
+    resetHighlights();
+    currentlyHighlighted = null; // Clear the highlighted node state
+    toggleDetailsPanel(false); // Explicitly hide the panel
+  } else {
+    resetHighlights(); // Reset any previous highlights
+    highlightNode(nodeId); // Highlight the newly clicked node
+    highlightConnected(nodeId); // Highlight connected links
+    currentlyHighlighted = nodeId; // Update the currently highlighted node
+    updateDetailsPanel(d); // Update panel content
+    toggleDetailsPanel(true); // Explicitly show the panel
+  }
+}
+
+// Mobile interactions
+nodeGroup.on("touchstart", function (event, d) {
+  console.log("touchstart", d.id);
+  manageNodeClick(this, event, d);
+});

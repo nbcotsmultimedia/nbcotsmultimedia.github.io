@@ -14,54 +14,7 @@
   overflow-y: hidden;
 }
 
-#details-panel:not(.hidden) {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Adjusting heights for different devices */
-@media (max-width: 600px) {
-  #details-panel {
-    top: 130px; /* Smaller screens might have a smaller header */
-    height: 170px; /* Smaller fixed height with scrolling */
-  }
-}
-
-@media (min-width: 601px) and (max-width: 1024px) {
-  #details-panel {
-    top: 110px; /* Medium screens */
-    height: 160px; /* Medium fixed height with scrolling */
-  }
-}
-
-@media (min-width: 1025px) {
-  #details-panel {
-    top: 100px; /* Medium screens */
-    height: 200px; /* Larger fixed height with scrolling */
-  }
-}
-
-/* Top div contains the selected node's name */
-#details-name {
-  position: relative; /* Make this container the reference for absolute positioning */
-  padding: 0; /* Add some padding for aesthetics */
-  display: flex; /* Use flexbox to align elements */
-  justify-content: space-between; /* Space out the name and the button */
-  align-items: center; /* Center align the items vertically */
-  font-family: "ArtHouseMed", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  margin-right: 15px;
-  margin-bottom: 10px;
-}
-
-#name-span {
-  flex-grow: 1; /* Allows the name to take up the remaining space */
-  /* padding-bottom: 4px; */
-}
-
 /* Scrollbar */
-
 #scrollbar-div {
   height: 100%;
   width: 100%;
