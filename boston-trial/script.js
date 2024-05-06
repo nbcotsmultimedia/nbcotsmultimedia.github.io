@@ -35,7 +35,26 @@ async function loadData() {
 // When the document is fully loaded, call the loadData function
 $(document).ready(function () {
   loadData();
+  window.addEventListener(
+    "resize",
+    debounce(() => {
+      createGraphic();
+      xtalk.signalIframe();
+    }, 200)
+  );
 });
+
+window.addEventListener("resize", debounce(createGraphic, 200));
+
+// Debounce function to limit the rate of calling the event handler
+function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
 
 //#endregion
 
@@ -47,8 +66,15 @@ function createGraphic() {
     console.error("nodeById is undefined. Cannot create graphic.");
     return;
   }
+  clearGraphic();
   setupNodes();
   setupLinks();
+}
+
+// Function to clear the existing SVG elements
+function clearGraphic() {
+  svg.selectAll("*").remove();
+  currentlyHighlighted = null;
 }
 
 //#region - Create links
