@@ -1,4 +1,4 @@
-// #region - Universal variables
+// #region - Set universal variables
 
 // Set global variables for data and SVG element
 const urls = {
@@ -468,3 +468,5 @@ nodeGroup.on("touchstart", function (event, d) {
   console.log("touchstart", d.id);
   manageNodeClick(this, event, d);
 });
+
+//#endregion
