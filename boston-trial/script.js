@@ -200,6 +200,24 @@ function renderNodes(nodesData, radius) {
     manageNodeClick(this, event, d);
   });
 
+  // Add event listeners for hover effect
+  nodeGroup
+    .on("mouseenter", function (event, d) {
+      if (currentlyHighlighted === null) {
+        d3.select(this).select(".node-border").style("display", "block");
+        d3.select(this).classed("hovered", true);
+        highlightNode(d.id);
+        highlightConnected(d.id);
+      }
+    })
+    .on("mouseleave", function (event, d) {
+      if (currentlyHighlighted === null) {
+        d3.select(this).select(".node-border").style("display", "none");
+        d3.select(this).classed("hovered", false);
+        resetHighlights();
+      }
+    });
+
   // Mobile interactions
   nodeGroup.on("touchstart", function (event, d) {
     console.log("touchstart", d.id);
@@ -304,8 +322,8 @@ function resetHighlights() {
   linkGroup.classed("highlighted", false).classed("faded", false);
 }
 
-const HEADER_HEIGHT = 100; // Adjust according to your header height
-const DETAILS_PANEL_HEIGHT = 250; // Set the static height for the details panel
+const HEADER_HEIGHT = 120; // Adjust according to your header height
+const DETAILS_PANEL_HEIGHT = 200; // Set the static height for the details panel
 const PANEL_SVG_MARGIN = 10; // Adjust this value to control spacing between panel and SVG
 
 function toggleDetailsPanel(show) {

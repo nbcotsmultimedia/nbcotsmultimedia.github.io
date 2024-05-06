@@ -8,7 +8,7 @@
   position: absolute;
   width: 100%;
   top: 120px;
-  padding: 20px;
+  /* padding: 20px; */
   background-color: #ffffff;
   box-sizing: border-box;
   overflow-y: hidden;
@@ -96,14 +96,6 @@
   font-size: 12px;
 }
 
-/* Down caret */
-.caret {
-  font-size: 10px; /* Adjust the size of the caret */
-  margin-left: 5px; /* Add some space between the text and the caret */
-  color: #999; /* Change the color of the caret */
-  vertical-align: middle; /* Aligns the caret vertically with the text */
-}
-
 /* Connection category text */
 .connection-category {
   margin-bottom: 8px;
@@ -121,5 +113,3 @@
 .node-names {
   margin-left: 3px;
 }
-
-/* === GLOBAL SETTINGS === */

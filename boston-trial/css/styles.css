@@ -93,7 +93,7 @@ body {
   font-weight: 700;
   margin-right: 15px;
   margin-bottom: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 #name-span {
@@ -194,7 +194,7 @@ svg {
   padding-right: 10px; /* Add padding to keep the scrollbar separate from the gradient */
   padding-bottom: 15px; /* Add padding to provide extra space at the bottom */
   box-sizing: border-box; /* Ensures padding is included in width */
-  padding: 10px;
+  padding-left: 10px;
 }
 
 #scrollbar-div::-webkit-scrollbar-track {
