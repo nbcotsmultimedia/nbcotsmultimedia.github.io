@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
-const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false }).addTo(map);
+const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false, spiderfyOnMaxZoom: false, disableClusteringAtZoom: 18 }).addTo(map);
 const markers = L.featureGroup().addTo(map);
 // event handler for marker click
 const handleMarkerClick = marker => {
