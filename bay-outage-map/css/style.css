@@ -12,8 +12,15 @@
 
 .marker-cluster div {
     border-radius: 50% !important;
-    background-color: #FF2400 !important;
     opacity: 0.75;
+}
+
+.marker-cluster.pge div {
+    background-color: #FF2400 !important;
+}
+
+.marker-cluster.other div {
+    background-color: #00b1ff !important;
 }
 
 .marker-cluster span {

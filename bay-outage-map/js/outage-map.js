@@ -7,7 +7,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
-const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false, spiderfyOnMaxZoom: false, disableClusteringAtZoom: 18 }).addTo(map);
 const markers = L.featureGroup().addTo(map);
 // add county outlines
 const countyLines = new L.geoJson();
@@ -56,7 +55,8 @@ const popUpInfo = outage => {
 		<br/><b>Impacted customers: </b> ${outage.num_impacted}
 		<br/><b>Start: </b> ${outage.start_date}
 		<br/><b>Estimated end: </b>${outage.restore_date}
-		<br/><b>Cause: </b> ${outage.cause ? outage.cause : 'Not available'}`;
+		<br/><b>Cause: </b> ${outage.cause ? outage.cause : 'Not available'}
+		<br/><b>Utility company: </b> ${outage.utility_company}`;
 	return info;
 };
 
@@ -73,28 +73,6 @@ const fillLegend = legendItems => {
 	$('#legend').html(innerHtml);
 };
 
-// function to create a marker and add to marker layer
-const marker = outage => {
-	const marker = L.circleMarker([outage.lat, outage.long], {
-		renderer: myRenderer,
-		radius: 5,
-		weight: 0.5,
-		color: "white",
-		fillColor: "#00b1ff",
-		fillOpacity: 0.85,
-	}).bindPopup(popUpInfo(outage)).on('click', e => handleMarkerClick(outage));
-	marker.addTo(markers);
-	markerList.push(marker);
-}
-
-// fucntion to add markers + makeshift clusters to the map 
-const addMarkers = data => {
-	for (let i = 0; i < data.length; i++) {
-		const outage = data[i];
-		marker(outage);
-	}
-};
-
 // fucntion to style clusters
 const styleClusters = () => {
 	const clusters = $(".marker-cluster div");
@@ -109,13 +87,25 @@ const styleClusters = () => {
 };
 
 // function to add clusters only
-const addClusters = data => {
+const addClusters = (data, company) => {
+	const clusters = new L.MarkerClusterGroup({ 
+		iconCreateFunction: function(cluster) {
+			var icon = clusters._defaultIconCreateFunction(cluster);
+			icon.options.className += " " + company;
+			return icon;
+		},
+		showCoverageOnHover: false, 
+		spiderfyOnMaxZoom: false, 
+		disableClusteringAtZoom: 18 
+	}).addTo(map);
+	$(clusters).addClass(company);
+	//clusters.classList.add(company);
 	for (let i = 0; i < data.length; i++) {
 		const outage = data[i];
 		clusters.addLayer(L.circleMarker([outage.lat, outage.long], {
 			renderer: myRenderer,
 			fillOpacity: 0.75,
-			fillColor: '#FF2400',
+			fillColor: outage.utility_company === "PGE" ? '#FF2400' : "#00b1ff",
 			weight: 0,
 			radius: 5
 		}).bindPopup(popUpInfo(outage)).openPopup());
@@ -183,10 +173,10 @@ function parseData() {
 	styleCounties();
 	const pgeData = data['pge'];
 	const otherData = data['other'];
-	addClusters(pgeData);
+	addClusters(pgeData, 'pge');
 	styleClusters();
 	if (otherData.length > 0) {
-		addMarkers(otherData);
+		addClusters(otherData, 'other');
 		fillLegend(legendItems);
 	}
 };
