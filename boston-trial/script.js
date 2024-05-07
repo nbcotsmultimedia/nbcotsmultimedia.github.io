@@ -16,7 +16,7 @@ let nodesData, linksData, nodeById;
 
 //#region - Load and process data
 
-// Define the function to load and process data using jQuery, then initialize the graphic
+// Load data asynchronously and initialize the graphic
 async function loadData() {
   try {
     [nodesData, linksData] = await Promise.all([
@@ -32,29 +32,27 @@ async function loadData() {
   }
 }
 
-// When the document is fully loaded, call the loadData function
-$(document).ready(function () {
-  loadData();
-  window.addEventListener(
-    "resize",
-    debounce(() => {
-      createGraphic();
-      xtalk.signalIframe();
-    }, 200)
-  );
-});
-
-window.addEventListener("resize", debounce(createGraphic, 200));
-
-// Debounce function to limit the rate of calling the event handler
+// Debounce function to limit the rate of calling an event handler
 function debounce(func, wait) {
   let timeout;
   return function (...args) {
-    const context = this;
     clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
+    timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
+
+function resizeHandler() {
+  createGraphic(); // Redraw the graphic on resize
+  currentlyHighlighted = null; // Clear highlighted node state
+  toggleDetailsPanel(false); // Close the details panel
+  xtalk.signalIframe(); // Signal iframe (if required)
+}
+
+// Initialize on document load
+$(document).ready(() => {
+  loadData();
+  window.addEventListener("resize", debounce(resizeHandler, 200));
+});
 
 //#endregion
 
@@ -377,29 +375,37 @@ function resetHighlights() {
   linkGroup.classed("highlighted", false).classed("faded", false);
 }
 
-const HEADER_HEIGHT = 120; // Adjust according to your header height
-const DETAILS_PANEL_HEIGHT = 200; // Set the static height for the details panel
-const PANEL_SVG_MARGIN = 10; // Adjust this value to control spacing between panel and SVG
+function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
 
 function toggleDetailsPanel(show) {
   const detailsPanel = document.getElementById("details-panel");
   const header = document.querySelector(".header");
   const svgElement = d3.select("svg");
+  const content = document.getElementById("details-content");
 
   const headerHeight = header.getBoundingClientRect().height;
+  const PANEL_SVG_MARGIN = 10;
 
   if (show) {
+    const contentHeight = content.scrollHeight; // Get the full height of the content
+    const maxPanelHeight = window.innerHeight - headerHeight - 20; // Add margin at the bottom
+    const panelHeight = Math.min(contentHeight + 40, maxPanelHeight); // Adjust based on content height
+
     detailsPanel.style.display = "block";
     detailsPanel.style.top = `${headerHeight}px`; // Position below the header
-    detailsPanel.style.height = `${DETAILS_PANEL_HEIGHT}px`; // Fixed panel height
+    detailsPanel.style.height = `${panelHeight}px`; // Adjust height dynamically
     detailsPanel.style.bottom = "auto";
     requestAnimationFrame(() => {
       detailsPanel.style.opacity = 1;
       detailsPanel.style.visibility = "visible";
-      svgElement.style(
-        "margin-top",
-        `${DETAILS_PANEL_HEIGHT + PANEL_SVG_MARGIN}px`
-      );
+      svgElement.style("margin-top", `${panelHeight + PANEL_SVG_MARGIN}px`);
     });
   } else {
     detailsPanel.style.opacity = 0;
@@ -464,7 +470,6 @@ function updateDetailsPanel(node) {
   toggleDetailsPanel(true); // Show the panel
 }
 
-// Node click handler with positioning logic
 function manageNodeClick(element, event, d) {
   event.preventDefault();
   event.stopPropagation();
@@ -491,11 +496,5 @@ function manageNodeClick(element, event, d) {
     toggleDetailsPanel(true); // Explicitly show the panel
   }
 }
-
-// Mobile interactions
-nodeGroup.on("touchstart", function (event, d) {
-  console.log("touchstart", d.id);
-  manageNodeClick(this, event, d);
-});
 
 //#endregion
