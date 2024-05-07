@@ -141,7 +141,7 @@ function init() {
 		'other': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgO5AqpXk9A-3ZSjGO4seRemZKRrtu8DKuoEqfSI1YBwW9FKD48wpxVG62H4HETAxtZUuO58rWY-W7/pub?gid=1574149924&single=true&output=csv'
 	}
 	loadData(urls);
-	//setTimeout(styleCounties, 500);
+	setTimeout(styleCounties, 1000);
 };
 
 function buildConfig() {
@@ -201,8 +201,7 @@ function parseData() {
 		addClusters(otherData, 'other');
 		fillLegend(legendItems);
 	}
-	addStats();
-	styleCounties();
+	addStats()
 };
 
 map.on('zoomend', () => {
