@@ -53,6 +53,10 @@ function resizeHandler() {
 $(document).ready(() => {
   loadData();
   window.addEventListener("resize", debounce(resizeHandler, 200));
+  // If document width is <500, change the height to 600
+  if ($(document).width() < 500) {
+    $("#svg-div").css("height", "1000px");
+  }
 });
 
 //#endregion
