@@ -179,13 +179,11 @@ function positionNode(
   isSmallViewport,
   numCols
 ) {
+  // Reduce nodeSpacingSmall and nodeSpacingLarge by reducing the base padding value
+  const verticalSpacing = radius * 2.75 + (isSmallViewport ? 8 : 12);
+
   node.x = offset + (index % numCols) * spacingX;
-  node.y =
-    Math.floor(index / numCols) *
-      (radius * 2 +
-        (isSmallViewport ? config.nodeSpacingSmall : config.nodeSpacingLarge) +
-        config.basePadding) +
-    config.basePadding;
+  node.y = Math.floor(index / numCols) * verticalSpacing + config.basePadding;
 }
 
 // Define the function to render the nodes in the SVG container
@@ -264,26 +262,57 @@ function appendImages(nodeGroup, radius) {
 
 // Define the function to add text labels to each node group
 function appendText(nodeGroup, radius) {
-  nodeGroup
-    .append("text")
-    .attr("class", "node-name")
-    .attr("y", radius + 20)
-    .attr("text-anchor", "middle")
-    .text((d) => d.name);
+  const maxCharsPerLine = 20; // Adjust this value to control the wrapping
+  const lineHeight = 14; // Adjust to control line spacing
 
   nodeGroup.each(function (d) {
+    const words = wrapText(d.name, maxCharsPerLine);
     const node = d3.select(this);
-    const bbox = node.select("text").node().getBBox();
+    const textGroup = node.append("g").attr("class", "node-name");
+
+    words.forEach((line, index) => {
+      textGroup
+        .append("text")
+        .attr("y", radius + 20 + index * lineHeight)
+        .attr("text-anchor", "middle")
+        .text(line);
+    });
+
+    // Create a background rectangle based on the dimensions of the text group
+    const bbox = textGroup.node().getBBox();
     node
-      .insert("rect", "text")
+      .insert("rect", "g.node-name")
       .attr("class", "node-name-bg")
-      .attr("x", bbox.x - 2)
+      .attr("x", bbox.x - 4)
       .attr("y", bbox.y - 2)
-      .attr("width", bbox.width + 4)
+      .attr("width", bbox.width + 8)
       .attr("height", bbox.height + 4)
       .attr("rx", 5)
       .attr("ry", 5);
   });
+}
+
+// Define utility function to wrap text into multiple lines
+function wrapText(text, maxChars) {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = [];
+
+  words.forEach((word) => {
+    const testLine = currentLine.concat(word).join(" ");
+    if (testLine.length > maxChars) {
+      lines.push(currentLine.join(" "));
+      currentLine = [word];
+    } else {
+      currentLine.push(word);
+    }
+  });
+
+  if (currentLine.length) {
+    lines.push(currentLine.join(" "));
+  }
+
+  return lines;
 }
 
 //#endregion
