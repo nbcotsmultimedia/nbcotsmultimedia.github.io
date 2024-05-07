@@ -119,6 +119,7 @@ function init() {
 		'other': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgO5AqpXk9A-3ZSjGO4seRemZKRrtu8DKuoEqfSI1YBwW9FKD48wpxVG62H4HETAxtZUuO58rWY-W7/pub?gid=1574149924&single=true&output=csv'
 	}
 	loadData(urls);
+	setTimeout(styleCounties, 500);
 };
 
 function buildConfig() {
@@ -170,7 +171,6 @@ function loadData(urls) {
 };
 
 function parseData() {
-	styleCounties();
 	const pgeData = data['pge'];
 	const otherData = data['other'];
 	addClusters(pgeData, 'pge');
