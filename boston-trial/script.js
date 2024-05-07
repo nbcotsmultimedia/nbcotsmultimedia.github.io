@@ -41,6 +41,7 @@ function debounce(func, wait) {
   };
 }
 
+// On resize, redraw the graphic
 function resizeHandler() {
   createGraphic(); // Redraw the graphic on resize
   currentlyHighlighted = null; // Clear highlighted node state
@@ -394,18 +395,19 @@ function toggleDetailsPanel(show) {
   const PANEL_SVG_MARGIN = 10;
 
   if (show) {
-    const contentHeight = content.scrollHeight; // Get the full height of the content
-    const maxPanelHeight = window.innerHeight - headerHeight - 20; // Add margin at the bottom
-    const panelHeight = Math.min(contentHeight + 40, maxPanelHeight); // Adjust based on content height
+    const contentHeight = content.scrollHeight;
+    const maxPanelHeight = window.innerHeight - headerHeight - 20;
+    const panelHeight = Math.min(contentHeight + 40, maxPanelHeight);
 
     detailsPanel.style.display = "block";
-    detailsPanel.style.top = `${headerHeight}px`; // Position below the header
-    detailsPanel.style.height = `${panelHeight}px`; // Adjust height dynamically
+    detailsPanel.style.top = `${headerHeight}px`;
+    detailsPanel.style.height = `${panelHeight}px`;
     detailsPanel.style.bottom = "auto";
     requestAnimationFrame(() => {
       detailsPanel.style.opacity = 1;
       detailsPanel.style.visibility = "visible";
       svgElement.style("margin-top", `${panelHeight + PANEL_SVG_MARGIN}px`);
+      xtalk.signalIframe(); // Signal Crosstalk to resize the iframe
     });
   } else {
     detailsPanel.style.opacity = 0;
@@ -413,7 +415,8 @@ function toggleDetailsPanel(show) {
     setTimeout(() => {
       detailsPanel.style.display = "none";
       svgElement.style("margin-top", "0");
-    }, 300); // Assume there's a CSS transition that matches this duration
+      xtalk.signalIframe(); // Signal Crosstalk to resize the iframe
+    }, 300);
   }
 }
 
