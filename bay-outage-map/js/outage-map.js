@@ -20,7 +20,29 @@ success: function(data) {
         countyLines.addData(data);
     });
 }
-})
+});
+
+const addStats = () => {
+	const stats = $("#stats");
+	let totalOutages = 0;
+	let customersImpacted = 0;
+	const companies = Object.keys(data);
+	for (let i = 0; i < companies.length; i++) {
+		const company = companies[i];
+		const dataset = data[company];
+		totalOutages += dataset.length;
+		for (let i = 0; i < dataset.length; i ++) {
+			const outage = dataset[i];
+			const numImpacted = parseInt(outage.num_impacted);
+			if (!isNaN(numImpacted)) {
+				customersImpacted += numImpacted;
+			}
+		}
+	}
+	const statText = `<p class="stat"><b>Total outages:</b> ${totalOutages.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>`
+	+`<p class="stat"><b>Total customers imapcted:</b> ${customersImpacted.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>`;
+	stats.html(statText);
+};
 
 const styleCounties = () => {
 	countyLines.setStyle({
@@ -179,6 +201,7 @@ function parseData() {
 		addClusters(otherData, 'other');
 		fillLegend(legendItems);
 	}
+	addStats();
 };
 
 map.on('zoomend', () => {
