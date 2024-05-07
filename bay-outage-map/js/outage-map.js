@@ -9,10 +9,29 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({ showCoverageOnHover: false, spiderfyOnMaxZoom: false, disableClusteringAtZoom: 18 }).addTo(map);
 const markers = L.featureGroup().addTo(map);
-// event handler for marker click
-const handleMarkerClick = marker => {
-	map.setView([marker.lat, marker.long]);
+// add county outlines
+const countyLines = new L.geoJson();
+countyLines.addTo(map);
+
+$.ajax({
+dataType: "json",
+url: "data/counties.geojson",
+success: function(data) {
+    $(data.features).each(function(key, data) {
+        countyLines.addData(data);
+    });
+}
+})
+
+const styleCounties = () => {
+	countyLines.setStyle({
+		fillColor: "transparent",
+		weight: 0.85,
+		color: "#cecece"
+	});
 };
+
+
 const legendItems = {
 	"pge": {
 		"color": "#FF2400",
@@ -25,6 +44,11 @@ const legendItems = {
 		"label": "Other utility company"
 	}
 }
+
+// event handler for marker click
+const handleMarkerClick = marker => {
+	map.setView([marker.lat, marker.long]);
+};
 
 // function to fill out pop up info for specific outage
 const popUpInfo = outage => {
@@ -156,6 +180,7 @@ function loadData(urls) {
 };
 
 function parseData() {
+	styleCounties();
 	const pgeData = data['pge'];
 	const otherData = data['other'];
 	addClusters(pgeData);
