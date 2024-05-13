@@ -129,12 +129,22 @@ body {
   font-size: 12px;
 }
 
-/* Connection category text */
 .connection-category {
-  margin-bottom: 8px;
-  margin-top: 8px;
+  margin-bottom: 4px; /* Adjusted from 8px to smaller value */
+  margin-top: 0;
   font-family: "Inter", sans-serif;
   font-size: 12px;
+}
+
+.connection-category {
+  padding-bottom: 4px; /* Adds padding within the element, instead of margin outside it */
+}
+
+/* Ensure there's enough space around text */
+.connection-category .category-name,
+.connection-category .node-names {
+  margin-right: 6px; /* Adjust if necessary */
+  display: inline-block; /* Ensure inline formatting */
 }
 
 /* Container div */
@@ -158,7 +168,6 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s;
-  overflow: hidden; /* Prevents overflow outside */
   z-index: 1000;
 }
 
@@ -172,9 +181,13 @@ body {
   box-sizing: border-box;
 }
 
+#scrollbar-div,
+.details-content {
+  overflow: auto;
+}
+
 .details-content {
   font-family: "Inter", sans-serif;
-  overflow: hidden; /* Prevent content overflow */
 }
 
 svg {
