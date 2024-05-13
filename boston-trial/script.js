@@ -401,7 +401,7 @@ function toggleDetailsPanel(show) {
   if (show) {
     const contentHeight = content.scrollHeight;
     const maxPanelHeight = window.innerHeight - headerHeight - 10;
-    const panelHeight = Math.min(contentHeight + 60, maxPanelHeight);
+    const panelHeight = Math.min(contentHeight + 80, maxPanelHeight);
 
     detailsPanel.style.display = "block";
     detailsPanel.style.top = `${headerHeight}px`;
