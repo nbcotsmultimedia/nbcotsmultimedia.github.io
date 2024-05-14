@@ -12,7 +12,7 @@ const markers = L.featureGroup().addTo(map);
 const countyLines = new L.geoJson();
 countyLines.addTo(map);
 
-/*$.ajax({
+$.ajax({
 dataType: "json",
 url: "data/counties.geojson",
 success: function(data) {
@@ -20,7 +20,7 @@ success: function(data) {
         countyLines.addData(data);
     });
 }
-});*/
+});
 
 const addStats = () => {
 	const stats = $("#stats");
@@ -44,13 +44,13 @@ const addStats = () => {
 	stats.html(statText);
 };
 
-/*const styleCounties = () => {
+const styleCounties = () => {
 	countyLines.setStyle({
 		fillColor: "transparent",
 		weight: 0.85,
 		color: "#cecece"
 	});
-};*/
+};
 
 
 const legendItems = {
@@ -141,7 +141,7 @@ function init() {
 		'other': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgO5AqpXk9A-3ZSjGO4seRemZKRrtu8DKuoEqfSI1YBwW9FKD48wpxVG62H4HETAxtZUuO58rWY-W7/pub?gid=1574149924&single=true&output=csv'
 	}
 	loadData(urls);
-	//setTimeout(styleCounties, 1000);
+	setTimeout(styleCounties, 1000);
 };
 
 function buildConfig() {
