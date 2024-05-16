@@ -4,10 +4,10 @@ no-arrest-made,#1a72ee
 arrest-made,#eecb1a
 not-convicted-of-a-crime,#cb1aee
 convicted-of-a-crime,#eecb1a
-never-made-it-to-court,#ee1aa7
-dismissed,#39ff14
+never-made-it-to-court,#ef2c4c
+dismissed,#31d810
 pending,#ff8000
-non-sex-crime,#1adcee 
+non-sex-crime,#5bcdf3 
 sex-crime,#7d12ff
-no-prison-time,#ab20fd
+no-prison-time,#ac49f2
 with-prison-time,#FFFF00

@@ -12,11 +12,21 @@ p {
 
 .slide {
     max-width: 700px;
-    height: 70vh;
-    z-index: 999;
+    height: 80vh;
+    position: relative;
     display: flex;
     justify-content: center;
     flex-direction: column;
+}
+
+.caption {
+    vertical-align: middle;
+    text-align: center;
+    padding: 10px;
+    height: 100px;
+    z-index: 9999;
+    width: 600px;
+    background-color: #0C0C0C;
 }
 
 #grid-container {
@@ -33,12 +43,6 @@ p {
 #legend {
     max-width: 225px;
     width: 100%;
-}
-
-#caption {
-    padding: 10px;
-    z-index: 9999;
-    bottom: 0;
 }
 
 #crime-grid {

@@ -155,7 +155,7 @@ const manageLegend = slideNum => {
 						.style("font-size", "16px")
 						.style("fill", "#ffffff")
 						.attr("x", legendItemWidth * j + squareSize)
-						.attr("y", squareSize * i + squareSize/2);
+						.attr("y", squareSize * i + squareSize/1.5);
 					legendSquares++
 				} else {
 					break;
@@ -165,13 +165,6 @@ const manageLegend = slideNum => {
 	} else {
 		legendSvg.html("");
 	}
-};
-
-const setCaption = slideNum => {
-	const caption = captions[slideNum];
-	const captionId = `#caption-${slideNum}`;
-	d3.select(captionId)
-		.html(caption);
 };
 
 const squareHasAttr = (data, val) => {
@@ -278,7 +271,6 @@ const interact = (e, d) => {
 
 const stopInteract = (e,d) => {
 	highlightAll();
-	setCaption("");
 }
 
 const addInteractivity = () => {
@@ -295,7 +287,6 @@ const removeInteractivity = () => {
 
 const changeSlide = slideNum => {
 	changeSquareColors(slideNum);
-	setCaption(slideNum);
 	manageLegend(slideNum);
 	if (slideNum === numSlides-1) {
 		addInteractivity();
@@ -337,13 +328,9 @@ const addSlides = () => {
 			container.append("div")
 				.attr("id", `slide-${i}`)
 				.attr("class", "slide")
-				.append("div")
-				.attr("class", "caption-holder")
 				.append("p")
-				.style("padding", "10px")
-				.style("z-index", 9999)
-				.style("background-color", "#0C0C0C")
-				.attr("class", "caption")
+				.html(captions[i])
+				.attr("class", captions[i] !== "" ? "caption" : "blank-caption")
 				.attr("id", `caption-${i}`);
 		}
 	});
