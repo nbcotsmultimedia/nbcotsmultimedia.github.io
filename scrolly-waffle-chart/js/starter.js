@@ -98,14 +98,14 @@ const addSquares = (data, numCols) => {
 			const xPos = squaresInRow * (squareWidth + squareMargin);
 			const attributes = getDataAttributes(dataRow);
 			if (j === 0 && lastSquareHeight < 1) {
-				addSquare(rowSvg, squareWidth * (1 - lastSquareHeight) + 0.75, squareMargin, xPos, yPos + (squareWidth * lastSquareHeight) - 0.75, attributes, '#1aa7ee', 'square');
+				addSquare(rowSvg, squareWidth * (1 - lastSquareHeight) + 0.75, squareMargin, xPos, yPos + (squareWidth * lastSquareHeight) - 0.75, attributes, '#1a72ee', 'square');
 				remainder = (remainder + lastSquareHeight) % 1;
 				squaresInRow++;
 			} else if (j === numSquares - 1 && remainder !== 0) {
-				addSquare(rowSvg, squareWidth * remainder, squareMargin, xPos, yPos, attributes, '#1aa7ee', 'square');
+				addSquare(rowSvg, squareWidth * remainder, squareMargin, xPos, yPos, attributes, '#1a72ee', 'square');
 				lastSquareHeight = remainder;
 			} else {
-				addSquare(rowSvg, squareWidth, squareMargin, xPos, yPos, attributes, '#1aa7ee', 'square');
+				addSquare(rowSvg, squareWidth, squareMargin, xPos, yPos, attributes, '#1a72ee', 'square');
 				squaresInRow++;
 				if (j === numSquares - 1) {
 					lastSquareHeight = 1;
@@ -124,7 +124,7 @@ const manageLegend = slideNum => {
 	const legendSvg = d3.select(`#legend`);
 	const squareSize = squareWidth + squareMargin;
 	if (slideNum === 0) {
-		addSquare(legendSvg, squareWidth, squareMargin, 0, 0, {}, '#1aa7ee', 'legend-square');
+		addSquare(legendSvg, squareWidth, squareMargin, 0, 0, {}, '#1a72ee', 'legend-square');
 		legendSvg.attr("height", mobile ? 35 : 75)
 		legendSvg.append("text")
 			.text("= 100 reports")
@@ -148,7 +148,7 @@ const manageLegend = slideNum => {
 				if (legendSquares < numCats) {
 					const catName = slideCats[legendSquares];
 					let catLabel = attrToName(catName);
-					const catColor = colors.filter(row => row["category"] === catName)[0]["primary"];
+					const catColor = colors.filter(row => row["category"] === catName)[0]["color"];
 					addSquare(row, squareWidth, squareMargin, legendItemWidth * j, squareSize * i, {}, catColor, 'legend-square');
 					legendSvg.append("text")
 						.text(catLabel)
@@ -191,19 +191,19 @@ const changeSquareColors = slideNum => {
 	if (primaries.length > 0) {
 		for (let i = 0; i < primaries.length; i++) {
 			const valToChange = primaries[i];
-			const color = colors.filter(row => row["category"] === valToChange)[0]["primary"]
+			const color = colors.filter(row => row["category"] === valToChange)[0]["color"]
 			d3.selectAll(`.square`)
 				.filter(d => squareHasAttr(d, valToChange))
+				.style("opacity", 1)
 				.attr("fill", color);
 		}
 	}
 	if (secondaries.length > 0) {
 		for (let i = 0; i < secondaries.length; i++) {
 			const valToChange = secondaries[i];
-			const color = colors.filter(row => row["category"] === valToChange)[0]["secondary"]
 			d3.selectAll(`.square`)
 				.filter(d => squareHasAttr(d, valToChange))
-				.attr("fill", color);
+				.style("opacity", 0.5);
 		}
 	}
 };
@@ -232,14 +232,7 @@ const matchCat = (data, col, val) => {
 };
 
 const highlightSquare = lowLevelVal => {
-	return colors.filter(row => row["category"] === lowLevelVal)[0]["primary"];
-};
-
-const lowlightSquare = (d, cats) => {
-	if (d) {
-		const lowLevelVal = lowestLevelCat(d, cats)[1];
-		return colors.filter(row => row["category"] === lowLevelVal)[0]["secondary"];
-	}
+	return colors.filter(row => row["category"] === lowLevelVal)[0]["color"];
 };
 
 const highlightData = (d) => {
@@ -249,14 +242,14 @@ const highlightData = (d) => {
 	const lowLevelVal = catInfo[1];
 	const squaresToHighlight = d3.selectAll(`.square`).filter(d => matchCat(d, lowLevelCat, lowLevelVal));
 	const otherSquares = d3.selectAll(`.square`).filter(d => !matchCat(d, lowLevelCat, lowLevelVal));
-	squaresToHighlight.attr("fill", d => highlightSquare(lowLevelVal));
-	otherSquares.attr("fill", d => lowlightSquare(d, cats));
+	squaresToHighlight.attr("fill", d => highlightSquare(lowLevelVal))
+		.style("opacity", 1);
+	otherSquares.style("opacity", 0.5);
 };
 
 const highlightAll = () => {
-	const cats = slidePrimaryCats[numSlides-1];
 	d3.selectAll(`.square`)
-		.attr("fill", d => highlightSquare(lowestLevelCat(d, cats)[1]));
+		.style("opacity", 1);
 };
 
 const interact = (e, d) => {
