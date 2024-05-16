@@ -204,7 +204,8 @@ const showTooltip = d => {
 	const cats = slidePrimaryCats[numSlides-1];
 	const cat = lowestLevelCat(d, cats)[1];
 	const catName = attrToName(cat);
-	//setCaption(`${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
+	d3.selectAll('#caption-7')
+		.text(`${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
 };
 
 const lowestLevelCat = (d, cats) => {
@@ -271,6 +272,8 @@ const interact = (e, d) => {
 
 const stopInteract = (e,d) => {
 	highlightAll();
+	d3.selectAll('#caption-7')
+		.text('');
 }
 
 const addInteractivity = () => {
@@ -330,7 +333,7 @@ const addSlides = () => {
 				.attr("class", "slide")
 				.append("p")
 				.html(captions[i])
-				.attr("class", captions[i] !== "" ? "caption" : "blank-caption")
+				.attr("class", "caption")
 				.attr("id", `caption-${i}`);
 		}
 	});
