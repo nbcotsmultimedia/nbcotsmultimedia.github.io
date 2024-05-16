@@ -136,7 +136,7 @@ const manageLegend = slideNum => {
 		const slideCats = slidePrimaryCats[slideNum];
 		const svgWidth = parseInt(legendSvg.style("width"));
 		const legendItemWidth = mobile ? squareSize + 150 : squareSize + 200;
-		const itemsPerRow = Math.floor(svgWidth / legendItemWidth);
+		const itemsPerRow = mobile ? Math.floor(svgWidth / legendItemWidth) : 1;
 		const numCats = slideCats.length;
 		const legendRows = Math.ceil(numCats / itemsPerRow);
 		legendSvg.attr("height", legendRows*squareSize+25);
@@ -149,7 +149,7 @@ const manageLegend = slideNum => {
 					const catName = slideCats[legendSquares];
 					let catLabel = attrToName(catName);
 					const catColor = colors.filter(row => row["category"] === catName)[0]["color"];
-					addSquare(row, squareWidth, squareMargin, legendItemWidth * j, squareSize * i, {}, catColor, 'legend-square');
+					addSquare(row, squareWidth, squareMargin, legendItemWidth * j, squareSize * i, [{"label": catName}], catColor, 'legend-square');
 					legendSvg.append("text")
 						.text(catLabel)
 						.style("font-size", "16px")
@@ -167,8 +167,10 @@ const manageLegend = slideNum => {
 	}
 };
 
-const setCaption = caption => {
-	d3.select(`#caption`)
+const setCaption = slideNum => {
+	const caption = captions[slideNum];
+	const captionId = `#caption-${slideNum}`;
+	d3.select(captionId)
 		.html(caption);
 };
 
@@ -185,9 +187,6 @@ const squareHasAttr = (data, val) => {
 const changeSquareColors = slideNum => {
 	const primaries = slidePrimaryCats[slideNum];
 	const secondaries = slideSecondaryCats[slideNum];
-	console.log(slideNum)
-	console.log(primaries)
-	console.log(secondaries)
 	if (primaries.length > 0) {
 		for (let i = 0; i < primaries.length; i++) {
 			const valToChange = primaries[i];
@@ -212,7 +211,7 @@ const showTooltip = d => {
 	const cats = slidePrimaryCats[numSlides-1];
 	const cat = lowestLevelCat(d, cats)[1];
 	const catName = attrToName(cat);
-	setCaption(`${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
+	//setCaption(`${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
 };
 
 const lowestLevelCat = (d, cats) => {
@@ -231,15 +230,24 @@ const matchCat = (data, col, val) => {
 	return data && data.hasOwnProperty(col) && data[col] === val;
 };
 
+const matchLegend = (data, val) => {
+	console.log(data)
+	return data && data["label"] === val;
+};
+
 const highlightSquare = lowLevelVal => {
 	return colors.filter(row => row["category"] === lowLevelVal)[0]["color"];
 };
 
-const highlightData = (d) => {
-	const cats = slidePrimaryCats[numSlides-1];
-	const catInfo = lowestLevelCat(d, cats);
-	const lowLevelCat = catInfo[0];
-	const lowLevelVal = catInfo[1];
+const highlightLegend = (d, lowLevelVal) => {
+	const squaresToHighlight = d3.selectAll(`.legend-square`).filter(d => matchLegend(d, lowLevelVal));
+	const otherSquares = d3.selectAll(`.legend-square`).filter(d => !matchLegend(d, lowLevelVal));
+	squaresToHighlight.attr("fill", d => highlightSquare(lowLevelVal))
+		.style("opacity", 1);
+	otherSquares.style("opacity", 0.5);
+};
+
+const highlightData = (d, lowLevelCat, lowLevelVal) => {
 	const squaresToHighlight = d3.selectAll(`.square`).filter(d => matchCat(d, lowLevelCat, lowLevelVal));
 	const otherSquares = d3.selectAll(`.square`).filter(d => !matchCat(d, lowLevelCat, lowLevelVal));
 	squaresToHighlight.attr("fill", d => highlightSquare(lowLevelVal))
@@ -247,13 +255,24 @@ const highlightData = (d) => {
 	otherSquares.style("opacity", 0.5);
 };
 
+const highlightSquares = d => {
+	const cats = slidePrimaryCats[numSlides-1];
+	const catInfo = lowestLevelCat(d, cats);
+	const lowLevelCat = catInfo[0];
+	const lowLevelVal = catInfo[1];
+	highlightLegend(d, lowLevelVal);
+	highlightData(d, lowLevelCat, lowLevelVal);
+};
+
 const highlightAll = () => {
 	d3.selectAll(`.square`)
+		.style("opacity", 1);
+	d3.selectAll(`.legend-square`)
 		.style("opacity", 1);
 };
 
 const interact = (e, d) => {
-	highlightData(d);
+	highlightSquares(d);
 	showTooltip(d);
 };
 
@@ -276,7 +295,7 @@ const removeInteractivity = () => {
 
 const changeSlide = slideNum => {
 	changeSquareColors(slideNum);
-	setCaption(captions[slideNum]);
+	setCaption(slideNum);
 	manageLegend(slideNum);
 	if (slideNum === numSlides-1) {
 		addInteractivity();
@@ -317,7 +336,15 @@ const addSlides = () => {
 		for (let i = 0; i < numSlides; i++) {
 			container.append("div")
 				.attr("id", `slide-${i}`)
-				.attr("class", "slide");
+				.attr("class", "slide")
+				.append("div")
+				.attr("class", "caption-holder")
+				.append("p")
+				.style("padding", "10px")
+				.style("z-index", 9999)
+				.style("background-color", "#0C0C0C")
+				.attr("class", "caption")
+				.attr("id", `caption-${i}`);
 		}
 	});
 

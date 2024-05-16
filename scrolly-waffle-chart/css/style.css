@@ -11,28 +11,49 @@ p {
 }
 
 .slide {
-    width: 100vw;
+    max-width: 700px;
     height: 70vh;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #grid-container {
     left: 50%;
     transform: translate(-50%, 0);
     width: 100%;
-    max-width: 500px;
+    max-width: 700px;
     position: fixed;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
 }
 
 #legend {
-    max-width: 500px;
+    max-width: 225px;
     width: 100%;
 }
 
 #caption {
-   text-align: center;
+    padding: 10px;
+    z-index: 9999;
+    bottom: 0;
 }
 
 #crime-grid {
     display: flex;
     justify-content: center;
+}
+
+#slide-0 {
+    justify-content: end;
+}
+
+@media screen and (max-width: 768px) {
+
+    #grid-container {
+        display: block;
+        max-width: 600px;
+    }
 }
