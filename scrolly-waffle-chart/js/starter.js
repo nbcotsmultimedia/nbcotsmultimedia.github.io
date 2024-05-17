@@ -101,7 +101,7 @@ const addSquares = (data, numCols) => {
 			const xPos = squaresInRow * squareSize;
 			const attributes = getDataAttributes(dataRow);
 			if (j === 0 && lastSquareHeight < 1) {
-				addSquare(rowSvg, squareWidth * (1 - lastSquareHeight) + 0.75, squareMargin, xPos, yPos + (squareWidth * lastSquareHeight) - 0.75, attributes, '#1a72ee', 'square');
+				addSquare(rowSvg, squareWidth * (1 - lastSquareHeight), squareMargin, xPos, yPos + (squareWidth * lastSquareHeight), attributes, '#1a72ee', 'square');
 				remainder = (remainder + lastSquareHeight) % 1;
 				squaresInRow++;
 			} else if (j === numSquares - 1 && remainder !== 0) {
