@@ -23,10 +23,9 @@ p {
     vertical-align: middle;
     text-align: center;
     padding: 10px;
-    height: 100px;
+    max-width: 600px;
     z-index: 9999;
-    width: 600px;
-    background-color: #0C0C0C;
+    background-color: rgba(12,12,12,0.75);
 }
 
 #grid-container {
@@ -56,9 +55,16 @@ p {
 }
 
 @media screen and (max-width: 768px) {
+    #crime-grid {
+        height: 50vh;
+    }
 
     #grid-container {
         display: block;
         max-width: 600px;
+    }
+
+    .caption {
+        max-width: 300px;
     }
 }
