@@ -5,6 +5,7 @@ let mobile = window.innerWidth <= 768,
 	numSquares,
 	squareWidth,
 	squareMargin,
+	squareSize,
 	captions,
 	slidePrimaryCats,
 	slideSecondaryCats,
@@ -49,12 +50,14 @@ const addRows = numRows => {
 };
 
 const setSvgHeight = (numCols, numRows) => {
-	// resize svg based on square size and number of rows
+	// resize svg based on square size and number of rows, leave room for interactive caption on last slide
 	const containerWidth = svg.node().getBoundingClientRect()["width"];
 	const rowHeight = containerWidth / numCols;
 	squareWidth = rowHeight * 0.8;
 	squareMargin = rowHeight * 0.2;
-	const svgHeight = rowHeight * numRows;
+	squareSize = squareWidth + squareMargin;
+	const gridHeight = rowHeight * numRows;
+	const svgHeight = gridHeight + 50;
 	svg.attr('height', svgHeight);
 };
 
@@ -94,8 +97,8 @@ const addSquares = (data, numCols) => {
 		let remainder = dataCount % 1;
 		for (let j = 0; j < numSquares; j++) {
 			const rowSvg = d3.select(`#row-${currentRow}`);
-			const yPos = currentRow * (squareWidth + squareMargin);
-			const xPos = squaresInRow * (squareWidth + squareMargin);
+			const yPos = currentRow * squareSize;
+			const xPos = squaresInRow * squareSize;
 			const attributes = getDataAttributes(dataRow);
 			if (j === 0 && lastSquareHeight < 1) {
 				addSquare(rowSvg, squareWidth * (1 - lastSquareHeight) + 0.75, squareMargin, xPos, yPos + (squareWidth * lastSquareHeight) - 0.75, attributes, '#1a72ee', 'square');
@@ -122,7 +125,6 @@ const addSquares = (data, numCols) => {
 
 const manageLegend = slideNum => {
 	const legendSvg = d3.select(`#legend`);
-	const squareSize = squareWidth + squareMargin;
 	if (slideNum === 0) {
 		addSquare(legendSvg, squareWidth, squareMargin, 0, 0, {}, '#1a72ee', 'legend-square');
 		legendSvg.attr("height", mobile ? 35 : 75)
@@ -204,8 +206,10 @@ const showTooltip = d => {
 	const cats = slidePrimaryCats[numSlides-1];
 	const cat = lowestLevelCat(d, cats)[1];
 	const catName = attrToName(cat);
-	d3.selectAll('#caption-7')
-		.text(`${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`);
+	const tooltipText = `${catName}: ${d["count"].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+	console.log(tooltipText)
+	d3.select('#tooltip')
+		.text(tooltipText);
 };
 
 const lowestLevelCat = (d, cats) => {
@@ -225,7 +229,6 @@ const matchCat = (data, col, val) => {
 };
 
 const matchLegend = (data, val) => {
-	console.log(data)
 	return data && data["label"] === val;
 };
 
@@ -272,7 +275,7 @@ const interact = (e, d) => {
 
 const stopInteract = (e,d) => {
 	highlightAll();
-	d3.selectAll('#caption-7')
+	d3.select('#tooltip')
 		.text('');
 }
 
@@ -299,6 +302,17 @@ const changeSlide = slideNum => {
 	setTimeout(function () { xtalk.signalIframe(); }, 800);
 };
 
+const addTooltipSpace = (numRows, numCols) => {
+	svg.append("g")
+		.append("text")
+		.attr("x", (numCols * squareSize) / 2)
+		.attr("y", (numRows * squareSize) + 25)
+		.attr("text-anchor", "middle")
+		.attr("id", "tooltip")
+		.attr("fill", "#ffffff")
+		.attr("font-size", "16px");
+};
+
 const createGrid = () => {
 	d3.csv('./data/crime-results.csv').then(data => {
 		// get total number of crime reports
@@ -316,6 +330,8 @@ const createGrid = () => {
 		// add grid content for initial slide
 		addRows(numRows);
 		addSquares(data, numRows, numCols);
+		// add space for interactive tooltip on last slide
+		addTooltipSpace(numRows, numCols);
 	});
 };
 
@@ -333,7 +349,7 @@ const addSlides = () => {
 				.attr("class", "slide")
 				.append("p")
 				.html(captions[i])
-				.attr("class", "caption")
+				.attr("class", i === numSlides - 1 ? "blank-caption" : "caption")
 				.attr("id", `caption-${i}`);
 		}
 	});
