@@ -125,8 +125,8 @@ const config = {
   nodeSpacingLarge: 20,
   basePadding: 45,
   strokeWidth: 1,
-  strokeColor: "#999",
-  fillColor: "#fff",
+  strokeColor: "#0c0c0c", // darker color for dark mode
+  fillColor: "#0c0c0c", // darker color for dark mode
 };
 
 // Define the function to configure and position nodes based on the current viewport size and data
@@ -183,7 +183,7 @@ function positionNode(
   numCols
 ) {
   // Reduce nodeSpacingSmall and nodeSpacingLarge by reducing the base padding value
-  const verticalSpacing = radius * 2.75 + (isSmallViewport ? 8 : 12);
+  const verticalSpacing = radius * 2.9 + (isSmallViewport ? 10 : 12);
 
   node.x = offset + (index % numCols) * spacingX;
   node.y = Math.floor(index / numCols) * verticalSpacing + config.basePadding;
