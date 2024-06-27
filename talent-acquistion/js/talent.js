@@ -5,9 +5,19 @@ var allData = [];
 var map;
 var config;
 
+var hearstIcon;
 
 function init() {
 	config = buildConfig();
+
+	hearstIcon = L.icon({
+		iconUrl: 'images/hearst-circle.png',
+		iconSize:     [17, 17], // size of the icon
+		iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+		popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+	});
+
+
 	loadStations();
 
 }
@@ -141,7 +151,8 @@ function parseStations() {
 
 	//CREATE MARKERS
 	for (var j=0; j<totalEntries; j++) {
-		marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), {icon:createLabelIcon("textLabelclass",markers[allStations[j].CallLetters])}).addTo(map).addTo(myFeatureGroup);
+		//marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), {icon:createLabelIcon("textLabelclass",markers[allStations[j].CallLetters])}).addTo(map).addTo(myFeatureGroup);
+		marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), { icon: hearstIcon }).addTo(map).addTo(myFeatureGroup);
 		marker.cid = allStations[j].CallLetters;
 	}
 	
@@ -164,19 +175,24 @@ function parseStations() {
 
 function displayTalent(which) {
 	//console.log(which);
-	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>LinkedIn</th><th>Employer</th><th>Smart Recuiters</th></tr></thead></table>");
+	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>LinkedIn</th><th>Employer</th><th>Smart Recuiters</th></tr></thead><tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table>");
 	
+	$("#currentSel").html("<h4>Current selection: " + which + " (" + "Hearst" + ")</h4>")
 
 	for (var i=0; i<allData.length; i++) {
 		
 		if (allData[i].Station == which) {
 			//console.log(allData[i].Station)
+			var srlink = "NA";
+			if (allData[i].SmartRecruiters != "NA") {
+				srlink = "<a href='" +  allData[i].SmartRecruiters + "' target='_blank'>Link</a>";
+			}
 			
 			$("#allTalent tr:last").after("<tr><td>" +  allData[i].Name + "</td>" + 
 											  "<td>" +  allData[i].Title + "</td>" +
 											  "<td><a href='" +  allData[i].LinkedIn + "' target='_blank'>Link</a></td>" +
 											  "<td>" +  allData[i].Station + "</td>" +
-											  "<td><a href='" +  allData[i].SmartRecruiters + "' target='_blank'>Link</a></td></tr>");
+											  "<td>" + srlink +"</td></tr>");
 			
 		}
 	}
@@ -184,9 +200,10 @@ function displayTalent(which) {
 	//new DataTable('#allTalent');
 	new DataTable('#allTalent', {
 		info: false,
-		ordering: false,
+		searching: false,
 		paging: false,
-		search: false
+		stripe: true,
+		order: [[1, 'asc']]
 	});
 
 	

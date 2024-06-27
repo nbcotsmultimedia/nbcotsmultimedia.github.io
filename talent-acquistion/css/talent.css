@@ -3,6 +3,14 @@ html {
 
 }
 
+.containerX {
+  max-width: 1000px;
+  margin: 0px auto;
+  background-color: #FFF;
+  padding: 10px 10px;
+  height: 100vh;
+}
+
 #map {
   height: 500px;
   margin: 0;
@@ -38,6 +46,11 @@ html {
 
 #talent {
   margin-top: 15px;
+}
+
+#currentSel {
+  margin-top: 15px;
+  border-bottom: 1px dotted #CCC;
 }
 
 @media (max-width: 700px ) {
