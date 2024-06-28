@@ -11,10 +11,39 @@ function init() {
 	config = buildConfig();
 
 	hearstIcon = L.icon({
-		iconUrl: 'images/hearst-circle.png',
-		iconSize:     [17, 17], // size of the icon
-		iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-		popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+		iconUrl: 'images/hearst.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	abcIcon = L.icon({
+		iconUrl: 'images/abc.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	cbsIcon = L.icon({
+		iconUrl: 'images/cbs.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	tegnaIcon = L.icon({
+		iconUrl: 'images/tegna.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	pbsIcon = L.icon({
+		iconUrl: 'images/pbs.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	nexstarIcon = L.icon({
+		iconUrl: 'images/nexstar.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	foxIcon = L.icon({
+		iconUrl: 'images/fox.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
 	});
 
 
@@ -138,7 +167,7 @@ function parseStations() {
 	  })
 	}
 
-	var myFeatureGroup = L.featureGroup().addTo(map).on("click", groupClick);
+	var myFeatureGroup = L.featureGroup().addTo(map).on("click", groupClick).on("mouseover", groupOver);
 	var marker, cid;
 
 	//TEST LABEL
@@ -149,19 +178,53 @@ function parseStations() {
 	//marker = L.marker(new L.LatLng(38.898308, -77.036565), {icon:createLabelIcon("textLabelclass",markers['unknown'])}).addTo(map).addTo(myFeatureGroup);
 	//marker.cid = "unknown";
 
+	var icon;
+
 	//CREATE MARKERS
 	for (var j=0; j<totalEntries; j++) {
-		//marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), {icon:createLabelIcon("textLabelclass",markers[allStations[j].CallLetters])}).addTo(map).addTo(myFeatureGroup);
-		marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), { icon: hearstIcon }).addTo(map).addTo(myFeatureGroup);
-		marker.cid = allStations[j].CallLetters;
-	}
-	
+		switch (allStations[j].Owner) {
+			case "Hearst":
+				icon = hearstIcon;
+				break;
+			case "CBS":
+				icon = cbsIcon;
+				break;
+			case "ABC":
+				icon = abcIcon;
+				break;
+			case "PBS":
+				icon = pbsIcon;
+				break;
+			case "Nexstar":
+				icon = nexstarIcon;
+				break;
+			case "Tegna":
+				icon = tegnaIcon;
+				break;
+			case "Fox":
+				icon = foxIcon;
+				break;
+			default:
+				//something
+		}
 
+		//marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), {icon:createLabelIcon("textLabelclass",markers[allStations[j].CallLetters])}).addTo(map).addTo(myFeatureGroup);
+		marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), { icon: icon  }).addTo(map).addTo(myFeatureGroup);
+		//marker = L.circleMarker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), { radius: 7, color: 'white', weight: 2, fillOpacity: .66, fillColor: 'red', title: 'XXXX' }).addTo(map).addTo(myFeatureGroup);
+		marker.cid = allStations[j].CallLetters;
+		marker.cid2 = j;
+	}
+
+	
 	function groupClick(event) {
   		//console.log("Clicked on marker " + event.layer.cid);
 		//console.log("Clicked on marker");
-		displayTalent(event.layer.cid);
+		displayTalent(event.layer.cid, event.layer.cid2);
 	}
+	function groupOver(event) {
+		
+	  console.log("over");
+  	}	
 
 	/*var circle = L.circle([38.897513, -77.036562], {
   	color: 'red',
@@ -173,16 +236,18 @@ function parseStations() {
 
 }
 
-function displayTalent(which) {
-	//console.log(which);
-	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>LinkedIn</th><th>Employer</th><th>Smart Recuiters</th></tr></thead><tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table>");
+function displayTalent(which, myindex) {
+	//console.log(which + " // " + myindex);
+	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>LinkedIn</th><th>Employer</th><th>Smart Recuiters</th><th>Notes</th></tr></thead><tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table>");
 	
-	$("#currentSel").html("<h4>Current selection: " + which + " (" + "Hearst" + ")</h4>")
+	//$("#currentSel").html("<h4>Current selection: " + which + " (" + "Hearst" + ")</h4>")
+	$("#currentSel").html("<h5>Current selection: " + which + "</h5><p>Alternate name: "  + allStations[myindex].AltCall + "<br/>Owner: " + allStations[myindex].Owner + "</p>");
 
 	for (var i=0; i<allData.length; i++) {
 		
 		if (allData[i].Station == which) {
 			//console.log(allData[i].Station)
+
 			var srlink = "NA";
 			if (allData[i].SmartRecruiters != "NA") {
 				srlink = "<a href='" +  allData[i].SmartRecruiters + "' target='_blank'>Link</a>";
@@ -192,7 +257,8 @@ function displayTalent(which) {
 											  "<td>" +  allData[i].Title + "</td>" +
 											  "<td><a href='" +  allData[i].LinkedIn + "' target='_blank'>Link</a></td>" +
 											  "<td>" +  allData[i].Station + "</td>" +
-											  "<td>" + srlink +"</td></tr>");
+											  "<td>" + srlink +"</td>" +
+		  									  "<td>" + allData[i].Notes +"</td></tr>");
 			
 		}
 	}

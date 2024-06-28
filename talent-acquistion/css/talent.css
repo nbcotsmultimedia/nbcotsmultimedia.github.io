@@ -20,13 +20,8 @@ html {
 
 .textLabelclass{
   padding-top: 2px;
-  font-size: 12px;
-  color: white;
   border-radius: 6px;
   background-color: rgba(204,0,0,.66);
-  border: 1px;
-  border-color: #FFF;
-  text-align: center;
   width: 12px !important;
   height: 12px !important;
 }
