@@ -8,7 +8,7 @@ html {
   margin: 0px auto;
   background-color: #FFF;
   padding: 10px 10px;
-  height: 100vh;
+  height: 100%;
 }
 
 #map {
