@@ -1,0 +1,374 @@
+FIRST_NAME,LAST_NAME,SPORT,FULL_HOMETOWN,Latitude,Longitude,Accuracy Score,Accuracy Type,Number,Street,Unit Type,Unit Number,City,State,County,Zip,Country,Source
+Ben ,Davison,Rowing ,"Iverness , Florida",28.8447,-82.3631194,0,,,,,,,,,,,
+Alex,Obert,Water Polo,"Loomis/Sacremento, California",38.806322,-121.2006899,0.5,place,,,,,Sacramento,CA,Sacramento County,94240,US,TIGER/Line® dataset from the US Census Bureau
+Vinson ,Chiu,Badminton,"Southern , California",35.187133,-117.885359,0.75,place,,,,,California City,CA,Kern County,93504,US,TIGER/Line® dataset from the US Census Bureau
+Annette,Echikunwoke,Track and Field,"Pickering North , Ohio ",39.88423,-82.7535,0.75,place,,,,,Pickerington,OH,Fairfield County,43147,US,TIGER/Line® dataset from the US Census Bureau
+Sunny,Choi,Breaking,"Queens, NY",40.745263,-73.711159,0.8,place,,,,,Queens,NY,Queens County,11004,US,TIGER/Line® dataset from the US Census Bureau
+Cameron ,Wood,Cycling (BMX Racing),"Montana City , Montana ",46.537711,-111.932769,0.8,place,,,,,Montana City,MT,Jefferson County,59634,US,TIGER/Line® dataset from the US Census Bureau
+Nick,Mead,Rowing,"Strafford, Pennsylvania",40.050942,-75.404358,0.8,place,,,,,Strafford,PA,Chester County,19087,US,TIGER/Line® dataset from the US Census Bureau
+Matt,Anderson,Volleyball,"West Seneca, New York",42.83749,-78.75083,0.8,place,,,,,West Seneca,NY,Erie County,14224,US,TIGER/Line® dataset from the US Census Bureau
+Ryann,Neushul,Water Polo,"Isla Vista, California",34.413329,-119.860972,0.8,place,,,,,Isla Vista,CA,Santa Barbara County,93117,US,TIGER/Line® dataset from the US Census Bureau
+Anita,Alvarez,Artistic Swimming,"Kenmore, New York",42.965891,-78.870036,0.9,place,,,,,Kenmore,NY,Erie County,14217,US,TIGER/Line® dataset from the US Census Bureau
+Kassidy ,Cook ,Diving,"The Woodlands, Texas ",30.194985,-95.548211,0.9,place,,,,,The Woodlands,TX,Montgomery County,77382,US,TIGER/Line® dataset from the US Census Bureau
+Jack ,Yonezuka,Judo ,"West Long Beach , New Jersey",39.685675,-74.144859,0.9,place,,,,,Long Beach,NJ,Ocean County,8008,US,TIGER/Line® dataset from the US Census Bureau
+Colin,Duffy,Sport Climbing,"Broomfield, Colorado",39.930782,-105.074287,0.9,place,,,,,Broomfield,CO,Broomfield County,80020,US,TIGER/Line® dataset from the US Census Bureau
+Abbey,Weitzeil,Swimming,"Saugus, California",34.411385,-118.540086,0.9,place,,,,,Saugus,CA,Los Angeles County,91350,US,TIGER/Line® dataset from the US Census Bureau
+David,Smith,Volleyball,"Saugus, California",34.411385,-118.540086,0.9,place,,,,,Saugus,CA,Los Angeles County,91350,US,TIGER/Line® dataset from the US Census Bureau
+Jordan ,Thompson,Volleyball,"Edina , Minnesota ",44.889687,-93.349949,0.9,place,,,,,Edina,MN,Hennepin County,55424,US,TIGER/Line® dataset from the US Census Bureau
+Brady,Ellison,Archery,"Globe, Arizona",33.566039,-110.757756,1,place,,,,,Globe,AZ,Gila County,85501,US,TIGER/Line® dataset from the US Census Bureau
+Casey,Kaufhold,Archery,"Lancaster, Pennsylvania",40.076553,-76.31068,1,place,,,,,Lancaster,PA,Lancaster County,17601,US,TIGER/Line® dataset from the US Census Bureau
+Jennifer,Mucino-Fernandez,Archery,"Mexico City, Mexico, ",39.395801,-91.660463,1,street_center,,Mexico Rd,,,Perry,MO,Ralls County,63462,US,TIGER/Line® dataset from the US Census Bureau
+Daniella,Ramirez,Artistic Swimming,"Miami, Florida",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Megumi,Field,Artistic Swimming,"Wilmington, Delaware",39.727113,-75.547844,1,place,,,,,Wilmington,DE,New Castle County,19801,US,TIGER/Line® dataset from the US Census Bureau
+Jaime,Czarkowski,Artistic Swimming,"Calgary, Canada",51.164888,-114.073897,1,place,,,,,Calgary,AB,,T3K,CA,CanVec+ by Natural Resources Canada
+Jacklyn,Luu,Artistic Swimming,"Milpitas, California",37.436454,-121.861989,1,place,,,,,Milpitas,CA,Santa Clara County,95035,US,TIGER/Line® dataset from the US Census Bureau
+Keana ,Hunter,Artistic Swimming,"Los Angeles, California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Jennie,Gai,Badminton,"Fremont, California",37.565285,-121.982721,1,place,,,,,Fremont,CA,Alameda County,94536,US,TIGER/Line® dataset from the US Census Bureau
+Beiwen,Zhang,Badminton,"China & Singapore, ",30.04799,-94.33574,1,place,,,,,China,TX,Jefferson County,77613,US,TIGER/Line® dataset from the US Census Bureau
+Annie ,Xu,Badminton,"San Jose , California",37.346608,-121.909871,1,place,,,,,San Jose,CA,Santa Clara County,95110,US,TIGER/Line® dataset from the US Census Bureau
+Kerry ,Xu,Badminton,"San Jose , California",37.346608,-121.909871,1,place,,,,,San Jose,CA,Santa Clara County,95110,US,TIGER/Line® dataset from the US Census Bureau
+Joshua ,Yuan,Badminton,"San Mateo, California",37.573485,-122.32253,1,place,,,,,San Mateo,CA,San Mateo County,94401,US,TIGER/Line® dataset from the US Census Bureau
+Howard ,Shu,Badminton,"Orange County , California",33.675687,-117.777207,1,county,,,,,,CA,Orange County,,US,US Census Bureau
+Canyon,Barry,Basketball 3x3,"Colorado Springs, Colorado",38.828893,-104.809929,1,place,,,,,Colorado Springs,CO,El Paso County,80903,US,TIGER/Line® dataset from the US Census Bureau
+Jimmer,Fredette,Basketball 3x3,"Glens Falls, New York",43.30952,-73.64401,1,place,,,,,Glens Falls,NY,Warren County,12801,US,TIGER/Line® dataset from the US Census Bureau
+Kareem,Maddox,Basketball 3x3,"Oak Park, California",34.184975,-118.766918,1,place,,,,,Oak Park,CA,Ventura County,91377,US,TIGER/Line® dataset from the US Census Bureau
+Dylan,Travis,Basketball 3x3,"Omaha, Nebraska",41.262003,-95.933564,1,place,,,,,Omaha,NE,Douglas County,68102,US,TIGER/Line® dataset from the US Census Bureau
+Cameron,Brink,Basketball 3x3,"Beaverton, Oregon ",45.496289,-122.800146,1,place,,,,,Beaverton,OR,Washington County,97005,US,TIGER/Line® dataset from the US Census Bureau
+Bam,Adebayo,Basketball,"Pinetown , North Carolina",35.574633,-76.776212,1,place,,,,,Pinetown,NC,Beaufort County,27865,US,TIGER/Line® dataset from the US Census Bureau
+Devin ,Booker,Basketball,"Moss Point , Mississippi ",30.546682,-88.489452,1,place,,,,,Moss Point,MS,Jackson County,39562,US,TIGER/Line® dataset from the US Census Bureau
+Stephen ,Curry ,Basketball,"Charlotte , North Carolina",35.26002,-80.804151,1,place,,,,,Charlotte,NC,Mecklenburg County,28201,US,TIGER/Line® dataset from the US Census Bureau
+Anthony ,Davis ,Basketball,"Chicago , Illinois ",41.88531,-87.62213,1,place,,,,,Chicago,IL,Cook County,60601,US,TIGER/Line® dataset from the US Census Bureau
+Kevin ,Durant ,Basketball,"Suitland , Maryland ",38.834912,-76.912745,1,place,,,,,Suitland,MD,Prince George's County,20746,US,TIGER/Line® dataset from the US Census Bureau
+Anthony ,Edwards ,Basketball,"Atlanta , Georgia ",33.844371,-84.47405,1,place,,,,,Atlanta,GA,Cobb County,30301,US,TIGER/Line® dataset from the US Census Bureau
+Joel ,Embiid,Basketball,"Yaounde , Cameroon ",39.74028,-94.24106,1,place,,,,,Cameron,MO,Clinton County,64429,US,TIGER/Line® dataset from the US Census Bureau
+Tyrese,Haliburton,Basketball,"Oshkosh, Wisconsin",44.062886,-88.535694,1,place,,,,,Oshkosh,WI,Winnebago County,54901,US,TIGER/Line® dataset from the US Census Bureau
+Jrue ,Holiday ,Basketball,"Los Angeles , California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+LeBron ,James ,Basketball,"Akron , Ohio ",41.04349,-81.524017,1,place,,,,,Akron,OH,Summit County,44301,US,TIGER/Line® dataset from the US Census Bureau
+Kawhi ,Leonard ,Basketball,"Los Angeles , California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Jayson ,Tatum ,Basketball,"St. Louis , Missouri ",38.631501,-90.19231,1,place,,,,,Saint Louis,MO,St. Louis City,63101,US,TIGER/Line® dataset from the US Census Bureau
+Napheesa,Collier,Basketball ,"Jefferson City , Missouri ",38.494029,-92.165194,1,place,,,,,Jefferson City,MO,Cole County,65101,US,TIGER/Line® dataset from the US Census Bureau
+Kahleah,Cooper ,Basketball ,"Philadelphia , Pennsylvania ",40.001811,-75.11787,1,place,,,,,Philadelphia,PA,Philadelphia County,19101,US,TIGER/Line® dataset from the US Census Bureau
+Chelsea,Gray ,Basketball ,"Hayward , California",37.673946,-122.08482,1,place,,,,,Hayward,CA,Alameda County,94541,US,TIGER/Line® dataset from the US Census Bureau
+Brittney,Griner ,Basketball ,"Houston , Texas ",29.813142,-95.309789,1,place,,,,,Houston,TX,Harris County,77001,US,TIGER/Line® dataset from the US Census Bureau
+Sabrina,Ionescu,Basketball ,"Walnut Creek , California",37.873343,-122.070625,1,place,,,,,Walnut Creek,CA,Contra Costa County,94595,US,TIGER/Line® dataset from the US Census Bureau
+Jewell,Loyd ,Basketball ,"Lincolnwod, Illinois ",42.00798,-87.736135,1,place,,,,,Lincolnwood,IL,Cook County,60712,US,TIGER/Line® dataset from the US Census Bureau
+Kelsey ,Plum,Basketball,"Poway , California ",32.994097,-117.030299,1,place,,,,,Poway,CA,San Diego County,92064,US,TIGER/Line® dataset from the US Census Bureau
+Breanna,Stewart,Basketball,"North Syracuse, New York",43.02143,-76.197701,1,place,,,,,Syracuse,NY,Onondaga County,13201,US,TIGER/Line® dataset from the US Census Bureau
+Diana,Taurasi,Basketball,"Chino, California ",33.953755,-117.639209,1,place,,,,,Chino,CA,San Bernardino County,91708,US,TIGER/Line® dataset from the US Census Bureau
+Alyssa ,Thomas,Basketball,"Harrisburg , Pensylvania ",40.258655,-76.894376,1,place,,,,,Harrisburg,PA,Dauphin County,17101,US,TIGER/Line® dataset from the US Census Bureau
+A'ja,Wilson,Basketball,"Columbia , South Carolina",33.987454,-81.024864,1,place,,,,,Columbia,SC,Richland County,29201,US,TIGER/Line® dataset from the US Census Bureau
+Jackie ,Young,Basketball,"Princeton , Indiana ",38.303369,-87.534003,1,place,,,,,Princeton,IN,Gibson County,47670,US,TIGER/Line® dataset from the US Census Bureau
+Kelly,Cheng (nee Claes),Beach Volleyball,"Fullerton, California",33.879768,-117.896341,1,place,,,,,Fullerton,CA,Orange County,92831,US,TIGER/Line® dataset from the US Census Bureau
+Miles ,Evans,Beach Volleyball,"Santa Barbara , CA",34.421897,-119.707135,1,place,,,,,Santa Barbara,CA,Santa Barbara County,93101,US,TIGER/Line® dataset from the US Census Bureau
+Jahmal,Harvey,Boxing,"Oxon Hill, MD",38.806809,-76.995859,1,place,,,,,Oxon Hill,MD,Prince George's County,20745,US,TIGER/Line® dataset from the US Census Bureau
+Omari,Jones,Boxing,"Orlando, Florida",28.545179,-81.373291,1,place,,,,,Orlando,FL,Orange County,32801,US,TIGER/Line® dataset from the US Census Bureau
+Roscoe ,Hill ,Boxing,"Spring, TX",30.062169,-95.383966,1,place,,,,,Spring,TX,Harris County,77373,US,TIGER/Line® dataset from the US Census Bureau
+Alyssa,Mendoza ,Boxing ,"Caldwell , Idaho",43.661908,-116.65629,1,place,,,,,Caldwell,ID,Canyon County,83605,US,TIGER/Line® dataset from the US Census Bureau
+Jajaria ,Gonzalez,Boxing,"Glendora , California",34.119363,-117.855059,1,place,,,,,Glendora,CA,Los Angeles County,91740,US,TIGER/Line® dataset from the US Census Bureau
+Jennifer,Lozano,Boxing,"Laredo, TX",27.515879,-99.494078,1,place,,,,,Laredo,TX,Webb County,78040,US,TIGER/Line® dataset from the US Census Bureau
+"Logan ""Logistx""",Edra,Breaking,"San Diego, California ",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Victor,Montalvo,Breaking,"Kissimmee, Florida",28.30639,-81.425522,1,place,,,,,Kissimmee,FL,Osceola County,34741,US,TIGER/Line® dataset from the US Census Bureau
+Evy ,Leibfarth ,Canoeing,"Bryson City , North Carolina",35.38563,-83.508554,1,place,,,,,Bryson City,NC,Swain County,28713,US,TIGER/Line® dataset from the US Census Bureau
+Nevin,Harrison,Canoeing,"Seattle , Washington",47.610902,-122.336422,1,place,,,,,Seattle,WA,King County,98101,US,TIGER/Line® dataset from the US Census Bureau
+Aaron ,Small ,Canoeing,"Seattle, Washington ",47.610902,-122.336422,1,place,,,,,Seattle,WA,King County,98101,US,TIGER/Line® dataset from the US Census Bureau
+Casey ,Eichfeld ,Canoeing,"Harrisburg , Pensylvania ",40.258655,-76.894376,1,place,,,,,Harrisburg,PA,Dauphin County,17101,US,TIGER/Line® dataset from the US Census Bureau
+Jonas ,Ecker ,Canoeing,"Bellingham , Washington ",48.754401,-122.478836,1,place,,,,,Bellingham,WA,Whatcom County,98225,US,TIGER/Line® dataset from the US Census Bureau
+Alise,Willoughby,Cycling (BMX Racing),"St. Cloud , Minnesota ",45.519196,-94.330619,1,place,,,,,Saint Cloud,MN,Stearns County,56301,US,TIGER/Line® dataset from the US Census Bureau
+Chloe,Dygert,Cycling (Road),"Brownsburg, Indiana",39.84338,-86.39777,1,place,,,,,Brownsburg,IN,Hendricks County,46112,US,TIGER/Line® dataset from the US Census Bureau
+Daleny ,Vaughn ,Cycling (BMX Racing),"Tucson , Arizona ",32.217975,-110.970869,1,place,,,,,Tucson,AZ,Pima County,85701,US,TIGER/Line® dataset from the US Census Bureau
+Felicia,Stancil,Cycling (BMX Racing),"Lake Villa, Illinois",42.381271,-87.999077,1,place,,,,,Lake Villa,IL,Lake County,60046,US,TIGER/Line® dataset from the US Census Bureau
+Haley,Batten,Cycling (Mountain Bike),"Park City, Utah",40.652531,-111.501916,1,place,,,,,Park City,UT,Summit County,84060,US,TIGER/Line® dataset from the US Census Bureau
+Hannah,Roberts,Cycling (BMX Freestyle),"Buchanan, Michigan",41.841369,-86.429249,1,place,,,,,Buchanan,MI,Berrien County,49107,US,TIGER/Line® dataset from the US Census Bureau
+Jennifer,Valente,Cycling (Track Cycling),"San Diego , California ",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Kristen ,Faulkner,Cycling (Track Cycling),"Homer , Alaska ",59.6425,-151.54833,1,place,,,,,Homer,AK,Kenai Peninsula Borough,99603,US,TIGER/Line® dataset from the US Census Bureau
+Lily ,Williams,Cycling (Track Cycling),"Tallahassee , Florida",30.427753,-84.258472,1,place,,,,,Tallahassee,FL,Leon County,32301,US,TIGER/Line® dataset from the US Census Bureau
+Perris,Benegas,Cycling (BMX Freestyle),"Reno, Nevada",39.525749,-119.813051,1,place,,,,,Reno,NV,Washoe County,89501,US,TIGER/Line® dataset from the US Census Bureau
+Riley,Amos,Cycling (Mountain Bike),"Durango, Colorado",37.318364,-107.880367,1,place,,,,,Durango,CO,La Plata County,81301,US,TIGER/Line® dataset from the US Census Bureau
+Savilia ,Blunk,Cycling (Mountain Bike),"Inverness, California",38.112571,-122.887717,1,place,,,,,Inverness,CA,Marin County,94937,US,TIGER/Line® dataset from the US Census Bureau
+Taylor,Knibb,Cycling (Road),"Washington, DC",38.911936,-77.016719,1,place,,,,,Washington,DC,District of Columbia,20001,US,TIGER/Line® dataset from the US Census Bureau
+Olivia ,Cummins,Cycling (Track Cycling),"Fort Collins, Colorado ",40.594597,-105.127416,1,place,,,,,Fort Collins,CO,Larimer County,80521,US,TIGER/Line® dataset from the US Census Bureau
+Brandon,McNulty,Cycling (Road),"Phoenix, Arizona",33.703967,-112.351835,1,place,,,,,Phoenix,AZ,Maricopa County,85001,US,TIGER/Line® dataset from the US Census Bureau
+Christopher,Blevins,Cycling (Mountain Bike),"Durango, Colorado",37.318364,-107.880367,1,place,,,,,Durango,CO,La Plata County,81301,US,TIGER/Line® dataset from the US Census Bureau
+Grant ,Koontz,Cycling (Track Cycling),"Houston , Texas ",29.813142,-95.309789,1,place,,,,,Houston,TX,Harris County,77001,US,TIGER/Line® dataset from the US Census Bureau
+Justin,Dowell,Cycling (BMX Freestyle),"Virginia Beach, Virginia",36.844004,-76.12036,1,place,,,,,Virginia Beach,VA,Virginia Beach City,23450,US,TIGER/Line® dataset from the US Census Bureau
+Kamren ,Larsen,Cycling (BMX Racing),"Bakersfield , California ",35.384337,-119.020562,1,place,,,,,Bakersfield,CA,Kern County,93301,US,TIGER/Line® dataset from the US Census Bureau
+Magnus,Sheffield,Cycling (Road),"Pittsford , New York ",43.060229,-77.520692,1,place,,,,,Pittsford,NY,Monroe County,14534,US,TIGER/Line® dataset from the US Census Bureau
+Marcus,Christopher,Cycling (BMX Freestyle),"Canton, Ohio",40.79979,-81.375811,1,place,,,,,Canton,OH,Stark County,44702,US,TIGER/Line® dataset from the US Census Bureau
+Matteo ,Jorgenson,Cycling (Road),"Boise, Idaho ",43.603768,-116.272921,1,place,,,,,Boise,ID,Ada County,83701,US,TIGER/Line® dataset from the US Census Bureau
+Alison,Gibson,Diving,"Austin, Texas",30.268335,-97.741382,1,place,,,,,Austin,TX,Travis County,78701,US,TIGER/Line® dataset from the US Census Bureau
+Delaney,Schnell,Diving,"Tucson, Arizona",32.217975,-110.970869,1,place,,,,,Tucson,AZ,Pima County,85701,US,TIGER/Line® dataset from the US Census Bureau
+Jessica,Parratto,Diving,"Dover, New Hampshire",43.190666,-70.887661,1,place,,,,,Dover,NH,Strafford County,3820,US,TIGER/Line® dataset from the US Census Bureau
+Sarah,Bacon,Diving,"Indianapolis, Indiana",39.775092,-86.13216,1,place,,,,,Indianapolis,IN,Marion County,46201,US,TIGER/Line® dataset from the US Census Bureau
+Andrew,Capobianco,Diving,"Holly Springs, North Carolina",35.607666,-78.829724,1,place,,,,,Holly Springs,NC,Wake County,27540,US,TIGER/Line® dataset from the US Census Bureau
+Carson,Tyler,Diving,"Moultrie, Georgia",31.183438,-83.789698,1,place,,,,,Moultrie,GA,Colquitt County,31768,US,TIGER/Line® dataset from the US Census Bureau
+Greg,Duncan,Diving,"Oakton, Virginia",38.892796,-77.329906,1,place,,,,,Oakton,VA,Fairfax County,22124,US,TIGER/Line® dataset from the US Census Bureau
+Tyler,Downs,Diving,"Ballwin, Missouri",38.609102,-90.559763,1,place,,,,,Ballwin,MO,St. Louis County,63011,US,TIGER/Line® dataset from the US Census Bureau
+Boyd,Martin,Equestrian (Eventing),"Cochranville, Pennslyvania ",39.916517,-75.925805,1,place,,,,,Cochranville,PA,Chester County,19330,US,TIGER/Line® dataset from the US Census Bureau
+Will ,Coleman,Equestrian (Eventing),"Gordonsville, Virginia ",38.175906,-78.181467,1,place,,,,,Gordonsville,VA,Orange County,22942,US,TIGER/Line® dataset from the US Census Bureau
+Lee,Kiefer,Fencing,"Lexington, Kentucky",38.016674,-84.486043,1,place,,,,,Lexington,KY,Fayette County,40502,US,TIGER/Line® dataset from the US Census Bureau
+Anne,Cebula,Fencing,"Brooklyn, New York",40.694481,-73.989319,1,place,,,,,Brooklyn,NY,Kings County,11201,US,TIGER/Line® dataset from the US Census Bureau
+Margherita,Guzzi Vincenti,Fencing,"Hartland, Wisconsin",43.123679,-88.336087,1,place,,,,,Hartland,WI,Waukesha County,53029,US,TIGER/Line® dataset from the US Census Bureau
+Eli,Dershwitz,Fencing,"Sherborn, Massachusetts",42.23899,-71.36978,1,place,,,,,Sherborn,MA,Middlesex County,1770,US,TIGER/Line® dataset from the US Census Bureau
+Nick,Itkin,Fencing,"Los Angeles, California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Alexander,Massialas,Fencing,"San Francisco, California",37.776646,-122.417481,1,place,,,,,San Francisco,CA,San Francisco County,94101,US,TIGER/Line® dataset from the US Census Bureau
+Jackie,Dubrovich,Fencing,"Riverdale, New Jersey",40.992647,-74.312443,1,place,,,,,Riverdale,NJ,Morris County,7457,US,TIGER/Line® dataset from the US Census Bureau
+Lauren,Scruggs,Fencing,"Queens, New York",40.654658,-73.841209,1,county,,,,,,NY,Queens County,,US,US Census Bureau
+Tatiana,Nazlymov,Fencing,"Bethesda, Maryland",39.00452,-77.1046,1,place,,,,,Bethesda,MD,Montgomery County,20814,US,TIGER/Line® dataset from the US Census Bureau
+Magda,Skarbonkiewicz,Fencing,"Portland, Oregon",45.507856,-122.690794,1,place,,,,,Portland,OR,Multnomah County,97201,US,TIGER/Line® dataset from the US Census Bureau
+Gerek,Meinhardt,Fencing,"San Francisco, California",37.776646,-122.417481,1,place,,,,,San Francisco,CA,San Francisco County,94101,US,TIGER/Line® dataset from the US Census Bureau
+Kat,Holmes ,Fencing,"Washington , District of Columbia ",38.911936,-77.016719,1,place,,,,,Washington,DC,District of Columbia,20001,US,TIGER/Line® dataset from the US Census Bureau
+Maia ,Weintraub ,Fencing ,"Philadelphia , Pennsylvania",40.001811,-75.11787,1,place,,,,,Philadelphia,PA,Philadelphia County,19101,US,TIGER/Line® dataset from the US Census Bureau
+Miles ,Chamley-Watson,Fencing ,"Westiminster , England ",34.54426,-91.96903,1,place,,,,,England,AR,Lonoke County,72046,US,TIGER/Line® dataset from the US Census Bureau
+Filip ,Dolegiewicz,Fencing ,"Park Ridge , Illinois",42.037228,-87.843714,1,place,,,,,Park Ridge,IL,Cook County,60068,US,TIGER/Line® dataset from the US Census Bureau
+Kelsey ,Bing,Field Hockey,"Houston , Texas ",29.813142,-95.309789,1,place,,,,,Houston,TX,Harris County,77001,US,TIGER/Line® dataset from the US Census Bureau
+Leah ,Crouse ,Field Hockey,"Virginia Beach , Virginia ",36.844004,-76.12036,1,place,,,,,Virginia Beach,VA,Virginia Beach City,23450,US,TIGER/Line® dataset from the US Census Bureau
+Brooke ,DeBerdine,Field Hockey,"Millersville , Pennsylvania ",39.99788,-76.35413,1,place,,,,,Millersville,PA,Lancaster County,17551,US,TIGER/Line® dataset from the US Census Bureau
+Emma ,DeBerdine,Field Hockey,"Millersville , Pennsylvania ",39.99788,-76.35413,1,place,,,,,Millersville,PA,Lancaster County,17551,US,TIGER/Line® dataset from the US Census Bureau
+Phia ,Gladieux,Field Hockey,"Oley , Pennsylvania ",40.38759,-75.78964,1,place,,,,,Oley,PA,Berks County,19547,US,TIGER/Line® dataset from the US Census Bureau
+Amanda ,Golini,Field Hockey,"Randolph , New Jersey ",40.837399,-74.586052,1,place,,,,,Randolph,NJ,Morris County,7869,US,TIGER/Line® dataset from the US Census Bureau
+Ally ,Hammel,Field Hockey,"Duxbury , Massachusetts ",41.970474,-70.701357,1,place,,,,,Duxbury,MA,Plymouth County,2331,US,TIGER/Line® dataset from the US Census Bureau
+Ashley ,Hoffman,Field Hockey,"Mohnton, Pennsylvania ",40.28593,-75.98438,1,place,,,,,Mohnton,PA,Berks County,19540,US,TIGER/Line® dataset from the US Census Bureau
+Karlie ,Kisha,Field Hockey,"Hamburg, Pennsylvania ",40.55565,-75.98188,1,place,,,,,Hamburg,PA,Berks County,19526,US,TIGER/Line® dataset from the US Census Bureau
+Kelee,Lepage,Field Hockey,"Honey Brook, Pennsylvania ",40.089561,-75.867533,1,place,,,,,Honey Brook,PA,Chester County,19344,US,TIGER/Line® dataset from the US Census Bureau
+Ashley ,Sessa,Field Hockey,"Schwenksville, Pennsylvania ",40.25621,-75.46379,1,place,,,,,Schwenksville,PA,Montgomery County,19473,US,TIGER/Line® dataset from the US Census Bureau
+Meredith ,Sholder,Field Hockey,"Fleetwood , Pennsylvania ",40.45398,-75.81798,1,place,,,,,Fleetwood,PA,Berks County,19522,US,TIGER/Line® dataset from the US Census Bureau
+Abby ,Tamer,Field Hockey,"Dexter , Michigan ",42.353887,-83.898295,1,place,,,,,Dexter,MI,Washtenaw County,48130,US,TIGER/Line® dataset from the US Census Bureau
+Megan ,Valzonis,Field Hockey,"San Diego, California ",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Beth ,Yeager,Field Hockey,"Greenwich, Connecticut",41.042746,-73.62617,1,place,,,,,Greenwich,CT,Western Connecticut Planning Region,6830,US,TIGER/Line® dataset from the US Census Bureau
+Maddie ,Zimmer,Field Hockey,"Hershey , Pennsylvania ",40.269748,-76.636357,1,place,,,,,Hershey,PA,Dauphin County,17033,US,TIGER/Line® dataset from the US Census Bureau
+Nelly,Korda,Golf,"Bradenton, Florida",27.404731,-82.470456,1,place,,,,,Bradenton,FL,Manatee County,34201,US,TIGER/Line® dataset from the US Census Bureau
+Lilia,Vu,Golf,"Fountain Valley , California ",33.710582,-117.951129,1,place,,,,,Fountain Valley,CA,Orange County,92708,US,TIGER/Line® dataset from the US Census Bureau
+Rose,Zhang,Golf,"Irvine , California",33.757245,-117.750414,1,place,,,,,Irvine,CA,Orange County,92602,US,TIGER/Line® dataset from the US Census Bureau
+Collin ,Morikawa,Golf,"Los Angeles, California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Scottie ,Scheffler ,Golf ,"Dallas , Texas ",32.781179,-96.790329,1,place,,,,,Dallas,TX,Dallas County,75201,US,TIGER/Line® dataset from the US Census Bureau
+Wyndham,Clark,Golf,"Denver , Colorado",39.760189,-104.996553,1,place,,,,,Denver,CO,Denver County,80202,US,TIGER/Line® dataset from the US Census Bureau
+Xander,Schauffele,Golf,"San Diego, California",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Angelica ,Delgado,Judo ,"Miami , Florida ",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Evita,Griskenas,Rhythmic Gymnastics,"Orland Park, Illinois",41.625307,-87.83293,1,place,,,,,Orland Park,IL,Cook County,60462,US,TIGER/Line® dataset from the US Census Bureau
+Kara,Kohler,Rowing,"Clayton, California",37.897832,-121.784818,1,place,,,,,Clayton,CA,Contra Costa County,94517,US,TIGER/Line® dataset from the US Census Bureau
+William,Bender,Rowing,"Norwich, Vermont",43.717918,-72.3612,1,place,,,,,Norwich,VT,Windsor County,5055,US,TIGER/Line® dataset from the US Census Bureau
+Charlotte ,Buck,Rowing,"Nyack, New York",41.080474,-73.930179,1,place,,,,,Nyack,NY,Rockland County,10960,US,TIGER/Line® dataset from the US Census Bureau
+Molly,Bruggeman,Rowing,"Dayton, Ohio",39.750471,-84.268593,1,place,,,,,Dayton,OH,Montgomery County,45401,US,TIGER/Line® dataset from the US Census Bureau
+Nina,Casatagna,Rowing,"Cincinnati, Ohio",39.166759,-84.53822,1,place,,,,,Cincinnati,OH,Hamilton County,45201,US,TIGER/Line® dataset from the US Census Bureau
+Olivia,Coffey,Rowing,"Watkins Glen, New York",42.37285,-76.927135,1,place,,,,,Watkins Glen,NY,Schuyler County,14891,US,TIGER/Line® dataset from the US Census Bureau
+Claire,Collins,Rowing,"McLean, Virginia",38.935202,-77.18672,1,place,,,,,Mc Lean,VA,Fairfax County,22101,US,TIGER/Line® dataset from the US Census Bureau
+Emily,Kallfelz,Rowing,"Jamestown, Rhode Island",41.51412,-71.377247,1,place,,,,,Jamestown,RI,Newport County,2835,US,TIGER/Line® dataset from the US Census Bureau
+Kaitlin,Knifton,Rowing,"Austin, Texas",30.268335,-97.741382,1,place,,,,,Austin,TX,Travis County,78701,US,TIGER/Line® dataset from the US Census Bureau
+Meghan,Musnicki,Rowing,"Naples, New York",42.667802,-77.413496,1,place,,,,,Naples,NY,Ontario County,14512,US,TIGER/Line® dataset from the US Census Bureau
+Molly,Reckford,Rowing,"Short Hills, New Jersey",40.74055,-74.334443,1,place,,,,,Short Hills,NJ,Essex County,7078,US,TIGER/Line® dataset from the US Census Bureau
+Regina,Salmons,Rowing,"Methuen, Massachusetts",42.73184,-71.186915,1,place,,,,,Methuen,MA,Essex County,1844,US,TIGER/Line® dataset from the US Census Bureau
+Michelle,Sechser ,Rowing,"Folsom, California",38.666597,-121.141636,1,place,,,,,Folsom,CA,Sacramento County,95630,US,TIGER/Line® dataset from the US Census Bureau
+Kristi,Wagner,Rowing,"Weston, Massachusetts",42.360502,-71.303434,1,place,,,,,Weston,MA,Middlesex County,2493,US,TIGER/Line® dataset from the US Census Bureau
+Madeleine ,Wanamaker,Rowing,"Neenah, Wisconsin",44.182337,-88.527574,1,place,,,,,Neenah,WI,Winnebago County,54956,US,TIGER/Line® dataset from the US Census Bureau
+Justin,Best,Rowing,"Kennett Square, Pennsylvania",39.867864,-75.716333,1,place,,,,,Kennett Square,PA,Chester County,19348,US,TIGER/Line® dataset from the US Census Bureau
+Liam,Corrigan,Rowing,"Old Lyme, Connecticut",41.31593,-72.32897,1,place,,,,,Old Lyme,CT,Lower Connecticut River Valley Planning Region,6371,US,TIGER/Line® dataset from the US Census Bureau
+Michael,Grady,Rowing,"Pittsburgh, Pennsylvania",40.47441,-79.950968,1,place,,,,,Pittsburgh,PA,Allegheny County,15201,US,TIGER/Line® dataset from the US Census Bureau
+Jacob ,Plihal,Rowing ,"Seattle , Washington",47.610902,-122.336422,1,place,,,,,Seattle,WA,King County,98101,US,TIGER/Line® dataset from the US Census Bureau
+Sorin,Koszyk,Rowing ,"Grosse Point Park , Michigan ",42.382395,-82.921842,1,place,,,,,Grosse Pointe,MI,Wayne County,48230,US,TIGER/Line® dataset from the US Census Bureau
+Clark ,Dean,Rowing ,"Sarasota, Florida",27.335023,-82.537169,1,place,,,,,Sarasota,FL,Sarasota County,34230,US,TIGER/Line® dataset from the US Census Bureau
+Pieter,Quinton,Rowing ,"Portland, Oregon",45.507856,-122.690794,1,place,,,,,Portland,OR,Multnomah County,97201,US,TIGER/Line® dataset from the US Census Bureau
+Jessia ,Thoennes,Rowing ,"Madison , Wisconsin",43.060926,-88.230636,1,place,,,,,Madison,WI,Waukesha County,53702,US,TIGER/Line® dataset from the US Census Bureau
+Kayla ,Canett,Rugby ,"Fallbrook , California ",33.390477,-117.209427,1,place,,,,,Fallbrook,CA,San Diego County,92028,US,TIGER/Line® dataset from the US Census Bureau
+Lauren ,Doyle,Rugby ,"Boody , Illinois ",39.76643,-89.04924,1,place,,,,,Boody,IL,Macon County,62514,US,TIGER/Line® dataset from the US Census Bureau
+Alev ,Kelter,Rugby ,"Eagleriver , Arkansas ",34.895526,-92.444626,1,state,,,,,,AR,,,US,TIGER/Line® dataset from the US Census Bureau
+Sarah,Levy,Rugby ,"San Diego , California ",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Ilona ,Maher,Rugby ,"Burlington , Vermont ",44.476622,-73.209998,1,place,,,,,Burlington,VT,Chittenden County,5401,US,TIGER/Line® dataset from the US Census Bureau
+Alena ,Olsen,Rugby ,"Grand Rapids , Michigan ",42.956176,-85.660693,1,place,,,,,Grand Rapids,MI,Kent County,49503,US,TIGER/Line® dataset from the US Census Bureau
+Ariana,Ramsey,Rugby ,"Bridgeport , Pennsylvania",40.103552,-75.341022,1,place,,,,,Bridgeport,PA,Montgomery County,19405,US,TIGER/Line® dataset from the US Census Bureau
+Steph ,Rovetti,Rugby ,"Reno, Nevada",39.525749,-119.813051,1,place,,,,,Reno,NV,Washoe County,89501,US,TIGER/Line® dataset from the US Census Bureau
+Spiff ,Sedrick,Rugby ,"Salt Lake City, Utah",40.756095,-111.900719,1,place,,,,,Salt Lake City,UT,Salt Lake County,84101,US,TIGER/Line® dataset from the US Census Bureau
+Sammy ,Sullivan,Rugby ,"Fayetteville, North Carolina",35.0748,-78.884257,1,place,,,,,Fayetteville,NC,Cumberland County,28301,US,TIGER/Line® dataset from the US Census Bureau
+Naya,Tapper,Rugby,"Charlotte, North Carolina",35.26002,-80.804151,1,place,,,,,Charlotte,NC,Mecklenburg County,28201,US,TIGER/Line® dataset from the US Census Bureau
+Daniela,Moroz,Sailing,"San Francisco Bay Area, California",37.776646,-122.417481,1,place,,,,,San Francisco,CA,San Francisco County,94101,US,TIGER/Line® dataset from the US Census Bureau
+Lara,Dallman-Weiss,Sailing,"Miami, Florida",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Erika,Reineke,Sailing,"Fort Lauderdale, Florida",26.121323,-80.127909,1,place,,,,,Fort Lauderdale,FL,Broward County,33301,US,TIGER/Line® dataset from the US Census Bureau
+Dominique,Stater,Sailing,"Miami, Florida",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Stephanie,Roble,Sailing,"East Troy, Wisconsin",42.78529,-88.4051,1,place,,,,,East Troy,WI,Walworth County,53120,US,TIGER/Line® dataset from the US Census Bureau
+Maggie,Shea,Sailing,"Wilmette, Illinois",42.079228,-87.72836,1,place,,,,,Wilmette,IL,Cook County,60091,US,TIGER/Line® dataset from the US Census Bureau
+Sarah,Newberry Moore,Sailing,"Miami , Florida",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Stu,McNay,Sailing,"Providence , Rhode Island",41.81835,-71.424851,1,place,,,,,Providence,RI,Providence County,2902,US,TIGER/Line® dataset from the US Census Bureau
+Hans,Henken,Sailing,"Coronado, California",32.699235,-117.209642,1,place,,,,,Coronado,CA,San Diego County,92118,US,TIGER/Line® dataset from the US Census Bureau
+Ian,Barrows,Sailing,"St. Thomas, U.S. Virgin Islands",18.342908,-64.9189,1,place,,,,,Saint Thomas,VI,St. Thomas Island,805,US,TIGER/Line® dataset from the US Census Bureau
+Noah,Lyons,Sailing,"Clearwater , Florida",27.978147,-82.781523,1,place,,,,,Clearwater,FL,Pinellas County,33755,US,TIGER/Line® dataset from the US Census Bureau
+Markus,Edegran,Sailing,"West Palm Beach , Florida",26.715844,-80.070249,1,place,,,,,West Palm Beach,FL,Palm Beach County,33401,US,TIGER/Line® dataset from the US Census Bureau
+David,Liebenberg,Sailing,"West Palm Beach , Florida",26.715844,-80.070249,1,place,,,,,West Palm Beach,FL,Palm Beach County,33401,US,TIGER/Line® dataset from the US Census Bureau
+Katelyn,Abeln,Shooting,"Douglasville, Georgia",33.759543,-84.777337,1,place,,,,,Douglasville,GA,Douglas County,30134,US,TIGER/Line® dataset from the US Census Bureau
+Alexis ,Lagan,Shooting ,"Boulder City, Nevada",36.020563,-114.82952,1,place,,,,,Boulder City,NV,Clark County,89005,US,TIGER/Line® dataset from the US Census Bureau
+Sagen,Maddalena,Shooting,"Groveland, California",37.83826,-120.23269,1,place,,,,,Groveland,CA,Tuolumne County,95321,US,TIGER/Line® dataset from the US Census Bureau
+Mary,Tucker,Shooting,"Sarasota , Florida",27.335023,-82.537169,1,place,,,,,Sarasota,FL,Sarasota County,34230,US,TIGER/Line® dataset from the US Census Bureau
+Ryann,Phillips,Shooting,"Gail, Texas",32.743795,-101.432354,1,place,,,,,Gail,TX,Borden County,79738,US,TIGER/Line® dataset from the US Census Bureau
+Austen ,Smith,Shooting,"Keller, Texas",32.928037,-97.283914,1,place,,,,,Keller,TX,Tarrant County,76244,US,TIGER/Line® dataset from the US Census Bureau
+Rachel,Tozier,Shooting,"Pattonsburg, Missouri",40.033605,-94.088967,1,place,,,,,Pattonsburg,MO,Daviess County,64670,US,TIGER/Line® dataset from the US Census Bureau
+Dania,Vizzi,Shooting,"Tampa, Florida",27.996097,-82.582035,1,place,,,,,Tampa,FL,Hillsborough County,33601,US,TIGER/Line® dataset from the US Census Bureau
+Ada,Khorkin ,Shooting ,"Brookline , Massachusetts",42.308198,-71.088745,1,place,,,,,Brookline,MA,Suffolk County,2146,US,TIGER/Line® dataset from the US Census Bureau
+Ivan,Roe,Shooting,"Manhattan, Montana",45.771228,-111.374118,1,place,,,,,Manhattan,MT,Gallatin County,59741,US,TIGER/Line® dataset from the US Census Bureau
+Vincent,Hancock,Shooting,"Eatonton, Georgia",33.320818,-83.355865,1,place,,,,,Eatonton,GA,Putnam County,31024,US,TIGER/Line® dataset from the US Census Bureau
+Will,Hinton,Shooting,"Dacula, Georgia",33.988309,-83.879494,1,place,,,,,Dacula,GA,Gwinnett County,30019,US,TIGER/Line® dataset from the US Census Bureau
+Derrick,Mein,Shooting,"Paola , Kansas",38.577932,-94.880328,1,place,,,,,Paola,KS,Miami County,66071,US,TIGER/Line® dataset from the US Census Bureau
+Conner,Prince,Shooting,"Burleson, Texas",32.492683,-97.264359,1,place,,,,,Burleson,TX,Johnson County,76028,US,TIGER/Line® dataset from the US Census Bureau
+Keith,Sanderson,Shooting,"Colorado Springs, Colorado",38.828893,-104.809929,1,place,,,,,Colorado Springs,CO,El Paso County,80903,US,TIGER/Line® dataset from the US Census Bureau
+Henry ,Leverett ,Shooting ,"Bainbridge, Georgia",30.888734,-84.617836,1,place,,,,,Bainbridge,GA,Decatur County,31717,US,TIGER/Line® dataset from the US Census Bureau
+Chris,Joslin,Skateboarding,"Hawaiian Gardens, California",33.830967,-118.072796,1,place,,,,,Hawaiian Gardens,CA,Los Angeles County,90716,US,TIGER/Line® dataset from the US Census Bureau
+Gavin ,Bottger,Skateboarding,"Oceanside , California",33.195534,-117.354538,1,place,,,,,Oceanside,CA,San Diego County,92054,US,TIGER/Line® dataset from the US Census Bureau
+Jagger,Eaton,Skateboarding,"Mesa, Arizona",33.440695,-111.856967,1,place,,,,,Mesa,AZ,Maricopa County,85201,US,TIGER/Line® dataset from the US Census Bureau
+Nyjah,Huston,Skateboarding,"Davis, California",38.55413,-121.798469,1,place,,,,,Davis,CA,Yolo County,95616,US,TIGER/Line® dataset from the US Census Bureau
+Tate ,Carew,Skateboarding,"San Diego , California",32.724103,-117.170912,1,place,,,,,San Diego,CA,San Diego County,92101,US,TIGER/Line® dataset from the US Census Bureau
+Tom,Schaar,Skateboarding,"Malibu , California",34.039034,-118.707992,1,place,,,,,Malibu,CA,Los Angeles County,90263,US,TIGER/Line® dataset from the US Census Bureau
+Bryce,Wettstein,Skateboarding,"Encinitas, California",33.016928,-116.846046,1,place,,,,,Encinitas,CA,San Diego County,92023,US,TIGER/Line® dataset from the US Census Bureau
+Mariah,Duran,Skateboarding,"Albuquerque, New Mexico",35.199592,-106.644831,1,place,,,,,Albuquerque,NM,Sandoval County,87101,US,TIGER/Line® dataset from the US Census Bureau
+Minna ,Stess,Skateboarding,"Petaluma, California",38.265366,-122.822588,1,place,,,,,Petaluma,CA,Sonoma County,94952,US,TIGER/Line® dataset from the US Census Bureau
+Paige ,Heyn,Skateboarding,"Tempe, Arizona ",33.401395,-111.931298,1,place,,,,,Tempe,AZ,Maricopa County,85280,US,TIGER/Line® dataset from the US Census Bureau
+Poe ,Pinson,Skateboarding,"Fernandina Beach , Florida ",30.609692,-81.49172,1,place,,,,,Fernandina Beach,FL,Nassau County,32034,US,TIGER/Line® dataset from the US Census Bureau
+Ruby,Lilley,Skateboarding,"Oceanside , California ",33.195534,-117.354538,1,place,,,,,Oceanside,CA,San Diego County,92054,US,TIGER/Line® dataset from the US Census Bureau
+Brooke,Raboutou,Sport Climbing,"Boulder, Colorado",40.049468,-105.201421,1,place,,,,,Boulder,CO,Boulder County,80301,US,TIGER/Line® dataset from the US Census Bureau
+Emma ,Hunt,Sport Climbing,"Woodstock, Georgia",34.127398,-84.481787,1,place,,,,,Woodstock,GA,Cherokee County,30188,US,TIGER/Line® dataset from the US Census Bureau
+Natalia,Grossman,Sport Climbing,"Boulder, Colorado",40.049468,-105.201421,1,place,,,,,Boulder,CO,Boulder County,80301,US,TIGER/Line® dataset from the US Census Bureau
+Piper,Kelly,Sport Climbing,"Indianapolis, Indiana",39.775092,-86.13216,1,place,,,,,Indianapolis,IN,Marion County,46201,US,TIGER/Line® dataset from the US Census Bureau
+Jesse,Grupper,Sport Climbing,"Montclair, New Jersey",40.811908,-74.216389,1,place,,,,,Montclair,NJ,Essex County,7042,US,TIGER/Line® dataset from the US Census Bureau
+Samuel,Watson,Sport Climbing,"Southlake, Texas",32.948474,-97.152368,1,place,,,,,Southlake,TX,Tarrant County,76092,US,TIGER/Line® dataset from the US Census Bureau
+Zach ,Hammer,Sport Climbing,"Ann Arbor, Michigan",42.266638,-83.849042,1,place,,,,,Ann Arbor,MI,Washtenaw County,48103,US,TIGER/Line® dataset from the US Census Bureau
+Griffin,Colapinto,Surfing,"San Clemente, California",33.42362,-117.606843,1,place,,,,,San Clemente,CA,Orange County,92672,US,TIGER/Line® dataset from the US Census Bureau
+John John,Florence,Surfing,"Haleiwa, Hawaii",21.5923,-158.10682,1,place,,,,,Haleiwa,HI,Honolulu County,96712,US,TIGER/Line® dataset from the US Census Bureau
+Caitlin,Simmers,Surfing,"Oceanside, California",33.195534,-117.354538,1,place,,,,,Oceanside,CA,San Diego County,92054,US,TIGER/Line® dataset from the US Census Bureau
+Carissa,Moore,Surfing,"Honolulu, Hawaii",21.316548,-157.845053,1,place,,,,,Honolulu,HI,Honolulu County,96813,US,TIGER/Line® dataset from the US Census Bureau
+Caroline,Marks,Surfing,"Melbourne Beach, Florida",28.06835,-80.56033,1,place,,,,,Melbourne Beach,FL,Brevard County,32951,US,TIGER/Line® dataset from the US Census Bureau
+Aaron,Shackell,Swimming,"Carmel, Indiana",39.962604,-86.174761,1,place,,,,,Carmel,IN,Hamilton County,46032,US,TIGER/Line® dataset from the US Census Bureau
+Blake,Pieroni,Swimming,"Chesterton, Indiana",41.613626,-87.04613,1,place,,,,,Chesterton,IN,Porter County,46304,US,TIGER/Line® dataset from the US Census Bureau
+Bobby,Finke,Swimming,"Clearwater, Florida",27.978147,-82.781523,1,place,,,,,Clearwater,FL,Pinellas County,33755,US,TIGER/Line® dataset from the US Census Bureau
+Brooks,Curry,Swimming,"Atlanta, Georgia",33.844371,-84.47405,1,place,,,,,Atlanta,GA,Cobb County,30301,US,TIGER/Line® dataset from the US Census Bureau
+Caeleb,Dressel,Swimming,"Orange Park, Florida",30.152238,-81.797016,1,place,,,,,Orange Park,FL,Clay County,32065,US,TIGER/Line® dataset from the US Census Bureau
+Carson,Foster,Swimming,"Cincinnati, Ohio",39.166759,-84.53822,1,place,,,,,Cincinnati,OH,Hamilton County,45201,US,TIGER/Line® dataset from the US Census Bureau
+Charlie ,Swanson,Swimming,"Richmond , Virginia ",37.524246,-77.493157,1,place,,,,,Richmond,VA,Richmond City,23218,US,TIGER/Line® dataset from the US Census Bureau
+Chase,Kalisz,Swimming,"Bel Air, Maryland",39.547557,-76.321984,1,place,,,,,Bel Air,MD,Harford County,21014,US,TIGER/Line® dataset from the US Census Bureau
+Chris,Guiliano,Swimming,"Douglassville, Pennsylvania",40.25787,-75.7263,1,place,,,,,Douglassville,PA,Berks County,19518,US,TIGER/Line® dataset from the US Census Bureau
+Drew,Kibler,Swimming,"Carmel, Indiana",39.962604,-86.174761,1,place,,,,,Carmel,IN,Hamilton County,46032,US,TIGER/Line® dataset from the US Census Bureau
+Hunter,Armstrong,Swimming,"Dover, Ohio",40.52062,-81.47401,1,place,,,,,Dover,OH,Tuscarawas County,44622,US,TIGER/Line® dataset from the US Census Bureau
+Jack,Alexy,Swimming,"Mendham, New Jersey",40.786699,-74.5938,1,place,,,,,Mendham,NJ,Morris County,7945,US,TIGER/Line® dataset from the US Census Bureau
+Josh,Matheny,Swimming,"Pittsburgh, Pennsylvania",40.47441,-79.950968,1,place,,,,,Pittsburgh,PA,Allegheny County,15201,US,TIGER/Line® dataset from the US Census Bureau
+Keaton,Jones,Swimming,"Gilbert, Arizona",33.335401,-111.815281,1,place,,,,,Gilbert,AZ,Maricopa County,85233,US,TIGER/Line® dataset from the US Census Bureau
+Kieran,Smith,Swimming,"Ridgefield, Connecticut",41.308201,-73.494637,1,place,,,,,Ridgefield,CT,Western Connecticut Planning Region,6877,US,TIGER/Line® dataset from the US Census Bureau
+Luca ,Urlando,Swimming,"Sacramento , California ",38.377411,-121.444429,1,place,,,,,Sacramento,CA,Sacramento County,94240,US,TIGER/Line® dataset from the US Census Bureau
+Luke,Hobson,Swimming,"Reno, Nevada",39.525749,-119.813051,1,place,,,,,Reno,NV,Washoe County,89501,US,TIGER/Line® dataset from the US Census Bureau
+Luke ,Whitlock,Swimming,"Noblesville, Indiana",40.073328,-85.999521,1,place,,,,,Noblesville,IN,Hamilton County,46060,US,TIGER/Line® dataset from the US Census Bureau
+Matt,Fallon,Swimming,"Warren, New Jersey",40.629101,-74.532449,1,place,,,,,Warren,NJ,Somerset County,7059,US,TIGER/Line® dataset from the US Census Bureau
+Nic,Fink,Swimming,"Morristown, New Jersey",40.77165,-74.506256,1,place,,,,,Morristown,NJ,Morris County,7960,US,TIGER/Line® dataset from the US Census Bureau
+Ryan,Murphy,Swimming,"Ponte Vedra Beach, Florida",29.937673,-81.420603,1,place,,,,,Ponte Vedra Beach,FL,St. Johns County,32004,US,TIGER/Line® dataset from the US Census Bureau
+Thomas,Heilman,Swimming,"Crozet, Virginia",38.129592,-78.710635,1,place,,,,,Crozet,VA,Albemarle County,22932,US,TIGER/Line® dataset from the US Census Bureau
+Alex,Shackell,Swimming,"Carmel, Indiana",39.962604,-86.174761,1,place,,,,,Carmel,IN,Hamilton County,46032,US,TIGER/Line® dataset from the US Census Bureau
+Alex ,Walsh,Swimming,"Nashville, Tennessee",36.165688,-86.778098,1,place,,,,,Nashville,TN,Davidson County,37201,US,TIGER/Line® dataset from the US Census Bureau
+Anna,Peplowski,Swimming,"Germantown Hills, Illinois",38.560662,-89.559413,1,place,,,,,Germantown,IL,Clinton County,62245,US,TIGER/Line® dataset from the US Census Bureau
+Claire,Weinstein,Swimming,"White Plains, New York",41.031397,-73.769626,1,place,,,,,White Plains,NY,Westchester County,10601,US,TIGER/Line® dataset from the US Census Bureau
+Emma,Weber ,Swimming,"Denver , Colorado ",39.760189,-104.996553,1,place,,,,,Denver,CO,Denver County,80202,US,TIGER/Line® dataset from the US Census Bureau
+Emma,Weyant,Swimming,"Sarasota , Florida",27.335023,-82.537169,1,place,,,,,Sarasota,FL,Sarasota County,34230,US,TIGER/Line® dataset from the US Census Bureau
+Erika,Connolly (formerly Brown),Swimming,"Cornelius, North Carolina",35.473286,-80.872585,1,place,,,,,Cornelius,NC,Mecklenburg County,28031,US,TIGER/Line® dataset from the US Census Bureau
+Erin,Gemmell,Swimming,"Potomac, Maryland",39.029839,-77.234792,1,place,,,,,Potomac,MD,Montgomery County,20854,US,TIGER/Line® dataset from the US Census Bureau
+Gretchen,Walsh,Swimming,"Nashville, Tennessee",36.165688,-86.778098,1,place,,,,,Nashville,TN,Davidson County,37201,US,TIGER/Line® dataset from the US Census Bureau
+Kate,Douglass,Swimming,"Pelham, New York",40.904538,-73.806277,1,place,,,,,Pelham,NY,Westchester County,10803,US,TIGER/Line® dataset from the US Census Bureau
+Katharine,Berkoff,Swimming,"Missoula, Montana",46.856398,-114.014338,1,place,,,,,Missoula,MT,Missoula County,59801,US,TIGER/Line® dataset from the US Census Bureau
+Katie,Grimes,Swimming,"Las Vegas, Nevada",36.17372,-115.10647,1,place,,,,,Las Vegas,NV,Clark County,89101,US,TIGER/Line® dataset from the US Census Bureau
+Katie,Ledecky,Swimming,"Bethesda, Maryland",39.00452,-77.1046,1,place,,,,,Bethesda,MD,Montgomery County,20814,US,TIGER/Line® dataset from the US Census Bureau
+Lilly,King,Swimming,"Evansville, Indiana",37.997128,-87.574963,1,place,,,,,Evansville,IN,Vanderburgh County,47701,US,TIGER/Line® dataset from the US Census Bureau
+Mariah,Denigan,Swimming,"Walton, Kentucky",38.88142,-84.665597,1,place,,,,,Walton,KY,Boone County,41094,US,TIGER/Line® dataset from the US Census Bureau
+Paige,Madden,Swimming,"Mobile, Alabama",30.701142,-88.103184,1,place,,,,,Mobile,AL,Mobile County,36601,US,TIGER/Line® dataset from the US Census Bureau
+Phoebe,Bacon,Swimming,"Chevy Chase, Maryland",38.983759,-77.079449,1,place,,,,,Chevy Chase,MD,Montgomery County,20815,US,TIGER/Line® dataset from the US Census Bureau
+Regan,Smith,Swimming,"Lakeville, Minnesota",44.633421,-93.25812,1,place,,,,,Lakeville,MN,Dakota County,55044,US,TIGER/Line® dataset from the US Census Bureau
+Simone,Manuel,Swimming,"Sugar Land, Texas",29.620312,-95.605693,1,place,,,,,Sugar Land,TX,Fort Bend County,77478,US,TIGER/Line® dataset from the US Census Bureau
+"Victoria ""Torri""",Huske,Swimming,"Arlington , Virginia",38.885484,-77.099113,1,place,,,,,Arlington,VA,Arlington County,22201,US,TIGER/Line® dataset from the US Census Bureau
+Lily,Zhang,Table Tennis,"Palo Alto, California",37.444122,-122.149915,1,place,,,,,Palo Alto,CA,Santa Clara County,94301,US,TIGER/Line® dataset from the US Census Bureau
+Kanak ,Jha,Table Tennis,"Milipitas, California",37.436454,-121.861989,1,place,,,,,Milpitas,CA,Santa Clara County,95035,US,TIGER/Line® dataset from the US Census Bureau
+CJ,Nickolas,Taekwondo,"Brentwood, California",37.922228,-121.668359,1,place,,,,,Brentwood,CA,Contra Costa County,94513,US,TIGER/Line® dataset from the US Census Bureau
+Faith ,Dillon ,Taekwondo,"Las Vegas, Nevada",36.17372,-115.10647,1,place,,,,,Las Vegas,NV,Clark County,89101,US,TIGER/Line® dataset from the US Census Bureau
+Kristina ,Teachout ,Taekwondo,"Palm Beach , Flroida ",26.600995,-80.038113,1,place,,,,,Palm Beach,FL,Palm Beach County,33480,US,TIGER/Line® dataset from the US Census Bureau
+Austin ,Krajicek,Tennis ,"Tampa , Florida ",27.996097,-82.582035,1,place,,,,,Tampa,FL,Hillsborough County,33601,US,TIGER/Line® dataset from the US Census Bureau
+Chris ,Eubanks ,Tennis,"Atlanta , Georgia",33.844371,-84.47405,1,place,,,,,Atlanta,GA,Cobb County,30301,US,TIGER/Line® dataset from the US Census Bureau
+Marcos ,Giron ,Tennis,"Thousand Oaks , California ",34.212798,-118.882175,1,place,,,,,Thousand Oaks,CA,Ventura County,91360,US,TIGER/Line® dataset from the US Census Bureau
+Rajeev ,Ram ,Tennis,"Denver , Colorado ",39.760189,-104.996553,1,place,,,,,Denver,CO,Denver County,80202,US,TIGER/Line® dataset from the US Census Bureau
+Taylor ,Fritz,Tennis,"Rancho Santa Fe , California",33.005026,-117.21569,1,place,,,,,Rancho Santa Fe,CA,San Diego County,92067,US,TIGER/Line® dataset from the US Census Bureau
+Tommy ,Paul,Tennis,"Camden County , New Jersey ",39.802407,-74.961249,1,county,,,,,,NJ,Camden County,,US,US Census Bureau
+Coco,Gauff,Tennis,"Delray Beach, Florida",26.457598,-80.081614,1,place,,,,,Delray Beach,FL,Palm Beach County,33444,US,TIGER/Line® dataset from the US Census Bureau
+Danielle ,Collins ,Tennis ,"St. Petersburg , Florida",27.775654,-82.64092,1,place,,,,,Saint Petersburg,FL,Pinellas County,33701,US,TIGER/Line® dataset from the US Census Bureau
+Jessica ,Pegula ,Tennis,"Buffalo , New York ",42.89606,-78.886424,1,place,,,,,Buffalo,NY,Erie County,14201,US,TIGER/Line® dataset from the US Census Bureau
+Chris ,Bailey,Track and Field,"Atlanta, Georgia",33.844371,-84.47405,1,place,,,,,Atlanta,GA,Cobb County,30301,US,TIGER/Line® dataset from the US Census Bureau
+Chris,Nilsen,Track and Field,"Kansas City, Missouri",39.102404,-94.598583,1,place,,,,,Kansas City,MO,Jackson County,64101,US,TIGER/Line® dataset from the US Census Bureau
+Clayton,Young,Track and Field,"American Fork, Utah",40.395796,-111.803101,1,place,,,,,American Fork,UT,Utah County,84003,US,TIGER/Line® dataset from the US Census Bureau
+Cole,Hocker,Track and Field,"Indianapolis, Indiana",39.775092,-86.13216,1,place,,,,,Indianapolis,IN,Marion County,46201,US,TIGER/Line® dataset from the US Census Bureau
+Conner,Mantz,Track and Field,"Smithfield, Utah",41.801798,-111.910101,1,place,,,,,Smithfield,UT,Cache County,84335,US,TIGER/Line® dataset from the US Census Bureau
+Fred,Kerley,Track and Field,"Morgan City  , Louisiana	",29.697653,-91.265374,1,place,,,,,Morgan City,LA,St. Mary Parish,70380,US,TIGER/Line® dataset from the US Census Bureau
+Grant,Fisher,Track and Field,"Grand Blanc, Michigan",42.9227,-83.67376,1,place,,,,,Grand Blanc,MI,Genesee County,48439,US,TIGER/Line® dataset from the US Census Bureau
+Hobbs,Kessler,Track and Field,"Ann Arbor, Michigan",42.266638,-83.849042,1,place,,,,,Ann Arbor,MI,Washtenaw County,48103,US,TIGER/Line® dataset from the US Census Bureau
+Harrison ,Williams ,Track and Field,"Houston , Texas ",29.813142,-95.309789,1,place,,,,,Houston,TX,Harris County,77001,US,TIGER/Line® dataset from the US Census Bureau
+Heath ,Baldwin ,Track and Field,"Kalamazoo, Michigan",42.264543,-85.561545,1,place,,,,,Kalamazoo,MI,Kalamazoo County,49001,US,TIGER/Line® dataset from the US Census Bureau
+Jacob ,Wooten ,Track and Field,"Tomball , Texas ",30.094886,-95.585826,1,place,,,,,Tomball,TX,Harris County,77375,US,TIGER/Line® dataset from the US Census Bureau
+Joe,Kovacs,Track and Field,"Bethlehem, Pennslyvania",40.58883,-75.351958,1,place,,,,,Bethlehem,PA,Northampton County,18015,US,TIGER/Line® dataset from the US Census Bureau
+Kenny,Bednarek,Track and Field,"Rice Lake, Wisconsin",45.519692,-91.826575,1,place,,,,,Rice Lake,WI,Barron County,54868,US,TIGER/Line® dataset from the US Census Bureau
+Leonard ,Korir,Track and Field,"Colorado Springs, Colorado ",38.828893,-104.809929,1,place,,,,,Colorado Springs,CO,El Paso County,80903,US,TIGER/Line® dataset from the US Census Bureau
+Nico ,Young ,Track and Field,"Camarillo , California ",34.227855,-119.079869,1,place,,,,,Camarillo,CA,Ventura County,93010,US,TIGER/Line® dataset from the US Census Bureau
+Noah,Lyles,Track and Field,"Alexandria, Virginia",38.819853,-77.059645,1,place,,,,,Alexandria,VA,Alexandria City,22301,US,TIGER/Line® dataset from the US Census Bureau
+Payton,Otterdahl,Track and Field,"Rosemount, Minnesota",44.73941,-93.12577,1,place,,,,,Rosemount,MN,Dakota County,55068,US,TIGER/Line® dataset from the US Census Bureau
+Ryan,Crouser,Track and Field,"Boring, Oregon",45.411842,-122.37642,1,place,,,,,Boring,OR,Clackamas County,97009,US,TIGER/Line® dataset from the US Census Bureau
+Sam,Kendricks,Track and Field,"Oxford, Mississippi",34.330814,-89.483519,1,place,,,,,Oxford,MS,Lafayette County,38655,US,TIGER/Line® dataset from the US Census Bureau
+Woody,Kincaid,Track and Field,"Littleton, Colorado",39.597937,-105.010182,1,place,,,,,Littleton,CO,Arapahoe County,80120,US,TIGER/Line® dataset from the US Census Bureau
+Yared,Nuguse,Track and Field,"Louisville, Kentucky",38.25247,-85.753812,1,place,,,,,Louisville,KY,Jefferson County,40202,US,TIGER/Line® dataset from the US Census Bureau
+Zach,Ziemek,Track and Field,"Itasca, Illinois",41.97503,-88.00729,1,place,,,,,Itasca,IL,Dupage County,60143,US,TIGER/Line® dataset from the US Census Bureau
+Aaliyah,Butler ,Track and Field,"Fort Lauderdale, Florida ",26.121323,-80.127909,1,place,,,,,Fort Lauderdale,FL,Broward County,33301,US,TIGER/Line® dataset from the US Census Bureau
+Alexis ,Holmes ,Track and Field,"Hamden , Connecticut",41.372723,-72.938747,1,place,,,,,Hamden,CT,South Central Connecticut Planning Region,6514,US,TIGER/Line® dataset from the US Census Bureau
+DeAnna,Price,Track and Field,"Troy, Missouri",39.016299,-90.940268,1,place,,,,,Troy,MO,Lincoln County,63379,US,TIGER/Line® dataset from the US Census Bureau
+Emily,Sisson,Track and Field,"Chesterfield, Missouri",38.637002,-90.650024,1,place,,,,,Chesterfield,MO,St. Louis County,63005,US,TIGER/Line® dataset from the US Census Bureau
+Fiona,O'Keeffe,Track and Field,"Davis, California",38.55413,-121.798469,1,place,,,,,Davis,CA,Yolo County,95616,US,TIGER/Line® dataset from the US Census Bureau
+Melissa ,Jefferson ,Track and Field,"Hemingway , South Carolina",33.732071,-79.430945,1,place,,,,,Hemingway,SC,Williamsburg County,29554,US,TIGER/Line® dataset from the US Census Bureau
+Sha'Carri,Richardson ,Track and Field,"Dallas , Texas ",32.781179,-96.790329,1,place,,,,,Dallas,TX,Dallas County,75201,US,TIGER/Line® dataset from the US Census Bureau
+Teetee ,Terry ,Track and Field,"Miami , Florida ",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Vashti,Cunningham,Track and Field,"Las Vegas, Nevada",36.17372,-115.10647,1,place,,,,,Las Vegas,NV,Clark County,89101,US,TIGER/Line® dataset from the US Census Bureau
+Morgan,Pearson,Triathlon,"New Vernon, New Jersey",40.739599,-74.483413,1,place,,,,,New Vernon,NJ,Morris County,7976,US,TIGER/Line® dataset from the US Census Bureau
+Taylor,Knibb,Triathlon,"Washington, DC",38.911936,-77.016719,1,place,,,,,Washington,DC,District of Columbia,20001,US,TIGER/Line® dataset from the US Census Bureau
+Taylor,Spivey,Triathlon,"Manhattan Beach, California",33.889151,-118.402127,1,place,,,,,Manhattan Beach,CA,Los Angeles County,90266,US,TIGER/Line® dataset from the US Census Bureau
+Taylor,Averill,Volleyball,"San Jose, California",37.346608,-121.909871,1,place,,,,,San Jose,CA,Santa Clara County,95110,US,TIGER/Line® dataset from the US Census Bureau
+Micah,Christenson,Volleyball,"Honolulu, Hawaii",21.316548,-157.845053,1,place,,,,,Honolulu,HI,Honolulu County,96813,US,TIGER/Line® dataset from the US Census Bureau
+T.J.,DeFalco,Volleyball,"Huntington Beach, California",33.66205,-117.968459,1,place,,,,,Huntington Beach,CA,Orange County,92646,US,TIGER/Line® dataset from the US Census Bureau
+Max,Holt,Volleyball,"Cincinnati, Ohio",39.166759,-84.53822,1,place,,,,,Cincinnati,OH,Hamilton County,45201,US,TIGER/Line® dataset from the US Census Bureau
+Thomas,Jaeschke,Volleyball,"Wheaton, Illinois",41.87272,-88.112442,1,place,,,,,Wheaton,IL,Dupage County,60187,US,TIGER/Line® dataset from the US Census Bureau
+Jeff,Jendryk II,Volleyball,"Wheaton, Illinois",41.87272,-88.112442,1,place,,,,,Wheaton,IL,Dupage County,60187,US,TIGER/Line® dataset from the US Census Bureau
+Garrett,Muagututia,Volleyball,"Oceanside , California",33.195534,-117.354538,1,place,,,,,Oceanside,CA,San Diego County,92054,US,TIGER/Line® dataset from the US Census Bureau
+Aaron,Russell,Volleyball,"Ellicott City, Maryland",39.236405,-76.941902,1,place,,,,,Ellicott City,MD,Howard County,21041,US,TIGER/Line® dataset from the US Census Bureau
+Erik,Shoji,Volleyball,"Honolulu, Hawaii",21.316548,-157.845053,1,place,,,,,Honolulu,HI,Honolulu County,96813,US,TIGER/Line® dataset from the US Census Bureau
+Lauren ,Carlini ,Volleyball,"Aurora , Illinois ",41.747452,-88.238622,1,place,,,,,Aurora,IL,Dupage County,60504,US,TIGER/Line® dataset from the US Census Bureau
+Annie ,Drews ,Volleyball,"Elkhart , Indiana ",41.71873,-85.937024,1,place,,,,,Elkhart,IN,Elkhart County,46514,US,TIGER/Line® dataset from the US Census Bureau
+Jordan ,Larson ,Volleyball,"Hooper , Nebraska ",41.621961,-96.549316,1,place,,,,,Hooper,NE,Dodge County,68031,US,TIGER/Line® dataset from the US Census Bureau
+Chiaka ,Ogbogu ,Volleyball,"Coppell , Texas ",32.963417,-96.984664,1,place,,,,,Coppell,TX,Dallas County,75019,US,TIGER/Line® dataset from the US Census Bureau
+Kathryn ,Plummer ,Volleyball,"Aliso Viejo , California",33.576205,-117.730364,1,place,,,,,Aliso Viejo,CA,Orange County,92656,US,TIGER/Line® dataset from the US Census Bureau
+Jordyn ,Poulter ,Volleyball,"Aurora , Colorado ",39.739249,-104.862881,1,place,,,,,Aurora,CO,Arapahoe County,80010,US,TIGER/Line® dataset from the US Census Bureau
+Dana ,Rettke ,Volleyball,"Riverside , Illinois ",41.83503,-87.82284,1,place,,,,,Riverside,IL,Cook County,60546,US,TIGER/Line® dataset from the US Census Bureau
+Kelsey,Robinson Cook,Volleyball,"Bartlett , Illinois ",41.980446,-88.203407,1,place,,,,,Bartlett,IL,Dupage County,60103,US,TIGER/Line® dataset from the US Census Bureau
+Avery ,Skinner ,Volleyball,"Katy , Texas ",29.837562,-95.733756,1,place,,,,,Katy,TX,Harris County,77449,US,TIGER/Line® dataset from the US Census Bureau
+Haleigh ,Washington,Volleyball,"Colorado Springs , Colorado ",38.828893,-104.809929,1,place,,,,,Colorado Springs,CO,El Paso County,80903,US,TIGER/Line® dataset from the US Census Bureau
+Amanda,Longan,Water Polo,"Moorpark, California",34.285558,-118.882041,1,place,,,,,Moorpark,CA,Ventura County,93020,US,TIGER/Line® dataset from the US Census Bureau
+Ashleigh,Johnson,Water Polo,"Miami, Florida",25.558428,-80.458168,1,place,,,,,Miami,FL,Miami-Dade County,33234,US,TIGER/Line® dataset from the US Census Bureau
+Jenna,Flynn,Water Polo,"San Jose, California",37.346608,-121.909871,1,place,,,,,San Jose,CA,Santa Clara County,95110,US,TIGER/Line® dataset from the US Census Bureau
+Jewel,Roemer,Water Polo,"Martinez, California",37.986421,-122.134976,1,place,,,,,Martinez,CA,Contra Costa County,94553,US,TIGER/Line® dataset from the US Census Bureau
+Kaleigh,Gilchrist,Water Polo,"Newport Beach, California",33.640302,-117.769442,1,place,,,,,Newport Beach,CA,Orange County,92658,US,TIGER/Line® dataset from the US Census Bureau
+Maggie,Steffens,Water Polo,"Danville, California",37.832075,-121.916718,1,place,,,,,Danville,CA,Contra Costa County,94506,US,TIGER/Line® dataset from the US Census Bureau
+Madeline,Musselman,Water Polo,"Newport Beach, California",33.640302,-117.769442,1,place,,,,,Newport Beach,CA,Orange County,92658,US,TIGER/Line® dataset from the US Census Bureau
+Rachel,Fattal,Water Polo,"Seal Beach, California",33.74141,-118.10479,1,place,,,,,Seal Beach,CA,Orange County,90740,US,TIGER/Line® dataset from the US Census Bureau
+Adrian,Weinberg,Water Polo,"Los Angeles, California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Alex,Bowen,Water Polo,"Santee, California",32.843956,-116.994511,1,place,,,,,Santee,CA,San Diego County,92071,US,TIGER/Line® dataset from the US Census Bureau
+Ben,Hallock,Water Polo,"Westlake Village, California",34.137015,-118.82193,1,place,,,,,Westlake Village,CA,Los Angeles County,91361,US,TIGER/Line® dataset from the US Census Bureau
+Chase,Dodd,Water Polo,"Long Beach, California",33.756024,-118.201101,1,place,,,,,Long Beach,CA,Los Angeles County,90802,US,TIGER/Line® dataset from the US Census Bureau
+Drew,Holland,Water Polo,"Orinda, California",37.87715,-122.17969,1,place,,,,,Orinda,CA,Contra Costa County,94563,US,TIGER/Line® dataset from the US Census Bureau
+Dylan,Woodhead,Water Polo,"San Anselmo, California",37.995864,-122.577814,1,place,,,,,San Anselmo,CA,Marin County,94960,US,TIGER/Line® dataset from the US Census Bureau
+Hannes,Daube,Water Polo,"Long Beach, California",33.756024,-118.201101,1,place,,,,,Long Beach,CA,Los Angeles County,90802,US,TIGER/Line® dataset from the US Census Bureau
+Johnny ,Hooper,Water Polo,"Los Angeles, California",33.973951,-118.248405,1,place,,,,,Los Angeles,CA,Los Angeles County,90001,US,TIGER/Line® dataset from the US Census Bureau
+Luca,Cupido,Water Polo,"Santa Margherita, Italy, ",32.189616,-96.873872,1,place,,,,,Italy,TX,Ellis County,76651,US,TIGER/Line® dataset from the US Census Bureau
+Marko,Vavic,Water Polo,"Rancho Palos Verdes, California",33.753146,-118.367459,1,place,,,,,Rancho Palos Verdes,CA,Los Angeles County,90275,US,TIGER/Line® dataset from the US Census Bureau
+Max,Irving,Water Polo,"Long Beach, California",33.756024,-118.201101,1,place,,,,,Long Beach,CA,Los Angeles County,90802,US,TIGER/Line® dataset from the US Census Bureau
+Ryder,Dodd,Water Polo,"Long Beach, California",33.756024,-118.201101,1,place,,,,,Long Beach,CA,Los Angeles County,90802,US,TIGER/Line® dataset from the US Census Bureau
+Hampton  ,Morris ,Weightlifting ,"Marietta , Georgia ",33.912473,-84.557181,1,place,,,,,Marietta,GA,Cobb County,30007,US,TIGER/Line® dataset from the US Census Bureau
+Wes ,Kitts,Weightlifting ,"Knoxville , Tennessee ",36.032334,-83.884804,1,place,,,,,Knoxville,TN,Knox County,37901,US,TIGER/Line® dataset from the US Census Bureau
+Jourdan,Delacruz,Weightlifting,"Wylie, Texas",33.012135,-96.534936,1,place,,,,,Wylie,TX,Collin County,75098,US,TIGER/Line® dataset from the US Census Bureau
+Mary ,Theisen-Lappen,Weightlifting ,"Eau Claire, Wisconsin ",44.75653,-91.473097,1,place,,,,,Eau Claire,WI,Eau Claire County,54701,US,TIGER/Line® dataset from the US Census Bureau
+Olivia ,Reeves,Weightlifting ,"Hixson, Tennessee ",35.166775,-85.21024,1,place,,,,,Hixson,TN,Hamilton County,37343,US,TIGER/Line® dataset from the US Census Bureau
+Amit,Elor,Wrestling,"Walnut Creek, California",37.873343,-122.070625,1,place,,,,,Walnut Creek,CA,Contra Costa County,94595,US,TIGER/Line® dataset from the US Census Bureau
+Dom,Parrish,Wrestling,"Scotts Valley, California",37.071387,-122.006276,1,place,,,,,Scotts Valley,CA,Santa Cruz County,95066,US,TIGER/Line® dataset from the US Census Bureau
+Kayla,Miracle,Wrestling,"Bloomington, Indiana",39.07881,-86.435094,1,place,,,,,Bloomington,IN,Monroe County,47401,US,TIGER/Line® dataset from the US Census Bureau
+Sarah,Hildebrandt,Wrestling,"Granger, Indiana",41.734912,-86.139868,1,place,,,,,Granger,IN,St. Joseph County,46530,US,TIGER/Line® dataset from the US Census Bureau
+Kyle ,Snyder ,Wrestling ,"Woodbine, Maryland",39.402352,-77.081821,1,place,,,,,Woodbine,MD,Carroll County,21797,US,TIGER/Line® dataset from the US Census Bureau
+Zain,Retherford,Wrestling,"Benton, Pennsylvania ",41.218998,-76.395426,1,place,,,,,Benton,PA,Columbia County,17814,US,TIGER/Line® dataset from the US Census Bureau
