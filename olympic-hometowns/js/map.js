@@ -127,11 +127,11 @@ const styleClusters = () => {
 const pickColor = locationType => {
 	switch (locationType) {
 		case ("School"):
-			return "rgba(230,0,0,0.65)";
+			return "rgba(249,72,146,0.85)";
 		case ("Hometown"):
-			return "rgba(230,96,0,0.65)";
+			return "rgba(255,127,63,0.85)";
 		case ("Current residence"):
-			return "rgba(154,3,30,0.65)";
+			return "rgba(251,223,7,0.85)";
 	}
 };
 
@@ -146,7 +146,7 @@ const addClusters = data => {
 			fillColor: pickColor(athlete.location_type),
 			color: pickColor(athlete.location_type),
 			weight: 0.5,
-			radius: mobile ? 6 : 4
+			radius: mobile ? 6 : 5
 		})
 			.bindPopup(`<b>${athlete.first_name} ${athlete.last_name}</b>
 		<br/><em>${athlete.sport}</em>
