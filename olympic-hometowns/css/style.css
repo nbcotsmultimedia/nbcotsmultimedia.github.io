@@ -35,6 +35,17 @@
     color: #FF2400;
 }
 
+.location-name {
+    font-size: 30px;
+    line-height: 32px;
+}
+
+.athlete-name {
+    margin-top:10px;
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
 .marker-cluster {
     background-color: transparent !important;
 }

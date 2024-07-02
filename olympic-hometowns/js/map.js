@@ -21,6 +21,10 @@ const clusters = new L.MarkerClusterGroup({
 	spiderfyOnMaxZoom: false,
 	disableClusteringAtZoom: 18
 });
+const sidebar = L.control.sidebar('sidebar', {
+    position: 'right'
+});
+map.addControl(sidebar);
 
 const search = e => {
 	const val = e.target.value;
@@ -68,7 +72,8 @@ const updateLocationTypes = (e, color) => {
 }
 
 const filterData = () => {
-	mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type) && filterVals["sport"].includes(datum.sport));
+	//mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type) && filterVals["sport"].includes(datum.sport));
+	mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type));
 	clusters.clearLayers();
 	addClusters(mapData);
 	setTimeout(styleClusters, 50);
@@ -85,7 +90,7 @@ const buildSportsList = () => {
 	}
 };
 
-const addSelect = () => {
+/*const addSelect = () => {
 	buildSportsList();
 	const select = $('#select');
 	let selectOptions = '<option selected>All sports</option>';
@@ -104,11 +109,13 @@ const filterSports = e => {
 		filterVals["sport"] = [val];
 	}
 	filterData();
-}
+}*/
 
 // event handler for marker click
-const handleMarkerClick = marker => {
-	map.flyTo([marker.lat, marker.long], 10);
+const handleMarkerClick = point => {
+	sidebar.setContent(point.tooltip);
+	console.log(point.tooltip)
+	sidebar.show();
 };
 
 // fucntion to style clusters
@@ -147,11 +154,11 @@ const addClusters = data => {
 			color: pickColor(athlete.location_type),
 			weight: 0.5,
 			radius: mobile ? 6 : 5
-		})
-			.bindPopup(`<b>${athlete.first_name} ${athlete.last_name}</b>
+		}).on("click", () => handleMarkerClick(athlete))
+			/*.bindPopup(`<b>${athlete.first_name} ${athlete.last_name}</b>
 		<br/><em>${athlete.sport}</em>
 		<br/>${athlete.location_type}: ${athlete.location_name}`)
-			.openPopup());
+			.openPopup()*/);
 	}
 	map.addLayer(clusters);
 	mapClustered = true;
@@ -161,7 +168,7 @@ function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=747029840&single=true&output=csv');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=1697127437&single=true&output=csv');
 
 };
 
@@ -214,7 +221,7 @@ function parseData() {
 	addClusters(mapData);
 	styleClusters();
 	addFilters(["Hometown", "School", "Current residence"]);
-	addSelect();
+	//addSelect();
 };
 
 map.on('zoomend', () => {

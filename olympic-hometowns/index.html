@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" /> 
+    <link href="https://cdn.jsdelivr.net/npm/leaflet-sidebar@0.2.4/src/L.Control.Sidebar.min.css" rel="stylesheet">
 
     <!-- Responsive iFrame stuff -->
     <!--
@@ -44,10 +45,12 @@
       <p id="response"></p>
       <div id="controls">
         <div id="legend"></div>
-        <select id="select" lass="form-select" aria-label="Default select example" onchange="filterSports(event)"></select>
+        <!--<select id="select" lass="form-select" aria-label="Default select example" onchange="filterSports(event)"></select>-->
       </div>
     </div>
     <div id="map"></div>
+    <div id="sidebar">
+    </div>
 
 
 
@@ -62,6 +65,7 @@
     <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/papaparse.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar@0.2.4/src/L.Control.Sidebar.min.js"></script>
     <script src="js/map.js"></script>
 
   </body>
