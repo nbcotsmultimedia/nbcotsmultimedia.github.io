@@ -19,8 +19,8 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({
 	showCoverageOnHover: false,
-	spiderfyOnMaxZoom: false,
-	disableClusteringAtZoom: 18
+	/*spiderfyOnMaxZoom: false,
+	disableClusteringAtZoom: 18*/
 });
 const sidebar = L.control.sidebar('sidebar', {
     position: 'right'
@@ -115,7 +115,6 @@ const filterSports = e => {
 // event handler for marker click
 const handleMarkerClick = point => {
 	sidebar.setContent(point.tooltip);
-	console.log(point.tooltip)
 	sidebar.show();
 };
 
@@ -148,8 +147,14 @@ const addClusters = data => {
 	texts = L.layerGroup().addTo(map);
 	for (let i = 0; i < data.length; i++) {
 		const athlete = data[i];
+		const customCircleMarker = L.CircleMarker.extend({
+			options: { 
+			   data: athlete
+			}
+		});
 		const multiple = athlete.athlete_count > 1;
-		clusters.addLayer(L.circleMarker([athlete.lat, athlete.long], {
+		clusters.addLayer(new customCircleMarker([athlete.lat, athlete.long], {
+			data: athlete,
 			renderer: myRenderer,
 			fillOpacity: 0.65,
 			fillColor: multiple ? '#89CFFD' : pickColor(athlete.location_type),
@@ -192,7 +197,7 @@ function init() {
 	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=1697127437&single=true&output=csv');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=747029840&single=true&output=csv');
 
 };
 
@@ -253,6 +258,16 @@ map.on('zoomend', () => {
 	setTimeout(styleClusters, 100);
 })
 
+
+clusters.on('clusterclick', function (a) {
+
+	const cluster = a.layer;
+    if(cluster.spiderfy) {
+		/*sidebar.setContent(a.layer.getAllChildMarkers()[0].options.data.tooltip);
+		sidebar.show();*/
+		console.log("spiderfied")
+    }
+});
 
 $(document).ready(function () {
 	init();
