@@ -4,7 +4,6 @@ let ds,
 	mapData,
 	config,
 	usBounds,
-	texts,
 	sports = [],
 	mobile = window.innerWidth < 768,
 	filterVals = {
@@ -18,9 +17,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 }).addTo(map);
 const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({
-	showCoverageOnHover: false,
-	/*spiderfyOnMaxZoom: false,
-	disableClusteringAtZoom: 18*/
+	showCoverageOnHover: false
 });
 const sidebar = L.control.sidebar('sidebar', {
     position: 'right'
@@ -42,7 +39,7 @@ const search = e => {
 	});
 };
 
-const addFilters = (locationTypes) => {
+const addFilters = locationTypes => {
 	const filterContainer = $('#legend');
 	let innerHtml = filterContainer.html();
 	for (let i = 0; i < locationTypes.length; i++) {
@@ -73,8 +70,8 @@ const updateLocationTypes = (e, color) => {
 }
 
 const filterData = () => {
-	//mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type) && filterVals["sport"].includes(datum.sport));
-	mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type));
+	mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type) && filterVals["sport"].includes(datum.sport));
+	//mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type));
 	clusters.clearLayers();
 	addClusters(mapData);
 	setTimeout(styleClusters, 50);
@@ -91,7 +88,7 @@ const buildSportsList = () => {
 	}
 };
 
-/*const addSelect = () => {
+const addSelect = () => {
 	buildSportsList();
 	const select = $('#select');
 	let selectOptions = '<option selected>All sports</option>';
@@ -110,11 +107,12 @@ const filterSports = e => {
 		filterVals["sport"] = [val];
 	}
 	filterData();
-}*/
+}
 
 // event handler for marker click
 const handleMarkerClick = point => {
-	sidebar.setContent(point.tooltip);
+	const header = `<h1 class="location-name">${point.location_name}</h1>`
+	sidebar.setContent(header + point.tooltip);
 	sidebar.show();
 };
 
@@ -152,39 +150,22 @@ const addClusters = data => {
 			   data: athlete
 			}
 		});
-		const multiple = athlete.athlete_count > 1;
 		clusters.addLayer(new customCircleMarker([athlete.lat, athlete.long], {
 			data: athlete,
 			renderer: myRenderer,
 			fillOpacity: 0.65,
-			fillColor: multiple ? '#89CFFD' : pickColor(athlete.location_type),
-			color: multiple ? '#3eb0fc' : pickColor(athlete.location_type),
+			fillColor: pickColor(athlete.location_type),
+			color:  pickColor(athlete.location_type),
 			weight: 0.5,
-			radius: multiple ? 11 : mobile ? 6 : 5
+			radius: mobile ? 6 : 5
 		}).on("click", () => handleMarkerClick(athlete)));
-			if (multiple) {
-				text(athlete);
-			}
 	}
 	map.addLayer(clusters);
 	mapClustered = true;
 };
 
-const text = athlete => {
-	const text = L.tooltip({
-        permanent: true,
-        direction: 'center',
-        className: 'cluster-label',
-		renderer: myRenderer,
-    })
-    .setContent(athlete.athlete_count.toString())
-    .setLatLng([athlete.lat, athlete.long]);
-    text.addTo(texts);
-};
-
 map.on('zoom', () => {
 	const zoomLevel = map.getZoom();
-	console.log(zoomLevel)
 	if (zoomLevel === 18) {
 		$('.cluster-label').css("display", "block");
 	} else {
@@ -194,10 +175,9 @@ map.on('zoom', () => {
 });
 
 function init() {
-	//console.log("ready");
 
 	config = buildConfig();
-	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=747029840&single=true&output=csv');
+	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=1697127437&single=true&output=csv');
 
 };
 
@@ -251,22 +231,20 @@ function parseData() {
 	styleClusters();
 	addFilters(["Hometown", "School", "Current residence"]);
 	$('.cluster-label').css("display", "none");
-	//addSelect();
+	addSelect();
 };
 
 map.on('zoomend', () => {
 	setTimeout(styleClusters, 100);
 })
 
-
-clusters.on('clusterclick', function (a) {
-
-	const cluster = a.layer;
-    if(cluster.spiderfy) {
-		/*sidebar.setContent(a.layer.getAllChildMarkers()[0].options.data.tooltip);
-		sidebar.show();*/
-		console.log("spiderfied")
-    }
+clusters.on('spiderfied', function (a) {
+	const childMarkers = a.cluster.getAllChildMarkers();
+	console.log("location", childMarkers[0].options.data.location_name)
+	let sideBarContent = `<h1 class="location-name">${childMarkers[0].options.data.location_name}</h1>`;
+	childMarkers.map(marker => sideBarContent += marker.options.data.tooltip);
+	sidebar.setContent(sideBarContent);
+	sidebar.show();
 });
 
 $(document).ready(function () {
