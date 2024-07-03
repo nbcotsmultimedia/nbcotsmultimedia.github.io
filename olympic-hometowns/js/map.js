@@ -4,6 +4,7 @@ let ds,
 	mapData,
 	config,
 	usBounds,
+	texts,
 	sports = [],
 	mobile = window.innerWidth < 768,
 	filterVals = {
@@ -144,25 +145,48 @@ const pickColor = locationType => {
 
 // function to add clusters only
 const addClusters = data => {
-
+	texts = L.layerGroup().addTo(map);
 	for (let i = 0; i < data.length; i++) {
 		const athlete = data[i];
+		const multiple = athlete.athlete_count > 1;
 		clusters.addLayer(L.circleMarker([athlete.lat, athlete.long], {
 			renderer: myRenderer,
 			fillOpacity: 0.65,
-			fillColor: pickColor(athlete.location_type),
-			color: pickColor(athlete.location_type),
+			fillColor: multiple ? '#89CFFD' : pickColor(athlete.location_type),
+			color: multiple ? '#3eb0fc' : pickColor(athlete.location_type),
 			weight: 0.5,
-			radius: mobile ? 6 : 5
-		}).on("click", () => handleMarkerClick(athlete))
-			/*.bindPopup(`<b>${athlete.first_name} ${athlete.last_name}</b>
-		<br/><em>${athlete.sport}</em>
-		<br/>${athlete.location_type}: ${athlete.location_name}`)
-			.openPopup()*/);
+			radius: multiple ? 11 : mobile ? 6 : 5
+		}).on("click", () => handleMarkerClick(athlete)));
+			if (multiple) {
+				text(athlete);
+			}
 	}
 	map.addLayer(clusters);
 	mapClustered = true;
 };
+
+const text = athlete => {
+	const text = L.tooltip({
+        permanent: true,
+        direction: 'center',
+        className: 'cluster-label',
+		renderer: myRenderer,
+    })
+    .setContent(athlete.athlete_count.toString())
+    .setLatLng([athlete.lat, athlete.long]);
+    text.addTo(texts);
+};
+
+map.on('zoom', () => {
+	const zoomLevel = map.getZoom();
+	console.log(zoomLevel)
+	if (zoomLevel === 18) {
+		$('.cluster-label').css("display", "block");
+	} else {
+		$('.cluster-label').css("display", "none");
+	}
+	
+});
 
 function init() {
 	//console.log("ready");
@@ -221,6 +245,7 @@ function parseData() {
 	addClusters(mapData);
 	styleClusters();
 	addFilters(["Hometown", "School", "Current residence"]);
+	$('.cluster-label').css("display", "none");
 	//addSelect();
 };
 
