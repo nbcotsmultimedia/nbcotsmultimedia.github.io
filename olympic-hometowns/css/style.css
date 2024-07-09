@@ -215,6 +215,7 @@ button {
 
     #select {
         background-color: #ffffff !important;
+        -webkit-appearance: none;
     }
 
     .leaflet-control {
