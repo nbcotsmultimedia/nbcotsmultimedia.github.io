@@ -44,7 +44,7 @@ const addFilters = locationTypes => {
 	let innerHtml = filterContainer.html();
 	for (let i = 0; i < locationTypes.length; i++) {
 		const locationType = locationTypes[i];
-		const color = pickColor(locationType);
+		const color = 'rgba(221, 87, 70, 0.8)';
 		const id = locationType.replace(/\s+/g, '-').toLowerCase();
 		filterVals["location_type"].push(locationType);
 		const itemHtml = `<div class="form-check form-switch legend-item">
@@ -67,11 +67,11 @@ const updateLocationTypes = (e, color) => {
 	}
 	filterData();
 	$(e.target).css("background-color",  displayVal ? color : "#ffffff");
-}
+};
+
 
 const filterData = () => {
-	mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type) && filterVals["sport"].includes(datum.sport));
-	//mapData = allData.filter(datum => filterVals["location_type"].includes(datum.location_type));
+	mapData = allData.filter(datum => datum.location_type.split(", ").some(r=> filterVals["location_type"].includes(r)) && filterVals["sport"].includes(datum.sport));
 	clusters.clearLayers();
 	addClusters(mapData);
 	setTimeout(styleClusters, 50);
@@ -90,6 +90,7 @@ const buildSportsList = () => {
 
 const addSelect = () => {
 	buildSportsList();
+	sports = sports.sort();
 	const select = $('#select');
 	let selectOptions = '<option selected>All sports</option>';
 	for (let i = 0; i < sports.length; i++) {
@@ -111,7 +112,7 @@ const filterSports = e => {
 
 // event handler for marker click
 const handleMarkerClick = point => {
-	const header = `<h1 class="location-name">${point.location_name}</h1>`
+	const header = `<h1 class="location-name">${point.location_name}</h1>`;
 	sidebar.setContent(header + point.tooltip);
 	sidebar.show();
 };
@@ -129,17 +130,6 @@ const styleClusters = () => {
 	}
 };
 
-const pickColor = locationType => {
-	switch (locationType) {
-		case ("School"):
-			return "rgba(249,72,146,0.85)";
-		case ("Hometown"):
-			return "rgba(255,127,63,0.85)";
-		case ("Current residence"):
-			return "rgba(251,223,7,0.85)";
-	}
-};
-
 // function to add clusters only
 const addClusters = data => {
 	texts = L.layerGroup().addTo(map);
@@ -150,12 +140,13 @@ const addClusters = data => {
 			   data: athlete
 			}
 		});
+		var popup = L.popup().setContent(athlete.tooltip);
 		clusters.addLayer(new customCircleMarker([athlete.lat, athlete.long], {
 			data: athlete,
 			renderer: myRenderer,
-			fillOpacity: 0.65,
-			fillColor: pickColor(athlete.location_type),
-			color:  pickColor(athlete.location_type),
+			fillOpacity: 0.85,
+			fillColor: 'rgba(221, 87, 70, 0.8)',
+			color:  'rgb(221, 87, 70)',
 			weight: 0.5,
 			radius: mobile ? 6 : 5
 		}).on("click", () => handleMarkerClick(athlete)));
@@ -240,12 +231,24 @@ map.on('zoomend', () => {
 
 clusters.on('spiderfied', function (a) {
 	const childMarkers = a.cluster.getAllChildMarkers();
-	console.log("location", childMarkers[0].options.data.location_name)
 	let sideBarContent = `<h1 class="location-name">${childMarkers[0].options.data.location_name}</h1>`;
 	childMarkers.map(marker => sideBarContent += marker.options.data.tooltip);
 	sidebar.setContent(sideBarContent);
 	sidebar.show();
 });
+
+clusters.on('unspiderfied', function (a) {
+	sidebar.hide()
+	console.log("blah")
+});
+
+/*clusters.on('clusterclick', function (a) {
+	const childMarkers = a.layer.getAllChildMarkers();
+	let sideBarContent = `<h1 class="location-name">${childMarkers[0].options.data.location_name}</h1>`;
+	childMarkers.map(marker => sideBarContent += marker.options.data.tooltip);
+	sidebar.setContent(sideBarContent);
+	sidebar.show();
+});*/
 
 $(document).ready(function () {
 	init();
