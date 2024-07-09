@@ -15,7 +15,6 @@ const map = L.map('map', { preferCanvas: true }).setView([44.2423649, -100.80930
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
-const myRenderer = L.canvas({ padding: 0.5 });
 const clusters = new L.MarkerClusterGroup({
 	showCoverageOnHover: false
 });
@@ -143,7 +142,6 @@ const addClusters = data => {
 		var popup = L.popup().setContent(athlete.tooltip);
 		clusters.addLayer(new customCircleMarker([athlete.lat, athlete.long], {
 			data: athlete,
-			renderer: myRenderer,
 			fillOpacity: 0.85,
 			fillColor: 'rgba(221, 87, 70, 0.8)',
 			color:  'rgb(221, 87, 70)',
