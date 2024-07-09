@@ -52,6 +52,8 @@
 }
 
 .location-name {
+    margin-top: 15px;
+    margin-bottom: 10px;
     font-size: 30px;
     line-height: 32px;
     margin-right: 20px;
@@ -65,11 +67,11 @@
 .athlete-tooltip {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .athlete-blurb {
-    line-height: 16px;
+    line-height: 18px;
     font-size: 14px;
     max-width: 225px;
     margin-bottom: 0;
@@ -79,7 +81,7 @@
     width: 100px !important;
     height: 100px !important;
     object-fit: cover;
-    margin-right: 5px;
+    margin-right: 10px;
     border-radius: 50%;
     border: 1px solid #ced4da;
 }
@@ -182,6 +184,11 @@
 
 .checkbox-label {
     margin-left: 2px;
+}
+
+button {
+    background-color: #4681dd !important;
+    border-color: #4681dd !important;
 }
 
 @media screen and (max-width: 768px) {

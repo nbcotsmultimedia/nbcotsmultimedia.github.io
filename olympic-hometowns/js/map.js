@@ -43,11 +43,10 @@ const addFilters = locationTypes => {
 	let innerHtml = filterContainer.html();
 	for (let i = 0; i < locationTypes.length; i++) {
 		const locationType = locationTypes[i];
-		const color = 'rgba(221, 87, 70, 0.8)';
 		const id = locationType.replace(/\s+/g, '-').toLowerCase();
 		filterVals["location_type"].push(locationType);
 		const itemHtml = `<div class="form-check form-switch legend-item">
-					<input role="switch" onchange="updateLocationTypes(event, '${color}')" class="form-check-input" type="checkbox" checked id="${id}" value="${locationType}" style="background-color:${color};border-color:${color};">
+					<input role="switch" onchange="updateLocationTypes(event)" class="form-check-input" type="checkbox" checked id="${id}" value="${locationType}" style="background-color:rgba(221, 87, 70, 0.8);border-color:rgb(221, 87, 70);">
 					<label class="form-check-label" for="${id}"><p>${locationType}</p></label>
 				</div>`
 		innerHtml += itemHtml;
@@ -55,7 +54,7 @@ const addFilters = locationTypes => {
 	filterContainer.html(innerHtml);
 };
 
-const updateLocationTypes = (e, color) => {
+const updateLocationTypes = e => {
 	const val = e.target.value;
 	const displayed = filterVals["location_type"];
 	const displayVal = !displayed.includes(val);
@@ -65,7 +64,6 @@ const updateLocationTypes = (e, color) => {
 		filterVals["location_type"] = displayed.filter(el => el != val);
 	}
 	filterData();
-	$(e.target).css("background-color",  displayVal ? color : "#ffffff");
 };
 
 
