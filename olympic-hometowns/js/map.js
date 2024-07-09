@@ -235,19 +235,6 @@ clusters.on('spiderfied', function (a) {
 	sidebar.show();
 });
 
-clusters.on('unspiderfied', function (a) {
-	sidebar.hide()
-	console.log("blah")
-});
-
-/*clusters.on('clusterclick', function (a) {
-	const childMarkers = a.layer.getAllChildMarkers();
-	let sideBarContent = `<h1 class="location-name">${childMarkers[0].options.data.location_name}</h1>`;
-	childMarkers.map(marker => sideBarContent += marker.options.data.tooltip);
-	sidebar.setContent(sideBarContent);
-	sidebar.show();
-});*/
-
 $(document).ready(function () {
 	init();
 });
