@@ -24,6 +24,7 @@ const sidebar = L.control.sidebar('sidebar', {
 map.addControl(sidebar);
 
 const search = e => {
+	sidebar.hide();
 	const val = e.target.value;
 	$.getJSON('https://nominatim.openstreetmap.org/search.php?q=' + val + '&format=jsonv2&countrycodes=US,CA,PR,VI', function(res) {
 		const response = $("#response");
