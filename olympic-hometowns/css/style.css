@@ -11,6 +11,7 @@
 #select {
     margin-bottom: 20px;
     border: 1px solid #ced4da;
+    border-radius: 5px;
     font-weight: 300;
 	font-size: 17px;
 	color: #191919;
@@ -210,6 +211,10 @@ button {
     #header,
     #map {
         max-width: 100vw !important;
+    }
+
+    #select {
+        background-color: #ffffff;
     }
 
     .leaflet-control {
