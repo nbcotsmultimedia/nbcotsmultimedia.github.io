@@ -59,21 +59,27 @@
 }
 
 .athlete-name {
-    margin-bottom: 5px;
-    font-size: 18px;
-    font-weight: 400;
+    font-weight: 500;
+}
+
+.athlete-tooltip {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
 .athlete-blurb {
     line-height: 16px;
     font-size: 14px;
+    max-width: 225px;
+    margin-bottom: 0;
 }
 
 .athlete-img {
-    width: 125px;
-    height: 125px;
+    width: 100px !important;
+    height: 100px !important;
     object-fit: cover;
-    margin-bottom: 5px;
+    margin-right: 5px;
     border-radius: 50%;
     border: 1px solid #ced4da;
 }
@@ -150,10 +156,6 @@
 .leaflet-popup-content {
     max-height: 250px;
     overflow-y: scroll;
-}
-
-.tooltip-heading {
-    font-size: 14px;
 }
 
 .legend-item {
