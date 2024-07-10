@@ -11,7 +11,7 @@ let ds,
 		"sport": []
 	};
 const markerList = [];
-const map = L.map('map', { preferCanvas: true }).setView([44.2423649, -100.8093025], 3);
+const map = L.map('map', { preferCanvas: true }).setView([42.2423649, -100.8093025], 3);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
@@ -26,6 +26,7 @@ map.addControl(sidebar);
 const search = e => {
 	sidebar.hide();
 	const val = e.target.value;
+	$('#search-loader').css("visibility", "visible");
 	$.getJSON('https://nominatim.openstreetmap.org/search.php?q=' + val + '&format=jsonv2&countrycodes=US,CA,PR,VI', function(res) {
 		const response = $("#response");
 		if (res.length > 0) {
@@ -36,6 +37,7 @@ const search = e => {
 		} else {
 			response.html("We couldn't find that address, please try another.<br/>Note: It may be helpful to type out the full address, town name or school name.")
 		}
+		$('#search-loader').css("visibility", "hidden");
 	});
 };
 
@@ -65,6 +67,7 @@ const updateLocationTypes = e => {
 		filterVals["location_type"] = displayed.filter(el => el != val);
 	}
 	filterData();
+	$(e.target).css("background-color",  displayVal ? 'rgba(221, 87, 70, 0.8)' : "#ffffff");
 };
 
 
@@ -220,6 +223,7 @@ function parseData() {
 	addFilters(["Hometown", "School", "Current residence"]);
 	$('.cluster-label').css("display", "none");
 	addSelect();
+	$('#loading').css("display", "none");
 };
 
 map.on('zoomend', () => {

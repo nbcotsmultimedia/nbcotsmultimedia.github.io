@@ -1,5 +1,5 @@
-#map { 
-    height: 600px; 
+#map {
+    height: 600px;
     max-width: 100vw !important;
     border: 1px solid #ced4da;
 }
@@ -13,8 +13,8 @@
     border: 1px solid #ced4da;
     border-radius: 5px !important;
     font-weight: 300;
-	font-size: 17px;
-	color: #191919;
+    font-size: 17px;
+    color: #191919;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -36,6 +36,51 @@
 #response {
     font-style: italic;
     color: #FF2400;
+}
+
+#button-container {
+    display: flex;
+}
+
+#address-input-button {
+    margin-right: 10px;
+}
+
+#loading {
+    height: 600px;
+    width: 100vw !important;
+    background-color: #d5dadc;
+    position: absolute;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#search-loader {
+    visibility: hidden;
+}
+
+.loading-icon {
+    border: 3px solid #fafaf8;
+    /* Light grey */
+    border-top: 3px solid #b4bdc2;
+    /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .leaflet-sidebar {
@@ -192,7 +237,7 @@ button {
     border-color: #4681dd !important;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 675px) {
     body {
         display: flex;
         flex-direction: column;
