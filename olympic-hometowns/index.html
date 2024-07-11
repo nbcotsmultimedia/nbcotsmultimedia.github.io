@@ -20,7 +20,6 @@
     <link href="https://cdn.jsdelivr.net/npm/leaflet-sidebar@0.2.4/src/L.Control.Sidebar.min.css" rel="stylesheet">
 
     <!-- Responsive iFrame stuff -->
-    <!--
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
     <script type="text/javascript">
          document.addEventListener("DOMContentLoaded", function() {
@@ -28,7 +27,6 @@
             xtalk.init();
          });
     </script>
-    -->
 
 
   </head>
@@ -36,22 +34,24 @@
   <body>
 
     <!-- Start content here-->
-    <div id="header">
-      <p id="instructions"><strong>Enter a town, school or address below:</strong></p> 
-      <div id='button-box'>
-        <input id="address-input" class="form-control" placeholder="111 S Michigan Ave, Chicago, IL" onchange="search(event)">
-        <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+    <div id="olympians-map">
+      <div id="header">
+        <p id="instructions"><strong>Enter a town, school or address below:</strong></p> 
+        <div id='button-box'>
+          <input id="address-input" class="form-control" placeholder="111 S Michigan Ave, Chicago, IL" onchange="search(event)">
+          <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+        </div>
+        <p id="response"></p>
+        <div id="controls">
+          <div id="legend"></div>
+          <select id="select" lass="form-select" aria-label="Default select example" onchange="filterSports(event)"></select>
+        </div>
       </div>
-      <p id="response"></p>
-      <div id="controls">
-        <div id="legend"></div>
-        <select id="select" lass="form-select" aria-label="Default select example" onchange="filterSports(event)"></select>
+      <div id="map">
+        <div id="loading"><div class="loading-icon"></div></div>
       </div>
-    </div>
-    <div id="map">
-      <div id="loading"><div class="loading-icon"></div></div>
-    </div>
-    <div id="sidebar">
+      <div id="sidebar">
+      </div>
     </div>
 
 

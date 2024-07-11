@@ -31,11 +31,13 @@ const search = e => {
 		const response = $("#response");
 		if (res.length > 0) {
 			response.html("")
+			xtalk.signalIframe();
 			let maxImportance = Math.max(...res.map(r => r.importance))
 			const topRes = res.filter(r => r.importance === maxImportance)[0];
 			map.flyTo([topRes.lat, topRes.lon], 10);
 		} else {
-			response.html("We couldn't find that address, please try another.<br/>Note: It may be helpful to type out the full address, town name or school name.")
+			response.html("We couldn't find that address, please try another.<br/>Note: It may be helpful to type out the full address, town name or school name.");
+			xtalk.signalIframe();
 		}
 		$('#search-loader').css("visibility", "hidden");
 	});
@@ -166,10 +168,9 @@ map.on('zoom', () => {
 });
 
 function init() {
-
 	config = buildConfig();
 	loadData('https://docs.google.com/spreadsheets/d/e/2PACX-1vRtdU3ka48OpMBBepDVI7GIdpbpfLNLplzBnVWcIqNIvFtly4rzpeZoiOHjzntW0EqLd1Ed2FGVWc6m/pub?gid=1697127437&single=true&output=csv');
-
+	xtalk.signalIframe();
 };
 
 function buildConfig() {
