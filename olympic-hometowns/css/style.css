@@ -119,13 +119,13 @@
 .athlete-blurb {
     line-height: 18px;
     font-size: 14px;
-    max-width: 225px;
+    max-width: 165px;
     margin-bottom: 0;
 }
 
 .athlete-img {
-    width: 100px !important;
-    height: 100px !important;
+    width: 80px !important;
+    height: 80px !important;
     object-fit: cover;
     margin-right: 10px;
     border-radius: 50%;
