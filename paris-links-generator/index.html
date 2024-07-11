@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Paris Links Generator</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <link href="css/profiles.css" rel="stylesheet">
+
+    <!-- Responsive iFrame stuff -->
+    <!--
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+         document.addEventListener("DOMContentLoaded", function() {
+            xtalk.responsive = false;
+            xtalk.init();
+         });
+    </script>
+    -->
+
+    <style>
+      body {
+        background-color: #e4e4e4 !important;
+      }
+      .navBtn {
+        width: 100%;
+        margin-bottom: 2px;
+      }
+      .copyBtn {
+        background-color:#0275d8;
+        border-radius: 4px;
+        color: #FFF;
+        font-size: 12px;
+        padding: 2px 4px;
+        font-weight: 500;
+      }
+      .copyBtn:hover {
+        color: #CCC;
+        cursor: pointer;
+      }
+      .output {
+        min-height: 150px;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+        padding: 10px;
+        word-wrap: break-word;
+        font-family: "Courier", sans-serif;
+        font-size: 14px;
+      }
+      .output1 {
+        min-height: 40px;
+        border: 1px solid #CCC;
+        border-radius: 3px;
+        padding: 10px;
+        word-wrap: break-word;
+        font-family: "Courier", sans-serif;
+        font-size: 14px;
+      }
+      .kicker {
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-bottom: 0px;
+      }
+      .redNote {
+        font-size: 11px;
+        color: red;
+        text-transform: uppercase;
+        margin-top: -10px;
+      }
+
+      .showStream, .showLink, .showEmbed, .showProfile {
+        cursor: pointer;
+      }
+    </style>
+
+
+  </head>
+
+  <body>
+
+    <!-- Start content here-->
+    <div class="container" style="background-color: #FFF; padding: 25px; margin-top: 15px;">
+      <div class="row">
+        <div class="col-3">
+          <img src="images/parislogo.jpg" class="img-fluid" />
+        </div>
+        <div class="col-9">
+          <h1>Olympics Embed Code Generator</h1>
+          <p>(v1) These are for non-inline links. These go into the Wordpress using Custom HTML Blocks.</p>
+          <p>If you are looking for the  OTS/LX Video Embed Code Converter, go <a href="https://data.nbcstations.com/national/toolbox/embed-conversion-tool/" target="_blank">here</a>.</p>
+        </div>
+
+      </div>
+      
+      <div class="row">
+        <div class="col-12">
+          <hr/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-3" style="padding-right: 45px; border-right: 1px dotted #CCC">
+          <h3>What would you like to do?</h3>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showStream navBtn">Create a stream linkout</button>
+          <p class="showStream"><img src="images/livestream.gif" class="img-fluid" /></p>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showLink navBtn">Create a visual linkout</button>
+          <p class="showLink"><img src="images/linkoutimage.jpg" class="img-fluid" /></p>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showEmbed navBtn">Convert embeded video code</button>
+          <p class="showEmbed"><img src="images/embed.jpg" class="img-fluid" /></p>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showProfile navBtn">Create an athlete profile card</button>
+          <p class="showProfile"><img src="images/profile.jpg" class="img-fluid" /></p>
+
+        </div>
+       
+        <div class="col-9">
+
+          <div id="streamSec">
+            <h3>Create a live stream linkout</h3>
+            <p>Link with a little play button</p>
+            
+            <label>Link title</label>
+            <p><input type="text" class="form-control" id="streamtitle" placeholder="Title Goes Here"></p>
+    
+            <label>Link to page where stream is</label>
+            <p><input type="text" class="form-control" id="streamurl" placeholder="Paste url here"></p>
+            <button type="button" class="btn btn-primary" id="submit3">GET CODE</button>
+    
+            <div>
+              <p id="tstream"></p>
+              <p class="kicker">Preview</p>
+              <div id="sPrev" style="padding: 15px 0px"></div>
+              <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#sm');">COPY</a></p>
+              <p class="output" id="sm">&nbsp;</p>
+              
+    
+            </div>
+    
+            
+          </div>
+
+          <div id="linkSec">
+
+            <h3>Create a linkout with image</h3>
+            <p>Link out to NBCOlympics.com with image and play button</p>
+            
+    
+            <label>Video title</label>
+            <input type="text" class="form-control" id="nbcotitle" placeholder="Title Goes Here">
+    
+            <label>NBCOlympics.com URL</label>
+            <p><input type="text" class="form-control" id="nbcourl" placeholder="Paste url here"></p>
+            <p class="redNote" id="vRemoveNote">Note: Extraneous chrcontext parameter has been removed</p>
+    
+            <label>URL for the image</label>
+            <p><input type="text" class="form-control" id="nbcoimg" placeholder="https://images.nbcolympics.com/sites/default/files/post/short_form_video/OLY20_SUW_G_1729_MOOREGOLD_HLF_210727_FINAL.jpg"></p>
+    
+            <p><button type="button" class="btn btn-primary" id="submit2">GET CODE</button></p>
+    
+            <div id="cityModCode">
+              <p class="kicker">Preview</p>
+              <div id="iPrev" style="max-width: 737px"></div>
+              <p id="tcm"></p>
+              <p class="kicker">URL For Lead Embed/Position <a class="copyBtn" href="javascript:copyCode('#justURL2');">COPY</a></p>
+              <p class="output1" id="justURL2"></p>
+              <!--<p><a href="javascript:copyCode('#justURL2');">COPY URL TO CLIPBOARD</a></p>-->
+              <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#dm');">COPY</a></p>
+              <p class="output" id="dm">&nbsp;</p>
+              <!--<p><a href="javascript:copyCode('#dm');">COPY CODE TO CLIPBOARD</a></p>-->
+            </div>
+    
+            
+          </div>
+
+          <div id="embedSec">
+
+            <h3>Convert video embed code</h3>
+            <p>The embed code comes via email or <a href="https://feed.theplatform.com/f/BxmELC/oly_distribution_feed_soc" target="_blank">here</a>.</p>
+            
+            <label>Code from email</label>
+            <p><input type="text" class="form-control" id="emailCode" placeholder="Paste code here"></p>
+    
+            <p><button type="button" class="btn btn-primary" id="submit1">CONVERT CODE</button></p>
+    
+    
+            <div id="modEmailCode">
+              <p class="kicker">Converted Embed Code <a class="copyBtn" href="javascript:copyCode('#emailDesktop');">COPY</a></p>
+              <p class="output" id="emailDesktop"></p>
+              <!--<p><a href="javascript:copyCode('#emailDesktop');">COPY CODE TO CLIPBOARD</a></p>-->
+              <p class="kicker">URL For Lead Embed/Position <a class="copyBtn" href="javascript:copyCode('#justURL');">COPY</a></p>
+              <p class="output1" id="justURL"></p>
+              <!--<p><a href="javascript:copyCode('#justURL');">COPY URL TO CLIPBOARD</a></p>-->
+            </div>
+          </div>
+
+          <div id="profileSec">
+            <h3>Athlete Profile Cards</h3>
+            <p>Contains name, photo, bio info, medals won</p>
+    
+            <div class="ui fluid search selection dropdown">
+              <input type="hidden" name="shipper_state_state">
+              <i class="dropdown icon"></i>
+              <div class="default text">Search athletes</div>
+              <div class="menu">
+              </div>
+            </div>
+    
+            <p class="kicker">Embed Code</p>
+            <p class="output" id="pcode">&nbsp;</p>
+            <p><a href="" id="copier">COPY CODE TO CLIPBOARD</a></p>
+    
+            <p class="kicker">Preview</p>
+            <div class="example">&nbsp;</div>
+          </div>
+
+          
+        </div>
+      </div>
+      
+
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+
+    <script>
+      $("#sRemoveNote").hide();
+      $("#vRemoveNote").hide();
+
+      $("#streamSec").hide();
+      $("#linkSec").hide();
+      $("#embedSec").hide();
+      $("#profileSec").hide();
+
+      $(".showStream").click(function() {
+        $("#streamSec").show();
+        $("#linkSec").hide();
+        $("#embedSec").hide();
+        $("#profileSec").hide();
+      });
+
+      $(".showLink").click(function() {
+        $("#streamSec").hide();
+        $("#linkSec").show();
+        $("#embedSec").hide();
+        $("#profileSec").hide();
+      });
+
+      $(".showEmbed").click(function() {
+        $("#streamSec").hide();
+        $("#linkSec").hide();
+        $("#embedSec").show();
+        $("#profileSec").hide();
+      });
+
+      $(".showProfile").click(function() {
+        $("#streamSec").hide();
+        $("#linkSec").hide();
+        $("#embedSec").hide();
+        $("#profileSec").show();
+      })
+
+
+      //FOR EMBEDDED VIDEOS
+      $("#submit1").click(function () {
+
+        var tmp1a = $("#emailCode").val();
+        //tmp1a = tmp1a.replace("width=\"624\" height=\"351\"", "width=\"100%\" height=\"411\"");
+        //$("#emailDesktop").text(tmp1a);
+
+        //console.log(tmp1a);
+        tmp1a = tmp1a.replace("“", "\"");
+        tmp1a = tmp1a.replace("”", "\"");
+        //console.log(tmp1a);
+
+        var matches = tmp1a.match(/\"(.*?)\"/);  //returns array
+        $("#emailDesktop").text("<iframe src=" + matches[0] + " width=\"100%\" height=\"411\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe>");
+
+        $("#justURL").text(matches[0].substring(1, matches[0].length-1));
+
+      });
+
+
+      //FOR LINK WITH IMAGE
+      $("#submit2").click(function () {
+        //CHECK FOR EXTRA PARAM
+        if ($("#nbcourl").val().indexOf("?") > -1) {
+          //console.log("parameter detected");
+          $("#nbcourl").val($("#nbcourl").val().substring(0,$("#nbcourl").val().indexOf("?")));
+        }
+
+        //CHECK FOR IMAGE PARAM
+        if ($("#nbcoimg").val().indexOf("?") > -1) {
+          //console.log("image parameter detected");
+          $("#nbcoimg").val($("#nbcoimg").val().substring(0,$("#nbcoimg").val().indexOf("?")));
+        }
+
+        var rand = Math.floor(Math.random() * 10000);
+
+        $("#dm").text("<iframe id=\"parisLink" + rand + "\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&rand=" + rand + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
+
+        $("#iPrev").html("<iframe id=\"bjnLink\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
+
+        $("#justURL2").text("https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?]&link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val() + "&image=" + $("#nbcoimg").val() + "?impolicy=rect_medium_1024_576");
+
+      });
+
+      //FOR STREAM LINKS
+      $("#submit3").click(function () {
+        
+        $("#sm").text("<div class='streamCon'><div style='float: left; margin-right: 10px'><a href='" + $("#streamurl").val() + "' target='_blank'><img src='https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/images/paris-playbtn-sm.png' alt='play' /></a></div><div><p><strong><a href='" + $("#streamurl").val() + "' target='_blank'>" + $("#streamtitle").val() + "</a></strong></p></div></div><div style='clear:both'></div>");
+
+        $("#sPrev").html("<div class='streamCon'><div style='float: left; margin-right: 10px'><a href='" + $("#streamurl").val() + "' target='_blank'><img src='https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/images/paris-playbtn-sm.png' alt='play' /></a></div><div><p><strong><a href='" + $("#streamurl").val() + "' target='_blank'>" + $("#streamtitle").val() + "</a></strong></p></div></div><div style='clear:both'></div>")
+      });
+
+      function copyCode(element) {
+        //var copyText = $("#" + which).text();
+
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val($(element).text()).select();
+        document.execCommand("copy");
+        $temp.remove();
+
+      }
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="js/profiles.js"></script>
+
+  </body>
+</html>
