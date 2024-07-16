@@ -140,14 +140,14 @@
     
             <label>Link to page where stream is</label>
             <p><input type="text" class="form-control" id="streamurl" placeholder="Paste url here"></p>
-            <button type="button" class="btn btn-primary" id="submit3">GET CODE</button>
+            <button type="button" class="btn btn-primary" id="submitStream">GET CODE</button>
     
             <div>
               <p id="tstream"></p>
               <p class="kicker">Preview</p>
               <div id="sPrev" style="padding: 15px 0px"></div>
-              <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#sm');">COPY</a></p>
-              <p class="output" id="sm">&nbsp;</p>
+              <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#streamCode');">COPY</a></p>
+              <p class="output" id="streamCode">&nbsp;</p>
               
     
             </div>
@@ -166,8 +166,7 @@
     
             <label>NBCOlympics.com URL</label>
             <p><input type="text" class="form-control" id="nbcourl" placeholder="Paste url here"></p>
-            <p class="redNote" id="vRemoveNote">Note: Extraneous chrcontext parameter has been removed</p>
-    
+            
             <label>URL for the image</label>
             <p><input type="text" class="form-control" id="nbcoimg" placeholder="https://images.nbcolympics.com/sites/default/files/post/short_form_video/OLY20_SUW_G_1729_MOOREGOLD_HLF_210727_FINAL.jpg"></p>
     
@@ -177,7 +176,7 @@
               <p class="kicker">Preview</p>
               <div id="iPrev" style="max-width: 737px"></div>
               <p id="tcm"></p>
-              <p class="kicker">URL For Lead Embed/Position <a class="copyBtn" href="javascript:copyCode('#justURL2');">COPY</a></p>
+              <p class="kicker">URL For Lead Media Position <a class="copyBtn" href="javascript:copyCode('#justURL2');">COPY</a></p>
               <p class="output1" id="justURL2"></p>
               <!--<p><a href="javascript:copyCode('#justURL2');">COPY URL TO CLIPBOARD</a></p>-->
               <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#dm');">COPY</a></p>
@@ -199,13 +198,14 @@
             <p><button type="button" class="btn btn-primary" id="submit1">CONVERT CODE</button></p>
     
     
-            <div id="modEmailCode">
-              <p class="kicker">Converted Embed Code <a class="copyBtn" href="javascript:copyCode('#emailDesktop');">COPY</a></p>
-              <p class="output" id="emailDesktop"></p>
-              <!--<p><a href="javascript:copyCode('#emailDesktop');">COPY CODE TO CLIPBOARD</a></p>-->
+            <div id="convEmbedCode">
+              <p class="kicker">Embed Code Inline <a class="copyBtn" href="javascript:copyCode('#embedCode');">COPY</a></p>
+              <p class="output" id="embedCode"></p>
               <p class="kicker">URL For Lead Embed/Position <a class="copyBtn" href="javascript:copyCode('#justURL');">COPY</a></p>
               <p class="output1" id="justURL"></p>
-              <!--<p><a href="javascript:copyCode('#justURL');">COPY URL TO CLIPBOARD</a></p>-->
+
+              <!--<p class="kicker">Test Responsive <a class="copyBtn" href="javascript:copyCode('#embedResp');">COPY</a></p>
+              <p class="output1" id="embedResp"></p>-->
             </div>
           </div>
 
@@ -245,9 +245,7 @@
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
 
     <script>
-      $("#sRemoveNote").hide();
-      $("#vRemoveNote").hide();
-
+      
       $("#streamSec").hide();
       $("#linkSec").hide();
       $("#embedSec").hide();
@@ -287,7 +285,7 @@
 
         var tmp1a = $("#emailCode").val();
         //tmp1a = tmp1a.replace("width=\"624\" height=\"351\"", "width=\"100%\" height=\"411\"");
-        //$("#emailDesktop").text(tmp1a);
+        //$("#embedCode").text(tmp1a);
 
         //console.log(tmp1a);
         tmp1a = tmp1a.replace("“", "\"");
@@ -295,9 +293,16 @@
         //console.log(tmp1a);
 
         var matches = tmp1a.match(/\"(.*?)\"/);  //returns array
-        $("#emailDesktop").text("<iframe src=" + matches[0] + " width=\"100%\" height=\"411\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe>");
+        //$("#embedCode").text("<iframe src=" + matches[0] + " width=\"100%\" height=\"411\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe>");
+        $("#embedCode").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\"><iframe class=\"nbcoplayerinline\" src=" + matches[0].replace("autoPlay=true", "autoPlay=false") + " width=\"100%\" height=\"100%\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></div>")
 
         $("#justURL").text(matches[0].substring(1, matches[0].length-1));
+
+        //TEST RESPONSIVE VERSION
+        /*var randNum2 = Math.floor(Math.random() * 1000);
+        var justid = $("#justURL").text().substring(48,$("#justURL").text().indexOf("?"));
+        $("#embedResp").text("<p><iframe id=\"nbcoplayer" + randNum2 + "\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/embed-videos.html?v=" + justid + "\&r=" + randNum2 + "\" width=\"100%\" height=\"411\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></p>");*/
+        
 
       });
 
@@ -318,18 +323,18 @@
 
         var rand = Math.floor(Math.random() * 10000);
 
-        $("#dm").text("<iframe id=\"parisLink" + rand + "\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&rand=" + rand + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
+        $("#dm").text("<p><iframe id=\"parisLink" + rand + "\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/visual-link.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&rand=" + rand + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe></p>");
 
-        $("#iPrev").html("<iframe id=\"bjnLink\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
+        $("#iPrev").html("<iframe id=\"bjnLink\" src=\"https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/visual-link.html?link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val().replace(/\ /g, '%20') + "&image=" + $("#nbcoimg").val() +  "?impolicy=rect_medium_1024_576\" width=\"100%\" height=\"460\" scrolling=\"no\" frameborder=\"0\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
 
-        $("#justURL2").text("https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/videos.html?]&link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val() + "&image=" + $("#nbcoimg").val() + "?impolicy=rect_medium_1024_576");
+        $("#justURL2").text("https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/visual-link.html?&link=" + $("#nbcourl").val() + "&title=" + $("#nbcotitle").val() + "&image=" + $("#nbcoimg").val() + "?impolicy=rect_medium_1024_576");
 
       });
 
       //FOR STREAM LINKS
-      $("#submit3").click(function () {
+      $("#submitStream").click(function () {
         
-        $("#sm").text("<div class='streamCon'><div style='float: left; margin-right: 10px'><a href='" + $("#streamurl").val() + "' target='_blank'><img src='https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/images/paris-playbtn-sm.png' alt='play' /></a></div><div><p><strong><a href='" + $("#streamurl").val() + "' target='_blank'>" + $("#streamtitle").val() + "</a></strong></p></div></div><div style='clear:both'></div>");
+        $("#streamCode").text("<div class='streamCon'><div style='float: left; margin-right: 10px'><a href='" + $("#streamurl").val() + "' target='_blank'><img src='https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/images/paris-playbtn-sm.png' alt='play' /></a></div><div><p><strong><a href='" + $("#streamurl").val() + "' target='_blank'>" + $("#streamtitle").val() + "</a></strong></p></div></div><div style='clear:both'></div>");
 
         $("#sPrev").html("<div class='streamCon'><div style='float: left; margin-right: 10px'><a href='" + $("#streamurl").val() + "' target='_blank'><img src='https://media.nbcnewyork.com/assets/editorial/national/2024/olympics/links-generator/images/paris-playbtn-sm.png' alt='play' /></a></div><div><p><strong><a href='" + $("#streamurl").val() + "' target='_blank'>" + $("#streamtitle").val() + "</a></strong></p></div></div><div style='clear:both'></div>")
       });
