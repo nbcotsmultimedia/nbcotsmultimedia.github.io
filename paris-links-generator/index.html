@@ -294,7 +294,7 @@
 
         var matches = tmp1a.match(/\"(.*?)\"/);  //returns array
         //$("#embedCode").text("<iframe src=" + matches[0] + " width=\"100%\" height=\"411\" scrolling=\"no\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe>");
-        $("#embedCode").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\"><iframe class=\"nbcoplayerinline\" src=" + matches[0].replace("autoPlay=true", "autoPlay=false") + " width=\"100%\" height=\"100%\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></div>")
+        $("#embedCode").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\"><iframe class=\"wp-block-embed is-type-video\" src=" + matches[0].replace("autoPlay=true", "autoPlay=false") + " width=\"100%\" height=\"100%\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></div>")
 
         $("#justURL").text(matches[0].substring(1, matches[0].length-1));
 
