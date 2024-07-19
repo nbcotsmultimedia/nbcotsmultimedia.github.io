@@ -4,6 +4,7 @@
 }
 
 body {
+  /* overflow: hidden; */
   margin: 0;
   padding: 0;
   font-family: "Roboto", sans-serif;
@@ -81,7 +82,7 @@ body {
 .scroll__graphic .chart img[src*="slide01"] {
   object-fit: contain; /* This will fit the entire image within the container */
   max-height: 100vh; /* Ensure it doesn't exceed the viewport height */
-  width: auto; /* Allow the width to adjust based on the aspect ratio */
+  width: 100%; /* Allow the width to adjust based on the aspect ratio */
   height: auto; /* Allow the height to adjust based on the aspect ratio */
   max-width: 100%; /* Ensure it doesn't exceed the container width */
 }
@@ -120,6 +121,15 @@ body {
 
 .step:last-child {
   margin-bottom: 0;
+}
+
+.scroll__graphic .chart img[src*="slide01"] {
+  width: 100vw; /* Set width to 100% of viewport width */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+  max-width: none; /* Remove max-width constraint */
+  max-height: none; /* Remove max-height constraint */
 }
 
 /* Background Wrapper */

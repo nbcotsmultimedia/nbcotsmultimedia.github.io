@@ -89,6 +89,8 @@ function init() {
   window.addEventListener("load", adjustSlide01);
 
   console.log("Initialization complete");
+
+  xtalk.signalIframe();
 }
 
 // kick things off
