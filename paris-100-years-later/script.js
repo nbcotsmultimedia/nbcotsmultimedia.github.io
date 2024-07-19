@@ -62,7 +62,7 @@ function init() {
     .setup({
       step: "#scroll .scroll__text .step",
       offset: 0.5,
-      debug: true,
+      //   debug: true,
     })
     .onStepEnter(handleStepEnter);
 
