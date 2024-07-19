@@ -1,3 +1,4 @@
+/* Global Styles */
 * {
   box-sizing: border-box;
 }
@@ -12,21 +13,42 @@ body {
   line-height: 1.6;
 }
 
-h1,
-h2 {
-  font-family: "ArtHouseBold", sans-serif;
-  text-align: center;
-  margin: 0 0 1rem;
-}
-
-h3 {
-  font-family: "ArtHouseMed", sans-serif;
-}
-
+/* Scroll Section Styles */
 #scroll {
   position: relative;
 }
 
+/* Typography */
+#scroll h2 {
+  font-family: "Poiret One", cursive;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+#scroll h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 0.5px solid #616161;
+}
+
+#scroll p {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Scroll Graphic */
 .scroll__graphic {
   position: sticky;
   top: 0;
@@ -36,6 +58,7 @@ h3 {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  z-index: 0;
 }
 
 .scroll__graphic .chart {
@@ -55,37 +78,24 @@ h3 {
   margin: auto;
 }
 
-@media (max-aspect-ratio: 16/9) {
-  .scroll__graphic .chart img {
-    width: auto;
-    height: 100%;
-  }
-}
-
-@media (min-aspect-ratio: 16/9) {
-  .scroll__graphic .chart img {
-    width: 100%;
-    height: auto;
-  }
-}
-
+/* Scroll Text */
 .scroll__text {
   position: relative;
   padding: 0 1rem;
-  max-width: 40rem; /* Increased max-width for better readability on wider screens */
+  max-width: 40rem;
   margin: 0 auto;
   z-index: 10;
 }
 
+/* Step Styles */
 .step {
-  margin: 0 auto 2rem auto;
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #333;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin: 0 auto 2rem;
+  padding: 0;
   opacity: 0.3;
   transition: opacity 0.3s ease;
+  min-height: 200px;
+  height: auto;
 }
 
 .step.is-active {
@@ -104,28 +114,31 @@ h3 {
   margin-bottom: 0;
 }
 
-.step h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-  margin-top: 0;
-  font-size: 1.5rem;
+/* Background Wrapper */
+.background-wrapper {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+  /* border-radius: 8px; */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
+/* Columns Layout */
 .columns {
   display: flex;
   justify-content: space-between;
   text-align: center;
-  margin: 1rem -0.5rem; /* Negative margin to counteract column padding */
+  margin: 1rem -0.5rem;
 }
 
 .columns div {
   flex: 1;
-  padding: 0 0.5rem; /* Add padding instead of margin for better spacing */
-  min-width: 0; /* Allow columns to shrink if needed */
+  padding: 0 0.5rem;
+  min-width: 0;
 }
 
-/* Remove the media query that was changing the column layout for mobile */
-
+/* Single Column Layout */
 .single-column {
   max-width: 800px;
   margin: 0 auto;
@@ -136,18 +149,28 @@ h3 {
   margin-bottom: 1rem;
 }
 
+/* Specific Step Styles */
 .step[data-step="2"] {
   max-width: 900px;
 }
 
-/* Additional reset to ensure no borders or outlines */
-* {
-  border: none !important;
-  outline: none !important;
+/* Media Queries */
+@media (max-aspect-ratio: 16/9) {
+  .scroll__graphic .chart img {
+    width: auto;
+    height: 100%;
+  }
 }
 
-/* Remove any pseudo-elements */
+@media (min-aspect-ratio: 16/9) {
+  .scroll__graphic .chart img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Remove pseudo-elements */
 #scroll *::before,
 #scroll *::after {
-  content: none !important;
+  content: none;
 }
