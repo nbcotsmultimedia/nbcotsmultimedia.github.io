@@ -49,6 +49,22 @@ function setupStickyfill() {
   });
 }
 
+function adjustSlide01() {
+  var slide01 = document.querySelector(
+    '.scroll__graphic .chart img[src*="slide01"]'
+  );
+  if (slide01) {
+    var aspectRatio = slide01.naturalWidth / slide01.naturalHeight;
+    if (aspectRatio > 1) {
+      slide01.style.width = "100%";
+      slide01.style.height = "auto";
+    } else {
+      slide01.style.width = "auto";
+      slide01.style.height = "100%";
+    }
+  }
+}
+
 function init() {
   console.log("Initializing...");
   setupStickyfill();
@@ -68,6 +84,10 @@ function init() {
 
   // setup resize event
   window.addEventListener("resize", handleResize);
+
+  // Add event listener for image load
+  window.addEventListener("load", adjustSlide01);
+
   console.log("Initialization complete");
 }
 
