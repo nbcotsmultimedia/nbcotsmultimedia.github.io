@@ -1,0 +1,200 @@
+/* Global Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* overflow: hidden; */
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 310;
+  font-size: 17px;
+  color: #191919;
+  line-height: 1.6;
+}
+
+/* Scroll Section Styles */
+#scroll {
+  position: relative;
+}
+
+/* Typography */
+#scroll h2 {
+  font-family: "Poiret One", cursive;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+#scroll h3 {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 0.5px solid #616161;
+}
+
+#scroll p {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Scroll Graphic */
+.scroll__graphic {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.scroll__graphic .chart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.scroll__graphic .chart img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This will cover the entire container */
+  object-position: center; /* This centers the image */
+  display: block;
+  margin: 0;
+}
+
+/* Specific rule for slide01 */
+.scroll__graphic .chart img[src*="slide01"] {
+  object-fit: contain; /* This will fit the entire image within the container */
+  max-height: 100vh; /* Ensure it doesn't exceed the viewport height */
+  width: 100%; /* Allow the width to adjust based on the aspect ratio */
+  height: auto; /* Allow the height to adjust based on the aspect ratio */
+  max-width: 100%; /* Ensure it doesn't exceed the container width */
+}
+
+/* Scroll Text */
+.scroll__text {
+  position: relative;
+  padding: 0 1rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  z-index: 10;
+}
+
+/* Step Styles */
+.step {
+  position: relative;
+  margin: 0 auto 2rem;
+  padding: 0;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  min-height: 200px;
+  height: auto;
+}
+
+.step.is-active {
+  opacity: 1;
+}
+
+.step.first-step {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.step:last-child {
+  margin-bottom: 0;
+}
+
+.scroll__graphic .chart img[src*="slide01"] {
+  width: 100vw; /* Set width to 100% of viewport width */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+  max-width: none; /* Remove max-width constraint */
+  max-height: none; /* Remove max-height constraint */
+}
+
+/* Background Wrapper */
+.background-wrapper {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 1rem;
+  /* border-radius: 8px; */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+
+/* Columns Layout */
+.columns {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin: 1rem -0.5rem;
+}
+
+.columns div {
+  flex: 1;
+  padding: 0 0.5rem;
+  min-width: 0;
+}
+
+/* Single Column Layout */
+.single-column {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: justify;
+}
+
+.single-column p {
+  margin-bottom: 1rem;
+}
+
+/* Specific Step Styles */
+.step[data-step="2"] {
+  max-width: 900px;
+}
+
+/* Media Queries */
+@media (max-aspect-ratio: 16/9) {
+  .scroll__graphic .chart img {
+    width: auto;
+    height: 100%;
+  }
+}
+
+@media (min-aspect-ratio: 16/9) {
+  .scroll__graphic .chart img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .scroll__graphic .chart img[src*="slide01"] {
+    /* Adjust styles for smaller screens if needed */
+  }
+}
+
+/* Remove pseudo-elements */
+#scroll *::before,
+#scroll *::after {
+  content: none;
+}
