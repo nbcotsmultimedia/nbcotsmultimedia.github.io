@@ -8,6 +8,10 @@ var step = article.selectAll(".step");
 // initialize the scrollama
 var scroller = scrollama();
 
+function isMobileView() {
+  return window.innerWidth < 500;
+}
+
 // generic window resize listener event
 function handleResize() {
   // 1. update height of step elements
@@ -23,6 +27,13 @@ function handleResize() {
 
   // 3. tell scrollama to update new element dimensions
   scroller.resize();
+
+  // 4. Update image based on new viewport size
+  var currentStep = d3.select(".is-active");
+  if (!currentStep.empty()) {
+    var stepIndex = currentStep.attr("data-step") - 1;
+    handleStepEnter({ index: stepIndex });
+  }
 }
 
 // scrollama event handlers
@@ -36,7 +47,10 @@ function handleStepEnter(response) {
 
   // update graphic based on step
   var imageIndex = response.index + 1;
-  var imageSrc = `images/slide${imageIndex.toString().padStart(2, "0")}.png`;
+  var imageSuffix = isMobileView() ? "m" : "";
+  var imageSrc = `images/slide${imageIndex
+    .toString()
+    .padStart(2, "0")}${imageSuffix}.png`;
 
   figure.select("img").attr("src", imageSrc);
 
@@ -87,6 +101,13 @@ function init() {
 
   // Add event listener for image load
   window.addEventListener("load", adjustSlide01);
+
+  // Add event listener for viewport changes
+  window.addEventListener("resize", function () {
+    if (isMobileView()) {
+      handleStepEnter({ index: scroller.getCurrentIndex() });
+    }
+  });
 
   console.log("Initialization complete");
 
