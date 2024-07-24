@@ -95,7 +95,7 @@
         </div>
         <div class="col-9">
           <h1>Olympics Embed Code Generator</h1>
-          <p>(v1.2) These are for non-inline links. These go into the Wordpress using Custom HTML Blocks.</p>
+          <p>(v1.21) These are for non-inline links. These go into the Wordpress using Custom HTML Blocks.</p>
           <p>If you are looking for the  OTS/LX Video Embed Code Converter, go <a href="https://data.nbcstations.com/national/toolbox/embed-conversion-tool/" target="_blank">here</a>.</p>
         </div>
 
@@ -190,18 +190,22 @@
           <div id="embedSec">
 
             <h3>Convert video embed code</h3>
-            <p>The embed code comes via email or <a href="https://feed.theplatform.com/f/BxmELC/oly_distribution_feed_soc" target="_blank">here</a> and <a href="https://feed.theplatform.com/f/BxmELC/Oly_Owned_Affiliate_Feed" target="_blank">here</a>.</p>
+            <p>The embed code comes from <a href="https://feed.theplatform.com/f/BxmELC/Oly_Owned_Affiliate_Feed" target="_blank">here</a>.</p>
             
-            <label>Code from email</label>
+            <label>Copied embed code from feed</label>
             <p><input type="text" class="form-control" id="emailCode" placeholder="Paste code here"></p>
-    
             <p><button type="button" class="btn btn-primary" id="submit1">CONVERT CODE</button></p>
+
+            <label>Telumndo URL</label>
+            <p><input type="text" class="form-control" id="emailCode-t" placeholder="Paste URL here"></p>
+            <p><button type="button" class="btn btn-primary" id="submit1-t">CONVERT TLMD URL</button></p>
     
     
             <div id="convEmbedCode">
+              <p>&nbsp;</p>
               <p class="kicker">Embed Code Inline <a class="copyBtn" href="javascript:copyCode('#embedCode');">COPY</a></p>
               <p class="output" id="embedCode"></p>
-              <p class="kicker">URL for Lead Embed <a class="copyBtn" href="javascript:copyCode('#justURL');">COPY</a></p>
+              <p class="kicker">URL for Lead Embed (English only) <a class="copyBtn" href="javascript:copyCode('#justURL');">COPY</a></p>
               <p class="output1" id="justURL"></p>
 
               <!--<p class="kicker">Test Responsive <a class="copyBtn" href="javascript:copyCode('#embedResp');">COPY</a></p>
@@ -310,6 +314,21 @@
         
 
       });
+
+      $("#submit1-t").click(function () {
+
+        var tmp1at = $("#emailCode-t").val();
+        console.log(tmp1at)
+          
+        tmp1at = tmp1at.replace("“", "\"");
+        tmp1at = tmp1at.replace("”", "\"");
+        //console.log(tmp1a);
+
+        //var matchest = tmp1at.match(/\"(.*?)\"/);  //returns array
+        $("#embedCode").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\" class=\"wp-block-embed is-type-video\"><iframe style=\"position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;\" class=\"wp-block-embed is-type-video\" src=" + tmp1at.replace("autoplay=true", "autoplay=false") + " width=\"100%\" height=\"100%\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></div>")
+
+        
+        });
 
 
       //FOR LINK WITH IMAGE
