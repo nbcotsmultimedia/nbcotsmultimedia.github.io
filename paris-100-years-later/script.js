@@ -52,9 +52,31 @@ function handleStepEnter(response) {
     .toString()
     .padStart(2, "0")}${imageSuffix}.png`;
 
-  figure.select("img").attr("src", imageSrc);
+  var img = figure.select("img");
+  img.attr("src", imageSrc);
 
   console.log("Image source set to:", imageSrc);
+
+  // Adjust the height for the long images in steps 01 and 13 and hide text block for step 13
+  if (imageIndex === 1 || imageIndex === 13) {
+    img
+      .style("height", "auto")
+      .style("width", "100%")
+      .style("object-fit", "contain")
+      .style("max-height", "none");
+    figure.style("height", "auto");
+    if (imageIndex === 13) {
+      article.select(".step[data-step='13']").style("display", "none");
+    }
+  } else {
+    img
+      .style("height", "100%")
+      .style("width", "auto")
+      .style("object-fit", "cover")
+      .style("max-height", "100vh");
+    figure.style("height", "100vh");
+    article.selectAll(".step").style("display", "block");
+  }
 }
 
 function setupStickyfill() {

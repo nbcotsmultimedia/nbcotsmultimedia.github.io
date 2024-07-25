@@ -52,38 +52,31 @@ body {
 .scroll__graphic {
   position: sticky;
   top: 0;
-  height: 100vh;
   width: 100%;
+  height: auto;
+  min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   z-index: 0;
 }
 
 .scroll__graphic .chart {
   position: relative;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: auto;
+  overflow: visible;
 }
 
 .scroll__graphic .chart img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* This will cover the entire container */
-  object-position: center; /* This centers the image */
+  width: 100vw;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
   display: block;
   margin: 0;
-}
-
-/* Specific rule for slide01 */
-.scroll__graphic .chart img[src*="slide01"] {
-  object-fit: contain; /* This will fit the entire image within the container */
-  max-height: 100vh; /* Ensure it doesn't exceed the viewport height */
-  width: 100%; /* Allow the width to adjust based on the aspect ratio */
-  height: auto; /* Allow the height to adjust based on the aspect ratio */
-  max-width: 100%; /* Ensure it doesn't exceed the container width */
+  max-width: none;
 }
 
 /* Scroll Text */
@@ -98,11 +91,10 @@ body {
 /* Step Styles */
 .step {
   position: relative;
-  margin: 0 auto 2rem;
+  margin: 0 auto;
   padding: 0;
-  /* opacity: 0.3; */
   transition: opacity 0.3s ease;
-  min-height: 200px;
+  min-height: 100vh;
   height: auto;
 }
 
@@ -115,27 +107,16 @@ body {
   box-shadow: none;
   padding: 0;
   margin: 0;
-  min-height: 100vh;
 }
 
 .step:last-child {
   margin-bottom: 0;
 }
 
-.scroll__graphic .chart img[src*="slide01"] {
-  width: 100vw; /* Set width to 100% of viewport width */
-  height: auto; /* Maintain aspect ratio */
-  object-fit: cover; /* Ensure the image covers the entire area */
-  object-position: center; /* Center the image */
-  max-width: none; /* Remove max-width constraint */
-  max-height: none; /* Remove max-height constraint */
-}
-
 /* Background Wrapper */
 .background-wrapper {
   background-color: rgba(255, 255, 255, 0.85);
   padding: 1rem;
-  /* border-radius: 8px; */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
@@ -166,29 +147,25 @@ body {
   margin-bottom: 1rem;
 }
 
-/* Specific Step Styles */
-.step[data-step="2"] {
-  max-width: 900px;
-}
-
 /* Media Queries */
 @media (max-aspect-ratio: 16/9) {
   .scroll__graphic .chart img {
-    width: auto;
-    height: 100%;
+    width: 100vw;
+    height: auto;
   }
 }
 
 @media (min-aspect-ratio: 16/9) {
   .scroll__graphic .chart img {
-    width: 100%;
+    width: 100vw;
     height: auto;
   }
 }
 
 @media (max-width: 768px) {
-  .scroll__graphic .chart img[src*="slide01"] {
-    /* Adjust styles for smaller screens if needed */
+  .scroll__graphic .chart img {
+    width: 100vw;
+    height: auto;
   }
 }
 
