@@ -1,6 +1,13 @@
 /* Global Styles */
 * {
   box-sizing: border-box;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 body {
@@ -20,63 +27,91 @@ body {
 
 /* Typography */
 #scroll h2 {
-  font-family: "Poiret One", cursive;
-  font-size: 1.6rem;
+  /* font-family: "Poiret One", cursive;
+  
   line-height: 1.2;
   margin: 0 0 1rem;
-  text-align: center;
+  
   text-transform: uppercase;
   font-variant: small-caps;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.05em; */
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 700;
+  font-style: normal;
+  text-align: center;
+  font-size: 1.9rem;
 }
 
 #scroll h3 {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1.3;
+  /* font-family: "Montserrat", sans-serif;
+  font-weight: 700; */
+  font-size: 1.7rem;
+  /* line-height: 1.3; */
   margin-bottom: 0.5rem;
   padding-bottom: 0.3rem;
   border-bottom: 0.5px solid #616161;
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 500;
+  font-style: italic;
 }
 
 #scroll p {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.6;
+  /* font-family: "Montserrat", sans-serif;
+  font-weight: 400; */
+  font-size: 1.4rem;
+  line-height: 1.2;
   margin-bottom: 1rem;
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 /* Scroll Graphic */
+
+.step.initial-view {
+  height: 100vh;
+}
+
 .scroll__graphic {
   position: sticky;
   top: 0;
   width: 100%;
-  height: auto;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  overflow: visible;
+  overflow: hidden;
   z-index: 0;
 }
 
 .scroll__graphic .chart {
   position: relative;
   width: 100%;
-  height: auto;
-  overflow: visible;
+  height: 100%;
+  overflow: hidden;
 }
 
 .scroll__graphic .chart img {
   width: 100vw;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
   object-position: top center;
   display: block;
   margin: 0;
-  max-width: none;
+}
+
+.step {
+  position: relative;
+  margin: 0 auto;
+  padding: 0;
+  /* transition: opacity 0.3s ease; */
+  min-height: 100vh;
+  height: auto;
+  overflow: auto; /* Allow scrolling for tall images */
+}
+
+.step.is-active {
+  opacity: 1;
 }
 
 /* Scroll Text */
@@ -88,25 +123,12 @@ body {
   z-index: 10;
 }
 
-/* Step Styles */
-.step {
-  position: relative;
-  margin: 0 auto;
-  padding: 0;
-  transition: opacity 0.3s ease;
-  min-height: 100vh;
-  height: auto;
-}
-
-.step.is-active {
-  opacity: 1;
-}
-
 .step.first-step {
   background-color: transparent;
   box-shadow: none;
   padding: 0;
   margin: 0;
+  height: auto;
 }
 
 .step:last-child {
@@ -136,15 +158,24 @@ body {
   min-width: 0;
 }
 
-/* Single Column Layout */
-.single-column {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: justify;
+#backToTopBtn {
+  display: none; /* Hidden by default */
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 99;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: #555;
+  color: white;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 4px;
 }
 
-.single-column p {
-  margin-bottom: 1rem;
+#backToTopBtn:hover {
+  background-color: #333;
 }
 
 /* Media Queries */
