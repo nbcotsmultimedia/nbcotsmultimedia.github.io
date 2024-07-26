@@ -56,17 +56,26 @@ function handleStepEnter(response) {
   if (slideIndex === TOTAL_SLIDES) {
     scrollGraphic.style("height", "auto");
     chart.style("height", "auto");
-    img.style("height", "auto").style("object-fit", "contain");
+    img
+      .style("height", "auto")
+      .style("width", "100vw")
+      .style("object-fit", "contain");
+
+    // Ensure the last step is full height
+    d3.select(response.element).style("height", "auto");
   } else {
     scrollGraphic.style("height", "100vh");
     chart.style("height", "100%");
-    img.style("height", "100%").style("object-fit", "cover");
+    img
+      .style("height", "100%")
+      .style("width", "100%")
+      .style("object-fit", "cover");
   }
 
   // Hide the scroll indicator after passing the first step
   if (slideIndex > 1) {
     scrollIndicator.style("opacity", 0);
-    setTimeout(() => scrollIndicator.style("display", "none"), 500); // Ensure it is completely hidden after the transition
+    setTimeout(() => scrollIndicator.style("display", "none"), 500);
   }
 }
 
@@ -99,6 +108,9 @@ function init() {
     .style("object-fit", "cover")
     .style("object-position", "top")
     .style("display", "block");
+
+  // Set initial source for final image
+  d3.select("#slide14-image").attr("src", getImageSrc(TOTAL_SLIDES));
 
   // Initial resize
   handleResize();
