@@ -1,208 +1,101 @@
-// using d3, select elements
-var main = d3.select("main");
-var scrolly = main.select("#scroll");
-var figure = scrolly.select(".scroll__graphic");
-var article = scrolly.select(".scroll__text");
-var step = article.selectAll(".step");
+// Constants
+const TOTAL_SLIDES = 14;
+const MOBILE_BREAKPOINT = 768;
 
-// initialize a new instance of scrollama
-var scroller = scrollama();
+// DOM Selections
+const scrolly = d3.select("#scrolly");
+const steps = scrolly.selectAll(".step");
+const scrollGraphic = scrolly.select(".scroll__graphic");
+const chart = scrollGraphic.select(".chart");
 
-// check for mobile view
-function isMobileView() {
-  return window.innerWidth < 500;
-}
+// Initialize scrollama
+const scroller = scrollama();
 
-// Function to get image dimensions
-function getImageDimensions(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve({ width: img.width, height: img.height });
-    img.onerror = reject;
-    img.src = src;
-  });
-}
+// Utility Functions
+const getImageSrc = (index) => {
+  const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+  const suffix = isMobile ? "m" : "";
+  return `images/slide${index.toString().padStart(2, "0")}${suffix}.png`;
+};
 
-// window resize listener event
-async function handleResize() {
-  var windowHeight = window.innerHeight;
-  var figureHeight = windowHeight;
-  var figureMarginTop = (windowHeight - figureHeight) / 2;
-
-  figure
-    .style("height", figureHeight + "px")
-    .style("top", figureMarginTop + "px");
-
-  // Adjust step heights based on image dimensions
-  for (let i = 0; i < step.size(); i++) {
-    let stepHeight = Math.floor(windowHeight * 0.75);
-
-    // Special handling for slide01 and slide13
-    if (i === 0 || i === 12) {
-      const imageSuffix = isMobileView() ? "m" : "";
-      const imageSrc = `images/slide${(i + 1)
-        .toString()
-        .padStart(2, "0")}${imageSuffix}.png`;
-      const dimensions = await getImageDimensions(imageSrc);
-      const imageAspectRatio = dimensions.height / dimensions.width;
-      const viewportAspectRatio = windowHeight / window.innerWidth;
-
-      if (imageAspectRatio > viewportAspectRatio) {
-        // Image is taller than the viewport
-        stepHeight = Math.max(
-          stepHeight,
-          dimensions.height * (window.innerWidth / dimensions.width)
-        );
-      }
-    }
-
-    d3.select(step.nodes()[i]).style("height", stepHeight + "px");
+function updateImageSources() {
+  const activeStep = steps.filter(".is-active");
+  if (activeStep.size() > 0) {
+    const stepIndex = activeStep.attr("data-step");
+    const img = chart.select("img");
+    const imageSrc = getImageSrc(stepIndex);
+    img.attr("src", imageSrc);
   }
+}
 
+function handleResize() {
+  const stepHeight = window.innerHeight * 0.75;
+  steps.style("height", stepHeight + "px");
   scroller.resize();
 }
 
-// scrollama event handler - handles the event when a step is entered
+// Step Enter Handler
 function handleStepEnter(response) {
-  console.log("Step entered:", response.index);
+  const { index, direction } = response;
+  const slideIndex = parseInt(d3.select(response.element).attr("data-step"));
 
-  step.classed("is-active", function (d, i) {
-    return i === response.index;
-  });
+  console.log(`Entering step ${slideIndex}, direction: ${direction}`);
 
-  var img = figure.select("img");
-  var imageIndex = response.index;
-  var totalImages = 13; // Set this to your total number of images
+  // Update active step
+  steps.classed("is-active", (d, i) => i === index);
 
-  // Ensure imageIndex doesn't exceed the number of available images
-  imageIndex = Math.min(imageIndex, totalImages - 1);
+  // Update image
+  const img = chart.select("img");
+  const imageSrc = getImageSrc(slideIndex);
 
-  var imageSuffix = isMobileView() ? "m" : "";
-  var imageSrc = `images/slide${(imageIndex + 1)
-    .toString()
-    .padStart(2, "0")}${imageSuffix}.png`;
+  // Update the image source immediately
+  img.attr("src", imageSrc);
 
-  // Only change the image if it's different from the current one
-  if (img.attr("src") !== imageSrc) {
-    img.attr("src", imageSrc);
-    console.log("Image source set to:", imageSrc);
-  }
-
-  // Adjust image styling for longer images (slide01 and slide13)
-  if (imageIndex === 0 || imageIndex === 12) {
-    img
-      .style("width", "100vw")
-      .style("height", "auto")
-      .style("max-height", "none")
-      .style("object-fit", "contain")
-      .style("object-position", "top center");
-
-    figure.style("height", "auto");
+  // Handle last slide
+  if (slideIndex === TOTAL_SLIDES) {
+    scrollGraphic.style("height", "auto");
+    chart.style("height", "auto");
+    img.style("height", "auto").style("object-fit", "contain");
   } else {
-    img
-      .style("width", "100vw")
-      .style("height", "100vh")
-      .style("object-fit", "cover")
-      .style("object-position", "top center");
-
-    figure.style("height", "100vh");
-  }
-
-  // Special handling for the footer illustration
-  if (imageIndex === totalImages - 1) {
-    article
-      .select(`.step[data-step='${totalImages - 1}']`)
-      .style("display", "none");
-  } else {
-    article.selectAll(".step").style("display", "block");
+    scrollGraphic.style("height", "100vh");
+    chart.style("height", "100%");
+    img.style("height", "100%").style("object-fit", "cover");
   }
 }
 
-// apply the sticky polyfill
-function setupStickyfill() {
-  d3.selectAll(".sticky").each(function () {
-    Stickyfill.add(this);
-  });
-}
+// Initialize
+function init() {
+  // Set up sticky graphic
+  scrollGraphic
+    .style("position", "sticky")
+    .style("top", "0px")
+    .style("height", "100vh");
 
-// handle step progress
-function handleStepProgress(response) {
-  if (response.progress > 0.99) {
-    scroller.disable();
-    setTimeout(() => scroller.enable(), 500);
-  }
-}
-
-// set up a back button to let users go to top
-function setupBackToTopButton() {
-  var backToTopBtn = d3.select("#backToTopBtn");
-
-  window.onscroll = function () {
-    if (
-      document.body.scrollTop > 20 ||
-      document.documentElement.scrollTop > 20
-    ) {
-      backToTopBtn.style("display", "block");
-    } else {
-      backToTopBtn.style("display", "none");
-    }
-  };
-
-  backToTopBtn.on("click", function () {
-    document.body.scrollTop = 0; // For Safari
-    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-  });
-}
-
-// preload images function
-function preloadImages() {
-  const totalImages = 13; // Set this to your total number of images
-  const images = [];
-
-  for (let i = 1; i <= totalImages; i++) {
-    const desktopImage = new Image();
-    desktopImage.src = `images/slide${i.toString().padStart(2, "0")}.png`;
-    images.push(desktopImage);
-
-    const mobileImage = new Image();
-    mobileImage.src = `images/slide${i.toString().padStart(2, "0")}m.png`;
-    images.push(mobileImage);
-  }
-
-  console.log(`Preloaded ${images.length} images`);
-}
-
-// initialization function
-async function init() {
-  console.log("Initializing...");
-  setupStickyfill();
-  await handleResize(); // Wait for handleResize to complete
-  preloadImages();
-
+  // Set up Scrollama
   scroller
     .setup({
-      step: "#scroll .scroll__text .step",
+      step: ".step",
       offset: 0.5,
-      progress: true,
-      threshold: 1, // Adjusted for smoother transitions
+      debug: false,
     })
-    .onStepEnter(handleStepEnter)
-    .onStepProgress(handleStepProgress);
+    .onStepEnter(handleStepEnter);
 
+  // Setup resize handler
   window.addEventListener("resize", handleResize);
 
-  window.addEventListener("resize", function () {
-    if (isMobileView()) {
-      handleStepEnter({ index: scroller.getCurrentIndex() });
-    }
-  });
+  // Load first image
+  chart
+    .select("img")
+    .attr("src", getImageSrc(1))
+    .style("width", "100%")
+    .style("height", "100%")
+    .style("object-fit", "cover")
+    .style("object-position", "top")
+    .style("display", "block");
 
-  setupBackToTopButton();
-
-  console.log("Initialization complete");
-
-  xtalk.signalIframe();
+  // Initial resize
+  handleResize();
 }
 
-// kick things off
+// Start it up
 init();
