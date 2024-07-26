@@ -1,12 +1,13 @@
 // Constants
 const TOTAL_SLIDES = 14;
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 600;
 
 // DOM Selections
 const scrolly = d3.select("#scrolly");
 const steps = scrolly.selectAll(".step");
 const scrollGraphic = scrolly.select(".scroll__graphic");
 const chart = scrollGraphic.select(".chart");
+const scrollIndicator = d3.select("#scroll-indicator");
 
 // Initialize scrollama
 const scroller = scrollama();
@@ -60,6 +61,12 @@ function handleStepEnter(response) {
     scrollGraphic.style("height", "100vh");
     chart.style("height", "100%");
     img.style("height", "100%").style("object-fit", "cover");
+  }
+
+  // Hide the scroll indicator after passing the first step
+  if (slideIndex > 1) {
+    scrollIndicator.style("opacity", 0);
+    setTimeout(() => scrollIndicator.style("display", "none"), 500); // Ensure it is completely hidden after the transition
   }
 }
 
