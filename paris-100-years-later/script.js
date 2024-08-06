@@ -1,118 +1,120 @@
-// using d3 for convenience
-var main = d3.select("main");
-var scrolly = main.select("#scroll");
-var figure = scrolly.select(".scroll__graphic");
-var article = scrolly.select(".scroll__text");
-var step = article.selectAll(".step");
+// Constants
+const TOTAL_SLIDES = 14;
+const MOBILE_BREAKPOINT = 600;
 
-// initialize the scrollama
-var scroller = scrollama();
+// DOM Selections
+const scrolly = d3.select("#scrolly");
+const steps = scrolly.selectAll(".step");
+const scrollGraphic = scrolly.select(".scroll__graphic");
+const chart = scrollGraphic.select(".chart");
+const scrollIndicator = d3.select("#scroll-indicator");
 
-function isMobileView() {
-  return window.innerWidth < 500;
+// Initialize scrollama
+const scroller = scrollama();
+
+// Utility Functions
+const getImageSrc = (index) => {
+  const isMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+  const suffix = isMobile ? "m" : "";
+  return `images/slide${index.toString().padStart(2, "0")}${suffix}.png`;
+};
+
+function updateImageSources() {
+  const activeStep = steps.filter(".is-active");
+  if (activeStep.size() > 0) {
+    const stepIndex = activeStep.attr("data-step");
+    const img = chart.select("img");
+    const imageSrc = getImageSrc(stepIndex);
+    img.attr("src", imageSrc);
+  }
 }
 
-// generic window resize listener event
 function handleResize() {
-  // 1. update height of step elements
-  var stepH = Math.floor(window.innerHeight * 0.75);
-  step.style("height", stepH + "px");
-
-  var figureHeight = window.innerHeight;
-  var figureMarginTop = (window.innerHeight - figureHeight) / 2;
-
-  figure
-    .style("height", figureHeight + "px")
-    .style("top", figureMarginTop + "px");
-
-  // 3. tell scrollama to update new element dimensions
+  const stepHeight = window.innerHeight * 0.75;
+  steps.style("height", stepHeight + "px");
   scroller.resize();
-
-  // 4. Update image based on new viewport size
-  var currentStep = d3.select(".is-active");
-  if (!currentStep.empty()) {
-    var stepIndex = currentStep.attr("data-step") - 1;
-    handleStepEnter({ index: stepIndex });
-  }
 }
 
-// scrollama event handlers
+// Step Enter Handler
 function handleStepEnter(response) {
-  console.log("Step entered:", response.index);
+  const { index, direction } = response;
+  const slideIndex = parseInt(d3.select(response.element).attr("data-step"));
 
-  // add color to current step only
-  step.classed("is-active", function (d, i) {
-    return i === response.index;
-  });
+  console.log(`Entering step ${slideIndex}, direction: ${direction}`);
 
-  // update graphic based on step
-  var imageIndex = response.index + 1;
-  var imageSuffix = isMobileView() ? "m" : "";
-  var imageSrc = `images/slide${imageIndex
-    .toString()
-    .padStart(2, "0")}${imageSuffix}.png`;
+  // Update active step
+  steps.classed("is-active", (d, i) => i === index);
 
-  figure.select("img").attr("src", imageSrc);
+  // Update image
+  const img = chart.select("img");
+  const imageSrc = getImageSrc(slideIndex);
 
-  console.log("Image source set to:", imageSrc);
-}
+  // Update the image source immediately
+  img.attr("src", imageSrc);
 
-function setupStickyfill() {
-  d3.selectAll(".sticky").each(function () {
-    Stickyfill.add(this);
-  });
-}
+  // Handle last slide
+  if (slideIndex === TOTAL_SLIDES) {
+    scrollGraphic.style("height", "auto");
+    chart.style("height", "auto");
+    img
+      .style("height", "auto")
+      .style("width", "100vw")
+      .style("object-fit", "contain");
 
-function adjustSlide01() {
-  var slide01 = document.querySelector(
-    '.scroll__graphic .chart img[src*="slide01"]'
-  );
-  if (slide01) {
-    var aspectRatio = slide01.naturalWidth / slide01.naturalHeight;
-    if (aspectRatio > 1) {
-      slide01.style.width = "100%";
-      slide01.style.height = "auto";
-    } else {
-      slide01.style.width = "auto";
-      slide01.style.height = "100%";
-    }
+    // Ensure the last step is full height
+    d3.select(response.element).style("height", "auto");
+  } else {
+    scrollGraphic.style("height", "100vh");
+    chart.style("height", "100%");
+    img
+      .style("height", "100%")
+      .style("width", "100%")
+      .style("object-fit", "cover");
+  }
+
+  // Hide the scroll indicator after passing the first step
+  if (slideIndex > 1) {
+    scrollIndicator.style("opacity", 0);
+    setTimeout(() => scrollIndicator.style("display", "none"), 500);
   }
 }
 
+// Initialize
 function init() {
-  console.log("Initializing...");
-  setupStickyfill();
+  // Set up sticky graphic
+  scrollGraphic
+    .style("position", "sticky")
+    .style("top", "0px")
+    .style("height", "100vh");
 
-  // 1. force a resize on load to ensure proper dimensions are sent to scrollama
-  handleResize();
-
-  // 2. setup the scroller passing options
-  // 3. bind scrollama event handlers
+  // Set up Scrollama
   scroller
     .setup({
-      step: "#scroll .scroll__text .step",
+      step: ".step",
       offset: 0.5,
-      //   debug: true,
+      debug: false,
     })
     .onStepEnter(handleStepEnter);
 
-  // setup resize event
+  // Setup resize handler
   window.addEventListener("resize", handleResize);
 
-  // Add event listener for image load
-  window.addEventListener("load", adjustSlide01);
+  // Load first image
+  chart
+    .select("img")
+    .attr("src", getImageSrc(1))
+    .style("width", "100%")
+    .style("height", "100%")
+    .style("object-fit", "cover")
+    .style("object-position", "top")
+    .style("display", "block");
 
-  // Add event listener for viewport changes
-  window.addEventListener("resize", function () {
-    if (isMobileView()) {
-      handleStepEnter({ index: scroller.getCurrentIndex() });
-    }
-  });
+  // Set initial source for final image
+  d3.select("#slide14-image").attr("src", getImageSrc(TOTAL_SLIDES));
 
-  console.log("Initialization complete");
-
-  xtalk.signalIframe();
+  // Initial resize
+  handleResize();
 }
 
-// kick things off
+// Start it up
 init();

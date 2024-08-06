@@ -9,10 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/nbcotsbase.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Poiret+One&family=Montserrat:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap"
         rel="stylesheet">
-
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
@@ -26,32 +27,35 @@
 
 <body>
     <div id="paris-compare" class="parent" style="width:100%; padding-bottom:30px;">
-
         <main>
-            <section id="scroll">
+            <section id="scrolly">
                 <div class="scroll__graphic sticky">
                     <div class="chart">
                         <img src="images/slide01.png" alt="Paris Olympics Comparison Illustration">
                     </div>
                 </div>
                 <div class="scroll__text">
-                    <div class="step" data-step="1">
+                    <!-- Initial full-screen view -->
+                    <div class="step initial-view" data-step="1">
+                    </div>
+                    <!-- Countries represented -->
+                    <div class="step" data-step="2">
                         <div class="background-wrapper">
                             <h2>Countries Represented</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>45 countries represented, 27 of which were European</p>
+                                    <p>44 countries represented, 27 of which were European</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>200 countries represented, as well as the Refugee Olympic Team</p>
+                                    <p>200 countries represented, as well as the IOC Refugee Olympic Team</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="2">
+                    <!-- Cost to the city -->
+                    <div class="step" data-step="3">
                         <div class="background-wrapper">
                             <h2>Cost to the City</h2>
                             <div class="columns">
@@ -61,67 +65,75 @@
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>€8 billion ($8.6 billion)</p>
+                                    <p>€8.2 billion ($8.9 billion)</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="3">
+                    <!-- Olympic village -->
+                    <div class="step" data-step="4">
                         <div class="background-wrapper">
                             <h2>Olympic Village</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>Accommodated 180 athletes</p>
+                                    <p>Featured the first-ever Olympic Village of portable wooden cabins that housed
+                                        three people each</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>Will accommodate 10,000 athletes</p>
+                                    <p>Includes 3,500 apartments that will accommodate 14,250 athletes and team
+                                        officials</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="4">
+                    <!-- Media coverage -->
+                    <div class="step" data-step="5">
                         <div class="background-wrapper">
                             <h2>Media Coverage</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>1,000 journalists, the first Games to be broadcast over radio</p>
+                                    <p>Approximately 1,000 journalists covered the Olympics, which were the first Games
+                                        to be broadcast over radio</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>6,000 press credentials made available by the International Olympic Committee</p>
+                                    <p>The IOC will give out 6,000 official press accreditations for the Paris 2024
+                                        Olympics – with a total media presence that’s likely to be significantly higher
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="5">
+                    <!-- Participating athletes -->
+                    <div class="step" data-step="6">
                         <div class="background-wrapper">
                             <h2>Athletes</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>3,089 (135 women)</p>
+                                    <p>3,089 (135 women), including notable feats by athletes like Finnish runner Paavo
+                                        Nurmi and American swimmer Johnny
+                                        Weismuller</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>10,500 (5,250 men and women)</p>
+                                    <p>10,500 (5,250 men and women), featuring stars like American gymnast Simone Biles,
+                                        sprinter Sha'Carri Richardson, and Brazilian skateboarder Rayssa Leal</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="6">
+                    <!-- Sports and events -->
+                    <div class="step" data-step="7">
                         <div class="background-wrapper">
                             <h2>Sports and Events</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>126 events across 17 sports</p>
+                                    <p>126 events across 23 sports</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
@@ -130,30 +142,34 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="7">
+                    <!-- Timing and scoring technology -->
+                    <div class="step" data-step="8">
                         <div class="background-wrapper">
                             <h2>Timing and Scoring Technology</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>Mechanical stopwatches were accurate to 1/100th of a second</p>
+                                    <p>The Heuer Mikrograph Pocket Chronometer, accurate to one one hundredth of a
+                                        second, was a stopwatch of choice at the
+                                        time</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>Electronic timing systems accurate to 1/1000th of a second</p>
+                                    <p>Electronic timing systems are accurate to one thousandth of a second; Omega’s
+                                        Quantum Timer has a resolution of one
+                                        millionth of a second</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="8">
+                    <!-- Total medals awarded -->
+                    <div class="step" data-step="9">
                         <div class="background-wrapper">
                             <h2>Medal Counts</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>Approximately 378 medals awarded</p>
+                                    <p>Approximately 378 medals awarded, but no medal ceremonies were held</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
@@ -162,8 +178,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="9">
+                    <!-- Total spectators -->
+                    <div class="step" data-step="10">
                         <div class="background-wrapper">
                             <h2>Spectators</h2>
                             <div class="columns">
@@ -173,13 +189,13 @@
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>9 million tickets sold</p>
+                                    <p>8.6 million tickets sold of 10 million available</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="10">
+                    <!-- Cost of a baguette -->
+                    <div class="step" data-step="11">
                         <div class="background-wrapper">
                             <h2>Cost of a Baguette</h2>
                             <div class="columns">
@@ -189,13 +205,13 @@
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>€1.20 - €1.50 ($1.30-1.60)</p>
+                                    <p>€4.07 ($4.42)</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="11">
+                    <!-- Cost of a newspaper -->
+                    <div class="step" data-step="12">
                         <div class="background-wrapper">
                             <h2>Cost of a Newspaper</h2>
                             <div class="columns">
@@ -205,48 +221,40 @@
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>€2.00 - €3.00 ($2.15-3.25)</p>
+                                    <p>€3.00 - €4.00 ($3.26-4.34)</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="step" data-step="12">
-                        <div class="background-wrapper">
-                            <h2>Cost of a Croissant</h2>
-                            <div class="columns">
-                                <div>
-                                    <h3>1924</h3>
-                                    <p>0.20 francs ($0.03)</p>
-                                </div>
-                                <div>
-                                    <h3>2024</h3>
-                                    <p>€1.00 - €2.50 ($1.08-2.70)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <!-- Popular pastries -->
                     <div class="step" data-step="13">
                         <div class="background-wrapper">
-                            <h2>Cost of a Macaron</h2>
+                            <h2>Popular French Pastries</h2>
                             <div class="columns">
                                 <div>
                                     <h3>1924</h3>
-                                    <p>0.30 francs ($0.05)</p>
+                                    <p>Boulangeries offered a modest selection of staples alongside simple pastries like
+                                        the croissant, which France declared a national product in 1920</p>
                                 </div>
                                 <div>
                                     <h3>2024</h3>
-                                    <p>€1.50 - €2.50 per piece ($1.60-2.70)</p>
+                                    <p>Boulangeries and patisseries offer a wide variety of bread types and an extensive
+                                        range of pastries, including a variety of “Instagram-able” croissants</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                    <!-- Foot illustration of cafe scene -->
+                    <div class="step" data-step="14">
+                        <div class="chart">
+                            <img alt="Final slide" id="slide14-image">
                         </div>
                     </div>
                 </div>
             </section>
-
-
-
+            <div id="scroll-indicator">
+                <div class="arrow"></div>
+            </div>
         </main>
 
     </div>

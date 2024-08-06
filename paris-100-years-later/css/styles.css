@@ -1,6 +1,11 @@
 /* Global Styles */
 * {
   box-sizing: border-box;
+  max-width: 100%;
+  hyphens: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 body {
@@ -13,132 +18,106 @@ body {
   line-height: 1.6;
 }
 
-/* Scroll Section Styles */
-#scroll {
+/* Scrolly Section Styles */
+#scrolly {
   position: relative;
 }
 
-/* Typography */
-#scroll h2 {
-  font-family: "Poiret One", cursive;
-  font-size: 1.6rem;
-  line-height: 1.2;
-  margin: 0 0 1rem;
-  text-align: center;
-  text-transform: uppercase;
-  font-variant: small-caps;
-  letter-spacing: 0.05em;
+.scroll__graphic {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
 }
 
-#scroll h3 {
-  font-family: "Montserrat", sans-serif;
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+.chart img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.scroll__text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Typography */
+#scrolly h2 {
+  font-family: "Averia Serif Libre", serif;
   font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1.3;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+#scrolly h3 {
+  font-family: "Averia Serif Libre", serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 1.4rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.3rem;
   border-bottom: 0.5px solid #616161;
 }
 
-#scroll p {
-  font-family: "Montserrat", sans-serif;
+#scrolly p {
+  font-family: "Averia Serif Libre", serif;
   font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.2;
   margin-bottom: 1rem;
-}
-
-/* Scroll Graphic */
-.scroll__graphic {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  z-index: 0;
-}
-
-.scroll__graphic .chart {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.scroll__graphic .chart img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* This will cover the entire container */
-  object-position: center; /* This centers the image */
-  display: block;
-  margin: 0;
-}
-
-/* Specific rule for slide01 */
-.scroll__graphic .chart img[src*="slide01"] {
-  object-fit: contain; /* This will fit the entire image within the container */
-  max-height: 100vh; /* Ensure it doesn't exceed the viewport height */
-  width: 100%; /* Allow the width to adjust based on the aspect ratio */
-  height: auto; /* Allow the height to adjust based on the aspect ratio */
-  max-width: 100%; /* Ensure it doesn't exceed the container width */
-}
-
-/* Scroll Text */
-.scroll__text {
-  position: relative;
-  padding: 0 1rem;
-  max-width: 40rem;
-  margin: 0 auto;
-  z-index: 10;
 }
 
 /* Step Styles */
 .step {
-  position: relative;
-  margin: 0 auto 2rem;
-  padding: 0;
-  /* opacity: 0.3; */
-  transition: opacity 0.3s ease;
-  min-height: 200px;
-  height: auto;
+  margin: 0 auto;
+  padding: 1rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.step.is-active {
-  opacity: 1;
-}
-
-.step.first-step {
+.step:first-child,
+.step:last-child {
   background-color: transparent;
   box-shadow: none;
   padding: 0;
   margin: 0;
-  min-height: 100vh;
 }
 
 .step:last-child {
-  margin-bottom: 0;
+  min-height: auto;
+  height: auto;
 }
 
-.scroll__graphic .chart img[src*="slide01"] {
-  width: 100vw; /* Set width to 100% of viewport width */
-  height: auto; /* Maintain aspect ratio */
-  object-fit: cover; /* Ensure the image covers the entire area */
-  object-position: center; /* Center the image */
-  max-width: none; /* Remove max-width constraint */
-  max-height: none; /* Remove max-height constraint */
+.step:last-child .chart {
+  height: auto;
+}
+
+.step:last-child .chart img {
+  height: auto;
+  object-fit: contain;
 }
 
 /* Background Wrapper */
 .background-wrapper {
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 1rem;
-  /* border-radius: 8px; */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
 }
 
 /* Columns Layout */
@@ -155,45 +134,55 @@ body {
   min-width: 0;
 }
 
-/* Single Column Layout */
-.single-column {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: justify;
+/* Scroll Indicator */
+#scroll-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.5s;
 }
 
-.single-column p {
-  margin-bottom: 1rem;
+.arrow {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 15px solid white;
+  margin: 10px auto 0;
+  animation: bounce 2s infinite !important;
 }
 
-/* Specific Step Styles */
-.step[data-step="2"] {
-  max-width: 900px;
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Media Queries */
-@media (max-aspect-ratio: 16/9) {
-  .scroll__graphic .chart img {
-    width: auto;
-    height: 100%;
-  }
-}
-
-@media (min-aspect-ratio: 16/9) {
-  .scroll__graphic .chart img {
-    width: 100%;
-    height: auto;
-  }
-}
-
 @media (max-width: 768px) {
-  .scroll__graphic .chart img[src*="slide01"] {
-    /* Adjust styles for smaller screens if needed */
+  .step {
+    padding: 0.5rem;
   }
 }
 
 /* Remove pseudo-elements */
-#scroll *::before,
-#scroll *::after {
+#scrolly *::before,
+#scrolly *::after {
   content: none;
 }
