@@ -144,7 +144,7 @@ function loadData() {
 				fillColor: getColor(feature.properties.OVERALL_RANK),
 				weight: 0.5,
 				opacity: 1,
-				color: '#a9a9a9',
+				color: '#444444',
 				fillOpacity: 1
 			};
 		};
