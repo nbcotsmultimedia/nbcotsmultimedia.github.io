@@ -1,0 +1,227 @@
+#map { 
+    height: 600px; 
+}
+
+#sidebar {
+    height: 600px;
+    width: 300px;
+    background-color: #ffffff;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    z-index: 999999;
+    padding: 10px;
+    border: #d3d3d3 1px solid;
+    border-right: none;
+    display: none;
+}
+
+#legend {
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+#close-button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background-color: #ffffff;
+    border: none;
+}
+
+#legend {
+    display: flex;
+}
+
+#select {
+    margin-bottom: 20px;
+    border: 1px solid #ced4da;
+    font-weight: 300;
+	font-size: 17px;
+	color: #191919;
+    font-family: 'Roboto', sans-serif;
+}
+
+#controls {
+    display: flex;
+    justify-content: space-between;
+}
+
+#button-box {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+#address-input {
+    width: 500px;
+    margin-right: 20px;
+}
+
+#response {
+    font-style: italic;
+    color: #FF2400;
+}
+
+.tooltip-subhed {
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 5px;
+}
+
+.tooltip-header {
+    font-size: 18px;
+    line-height: 20px;
+    margin-bottom: 10px;
+}
+
+.tooltip-text {
+    font-size: 14px;
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+}
+
+.marker-cluster {
+    background-color: transparent !important;
+}
+
+.marker-cluster div {
+    border-radius: 50% !important;
+    background-color: #FFD580 !important;
+    border: 1px #FFC000 solid;
+    opacity: 0.85;
+}
+
+.leaflet-interactive {
+    opacity: 0.85;
+}
+
+.marker-cluster span {
+    color: #ffffff;
+}
+
+.xlarge-cluster {
+    height: 75px !important;
+    width: 75px !important;
+}
+
+.xlarge-label {
+    line-height: 75px !important;
+}
+
+.large-cluster {
+    height: 65px !important;
+    width: 65px !important;
+}
+
+.large-label {
+    line-height: 65px !important;
+}
+
+.medium-large-cluster {
+    height: 55px !important;
+    width: 55px !important;
+}
+
+.medium-large-label {
+    line-height: 55px !important;
+}
+
+.medium-cluster {
+    height: 45px !important;
+    width: 45px !important;
+}
+
+.medium-label {
+    line-height: 45px !important;
+}
+
+.small-cluster {
+    height: 35px !important;
+    width: 35px !important;
+}
+
+.small-label {
+    line-height: 35px !important;
+}
+
+.xsmall-cluster {
+    height: 25px !important;
+    width: 25px !important;
+}
+
+.xsmall-label {
+    line-height: 25px !important;
+}
+
+.leaflet-popup-content {
+    max-height: 250px;
+    overflow-y: scroll;
+}
+
+.tooltip-heading {
+    font-size: 14px;
+}
+
+.legend-item {
+    margin-right: 1em;
+}
+
+.legend-icon {
+    border-radius: 50%;
+    opacity: 0.85;
+    margin-bottom: 1.35em;
+    margin-right: 0.25em;
+}
+
+.legend-label {
+    font-size: 14px;
+}
+
+.cluster-label {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.checkbox-label {
+    margin-left: 2px;
+}
+
+.hide-content {
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+}
+
+.show-content {
+    opacity: 1 !important;
+    transition: opacity 0.25s ease-in-out !important;
+}
+
+@media screen and (max-width: 550px) {
+    body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    #map {
+        width: 100vw !important;
+    }
+
+    #controls {
+        flex-direction: column-reverse;
+    }
+
+    #sidebar {
+        width: 100vw !important;
+        border-left: none;
+        height: 300px !important;
+        top: 400px;
+    }
+
+    #legend {
+        height: 90px;
+    }
+}
