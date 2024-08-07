@@ -85,8 +85,8 @@ const selectZipCode = (e, feature) => {
 	const viewCoords = mobile ? [e.latlng["lat"]-0.25, e.latlng["lng"]] : [e.latlng["lat"], e.latlng["lng"]];
 	map.setView(viewCoords);
 	$(".leaflet-interactive").css('opacity', 0.5);
-	$(`#feature-${feature.properties.ZIP}`).css('opacity', 0.85);
-	console.log($(`#feature-${feature.properties.ZIP}`).css('opacity'))
+	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.85);
+	console.log($(`.feature-${feature.properties.ZIP}`).css('opacity'))
 	showSidebar(feature);
 }
 
@@ -145,7 +145,8 @@ function loadData() {
 				weight: 0.5,
 				opacity: 1,
 				color: '#444444',
-				fillOpacity: 1
+				fillOpacity: 1,
+				className: 'feature-' + feature.properties.ZIP
 			};
 		};
 		const geoJsonLayer = L.geoJson(allData, {
@@ -156,10 +157,6 @@ function loadData() {
 			},
 			style: style
 		}).addTo(map);
-
-		geoJsonLayer.eachLayer(function (layer) {
-			layer._path.id = 'feature-' + layer.feature.properties.ZIP;
-		});
 	});
 };
 
