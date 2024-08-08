@@ -48,7 +48,7 @@
   padding-right: 10px;
 }
 .pRole a {
-  
+  color: #CCC;
 }
 
 .dlabel {
@@ -76,54 +76,6 @@
   left: 0;
 }
 
-.watchBtn {
-  display: inline-block;
-  color: #ceb88b;
-  padding: 2px 6px;
-  background-color:#000;
-  margin-top: 5px;
-  font-size: 11px;
-  border-radius: 3px;
-  position: absolute;
-  top: 0px;
-  left: 5px;
-  font-weight: bold;
-  border: 1px solid #666;
-}
-.watchBtn:hover {
-  color: #000;
-  background-color:#ceb88b;
-  border: 1px solid #ceb88b;
-  cursor: pointer;
-}
-
-#vidCon {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: #FFF;
-  border: 1px solid #CCC;
-  width: 700px;
-  margin: 0px auto;
-  padding: 15px;
-}
-
-#closeBtn {
-  display: inline-block;
-  color: #ceb88b;
-  padding: 2px 6px;
-  background-color:#000;
-  font-size: 11px;
-  border-radius: 3px;
-  font-weight: bold;
-}
-.closeBtn:hover {
-  color: #000;
-  background-color:#ceb88b;
-  cursor: pointer;
-}
-
 
 @media (max-width: 500px) {
   .thumb {
@@ -138,14 +90,6 @@
   .item {
     padding: 0px 3px;
     margin: 0px 0px 15px 0px;
-  }
-
-  #vidCon {
-    background-color: #FFF;
-    border: 1px solid #CCC;
-    width: 90%;
-    margin: 0px auto;
-    padding: 10px;
   }
 }
 
