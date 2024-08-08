@@ -10,9 +10,14 @@ var sheets = [];
 
 var allSports = [];
 
+var colorDropVal = "All";
+var sportDropVal = "All"
+
 function init() {
 	//console.log("ready");
 	$(".pages").hide();
+
+	$("#whiteCover").css("height", $(document).height())
 
 	sheets[0] = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSFoxPgZ39rGRimNJQxkpPo4Gt3RNxmg0Tw4pxU8kccHAv2ZRXvxpIub6YYHOJzJYoO74Qx5i3MYYse/pub?gid=1439609260&single=true&output=csv";
 
@@ -101,7 +106,7 @@ function generateGrid() {
 
 	for (var i=0; i<totalEntries; i++) {
 
-		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-gid='" + (i+1) + "' data-color='all_" + allData[i].medal.toLowerCase()+ "' data-tmp='0'>" +
+		$("#gridCon").append("<div class='item' id='th" + i + "' data-id='" + i + "' data-gid='" + (i+1) + "' data-color='all_" + allData[i].medal.toLowerCase() + "' data-sport='All_" + allData[i].sport + "' data-tmp='0'>" +
 												"<div class='th'><div class='thcon'><img id='img" + i + "'src='" + allData[i].image + "' width='100%' alt='thumb' onerror='imgError(this);' /></div>" +
 												"<p class='pName'>" + allData[i].name + "</p>" +
 												"<p class='pRole'>" + allData[i].medal.toUpperCase() + " - " + allData[i].sport + ", " + allData[i].event + "</p>" +
@@ -201,12 +206,20 @@ function createSportsDrop() {
 
 }
 
-function filterColors(val) {
+function getDropVals() {
+	colorDropVal = $("#colorDrop").val();
+	sportDropVal = $("#sportDrop").val();
+	filterMedals();
+}
+
+function filterMedals() {
 	$(".item").hide();
 	$(".item").css("opacity", 0);
 
 	var tmpcount = 0;
-	$( ".item[data-color*='" + val.toLowerCase() + "']" ).show().animate({ opacity: 1 }, 1000, function() { $(this).attr("data-tmp", tmpcount); tmpcount++;  } );
+	$( ".item[data-color*='" + colorDropVal.toLowerCase() + "'][data-sport*='" + sportDropVal + "']" ).show().animate({ opacity: 1 }, 1000, function() { $(this).attr("data-tmp", tmpcount); tmpcount++;  } );
+
+	//$( ".item[data-o='" + $(this).attr("data-outcome") + "'][data-f*='" + $("#searchF").val().toLowerCase() + "']" ).show();
 	//$( ".item[data-incident*='" + val + "']" ).attr("data-tmp", "100");
 
 	showCount();
