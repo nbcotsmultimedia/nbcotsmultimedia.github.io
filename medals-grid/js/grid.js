@@ -248,7 +248,7 @@ function filterMedals() {
 function showCount() {
 	//$("#showing").html("Showing " + $('.item:visible').length + " items | " + "<a class='shall' href='javascript:showAll()'>Show all</a>");
 	$("#showing").html("Showing " + $('.item:visible').length + " medals");
-	xtalk.signalIframe();
+	//xtalk.signalIframe();
 }
 
 function watchHighlight(which) {
