@@ -7,7 +7,7 @@ let ds,
 	sidebar = $('#sidebar'),
 	sidebarContent = $('#sidebar-content');
 const map = L.map('map').setView([33.0169285, -116.8460104], 9);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 
@@ -79,15 +79,15 @@ function buildConfig() {
 const fillLegend = () => {
 	let legendContent = '';
 	const legendLabels = Object.keys(colors);
-	const numRows  = mobile ? 2 : 1;
+	const numRows = mobile ? 2 : 1;
 	const numPerRow = Math.max(legendLabels.length / numRows);
 	let currentIdx = 0;
 	for (let i = 0; i < numRows; i++) {
-		legendContent += `<div style="margin-top:${5*i}px; display:flex;">`
+		legendContent += `<div style="margin-top:${5 * i}px; display:flex;">`
 		for (let j = 0; j < numPerRow; j++) {
 			try {
 				const label = legendLabels[currentIdx];
-				legendContent += `<b style="border-right:18px solid ${colors[label][1]};opacity:0.85;height:18px;margin-right:3px;margin-top:3px;"></b><p style="margin-right: 10px;">${label}</p>`;
+				legendContent += `<b style="border-right:18px solid ${colors[label][1]};opacity:0.8;height:18px;margin-right:3px;margin-top:3px;"></b><p style="margin-right: 10px;">${label}</p>`;
 				currentIdx++;
 			} catch {
 				console.log("Legend error");
@@ -100,19 +100,19 @@ const fillLegend = () => {
 
 const selectZipCode = (e, feature) => {
 	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
-	viewCoords = mobile ? [viewCoords["lat"]-0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"]+0.25];
+	viewCoords = mobile ? [viewCoords["lat"] - 0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"] + 0.25];
 	map.setView(viewCoords);
-	$(".leaflet-interactive").css('opacity', 0.5);
-	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.85);
+	$(".leaflet-interactive").css('opacity', 0.35);
+	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.8);
 	showSidebar(feature);
 }
 
 const showSidebar = feature => {
 	let sidebarVisible = sidebar.css('display') === 'block';
 	let dataAvailable = feature.properties.OVERALL_RANK !== null;
-	let featureData =  dataAvailable ? `<h1 class="tooltip-header">${feature.properties.ZIP}</h1><h2 class="tooltip-subhed">Historical Heat and Health Burden</h2><p class="tooltip-text">${feature.properties.HHB_RANK}</p><h2 class="tooltip-subhed">Sensitivity</h2><p class="tooltip-text">${feature.properties.F_SEN_COUNT}</p><h2 class="tooltip-subhed">Sociodemographic</h2><p class="tooltip-text">${feature.properties.SOCIODEM_RANK}</p><h2 class="tooltip-subhed">Natural and Built Environment</h2><p class="tooltip-text">${feature.properties.NBE_RANK}</p>` : 
-	`<h1 class="tooltip-header">${feature.properties.ZIP}</h1><p class="tooltip-text">Data not available for this zip code.</p>`;
-	
+	let featureData = dataAvailable ? `<h1 class="tooltip-header">${feature.properties.ZIP}</h1><h2 class="tooltip-subhed">Historical Heat and Health Burden</h2><p class="tooltip-text">${feature.properties.HHB_RANK}</p><h2 class="tooltip-subhed">Sensitivity</h2><p class="tooltip-text">${feature.properties.F_SEN_COUNT}</p><h2 class="tooltip-subhed">Sociodemographic</h2><p class="tooltip-text">${feature.properties.SOCIODEM_RANK}</p><h2 class="tooltip-subhed">Natural and Built Environment</h2><p class="tooltip-text">${feature.properties.NBE_RANK}</p>` :
+		`<h1 class="tooltip-header">${feature.properties.ZIP}</h1><p class="tooltip-text">Data not available for this zip code.</p>`;
+
 	if (sidebarVisible) {
 		sidebarContent.removeClass('show-content');
 		sidebarContent.addClass('hide-content');
@@ -132,7 +132,7 @@ const showSidebar = feature => {
 };
 
 const unSelectZipCode = () => {
-	$(".leaflet-interactive").css('opacity', 0.85);
+	$(".leaflet-interactive").css('opacity', 0.8);
 	hideSidebar();
 };
 
@@ -174,6 +174,19 @@ function loadData() {
 			},
 			style: style
 		}).addTo(map);
+	});
+
+	d3.json("./data/sd-county-major-cities.geojson").then(data => {
+		let cities = L.geoJSON(null, {
+			pointToLayer: function (feature, latlng) {
+				label = String(feature.properties.NAME) 
+				return new L.CircleMarker(latlng, {
+					radius: 1,
+				}).bindTooltip(label, { permanent: true, direction: "center", className: "my-labels"}).openTooltip();
+			}
+		});
+		cities.addData(data);
+		map.addLayer(cities);
 	});
 };
 
