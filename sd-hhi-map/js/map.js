@@ -22,7 +22,8 @@ const search = e => {
 		selectZipCode(e, feature);
 		response.html("");
 		newSidebarTop = mobile ? "500px" : "150px";
-	} catch {
+	} catch(e) {
+		console.log(e);
 		response.html("We couldn't find that zip code. Please enter a valid San Diego County zip code.");
 		newSidebarTop = mobile ? "560px" : "190px";
 	}
@@ -91,8 +92,8 @@ const fillLegend = () => {
 				const label = legendLabels[currentIdx];
 				legendContent += `<b style="border-right:18px solid ${colors[label][1]};opacity:0.8;height:18px;margin-right:3px;margin-top:1px;"></b><p style="margin-right: 10px;">${label}</p>`;
 				currentIdx++;
-			} catch {
-				console.log("Legend error");
+			} catch(e) {
+				console.log(e);
 			}
 		}
 		legendContent += "</div>"
@@ -106,11 +107,15 @@ const zipCodeOpacity = feature => {
 };
 
 const selectZipCode = (e, feature) => {
-	showZipCode(e, feature);
+	try {
+		e.target.closePopup();
+	} catch(e) {
+		console.log(e);
+	}
+	zipCodeOpacity(feature);
 	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
 	viewCoords = mobile ? [viewCoords["lat"] - 0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"] + 0.25];
 	map.setView(viewCoords);
-	zipCodeOpacity(feature);
 	showSidebar(feature);
 };
 
@@ -159,22 +164,17 @@ const hideSidebar = () => {
 	}
 };
 
-const showZipCode = (e, feature) => {
-	e.target.openPopup();
-	zipCodeOpacity(feature);
-};
-
-const showZipCodeOnMouseover = (e, feature) => {
-	if (sidebar.css("display") === "none") {
+const showZipCodeOnMouseover = e => {
+	if (sidebar.css('display') !== 'block') {
 		e.target.openPopup();
 	}
 };
 
 const hideZipCode = e => {
-	if (sidebar.css("display") === "none") {
+	if (sidebar.css('display') !== 'block') {
 		uniformZipCodeOpacity();
-		Object.values(e.target._layers).map(layer => layer.closePopup());
 	}
+	Object.values(e.target._layers).map(layer => layer.closePopup());
 }
 
 function loadData() {
