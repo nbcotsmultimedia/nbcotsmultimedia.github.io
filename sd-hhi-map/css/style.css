@@ -1,5 +1,7 @@
 #map { 
     height: 600px; 
+    border-top: #d3d3d3 1px solid;
+    border-bottom: #d3d3d3 1px solid;
 }
 
 #sidebar {
