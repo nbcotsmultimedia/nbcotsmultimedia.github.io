@@ -1,7 +1,9 @@
 let ds,
 	totalEntries,
 	allData,
+	cities,
 	geoJsonLayer,
+	cityLayer,
 	config,
 	mobile = window.innerWidth < 550,
 	sidebar = $('#sidebar'),
@@ -87,7 +89,7 @@ const fillLegend = () => {
 		for (let j = 0; j < numPerRow; j++) {
 			try {
 				const label = legendLabels[currentIdx];
-				legendContent += `<b style="border-right:18px solid ${colors[label][1]};opacity:0.8;height:18px;margin-right:3px;margin-top:3px;"></b><p style="margin-right: 10px;">${label}</p>`;
+				legendContent += `<b style="border-right:18px solid ${colors[label][1]};opacity:0.8;height:18px;margin-right:3px;margin-top:1px;"></b><p style="margin-right: 10px;">${label}</p>`;
 				currentIdx++;
 			} catch {
 				console.log("Legend error");
@@ -98,19 +100,28 @@ const fillLegend = () => {
 	$('#legend').html(legendContent);
 }
 
+const zipCodeOpacity = feature => {
+	$(".leaflet-interactive").css('opacity', 0.35);
+	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.8);
+};
+
 const selectZipCode = (e, feature) => {
+	showZipCode(e, feature);
 	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
 	viewCoords = mobile ? [viewCoords["lat"] - 0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"] + 0.25];
 	map.setView(viewCoords);
-	$(".leaflet-interactive").css('opacity', 0.35);
-	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.8);
+	zipCodeOpacity(feature);
 	showSidebar(feature);
-}
+};
 
 const showSidebar = feature => {
 	let sidebarVisible = sidebar.css('display') === 'block';
 	let dataAvailable = feature.properties.OVERALL_RANK !== null;
-	let featureData = dataAvailable ? `<h1 class="tooltip-header">${feature.properties.ZIP}</h1><h2 class="tooltip-subhed">Historical Heat and Health Burden</h2><p class="tooltip-text">${feature.properties.HHB_RANK}</p><h2 class="tooltip-subhed">Sensitivity</h2><p class="tooltip-text">${feature.properties.F_SEN_COUNT}</p><h2 class="tooltip-subhed">Sociodemographic</h2><p class="tooltip-text">${feature.properties.SOCIODEM_RANK}</p><h2 class="tooltip-subhed">Natural and Built Environment</h2><p class="tooltip-text">${feature.properties.NBE_RANK}</p>` :
+	let featureData = dataAvailable ? `<h1 class="tooltip-header">${feature.properties.ZIP}</h1>`+
+	`<div class="sidebar-item"><i class="fa-solid fa-truck-medical"></i><div><h2 class="tooltip-subhed">Historical Heat and Health Burden</h2><p class="tooltip-text">${feature.properties.HHB_RANK}</p></div></div>`+
+	`<div class="sidebar-item"><i class="fa-solid fa-heart-pulse bigger"></i><div><h2 class="tooltip-subhed">Sensitivity</h2><p class="tooltip-text">${feature.properties.F_SEN_COUNT}</p></div></div>`+
+	`<div class="sidebar-item"><i class="fa-solid fa-person-cane biggest"></i><div><h2 class="tooltip-subhed">Sociodemographic</h2><p class="tooltip-text">${feature.properties.SOCIODEM_RANK}</p></div></div>`+
+	`<div class="sidebar-item"><i class="fa-solid fa-tree-city"></i><div><h2 class="tooltip-subhed">Natural and Built Environment</h2><p class="tooltip-text">${feature.properties.NBE_RANK}</p></div></div>` :
 		`<h1 class="tooltip-header">${feature.properties.ZIP}</h1><p class="tooltip-text">Data not available for this zip code.</p>`;
 
 	if (sidebarVisible) {
@@ -131,8 +142,12 @@ const showSidebar = feature => {
 	}
 };
 
-const unSelectZipCode = () => {
+const uniformZipCodeOpacity = () => {
 	$(".leaflet-interactive").css('opacity', 0.8);
+};
+
+const unSelectZipCode = () => {
+	uniformZipCodeOpacity();
 	hideSidebar();
 };
 
@@ -143,6 +158,24 @@ const hideSidebar = () => {
 		sidebar.hide("slide", { direction: "right" }, 1000);
 	}
 };
+
+const showZipCode = (e, feature) => {
+	e.target.openPopup();
+	zipCodeOpacity(feature);
+};
+
+const showZipCodeOnMouseover = (e, feature) => {
+	if (sidebar.css("display") === "none") {
+		e.target.openPopup();
+	}
+};
+
+const hideZipCode = e => {
+	if (sidebar.css("display") === "none") {
+		uniformZipCodeOpacity();
+		Object.values(e.target._layers).map(layer => layer.closePopup());
+	}
+}
 
 function loadData() {
 	d3.json("./data/sd-hhi-map.json").then(data => {
@@ -169,26 +202,49 @@ function loadData() {
 		geoJsonLayer = L.geoJson(allData, {
 			onEachFeature: function (feature, layer) {
 				layer.on({
-					click: (event) => selectZipCode(event, feature)
+					click: (event) => selectZipCode(event, feature),
+					mouseover: (event) => showZipCodeOnMouseover(event, feature),
 				});
+				layer.bindPopup(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
 			},
 			style: style
 		}).addTo(map);
+
+		geoJsonLayer.on('mouseout', event => hideZipCode(event));
 	});
 
-	d3.json("./data/sd-county-major-cities.geojson").then(data => {
-		let cities = L.geoJSON(null, {
+	d3.json("./data/sd-major-cities.geojson").then(data => {
+		cityLayer = L.geoJSON(null, {
 			pointToLayer: function (feature, latlng) {
-				label = String(feature.properties.NAME) 
+				let popClass = feature.properties.POP_CLASS;
+				let cName = popClass >= 10 ? "major-city" : popClass > 7 ? "big-city" : "city"; 
+				label = String(feature.properties.NAME); 
 				return new L.CircleMarker(latlng, {
 					radius: 1,
-				}).bindTooltip(label, { permanent: true, direction: "center", className: "my-labels"}).openTooltip();
-			}
+				}).bindTooltip(label, { permanent: true, direction: "center", className: "my-labels "+cName}).openTooltip();
+			},
 		});
-		cities.addData(data);
-		map.addLayer(cities);
+		cities = data['features'];
+		let topCities = cities.filter(d => d.properties.POP_CLASS >= 8);
+		cityLayer.addData(topCities);
+		map.addLayer(cityLayer);
 	});
 };
+
+map.on('zoom', () => {
+	zoomLevel = map.getZoom();
+	console.log(zoomLevel);
+	let includeCities;
+	cityLayer.clearLayers();
+	if (zoomLevel <= 9) {
+		includeCities = cities.filter(d => d.properties.POP_CLASS >= 8);
+	} else if (zoomLevel == 10) {
+		includeCities = cities.filter(d => d.properties.POP_CLASS >= 7);
+	} else {
+		includeCities = cities;
+	}
+	cityLayer.addData(includeCities);
+});
 
 $(document).ready(function () {
 	init();
