@@ -1,6 +1,7 @@
 let ds,
 	totalEntries,
 	allData,
+	geoJsonLayer,
 	config,
 	mobile = window.innerWidth < 550,
 	sidebar = $('#sidebar'),
@@ -9,6 +10,22 @@ const map = L.map('map').setView([33.0169285, -116.8460104], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
+
+const search = e => {
+	const val = e.target.value;
+	const response = $("#response");
+	let newSidebarTop = "150px";
+	try {
+		const feature = allData["features"].filter(feature => feature.properties.ZIP === parseInt(val))[0];
+		selectZipCode(e, feature);
+		response.html("");
+		newSidebarTop = mobile ? "500px" : "150px";
+	} catch {
+		response.html("We couldn't find that zip code. Please enter a valid San Diego County zip code.");
+		newSidebarTop = mobile ? "560px" : "190px";
+	}
+	$('#sidebar').css("top", newSidebarTop);
+};
 
 const colors = {
 	"No data": [null, '#adadad'],
@@ -82,11 +99,11 @@ const fillLegend = () => {
 }
 
 const selectZipCode = (e, feature) => {
-	const viewCoords = mobile ? [e.latlng["lat"]-0.25, e.latlng["lng"]] : [e.latlng["lat"], e.latlng["lng"]];
+	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
+	viewCoords = mobile ? [viewCoords["lat"]-0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"]+0.25];
 	map.setView(viewCoords);
 	$(".leaflet-interactive").css('opacity', 0.5);
 	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.85);
-	console.log($(`.feature-${feature.properties.ZIP}`).css('opacity'))
 	showSidebar(feature);
 }
 
@@ -149,7 +166,7 @@ function loadData() {
 				className: 'feature-' + feature.properties.ZIP
 			};
 		};
-		const geoJsonLayer = L.geoJson(allData, {
+		geoJsonLayer = L.geoJson(allData, {
 			onEachFeature: function (feature, layer) {
 				layer.on({
 					click: (event) => selectZipCode(event, feature)

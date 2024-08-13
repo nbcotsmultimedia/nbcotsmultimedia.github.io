@@ -36,7 +36,14 @@
   <body>
 
     <!-- Start content here-->
-    <div id="legend"></div>
+    <div id="header">
+      <p id="instructions"><strong>Enter a zip code below:</strong></p> 
+      <div id='button-box'>
+        <input id="address-input" class="form-control" placeholder="91911" onchange="search(event)">
+        <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+      </div>
+      <p id="response"></p>
+      <div id="legend"></div>
     <div id="graphic">
       <div id="map"></div>
       <div id="sidebar">
