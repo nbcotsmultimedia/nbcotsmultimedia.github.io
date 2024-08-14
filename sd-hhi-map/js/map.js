@@ -79,7 +79,6 @@ const zipCodeOpacity = feature => {
 
 const selectZipCode = (e, feature) => {
 	Object.values(geoJsonLayer._layers).map(layer => layer.unbindTooltip());
-	e.target.closePopup();
 	sidebarOpen = true;
 	zipCodeOpacity(feature);
 	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
