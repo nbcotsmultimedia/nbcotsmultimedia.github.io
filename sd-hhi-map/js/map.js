@@ -4,12 +4,14 @@ let ds,
 	cities,
 	geoJsonLayer,
 	cityLayer,
-	config,
 	mobile = window.innerWidth < 550,
+	viewFactor = 0.25,
+	sidebarOpen,
 	sidebar = $('#sidebar'),
 	sidebarContent = $('#sidebar-content');
 const map = L.map('map').setView([33.0169285, -116.8460104], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+	maxZoom:12,
 	attribution: '©OpenStreetMap, ©CartoDB'
 }).addTo(map);
 
@@ -44,39 +46,8 @@ const handleMarkerClick = marker => {
 };
 
 function init() {
-	config = buildConfig();
 	loadData();
 	fillLegend();
-};
-
-function buildConfig() {
-	return {
-		delimiter: "",	// auto-detect
-		newline: "",	// auto-detect
-		quoteChar: '"',
-		escapeChar: '"',
-		header: false,
-		transformHeader: undefined,
-		dynamicTyping: false,
-		preview: 0,
-		encoding: "",
-		worker: false,
-		comments: false,
-		step: undefined,
-		complete: undefined,
-		error: undefined,
-		download: false,
-		downloadRequestHeaders: undefined,
-		downloadRequestBody: undefined,
-		skipEmptyLines: false,
-		chunk: undefined,
-		chunkSize: undefined,
-		fastMode: undefined,
-		beforeFirstChunk: undefined,
-		withCredentials: undefined,
-		transform: undefined,
-		delimitersToGuess: [',', '\t', '|', ';', Papa.RECORD_SEP, Papa.UNIT_SEP]
-	};
 };
 
 const fillLegend = () => {
@@ -107,16 +78,14 @@ const zipCodeOpacity = feature => {
 };
 
 const selectZipCode = (e, feature) => {
-	try {
-		e.target.closePopup();
-	} catch(e) {
-		console.log(e);
-	}
+	Object.values(geoJsonLayer._layers).map(layer => layer.unbindTooltip());
+	e.target.closePopup();
+	sidebarOpen = true;
 	zipCodeOpacity(feature);
 	let viewCoords = Object.values(geoJsonLayer._layers).filter(layer => layer.feature === feature)[0].getBounds().getCenter();
-	viewCoords = mobile ? [viewCoords["lat"] - 0.25, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"] + 0.25];
-	map.setView(viewCoords);
+	viewCoords = mobile ? [viewCoords["lat"] - viewFactor, viewCoords["lng"]] : [viewCoords["lat"], viewCoords["lng"] + viewFactor];
 	showSidebar(feature);
+	map.setView(viewCoords);
 };
 
 const showSidebar = feature => {
@@ -157,6 +126,7 @@ const unSelectZipCode = () => {
 };
 
 const hideSidebar = () => {
+	sidebarOpen = false;
 	if (mobile) {
 		sidebar.hide("slide", { direction: "down" }, 1000);
 	} else {
@@ -164,18 +134,11 @@ const hideSidebar = () => {
 	}
 };
 
-const showZipCodeOnMouseover = e => {
-	if (sidebar.css('display') !== 'block') {
-		e.target.openPopup();
-	}
+const showZipCodeOnMouseover = (layer, feature) => {
+	if (!sidebarOpen) {
+		layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
+	} 
 };
-
-const hideZipCode = e => {
-	if (sidebar.css('display') !== 'block') {
-		uniformZipCodeOpacity();
-	}
-	Object.values(e.target._layers).map(layer => layer.closePopup());
-}
 
 function loadData() {
 	d3.json("./data/sd-hhi-map.json").then(data => {
@@ -203,14 +166,12 @@ function loadData() {
 			onEachFeature: function (feature, layer) {
 				layer.on({
 					click: (event) => selectZipCode(event, feature),
-					mouseover: (event) => showZipCodeOnMouseover(event, feature),
+					mouseover: () => showZipCodeOnMouseover(layer, feature)
 				});
-				layer.bindPopup(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
+				layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
 			},
 			style: style
 		}).addTo(map);
-
-		geoJsonLayer.on('mouseout', event => hideZipCode(event));
 	});
 
 	d3.json("./data/sd-major-cities.geojson").then(data => {
@@ -237,10 +198,13 @@ map.on('zoom', () => {
 	let includeCities;
 	cityLayer.clearLayers();
 	if (zoomLevel <= 9) {
+		viewFactor = 0.25
 		includeCities = cities.filter(d => d.properties.POP_CLASS >= 8);
 	} else if (zoomLevel == 10) {
+		viewFactor = 0.10;
 		includeCities = cities.filter(d => d.properties.POP_CLASS >= 7);
 	} else {
+		viewFactor = 0.05;
 		includeCities = cities;
 	}
 	cityLayer.addData(includeCities);

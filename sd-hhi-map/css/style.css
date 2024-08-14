@@ -241,6 +241,8 @@
     transition: opacity 0.25s ease-in-out !important;
 }
 
+path.leaflet-interactive:focus { outline: none; }
+
 @media screen and (max-width: 550px) {
     body {
         display: flex;
