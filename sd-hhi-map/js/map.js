@@ -183,7 +183,7 @@ function loadData() {
 					click: (event) => selectZipCode(event, feature),
 					mouseover: () => showZipCodeOnMouseover(layer, feature)
 				});
-				//layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
+				layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
 			},
 			style: style
 		}).addTo(map);
