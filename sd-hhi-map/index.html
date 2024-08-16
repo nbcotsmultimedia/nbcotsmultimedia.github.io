@@ -32,22 +32,23 @@
 
   <body>
 
-    <!-- Start content here-->
-    <div id="header">
-      <p id="instructions"><strong>Enter a zip code below:</strong></p> 
-      <div id='button-box'>
-        <input id="address-input" class="form-control" placeholder="91911" onchange="search(event)">
-        <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+    <div id="sd-hhi-map" class="parent" style="width:100%; padding-bottom:30px;">
+      <div id="header">
+        <p id="instructions"><strong>Enter a zip code below:</strong></p> 
+        <div id='button-box'>
+          <input id="address-input" class="form-control" placeholder="91911" onchange="search(event)">
+          <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+        </div>
+        <p id="response"></p>
+        <div id="legend"></div>
       </div>
-      <p id="response"></p>
-      <div id="legend"></div>
-    </div>
-    <div id="graphic">
-      <div id="map"></div>
-      <div id="sidebar">
-        <button id="close-button" onclick="unSelectZipCode()">x</button>
-        <div id="sidebar-content"></div>
-      </div>  
+      <div id="graphic">
+        <div id="map"></div>
+        <div id="sidebar">
+          <button id="close-button" onclick="unSelectZipCode()">x</button>
+          <div id="sidebar-content"></div>
+        </div>  
+      </div>
     </div>
 
 
