@@ -1,19 +1,241 @@
 /* General Styles */
-/* ... */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-/* Header Styles */
-/* ... */
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
 
 /* Search Section Styles */
-/* ... */
+#search-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+#search-container p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.search-input-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 12px 40px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.search-input-container::before {
+  content: "🔍";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+}
+
+#cancel-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+}
+
+/* Autocomplete Results Styles */
+#autocomplete-results {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.autocomplete-item {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.autocomplete-item:hover {
+  background-color: #f0f0f0;
+}
+
+.autocomplete-item::before {
+  content: "💊";
+  margin-right: 12px;
+  font-size: 20px;
+}
 
 /* Drug Details Styles */
-/* ... */
+.drug-result {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.drug-result h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.drug-category {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.brand-info h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.manufacturer {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* Dosage Item Styles */
+.dosage-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.dosage-summary {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  background-color: #f5f5f5;
+}
+
+.dosage-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.dosage-value {
+  flex-grow: 1;
+  font-size: 16px;
+}
+
+.availability {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.available {
+  background-color: #e6f4ea;
+  color: #1e8e3e;
+}
+
+.shortage {
+  background-color: #fce8e6;
+  color: #d93025;
+}
+
+.expand-icon {
+  font-size: 12px;
+}
+
+.shortage-details {
+  padding: 16px;
+  background-color: white;
+}
+
+/* Timeline Styles */
+.timeline {
+  margin-bottom: 16px;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.timeline-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.timeline-icon.shortage {
+  background-color: #d93025;
+}
+
+.timeline-icon.resolved {
+  background-color: #1e8e3e;
+}
+
+.timeline-icon.ongoing {
+  background-color: #fbbc04;
+}
+
+.timeline-content {
+  font-size: 14px;
+}
+
+.timeline-duration {
+  margin-left: 24px;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.shortage-reason,
+.related-info {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
 
 /* Loading and No Results Styles */
-/* ... */
+#loading,
+#no-results {
+  text-align: center;
+  padding: 20px;
+}
+
+#loading img {
+  width: 50px;
+  height: 50px;
+}
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  /* ... */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  #search-input {
+    font-size: 14px;
+  }
 }
