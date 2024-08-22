@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function initApp() {
   try {
     showLoading(true);
+    // Use the fetchDrugData function from api.js
     const data = await fetchDrugData();
     if (typeof window.initSearch === "function") {
       window.initSearch(data);
@@ -35,25 +36,4 @@ function showError(message) {
     errorElement.textContent = message;
     errorElement.style.display = "block";
   }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  initApp();
-  setupCancelButton();
-});
-
-function setupCancelButton() {
-  const searchInput = document.getElementById("search-input");
-  const cancelButton = document.getElementById("cancel-search");
-
-  searchInput.addEventListener("input", () => {
-    cancelButton.style.display = searchInput.value ? "block" : "none";
-  });
-
-  cancelButton.addEventListener("click", () => {
-    searchInput.value = "";
-    cancelButton.style.display = "none";
-    document.getElementById("autocomplete-results").innerHTML = "";
-    document.getElementById("results-container").innerHTML = "";
-  });
 }

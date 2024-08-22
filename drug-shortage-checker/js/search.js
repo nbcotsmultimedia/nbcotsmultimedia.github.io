@@ -3,40 +3,52 @@
 let drugData = [];
 let selectedIndex = -1;
 
-function initSearch(data) {
-  drugData = data;
+document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("search-input");
+  const clearButton = document.getElementById("clear-search");
   const autocompleteResults = document.getElementById("autocomplete-results");
 
-  if (searchInput && autocompleteResults) {
-    searchInput.addEventListener("input", debounce(handleSearch, 300));
-    searchInput.addEventListener("focus", showAllResults);
-    searchInput.addEventListener("keydown", handleKeydown);
-
-    // Use mousedown instead of click to prevent focus issues
-    document.addEventListener("mousedown", (event) => {
-      if (!event.target.closest("#search-section")) {
-        autocompleteResults.innerHTML = "";
-      }
-    });
-
-    // Prevent the dropdown from closing immediately after focusing
-    searchInput.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
+  if (searchInput && clearButton && autocompleteResults) {
+    setupEventListeners(searchInput, clearButton, autocompleteResults);
   } else {
-    console.error("Search input or autocomplete results container not found");
+    console.error("Required elements not found in the DOM");
   }
+});
+
+function setupEventListeners(searchInput, clearButton, autocompleteResults) {
+  searchInput.addEventListener("input", debounce(handleSearch, 300));
+  searchInput.addEventListener("focus", showAllResults);
+  searchInput.addEventListener("click", showAllResults);
+  searchInput.addEventListener("keydown", handleKeydown);
+  searchInput.addEventListener("blur", function () {
+    setTimeout(() => {
+      autocompleteResults.innerHTML = "";
+    }, 200);
+  });
+
+  clearButton.addEventListener("click", clearSearch);
+
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest("#search-section")) {
+      autocompleteResults.innerHTML = "";
+    }
+  });
+
+  searchInput.addEventListener("click", function (event) {
+    event.stopPropagation();
+  });
 }
 
-function showAllResults() {
-  const groupedDrugs = groupDrugsByGenericName(drugData);
-  displayAutocompleteResults(groupedDrugs, "");
+function initSearch(data) {
+  drugData = data;
 }
 
 function handleSearch(event) {
   const searchTerm = event.target.value.toLowerCase();
+  const clearButton = document.getElementById("clear-search");
   const autocompleteResults = document.getElementById("autocomplete-results");
+
+  clearButton.style.display = searchTerm ? "block" : "none";
 
   if (searchTerm.length === 0) {
     showAllResults();
@@ -49,8 +61,19 @@ function handleSearch(event) {
       drug.brandName.toLowerCase().includes(searchTerm)
   );
 
+  if (matchingDrugs.length === 0) {
+    displayNoResultsMessage();
+    autocompleteResults.innerHTML = "";
+    return;
+  }
+
   const groupedDrugs = groupDrugsByGenericName(matchingDrugs);
   displayAutocompleteResults(groupedDrugs, searchTerm);
+}
+
+function showAllResults() {
+  const groupedDrugs = groupDrugsByGenericName(drugData);
+  displayAutocompleteResults(groupedDrugs, "");
 }
 
 function groupDrugsByGenericName(drugs) {
@@ -71,16 +94,20 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
   Object.entries(groupedDrugs).forEach(([genericName, drugs], index) => {
     const div = document.createElement("div");
     div.className = "autocomplete-item";
-    div.innerHTML = `${highlightMatch(genericName, searchTerm)}`;
+    div.innerHTML = `
+      ${getRouteIconSVG(drugs[0].route)}
+      <span class="drug-name">${highlightMatch(genericName, searchTerm)}</span>
+    `;
     if (drugs[0].brandName && drugs[0].brandName !== genericName) {
-      div.innerHTML += ` (${highlightMatch(drugs[0].brandName, searchTerm)})`;
+      div.innerHTML += `<span class="brand-name">(${highlightMatch(
+        drugs[0].brandName,
+        searchTerm
+      )})</span>`;
     }
 
     div.addEventListener("mousedown", (event) => {
       event.preventDefault();
-      document.getElementById("search-input").value = genericName;
-      autocompleteResults.innerHTML = "";
-      displayDrugDetails(drugs);
+      selectDrug(genericName, drugs);
     });
 
     div.addEventListener("mouseover", () => {
@@ -90,6 +117,43 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
 
     autocompleteResults.appendChild(div);
   });
+}
+
+function getRouteIconSVG(route) {
+  const iconId = getRouteIcon(route);
+  console.log(`Generating icon SVG for route: ${route}, iconId: ${iconId}`);
+  const svgHtml = `<svg class="icon icon-route" aria-hidden="true" focusable="false"><use href="#${iconId}"></use></svg>`;
+  console.log("Generated SVG HTML:", svgHtml);
+  return svgHtml;
+}
+
+function getRouteIcon(route) {
+  switch (route.toLowerCase()) {
+    case "inhalation":
+      return "icon-inhaler";
+    case "oral":
+      return "icon-pill";
+    case "injection":
+    case "injectable":
+      return "icon-syringe";
+    default:
+      return "icon-other";
+  }
+}
+
+function selectDrug(genericName, drugs) {
+  const searchInput = document.getElementById("search-input");
+  const autocompleteResults = document.getElementById("autocomplete-results");
+  const clearButton = document.getElementById("clear-search");
+
+  searchInput.value = genericName;
+  autocompleteResults.innerHTML = "";
+  clearButton.style.display = "block";
+  if (typeof window.displayDrugDetails === "function") {
+    window.displayDrugDetails(drugs);
+  } else {
+    console.error("displayDrugDetails function not found");
+  }
 }
 
 function handleKeydown(event) {
@@ -109,7 +173,7 @@ function handleKeydown(event) {
       break;
     case "Enter":
       if (selectedIndex > -1 && items[selectedIndex]) {
-        items[selectedIndex].click();
+        items[selectedIndex].dispatchEvent(new Event("mousedown"));
       }
       break;
     case "Escape":
@@ -131,6 +195,20 @@ function updateSelectedItem() {
   }
 }
 
+function clearSearch() {
+  const searchInput = document.getElementById("search-input");
+  const clearButton = document.getElementById("clear-search");
+  const autocompleteResults = document.getElementById("autocomplete-results");
+  const resultsContainer = document.getElementById("results-container");
+
+  searchInput.value = "";
+  clearButton.style.display = "none";
+  autocompleteResults.innerHTML = "";
+  if (resultsContainer) {
+    resultsContainer.innerHTML = "";
+  }
+}
+
 function debounce(func, delay) {
   let timeoutId;
   return function (...args) {
@@ -140,12 +218,23 @@ function debounce(func, delay) {
 }
 
 function highlightMatch(text, searchTerm) {
+  if (!searchTerm) return text;
   const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, "gi");
   return text.replace(regex, "<strong>$1</strong>");
 }
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function displayNoResultsMessage() {
+  const resultsContainer = document.getElementById("results-container");
+  resultsContainer.innerHTML = `
+    <div class="no-results">
+      <h2>No matching records found.</h2>
+      <p>This drug does not appear in the shortage database.</p>
+    </div>
+  `;
 }
 
 window.initSearch = initSearch;

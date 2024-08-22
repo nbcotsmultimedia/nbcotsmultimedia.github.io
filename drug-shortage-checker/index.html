@@ -6,22 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drug Shortage Checker</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <!-- SVG definitions -->
+    <!-- SVG definitions -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <!-- Route icons -->
+        <symbol id="icon-pill" viewBox="0 0 24 24">
+            <use href="assets/images/icons-route/pill.svg"></use>
+        </symbol>
+        <symbol id="icon-inhaler" viewBox="0 0 24 24">
+            <use href="assets/images/icons-route/inhaler.svg"></use>
+        </symbol>
+        <symbol id="icon-syringe" viewBox="0 0 24 24">
+            <use href="assets/images/icons-route/syringe.svg"></use>
+        </symbol>
+        <symbol id="icon-other" viewBox="0 0 24 24">
+            <use href="assets/images/icons-route/other.svg"></use>
+        </symbol>
+
+        <!-- Timeline icons -->
+        <symbol id="icon-discontinued" viewBox="0 0 24 24">
+            <use href="assets/images/icons-timeline/discontinued.svg"></use>
+        </symbol>
+        <symbol id="icon-resolved" viewBox="0 0 24 24">
+            <use href="assets/images/icons-timeline/resolved.svg"></use>
+        </symbol>
+        <symbol id="icon-shortage" viewBox="0 0 24 24">
+            <use href="assets/images/icons-timeline/shortage.svg"></use>
+        </symbol>
+    </svg>
+
     <div id="search-container">
         <h1>Is my drug in shortage?</h1>
         <p>Search for your medication's availability.</p>
         <div class="search-input-container">
             <input type="text" id="search-input" placeholder="Enter a medication">
-            <button id="cancel-search" style="display: none;">Cancel</button>
+            <button id="clear-search" style="display: none;">×</button>
         </div>
         <div id="autocomplete-results"></div>
     </div>
 
     <div id="results-container"></div>
 
-    <div id="loading" style="display: none;">Loading...</div>
     <div id="error-message" style="display: none;"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
