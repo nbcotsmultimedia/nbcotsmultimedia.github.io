@@ -193,20 +193,38 @@ function formatDuration(days) {
   }
 }
 
-function getStatusIconSVG(status) {
-  const iconId = getStatusIcon(status);
+function getStatusIconSVG(status, isCurrent = false) {
+  const iconClass = status.toLowerCase();
   console.log(
-    `Generating status icon SVG for status: ${status}, iconId: ${iconId}`
+    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}`
   );
-  return `
-    <div class="icon-wrapper timeline-icon">
-      <div class="icon-circle"></div>
-      <img src="assets/images/icons-timeline/${iconId}.svg" 
-           alt="${status} icon" 
-           class="icon icon-timeline icon-${iconId}"
-           onerror="this.onerror=null; this.src='assets/images/icons-timeline/other.svg';">
-    </div>
-  `;
+
+  if (isCurrent) {
+    return `<div class="timeline-icon current ${iconClass}"></div>`;
+  }
+
+  let iconSvg;
+  switch (iconClass) {
+    case "shortage":
+      iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496.2 550" class="icon-shortage">
+        <path d="M389.27,178.63c-2.9-3.94-3.15-6.46-.16-10.48,34.41-46.25,68.62-92.64,102.88-139,1.37-1.85,2.62-3.79,4.21-6.1-2.43-.64-4-1.17-5.61-1.46-45.74-8.01-91.59-7.24-137.36-.86-35.43,4.94-70.72,10.94-106.07,16.44-41.24,6.42-82.57,8.89-124.13,3.09-22.35-3.12-44.17-8.34-65.37-16.03v-2.31C57.66,9.82,47.84,0,35.73,0h-13.8C9.82,0,0,9.82,0,21.93v506.14c0,12.11,9.82,21.93,21.93,21.93h13.8c12.11,0,21.93-9.82,21.93-21.93v-201.39c.41.12.82.24,1.22.37,27.43,9.06,55.51,15.18,84.2,18.47,38.27,4.4,76.35,2.02,114.27-3.8,44.84-6.88,89.53-14.93,134.5-20.71,20.36-2.62,41.29-1.51,61.94-1.05,13.75.31,27.46,2.48,41.75,3.87-1.06-1.55-1.86-2.78-2.72-3.96-34.48-47.11-68.91-94.26-103.55-141.25Z"/>
+      </svg>`;
+      break;
+    case "resolved":
+      iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 456.7" class="icon-resolved">
+        <path d="M550,59.32c.15,14.71-4.49,27.45-13.44,39-46.75,60.31-93.36,120.71-140.07,181.05-40.18,51.91-80.31,103.86-120.69,155.61-20.7,26.52-62.54,29.16-86.57,5.7-13.6-13.29-25.2-28.39-37.63-42.75-17.67-20.44-35.17-41.03-52.74-61.56-19.47-22.76-38.92-45.54-58.41-68.29-8.54-9.97-17.03-19.98-25.75-29.78-22.14-24.89-18.89-65.5,7.2-86.18,11.09-8.8,23.63-13.94,36.85-13.28,22.1-.4,37.67,9.38,50.72,24.82,23.21,27.48,46.72,54.71,70.12,82.03,14.36,16.77,28.73,33.54,43.08,50.33,4.45,5.21,4.73,5.2,9.05-.38,31.77-41.03,63.54-82.06,95.31-123.09,37.81-48.85,75.73-97.61,113.36-146.58C453.31,9.14,469.85-.13,491.12,0c32.57.2,58.55,26.75,58.88,59.32Z"/>
+      </svg>`;
+      break;
+    case "discontinued":
+      iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 550.04" class="icon-discontinued">
+        <path d="M550,274.85c0,152.33-122.93,275.21-275.28,275.19C123.34,550.02-.35,426.14,0,274.91.36,123.24,123.65.04,275.1,0c151.55-.04,274.91,123.3,274.9,274.85ZM159.62,106.9c94.68,94.72,189.18,189.26,283.59,283.71,50.34-67.05,53.98-180.33-21.13-257.79-76.62-79.01-192.31-77.76-262.46-25.92ZM107.46,158.76c-55.14,75.19-53.11,197.66,36.05,272.9,85.51,72.15,196.32,52.88,247.27,10.63-94.3-94.37-188.67-188.8-283.32-283.53Z"/>
+      </svg>`;
+      break;
+    default:
+      iconSvg = `<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>`;
+  }
+
+  return `<div class="timeline-icon ${iconClass}">${iconSvg}</div>`;
 }
 
 function formatDate(dateString) {

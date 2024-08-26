@@ -25,6 +25,7 @@ body {
   background-color: var(--light-gray);
 }
 
+/* Header Styles */
 h1,
 h2,
 h3 {
@@ -49,6 +50,7 @@ h3 {
 
 /* Icon Styles */
 #svg-container {
+  /* Hide SVG container but keep it accessible for screen readers */
   position: absolute;
   width: 1px;
   height: 1px;
@@ -136,6 +138,7 @@ h3 {
   box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
 }
 
+/* Search icon */
 .search-input-container::before {
   content: "🔍";
   position: absolute;
@@ -146,6 +149,7 @@ h3 {
   pointer-events: none;
 }
 
+/* Clear search button */
 #clear-search {
   position: absolute;
   right: 14px;
@@ -297,7 +301,7 @@ h3 {
 /* Timeline Styles */
 .timeline {
   position: relative;
-  padding-left: 30px;
+  padding-left: 24px;
   margin-bottom: 1rem;
 }
 
@@ -318,7 +322,7 @@ h3 {
 
 .timeline-icon {
   position: absolute;
-  left: -30px;
+  left: -24px;
   top: 0;
   width: 16px;
   height: 16px;
@@ -330,28 +334,55 @@ h3 {
 .timeline-icon svg {
   width: 16px;
   height: 16px;
+  fill: currentColor;
 }
 
+/* Color the icons based on status */
+.timeline-icon.shortage img {
+  fill: var(--danger-color);
+  width: 14px;
+  height: 14px;
+  transform: translate(-1px, -1px); /* Adjust these values as needed */
+}
+
+.timeline-icon.resolved svg {
+  fill: var(--success-color);
+}
+
+.timeline-icon.discontinued svg {
+  fill: var(--warning-color);
+}
+
+/* Style for the current (last) status icon */
 .timeline-icon.current {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   top: 4px;
-  left: -27px;
+  left: -20px;
 }
 
-.timeline-icon.shortage {
+.timeline-icon.current.shortage {
   background-color: var(--danger-color);
 }
-.timeline-icon.resolved {
+
+.timeline-icon.current.resolved {
   background-color: var(--success-color);
 }
-.timeline-icon.available {
-  background-color: var(--success-color);
+
+.timeline-icon.current.discontinued {
+  background-color: var(--warning-color);
+}
+
+/* Ensure SVGs maintain aspect ratio and don't get cut off */
+.icon-shortage,
+.icon-resolved,
+.icon-discontinued {
+  overflow: visible;
 }
 
 .timeline-content {
-  padding-left: 10px;
+  padding-left: 0;
 }
 
 .timeline-content .date {
@@ -361,20 +392,13 @@ h3 {
 
 .timeline-content .event {
   color: var(--text-secondary);
+  margin-bottom: 0.25rem;
 }
 
 .timeline-duration {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 1rem;
-  padding-left: 10px;
-}
-
-.shortage-reason,
-.related-info {
-  font-size: 14px;
-  margin-bottom: 0.5rem;
-  color: var(--text-secondary);
+  margin: 0.5rem;
 }
 
 .shortage-reason,
