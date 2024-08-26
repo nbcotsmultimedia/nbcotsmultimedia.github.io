@@ -47,19 +47,48 @@ h3 {
   font-weight: 500;
 }
 
-/* Icons */
+/* Icon Styles */
+#svg-container {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+  margin: -1px;
+  padding: 0;
+}
 
-.icon {
+.icon-route,
+.icon-timeline {
   width: 24px;
   height: 24px;
   fill: currentColor;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.icon-timeline {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  z-index: 2;
+  fill: var(--text-secondary);
 }
 
 .icon-wrapper {
-  display: inline-block;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  border: 2px solid var(--text-secondary);
+}
+
+.icon-wrapper.timeline-icon {
+  position: relative;
 }
 
 .icon-circle {
@@ -69,16 +98,9 @@ h3 {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: red; /* Adjust color as needed */
-}
-
-.icon-timeline {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 60%;
+  background-color: white;
+  border: 2px solid var(--text-secondary);
+  z-index: 1;
 }
 
 /* Search Section Styles */
@@ -100,7 +122,7 @@ h3 {
 
 #search-input {
   width: 100%;
-  padding: 12px 40px 12px 40px;
+  padding: 12px 40px;
   font-size: 16px;
   border: 1px solid var(--border-color);
   border-radius: 24px;
@@ -144,7 +166,6 @@ h3 {
 
 /* Autocomplete Results Styles */
 #autocomplete-results {
-  /* border: 1px solid var(--border-color); */
   border-radius: var(--border-radius);
   max-height: 300px;
   overflow-y: auto;
@@ -171,23 +192,21 @@ h3 {
   font-size: 20px;
 }
 
+/* No Results Styles */
 .no-results {
   text-align: center;
   padding: 2rem;
-  /* background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); */
 }
 
 .no-results h2 {
   font-size: 18px;
-  color: #202124;
+  color: var(--secondary-color);
   margin-bottom: 0.5rem;
 }
 
 .no-results p {
   font-size: 14px;
-  color: #5f6368;
+  color: var(--text-secondary);
 }
 
 /* Drug Details Styles */
@@ -250,22 +269,17 @@ h3 {
 
 .availability.available {
   background-color: #e6f4ea;
-  color: #1e8e3e;
+  color: var(--success-color);
 }
 
 .availability.shortage {
   background-color: #fce8e6;
-  color: #d93025;
+  color: var(--danger-color);
 }
 
 .availability.discontinue {
   background-color: #fef7e0;
-  color: #f9ab00;
-}
-
-.shortage {
-  background-color: #fce8e6;
-  color: var(--danger-color);
+  color: var(--warning-color);
 }
 
 .expand-icon {
@@ -283,7 +297,7 @@ h3 {
 /* Timeline Styles */
 .timeline {
   position: relative;
-  padding-left: 28px;
+  padding-left: 30px;
   margin-bottom: 1rem;
 }
 
@@ -294,30 +308,50 @@ h3 {
   top: 0;
   bottom: 0;
   width: 2px;
-  background-color: var(--border-color);
+  background-color: #e0e0e0;
 }
 
 .timeline-item {
   position: relative;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .timeline-icon {
   position: absolute;
-  left: -28px;
+  left: -30px;
+  top: 0;
   width: 16px;
   height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.timeline-icon.current {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: white;
-  border: 2px solid;
+  top: 4px;
+  left: -27px;
 }
 
 .timeline-icon.shortage {
-  border-color: var(--danger-color);
+  background-color: var(--danger-color);
+}
+.timeline-icon.resolved {
+  background-color: var(--success-color);
+}
+.timeline-icon.available {
+  background-color: var(--success-color);
 }
 
-.timeline-icon.ongoing {
-  border-color: var(--warning-color);
+.timeline-content {
+  padding-left: 10px;
 }
 
 .timeline-content .date {
@@ -333,12 +367,21 @@ h3 {
   font-size: 14px;
   color: var(--text-secondary);
   margin-bottom: 1rem;
+  padding-left: 10px;
 }
 
 .shortage-reason,
 .related-info {
   font-size: 14px;
   margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.shortage-reason,
+.related-info {
+  font-size: 14px;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
 }
 
 /* Loading and No Results Styles */

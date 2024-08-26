@@ -119,26 +119,27 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
   });
 }
 
-function getRouteIconSVG(route) {
-  const iconId = getRouteIcon(route);
-  console.log(`Generating icon SVG for route: ${route}, iconId: ${iconId}`);
-  const svgHtml = `<svg class="icon icon-route" aria-hidden="true" focusable="false"><use href="#${iconId}"></use></svg>`;
-  console.log("Generated SVG HTML:", svgHtml);
-  return svgHtml;
-}
-
 function getRouteIcon(route) {
   switch (route.toLowerCase()) {
     case "inhalation":
       return "icon-inhaler";
     case "oral":
+    case "tablet":
+    case "capsule":
       return "icon-pill";
     case "injection":
     case "injectable":
       return "icon-syringe";
     default:
+      console.log(`No specific icon for route: ${route}, using default`);
       return "icon-other";
   }
+}
+
+function getRouteIconSVG(route) {
+  const iconId = getRouteIcon(route);
+  console.log(`Generating icon SVG for route: ${route}, iconId: ${iconId}`);
+  return `<img src="assets/images/icons-route/${iconId}.svg" alt="${route} icon" class="icon icon-route">`;
 }
 
 function selectDrug(genericName, drugs) {

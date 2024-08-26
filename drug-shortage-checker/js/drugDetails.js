@@ -77,10 +77,13 @@ function createDosageItemsHTML(drug) {
 
 function getRouteIconSVG(route) {
   const iconId = getRouteIcon(route);
-  console.log(`Generating icon SVG for route: ${route}, iconId: ${iconId}`);
-  const svgHtml = `<svg class="icon icon-route" aria-hidden="true" focusable="false"><use href="#${iconId}"></use></svg>`;
-  console.log("Generated route icon HTML:", svgHtml);
-  return svgHtml;
+  console.log(`Inserting icon for route: ${route}, iconId: ${iconId}`);
+  const iconHTML = `<img src="assets/images/icons-route/${iconId.replace(
+    "icon-",
+    ""
+  )}.svg" alt="${route} icon" class="icon icon-route">`;
+  console.log("Icon HTML:", iconHTML);
+  return iconHTML;
 }
 
 function getRouteIcon(route) {
@@ -101,18 +104,11 @@ function getRouteIcon(route) {
 }
 
 function getStatusIcon(status) {
-  switch (status.toLowerCase()) {
-    case "to be discontinued":
-      return "icon-discontinued";
-    case "resolved":
-      return "icon-resolved";
-    case "current":
-    case "shortage":
-      return "icon-shortage";
-    default:
-      console.warn(`Unknown status: ${status}, using default icon`);
-      return "icon-shortage";
-  }
+  console.log(`Getting icon for status: ${status}`);
+  const iconId =
+    status.toLowerCase() === "current" ? "shortage" : status.toLowerCase();
+  console.log(`Resolved icon ID: ${iconId}`);
+  return iconId;
 }
 
 function getStatusClass(status) {
@@ -132,8 +128,10 @@ function getStatusLabel(status) {
 }
 
 function createShortageDetailsHTML(dosage) {
+  console.log("Creating shortage details HTML for dosage:", dosage);
   const hasShortageInfo =
     dosage.reportedDate || dosage.shortageReason || dosage.relatedInfo;
+  console.log("Has shortage info:", hasShortageInfo);
 
   if (!hasShortageInfo) {
     return "<p>No shortage information available for this dosage.</p>";
@@ -148,15 +146,15 @@ function createShortageDetailsHTML(dosage) {
   return `
     <div class="timeline">
       <div class="timeline-item">
-        ${getStatusIconSVG("shortage")}
+        <div class="timeline-icon">${getStatusIconSVG("shortage")}</div>
         <div class="timeline-content">
           <p class="date">${formatDate(dosage.reportedDate)}</p>
           <p class="event">Shortage reported</p>
         </div>
       </div>
-      <p class="timeline-duration">${duration.toFixed(3)} days</p>
+      <p class="timeline-duration">${formatDuration(duration)}</p>
       <div class="timeline-item">
-        ${getStatusIconSVG("current")}
+        <div class="timeline-icon">${getStatusIconSVG("current")}</div>
         <div class="timeline-content">
           <p class="date">${formatDate(currentDate)}</p>
           <p class="event">Shortage ongoing</p>
@@ -174,6 +172,25 @@ function createShortageDetailsHTML(dosage) {
         : ""
     }
   `;
+  console.log("Generated timeline HTML:", timelineHtml);
+  return timelineHtml;
+}
+
+function formatDuration(days) {
+  if (days < 30) {
+    return `${days} day${days !== 1 ? "s" : ""}`;
+  } else if (days < 365) {
+    const months = Math.floor(days / 30);
+    return `${months} month${months !== 1 ? "s" : ""}`;
+  } else {
+    const years = Math.floor(days / 365);
+    const remainingMonths = Math.floor((days % 365) / 30);
+    return `${years} year${years !== 1 ? "s" : ""}${
+      remainingMonths > 0
+        ? ` ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`
+        : ""
+    }`;
+  }
 }
 
 function getStatusIconSVG(status) {
@@ -181,16 +198,15 @@ function getStatusIconSVG(status) {
   console.log(
     `Generating status icon SVG for status: ${status}, iconId: ${iconId}`
   );
-  const svgHtml = `
-    <div class="icon-wrapper">
+  return `
+    <div class="icon-wrapper timeline-icon">
       <div class="icon-circle"></div>
-      <svg class="icon icon-timeline" aria-hidden="true" focusable="false">
-        <use href="#${iconId}"></use>
-      </svg>
+      <img src="assets/images/icons-timeline/${iconId}.svg" 
+           alt="${status} icon" 
+           class="icon icon-timeline icon-${iconId}"
+           onerror="this.onerror=null; this.src='assets/images/icons-timeline/other.svg';">
     </div>
   `;
-  console.log("Generated status icon HTML:", svgHtml);
-  return svgHtml;
 }
 
 function formatDate(dateString) {

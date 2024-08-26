@@ -10,35 +10,29 @@
 </head>
 
 <body>
-    <!-- SVG definitions -->
-    <!-- SVG definitions -->
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <!-- SVG placeholders -->
+    <div id="svg-container" style="display: none;">
         <!-- Route icons -->
-        <symbol id="icon-pill" viewBox="0 0 24 24">
-            <use href="assets/images/icons-route/pill.svg"></use>
-        </symbol>
-        <symbol id="icon-inhaler" viewBox="0 0 24 24">
-            <use href="assets/images/icons-route/inhaler.svg"></use>
-        </symbol>
-        <symbol id="icon-syringe" viewBox="0 0 24 24">
-            <use href="assets/images/icons-route/syringe.svg"></use>
-        </symbol>
-        <symbol id="icon-other" viewBox="0 0 24 24">
-            <use href="assets/images/icons-route/other.svg"></use>
-        </symbol>
+        <img src="assets/images/icons-route/pill.svg" alt="Pill icon" onload="console.log('Pill icon loaded')"
+            onerror="console.error('Failed to load pill icon')">
+        <img src="assets/images/icons-route/inhaler.svg" alt="Inhaler icon" onload="console.log('Inhaler icon loaded')"
+            onerror="console.error('Failed to load inhaler icon')">
+        <img src="assets/images/icons-route/syringe.svg" alt="Syringe icon" onload="console.log('Syringe icon loaded')"
+            onerror="console.error('Failed to load syringe icon')">
+        <img src="assets/images/icons-route/other.svg" alt="Other icon" onload="console.log('Other icon loaded')"
+            onerror="console.error('Failed to load other icon')">
 
         <!-- Timeline icons -->
-        <symbol id="icon-discontinued" viewBox="0 0 24 24">
-            <use href="assets/images/icons-timeline/discontinued.svg"></use>
-        </symbol>
-        <symbol id="icon-resolved" viewBox="0 0 24 24">
-            <use href="assets/images/icons-timeline/resolved.svg"></use>
-        </symbol>
-        <symbol id="icon-shortage" viewBox="0 0 24 24">
-            <use href="assets/images/icons-timeline/shortage.svg"></use>
-        </symbol>
-    </svg>
+        <img src="assets/images/icons-timeline/discontinued.svg" alt="Discontinued icon"
+            onload="console.log('Discontinued icon loaded')"
+            onerror="console.error('Failed to load discontinued icon')">
+        <img src="assets/images/icons-timeline/resolved.svg" alt="Resolved icon"
+            onload="console.log('Resolved icon loaded')" onerror="console.error('Failed to load resolved icon')">
+        <img src="assets/images/icons-timeline/shortage.svg" alt="Shortage icon"
+            onload="console.log('Shortage icon loaded')" onerror="console.error('Failed to load shortage icon')">
+    </div>
 
+    <!-- Search container placeholder -->
     <div id="search-container">
         <h1>Is my drug in shortage?</h1>
         <p>Search for your medication's availability.</p>
@@ -49,12 +43,14 @@
         <div id="autocomplete-results"></div>
     </div>
 
+    <!-- Results container placeholder -->
     <div id="results-container"></div>
 
+    <!-- Error message placeholder -->
     <div id="error-message" style="display: none;"></div>
 
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="js/search.js"></script>

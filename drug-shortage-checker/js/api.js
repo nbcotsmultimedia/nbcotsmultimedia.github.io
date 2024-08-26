@@ -6,17 +6,18 @@ const SHEET_URL =
 
 async function fetchDrugData() {
   try {
-    console.log("Fetching drug data from:", SHEET_URL);
+    // console.log("Fetching drug data from:", SHEET_URL);
     const response = await fetch(SHEET_URL);
     const csvData = await response.text();
-    console.log("CSV data received:", csvData.substring(0, 200) + "..."); // Log first 200 characters of CSV
+    // console.log("CSV data received:", csvData.substring(0, 200) + "...");
+    // Log first 200 characters of CSV
 
     return new Promise((resolve, reject) => {
       Papa.parse(csvData, {
         header: true,
         complete: (results) => {
-          console.log("Papa Parse complete. Rows parsed:", results.data.length);
-          console.log("First row of parsed data:", results.data[0]);
+          // console.log("Papa Parse complete. Rows parsed:", results.data.length);
+          // console.log("First row of parsed data:", results.data[0]);
 
           const data = results.data.map((row) => ({
             id: row.id,
@@ -33,22 +34,22 @@ async function fetchDrugData() {
             resolvedDate: row.resolvedDate,
           }));
 
-          console.log(
-            "Data processing complete. First processed item:",
-            JSON.stringify(data[0], null, 2)
-          );
-          console.log("Total processed items:", data.length);
+          // console.log(
+          //   "Data processing complete. First processed item:",
+          //   JSON.stringify(data[0], null, 2)
+          // );
+          // console.log("Total processed items:", data.length);
 
           resolve(data);
         },
         error: (error) => {
-          console.error("Papa Parse error:", error);
+          // console.error("Papa Parse error:", error);
           reject(error);
         },
       });
     });
   } catch (error) {
-    console.error("Error fetching drug data:", error);
+    // console.error("Error fetching drug data:", error);
     throw error;
   }
 }
