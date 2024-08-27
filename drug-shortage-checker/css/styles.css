@@ -18,9 +18,9 @@
 
 /* General Styles */
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 1.5;
-  color: var(--text-color);
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+  color: #333;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
@@ -63,12 +63,26 @@ h3 {
   padding: 0;
 }
 
+/* Route icons */
+.icon-route-wrapper {
+  width: 40px; /* Increase from 32px */
+  height: 40px; /* Increase from 32px */
+  background-color: #ababab; /* Gray background */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
 .icon-route {
-  width: 24px;
-  height: 24px;
-  fill: currentColor;
-  vertical-align: middle;
-  display: inline-block;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  box-sizing: border-box;
+  fill: white; /* Make the SVG icon white */
+  stroke-width: 5px;
+  stroke: white;
 }
 
 /* Search Section Styles */
@@ -157,7 +171,7 @@ h3 {
 }
 
 .autocomplete-item::before {
-  content: "💊";
+  /* content: "💊"; */
   margin-right: 12px;
   font-size: 20px;
 }
@@ -227,8 +241,8 @@ h3 {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 600;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .availability.available {
@@ -262,7 +276,7 @@ h3 {
 .timeline {
   list-style-type: none;
   padding-left: 0;
-  margin-left: 10px;
+  margin: 16px 0 0 10px;
   border-left: 2px solid #e0e0e0;
 }
 
@@ -270,14 +284,15 @@ h3 {
   position: relative;
   padding-left: 22px;
   margin-bottom: 16px;
+  min-height: 26px; /* Ensure minimum height for proper alignment */
 }
 
 .timeline-item-icon {
   position: absolute;
-  left: -11px;
-  top: 0;
-  width: 20px;
-  height: 20px;
+  left: -14px; /* Adjust left position */
+  top: -2px; /* Adjust top position */
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background-color: #fff;
   display: flex;
@@ -287,10 +302,11 @@ h3 {
 }
 
 .timeline-item-icon svg {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 
+/* Shortage icon */
 .timeline-item-icon.shortage {
   background-color: var(--danger-color);
 }
@@ -299,22 +315,24 @@ h3 {
   fill: var(--status-shortage);
 }
 
+/* Resolved icon */
 .timeline-item-icon.resolved {
   background-color: var(--success-color);
 }
 
+/* Current icon */
 .timeline-item-icon.current {
   width: 12px;
   height: 12px;
-  left: -7px;
-  top: 4px;
-  background-color: var(--danger-color);
-  border: none;
+  left: -9px; /* Adjust left position for smaller icon */
+  top: 4px; /* Adjust top position for smaller icon */
+  border: 2px solid #e0e0e0;
 }
 
 .timeline-item-description {
   display: flex;
   flex-direction: column;
+  padding-top: 2px; /* Add some top padding for better alignment */
 }
 
 .timeline-item-description .date {
@@ -336,12 +354,12 @@ h3 {
   margin-top: 2px;
 }
 
+.timeline-item-description .event,
 .shortage-reason,
 .related-info {
   font-size: 14px;
   color: #5f6368;
-  margin-top: 12px;
-  margin-left: 12px;
+  margin-bottom: 2px;
 }
 
 /* Loading and No Results Styles */

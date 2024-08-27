@@ -59,12 +59,16 @@ function createDosageItemsHTML(drug) {
       (dosage, index) => `
     <div class="dosage-item">
       <div class="dosage-summary" data-index="${index}">
-        ${getRouteIconSVG(drug.route)}
+        <div class="icon-route-wrapper">
+          <svg class="icon-route">
+            <use xlink:href="#${getRouteIcon(drug.route)}"></use>
+          </svg>
+        </div>
         <span class="dosage-value">${dosage.value}</span>
         <span class="availability ${getStatusClass(
           dosage.status
         )}">${getStatusLabel(dosage.status)}</span>
-        <span class="expand-icon">${createSVGIcon("down")}</span>
+        <span class="expand-icon">▼</span>
       </div>
       <div class="shortage-details" style="display: none;">
         ${createShortageDetailsHTML(dosage)}
@@ -75,15 +79,21 @@ function createDosageItemsHTML(drug) {
     .join("");
 }
 
-function getRouteIconSVG(route) {
-  const iconId = getRouteIcon(route);
-  console.log(`Inserting icon for route: ${route}, iconId: ${iconId}`);
-  const iconHTML = `<img src="assets/images/icons-route/${iconId.replace(
-    "icon-",
-    ""
-  )}.svg" alt="${route} icon" class="icon icon-route">`;
-  console.log("Icon HTML:", iconHTML);
-  return iconHTML;
+function getRouteIcon(route) {
+  switch (route.toLowerCase()) {
+    case "inhalation":
+      return "icon-inhaler";
+    case "oral":
+    case "tablet":
+    case "capsule":
+      return "icon-pill";
+    case "injection":
+    case "injectable":
+      return "icon-syringe";
+    default:
+      console.warn(`Unknown route: ${route}, using default icon`);
+      return "icon-other";
+  }
 }
 
 function getRouteIcon(route) {

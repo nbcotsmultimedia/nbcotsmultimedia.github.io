@@ -95,11 +95,15 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
     const div = document.createElement("div");
     div.className = "autocomplete-item";
     div.innerHTML = `
-      ${getRouteIconSVG(drugs[0].route)}
+      <div class="icon-route-wrapper">
+        <svg class="icon-route">
+          <use xlink:href="#${getRouteIcon(drugs[0].route)}"></use>
+        </svg>
+      </div>
       <span class="drug-name">${highlightMatch(genericName, searchTerm)}</span>
     `;
     if (drugs[0].brandName && drugs[0].brandName !== genericName) {
-      div.innerHTML += `<span class="brand-name">(${highlightMatch(
+      div.innerHTML += `&nbsp;<span class="brand-name"> (${highlightMatch(
         drugs[0].brandName,
         searchTerm
       )})</span>`;
@@ -136,10 +140,21 @@ function getRouteIcon(route) {
   }
 }
 
-function getRouteIconSVG(route) {
-  const iconId = getRouteIcon(route);
-  console.log(`Generating icon SVG for route: ${route}, iconId: ${iconId}`);
-  return `<img src="assets/images/icons-route/${iconId}.svg" alt="${route} icon" class="icon icon-route">`;
+function getRouteIcon(route) {
+  switch (route.toLowerCase()) {
+    case "inhalation":
+      return "icon-inhaler";
+    case "oral":
+    case "tablet":
+    case "capsule":
+      return "icon-pill";
+    case "injection":
+    case "injectable":
+      return "icon-syringe";
+    default:
+      console.warn(`Unknown route: ${route}, using default icon`);
+      return "icon-other";
+  }
 }
 
 function selectDrug(genericName, drugs) {
