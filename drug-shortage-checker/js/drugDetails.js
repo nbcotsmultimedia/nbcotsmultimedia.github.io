@@ -68,7 +68,7 @@ function createDosageItemsHTML(drug) {
         <span class="availability ${getStatusClass(
           dosage.status
         )}">${getStatusLabel(dosage.status)}</span>
-        <span class="expand-icon">▼</span>
+        <span class="expand-icon">${createSVGIcon("down")}</span>
       </div>
       <div class="shortage-details" style="display: none;">
         ${createShortageDetailsHTML(dosage)}
@@ -254,6 +254,16 @@ function toggleAccordion(event) {
     shortageDetails.style.display = "none";
     expandIcon.innerHTML = createSVGIcon("down");
   }
+}
+
+function createSVGIcon(direction) {
+  return `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="${
+        direction === "down" ? "M6 9l6 6 6-6" : "M18 15l-6-6-6 6"
+      }"></path>
+    </svg>
+  `;
 }
 
 function createSVGIcon(direction) {
