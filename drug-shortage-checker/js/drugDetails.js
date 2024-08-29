@@ -1,6 +1,15 @@
 // drugDetails.js
 
-const MIN_SEGMENT_HEIGHT = 50; // Minimum height in pixels for a timeline segment
+window.displayDrugDetails = function (drugs) {
+  console.log("Displaying drug details for:", drugs);
+  const resultsContainer = document.getElementById("results-container");
+  if (resultsContainer) {
+    resultsContainer.innerHTML = createDrugResultHTML(drugs);
+    addAccordionEventListeners();
+  } else {
+    console.error("Results container not found in the DOM");
+  }
+};
 
 function createShortageDetailsHTML(dosage) {
   console.log("Creating shortage details HTML for dosage:", dosage);
@@ -25,14 +34,15 @@ function createShortageDetailsHTML(dosage) {
     },
   ];
 
-  const timelineHeight = calculateTimelineHeight(
+  const shortageDuration = calculateDuration(
     reportedDate,
     isResolved ? resolvedDate : currentDate
   );
+  const timelineHeight = Math.max(shortageDuration * 3, 90); // 3px per day, minimum 90px
 
   return `
-    <div class="timeline-container" style="height: ${timelineHeight}px;">
-      <ol class="timeline">
+    <div class="timeline-container">
+      <ol class="timeline" style="height: ${timelineHeight + 60}px;">
         ${timelineEvents
           .map((event, index) =>
             createTimelineItem(
@@ -47,38 +57,44 @@ function createShortageDetailsHTML(dosage) {
       </ol>
       ${createTimelineDurations(timelineEvents, isResolved, timelineHeight)}
     </div>
-    ${
-      dosage.shortageReason
-        ? `<p class="shortage-reason">Shortage reason: ${dosage.shortageReason}</p>`
-        : ""
-    }
-    ${
-      dosage.relatedInfo
-        ? `<p class="related-info">Related information: ${dosage.relatedInfo}</p>`
-        : ""
-    }
+    <div class="shortage-info">
+      ${
+        dosage.shortageReason
+          ? `<p class="shortage-reason">Shortage reason: ${dosage.shortageReason}</p>`
+          : ""
+      }
+      ${
+        dosage.relatedInfo
+          ? `<p class="related-info">Related information: ${dosage.relatedInfo}</p>`
+          : ""
+      }
+    </div>
   `;
 }
 
-function createTimelineItem(event, index, allEvents, isResolved, totalHeight) {
+function createTimelineItem(
+  event,
+  index,
+  allEvents,
+  isResolved,
+  timelineHeight
+) {
   const isLast = index === allEvents.length - 1;
-  const position = isLast ? "end" : index === 0 ? "start" : "";
-  let style;
+  const position = isLast ? "end" : index === 0 ? "start" : "middle";
+  const statusClass = event.status.toLowerCase();
+  const currentClass = isLast ? "current" : "";
 
-  if (isResolved && isLast) {
-    style = `top: calc(100% + 20px);`; // Place the current status below the timeline
-  } else {
-    const topPosition = calculateSegmentPosition(
-      event.date,
-      allEvents[0].date,
-      allEvents[allEvents.length - 2].date,
-      totalHeight
-    );
-    style = `top: ${topPosition}px;`;
+  let style = "";
+  if (index === 0) {
+    style = "top: 0;";
+  } else if (index === 1) {
+    style = `top: ${timelineHeight}px;`;
+  } else if (index === 2) {
+    style = `top: ${timelineHeight + 30}px;`;
   }
 
   return `
-    <li class="timeline-item ${position}" style="${style}">
+    <li class="timeline-item ${position} ${statusClass} ${currentClass}" style="${style}">
       ${getStatusIconSVG(event.status, isLast)}
       <div class="timeline-item-description">
         <span class="date">${formatDate(event.date)}</span>
@@ -88,76 +104,62 @@ function createTimelineItem(event, index, allEvents, isResolved, totalHeight) {
   `;
 }
 
-function createTimelineDurations(events, isResolved, totalHeight) {
-  let durations = "";
-  const lastEventIndex = events.length - (isResolved ? 2 : 1);
+function createTimelineDurations(events, isResolved, timelineHeight) {
+  if (events.length < 2) return "";
 
-  for (let i = 0; i < lastEventIndex; i++) {
-    const duration = calculateDuration(events[i].date, events[i + 1].date);
-    const topPosition = calculateSegmentPosition(
-      events[i].date,
-      events[0].date,
-      events[lastEventIndex].date,
-      totalHeight
-    );
-    const nextTopPosition = calculateSegmentPosition(
-      events[i + 1].date,
-      events[0].date,
-      events[lastEventIndex].date,
-      totalHeight
-    );
-    const segmentHeight = nextTopPosition - topPosition;
-
-    if (segmentHeight >= MIN_SEGMENT_HEIGHT) {
-      durations += `
-        <div class="timeline-duration" style="top: ${
-          topPosition + segmentHeight / 2
-        }px;">
-          ${formatDuration(duration)}
-        </div>
-      `;
-    }
-  }
-
-  const totalDuration = calculateDuration(
-    events[0].date,
-    events[events.length - 1].date
-  );
-  durations += `
-    <div class="timeline-duration total-duration">
-      Total duration: ${formatDuration(totalDuration)}
+  const shortageDuration = calculateDuration(events[0].date, events[1].date);
+  return `
+    <div class="timeline-duration" style="top: ${timelineHeight / 2}px;">
+      ${formatDuration(shortageDuration)}
     </div>
   `;
-
-  return durations;
 }
 
-function calculateTimelineHeight(startDate, endDate) {
-  const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-  return Math.max(days * 2, MIN_SEGMENT_HEIGHT * 2, 100); // Ensure at least two segments can fit
-}
-
-function calculateSegmentPosition(date, startDate, endDate, totalHeight) {
-  const total = endDate - startDate;
-  const current = date - startDate;
-  const rawPosition = (current / total) * totalHeight;
-
-  // Ensure minimum segment height
-  return Math.min(rawPosition, totalHeight - MIN_SEGMENT_HEIGHT);
-}
-
-// tktk
-
-window.displayDrugDetails = function (drugs) {
-  console.log("Displaying drug details for:", drugs);
-  const resultsContainer = document.getElementById("results-container");
-  if (resultsContainer) {
-    resultsContainer.innerHTML = createDrugResultHTML(drugs);
-    addAccordionEventListeners();
-  } else {
-    console.error("Results container not found in the DOM");
+function getStatusLabel(status) {
+  status = status.toLowerCase();
+  switch (status) {
+    case "available":
+    case "resolved":
+      return "Drug available";
+    case "shortage":
+    case "current":
+      return "Shortage ongoing";
+    case "tobediscontinued":
+      return "To be discontinued";
+    default:
+      return status.charAt(0).toUpperCase() + status.slice(1);
   }
-};
+}
+
+function getStatusIconSVG(status, isCurrent = false) {
+  const iconClass = getStatusClass(status);
+  console.log(
+    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}`
+  );
+
+  const svgContent = {
+    shortage:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512"><path d="M96 64c0-17.7-14.3-32-32-32S32 46.3 32 64l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32L96 64zM64 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>',
+    available:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
+    discontinue:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>',
+    current:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="256"/></svg>',
+  };
+
+  return `
+    <div class="timeline-item-icon ${iconClass}">
+      <svg viewBox="0 0 512 512" class="icon icon-timeline">
+        ${svgContent[iconClass] || svgContent.current}
+      </svg>
+    </div>
+  `;
+}
+
+function calculateDuration(startDate, endDate) {
+  return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+}
 
 function createDrugResultHTML(drugs) {
   if (!drugs || drugs.length === 0) {
@@ -248,6 +250,12 @@ function createDosageItemsHTML(drug) {
     .join("");
 }
 
+function calculatePosition(date, startDate, endDate, totalHeight) {
+  const total = endDate - startDate;
+  const current = date - startDate;
+  return (current / total) * (totalHeight - 40); // Subtract 40px to account for icon sizes
+}
+
 function getRouteIcon(route) {
   switch (route.toLowerCase()) {
     case "inhalation":
@@ -267,56 +275,18 @@ function getRouteIcon(route) {
 
 function getStatusClass(status) {
   status = status.toLowerCase();
-  if (status === "available" || status === "resolved") return "available";
-  if (status === "shortage" || status === "current") return "shortage";
-  if (status === "to be discontinued") return "discontinue";
-  return "";
-}
-
-function getStatusLabel(status) {
-  status = status.toLowerCase();
-  if (status === "available" || status === "resolved") return "AVAILABLE";
-  if (status === "shortage" || status === "current") return "SHORTAGE";
-  if (status === "to be discontinued") return "TO BE DISCONTINUED";
-  return status.toUpperCase();
-}
-
-function calculatePosition(date, startDate, endDate) {
-  const total = endDate - startDate;
-  const current = date - startDate;
-  return (current / total) * 100;
-}
-
-function calculateDuration(startDate, endDate) {
-  return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-}
-
-function getStatusIconSVG(status, isCurrent = false) {
-  const iconClass = status.toLowerCase();
-  console.log(
-    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}`
-  );
-
-  if (isCurrent) {
-    return `<div class="timeline-item-icon current ${iconClass}"></div>`;
+  switch (status) {
+    case "available":
+    case "resolved":
+      return "available";
+    case "shortage":
+    case "current":
+      return "shortage";
+    case "tobediscontinued":
+      return "discontinue";
+    default:
+      return "";
   }
-
-  const svgContent = {
-    shortage:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5z"/><path d="M11 10h2v5h-2zm0 6h2v2h-2z"/></svg>',
-    resolved:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>',
-    current:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>',
-  };
-
-  return `
-    <div class="timeline-item-icon ${iconClass}">
-      <svg viewBox="0 0 24 24" class="icon icon-timeline">
-        ${svgContent[iconClass] || svgContent.current}
-      </svg>
-    </div>
-  `;
 }
 
 function formatDate(date) {
