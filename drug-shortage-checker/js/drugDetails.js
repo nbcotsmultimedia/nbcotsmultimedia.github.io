@@ -15,25 +15,45 @@ function createDrugResultHTML(drugs) {
   if (!drugs || drugs.length === 0) {
     return "<p>No drug information available.</p>";
   }
+
   const genericName = drugs[0].genericName || "Unknown Generic Name";
   const category = drugs[0].category || "Unknown Category";
+
+  // Group drugs by manufacturer
+  const groupedDrugs = drugs.reduce((acc, drug) => {
+    const key = `${drug.manufacturer}-${drug.brandName}`;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(drug);
+    return acc;
+  }, {});
 
   return `
     <div class="drug-result">
       <h2>${genericName}</h2>
-      <p class="drug-category">${category}</p>
-      ${drugs.map(createBrandInfoHTML).join("")}
+      <p class="drug-category">
+        <span class="label">Used for:</span>
+        <span class="value">${category}</span>
+      </p>
+      ${Object.values(groupedDrugs).map(createBrandInfoHTML).join("")}
     </div>
   `;
 }
 
-function createBrandInfoHTML(drug) {
+function createBrandInfoHTML(drugGroup) {
+  const drug = drugGroup[0]; // Take the first drug for brand and manufacturer info
   return `
     <div class="brand-info">
       <h3>${drug.brandName || "Unknown Brand"}</h3>
-      <p class="manufacturer">${drug.manufacturer || "Unknown Manufacturer"}</p>
+      <p class="manufacturer">
+        <span class="label">Manufactured by:</span>
+        <span class="value">${
+          drug.manufacturer || "Unknown Manufacturer"
+        }</span>
+      </p>
       <div class="dosages">
-        ${createDosageItemsHTML(drug)}
+        ${drugGroup.map(createDosageItemsHTML).join("")}
       </div>
     </div>
   `;
@@ -68,6 +88,7 @@ function createDosageItemsHTML(drug) {
         <span class="availability ${getStatusClass(
           dosage.status
         )}">${getStatusLabel(dosage.status)}</span>
+        <span class="spacer"></span>
         <span class="expand-icon">${createSVGIcon("down")}</span>
       </div>
       <div class="shortage-details" style="display: none;">
@@ -77,23 +98,6 @@ function createDosageItemsHTML(drug) {
   `
     )
     .join("");
-}
-
-function getRouteIcon(route) {
-  switch (route.toLowerCase()) {
-    case "inhalation":
-      return "icon-inhaler";
-    case "oral":
-    case "tablet":
-    case "capsule":
-      return "icon-pill";
-    case "injection":
-    case "injectable":
-      return "icon-syringe";
-    default:
-      console.warn(`Unknown route: ${route}, using default icon`);
-      return "icon-other";
-  }
 }
 
 function getRouteIcon(route) {
@@ -181,24 +185,29 @@ function createShortageDetailsHTML(dosage) {
     (currentDate - reportedDate) / (1000 * 60 * 60 * 24)
   );
 
+  // Calculate the timeline height based on the duration
+  const timelineHeight = Math.min(Math.max(duration, 30), 365); // Min 30px, Max 365px
+
   return `
-    <ol class="timeline">
-      <li class="timeline-item">
-        ${getStatusIconSVG("shortage")}
-        <div class="timeline-item-description">
-          <span class="date">${formatDate(dosage.reportedDate)}</span>
-          <span class="event">Shortage reported</span>
-          <span class="timeline-duration">${formatDuration(duration)}</span>
-        </div>
-      </li>
-      <li class="timeline-item">
-        ${getStatusIconSVG("shortage", true)}
-        <div class="timeline-item-description">
-          <span class="date">${formatDate(currentDate)}</span>
-          <span class="event">Shortage ongoing</span>
-        </div>
-      </li>
-    </ol>
+    <div class="timeline-container" style="height: ${timelineHeight}px;">
+      <ol class="timeline">
+        <li class="timeline-item start">
+          ${getStatusIconSVG("shortage")}
+          <div class="timeline-item-description">
+            <span class="date">${formatDate(dosage.reportedDate)}</span>
+            <span class="event">Shortage reported</span>
+          </div>
+        </li>
+        <li class="timeline-item end" style="top: ${timelineHeight - 24}px;">
+          ${getStatusIconSVG("shortage", true)}
+          <div class="timeline-item-description">
+            <span class="date">${formatDate(currentDate)}</span>
+            <span class="event">Shortage ongoing</span>
+          </div>
+        </li>
+      </ol>
+      <div class="timeline-duration">${formatDuration(duration)}</div>
+    </div>
     ${
       dosage.shortageReason
         ? `<p class="shortage-reason">Shortage reason: ${dosage.shortageReason}</p>`
@@ -254,16 +263,6 @@ function toggleAccordion(event) {
     shortageDetails.style.display = "none";
     expandIcon.innerHTML = createSVGIcon("down");
   }
-}
-
-function createSVGIcon(direction) {
-  return `
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="${
-        direction === "down" ? "M6 9l6 6 6-6" : "M18 15l-6-6-6 6"
-      }"></path>
-    </svg>
-  `;
 }
 
 function createSVGIcon(direction) {
