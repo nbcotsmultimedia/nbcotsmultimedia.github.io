@@ -38,11 +38,18 @@ function createShortageDetailsHTML(dosage) {
     reportedDate,
     isResolved ? resolvedDate : currentDate
   );
-  const timelineHeight = Math.max(shortageDuration * 3, 90); // 3px per day, minimum 90px
+
+  // Set a maximum height for the timeline
+  const maxTimelineHeight = 302; // in pixels
+  // Set a minimum height for very short durations
+  const minTimelineHeight = 90; // in pixels
+  // Calculate the timeline height based on the shortage duration
+  let timelineHeight = Math.min(shortageDuration * 3, maxTimelineHeight);
+  timelineHeight = Math.max(timelineHeight, minTimelineHeight);
 
   return `
     <div class="timeline-container">
-      <ol class="timeline" style="height: ${timelineHeight + 60}px;">
+      <ol class="timeline" style="height: ${timelineHeight}px;">
         ${timelineEvents
           .map((event, index) =>
             createTimelineItem(
@@ -55,17 +62,17 @@ function createShortageDetailsHTML(dosage) {
           )
           .join("")}
       </ol>
-      ${createTimelineDurations(timelineEvents, isResolved, timelineHeight)}
+      ${createTimelineDurations(timelineEvents, timelineHeight)}
     </div>
     <div class="shortage-info">
       ${
         dosage.shortageReason
-          ? `<p class="shortage-reason">Shortage reason: ${dosage.shortageReason}</p>`
+          ? `<p class="shortage-reason"><span class="label">Shortage reason: </span>${dosage.shortageReason}</p>`
           : ""
       }
       ${
         dosage.relatedInfo
-          ? `<p class="related-info">Related information: ${dosage.relatedInfo}</p>`
+          ? `<p class="related-info"><span class="label">Related information: </span>${dosage.relatedInfo}</p>`
           : ""
       }
     </div>
@@ -84,17 +91,15 @@ function createTimelineItem(
   const statusClass = event.status.toLowerCase();
   const currentClass = isLast ? "current" : "";
 
-  let style = "";
-  if (index === 0) {
-    style = "top: 0;";
-  } else if (index === 1) {
-    style = `top: ${timelineHeight}px;`;
-  } else if (index === 2) {
-    style = `top: ${timelineHeight + 30}px;`;
-  }
+  const itemPosition = calculatePosition(
+    event.date,
+    allEvents[0].date,
+    allEvents[allEvents.length - 1].date,
+    timelineHeight
+  );
 
   return `
-    <li class="timeline-item ${position} ${statusClass} ${currentClass}" style="${style}">
+    <li class="timeline-item ${position} ${statusClass} ${currentClass}" style="top: ${itemPosition}px;">
       ${getStatusIconSVG(event.status, isLast)}
       <div class="timeline-item-description">
         <span class="date">${formatDate(event.date)}</span>
@@ -104,15 +109,40 @@ function createTimelineItem(
   `;
 }
 
-function createTimelineDurations(events, isResolved, timelineHeight) {
+function createTimelineDurations(events, timelineHeight) {
   if (events.length < 2) return "";
 
-  const shortageDuration = calculateDuration(events[0].date, events[1].date);
-  return `
-    <div class="timeline-duration" style="top: ${timelineHeight / 2}px;">
-      ${formatDuration(shortageDuration)}
-    </div>
-  `;
+  const durations = [];
+  for (let i = 0; i < events.length - 1; i++) {
+    const duration = calculateDuration(events[i].date, events[i + 1].date);
+    const position =
+      (calculatePosition(
+        events[i].date,
+        events[0].date,
+        events[events.length - 1].date,
+        timelineHeight
+      ) +
+        calculatePosition(
+          events[i + 1].date,
+          events[0].date,
+          events[events.length - 1].date,
+          timelineHeight
+        )) /
+      2;
+    durations.push(`
+      <div class="timeline-duration" style="top: ${position}px;">
+        ${formatDuration(duration)}
+      </div>
+    `);
+  }
+
+  return durations.join("");
+}
+
+function calculatePosition(date, startDate, endDate, totalHeight) {
+  const total = endDate - startDate;
+  const current = date - startDate;
+  return (current / total) * totalHeight;
 }
 
 function getStatusLabel(status) {
@@ -137,6 +167,14 @@ function getStatusIconSVG(status, isCurrent = false) {
     `Generating status icon for status: ${status}, isCurrent: ${isCurrent}`
   );
 
+  if (isCurrent) {
+    return `
+      <div class="timeline-item-icon ${iconClass} current">
+        <div class="current-status-circle"></div>
+      </div>
+    `;
+  }
+
   const svgContent = {
     shortage:
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512"><path d="M96 64c0-17.7-14.3-32-32-32S32 46.3 32 64l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32L96 64zM64 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>',
@@ -144,14 +182,12 @@ function getStatusIconSVG(status, isCurrent = false) {
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
     discontinue:
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>',
-    current:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="256"/></svg>',
   };
 
   return `
     <div class="timeline-item-icon ${iconClass}">
       <svg viewBox="0 0 512 512" class="icon icon-timeline">
-        ${svgContent[iconClass] || svgContent.current}
+        ${svgContent[iconClass] || ""}
       </svg>
     </div>
   `;
@@ -250,12 +286,6 @@ function createDosageItemsHTML(drug) {
     .join("");
 }
 
-function calculatePosition(date, startDate, endDate, totalHeight) {
-  const total = endDate - startDate;
-  const current = date - startDate;
-  return (current / total) * (totalHeight - 40); // Subtract 40px to account for icon sizes
-}
-
 function getRouteIcon(route) {
   switch (route.toLowerCase()) {
     case "inhalation":
@@ -285,7 +315,7 @@ function getStatusClass(status) {
     case "tobediscontinued":
       return "discontinue";
     default:
-      return "";
+      return "shortage"; // Default to shortage for unknown statuses
   }
 }
 
