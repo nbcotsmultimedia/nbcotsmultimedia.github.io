@@ -15,7 +15,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png
 }).addTo(map);
 // legend values from CDC
 const colors = {
-	"No data": [null, '#adadad'],
 	"Low": [0.25, '#F2C85B'],
 	"Low-Moderate": [0.5, '#FBA465'],
 	"Moderate-High": [0.75, '#F86E51'],
@@ -29,7 +28,7 @@ const search = e => {
 	const response = $("#response");
 	let newSidebarTop = "150px";
 	try {
-		const feature = allData["features"].filter(feature => feature.properties.ZIP === parseInt(val))[0];
+		const feature = allData["features"].filter(feature => feature.properties.ZCTA5CE10 === parseInt(val))[0];
 		selectZipCode(e, feature);
 		response.html("");
 		newSidebarTop = mobile ? "500px" : "150px";
@@ -88,7 +87,7 @@ const unSelectZipCode = () => {
 const showZipCodeOnMouseover = (layer, feature) => {
 	if (!sidebarOpen) {
 		// this seems to be the least glitchy way to deal with the tooltips
-		layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
+		layer.bindTooltip(feature.properties.ZCTA5CE10.toString(), { direction: "center", closeButton: false });
 	} 
 };
 
@@ -96,8 +95,8 @@ const showZipCodeOnMouseover = (layer, feature) => {
 const showSidebar = feature => {
 	// not all zipcodes have data
 	const dataAvailable = feature.properties.OVERALL_RANK !== null;
-	const noDataMessage = `<h1 class="tooltip-header">${feature.properties.ZIP}</h1><p class="tooltip-text">Data not available for this zip code.</p>`;
-	const dataInfo = `<h1 class="tooltip-header">${feature.properties.ZIP}</h1>`+
+	const noDataMessage = `<h1 class="tooltip-header">${feature.properties.ZCTA5CE10}</h1><p class="tooltip-text">Data not available for this zip code.</p>`;
+	const dataInfo = `<h1 class="tooltip-header">${feature.properties.ZCTA5CE10}</h1>`+
 	`<div class="sidebar-item"><i class="fa-solid fa-truck-medical"></i><div><h2 class="tooltip-subhed">Historical Heat and Health Burden</h2><p class="tooltip-text">${feature.properties.HHB_RANK}</p></div></div>`+
 	`<div class="sidebar-item"><i class="fa-solid fa-heart-pulse bigger"></i><div><h2 class="tooltip-subhed">Sensitivity</h2><p class="tooltip-text">${feature.properties.F_SEN_COUNT}</p></div></div>`+
 	`<div class="sidebar-item"><i class="fa-solid fa-person-cane biggest"></i><div><h2 class="tooltip-subhed">Sociodemographic</h2><p class="tooltip-text">${feature.properties.SOCIODEM_RANK}</p></div></div>`+
@@ -135,7 +134,7 @@ const panMapToZipCode = feature => {
 // adjust opacities of zip code features to make one zip code looked "selected"
 const setZipCodeOpacity = feature => {
 	$(".leaflet-interactive").css('opacity', 0.35);
-	$(`.feature-${feature.properties.ZIP}`).css('opacity', 0.8);
+	$(`.feature-${feature.properties.ZCTA5CE10}`).css('opacity', 0.8);
 };
 
 // select zip code and show zip code info in sidebar
@@ -156,7 +155,7 @@ const style = feature => {
 		opacity: 1,
 		color: '#444444',
 		fillOpacity: 1,
-		className: 'feature-' + feature.properties.ZIP
+		className: 'feature-' + feature.properties.ZCTA5CE10
 	};
 };
 
@@ -174,7 +173,7 @@ const getColor = overallRank => {
 // read data and add to map
 function loadData() {
 	// read zip code geojson data and add to map
-	d3.json("./data/sd-hhi-map.json").then(data => {
+	d3.json("./data/sd-zcta.geojson").then(data => {
 		allData = data;
 		// leaflet layer for zip codes
 		geoJsonLayer = L.geoJson(allData, {
@@ -183,7 +182,7 @@ function loadData() {
 					click: (event) => selectZipCode(event, feature),
 					mouseover: () => showZipCodeOnMouseover(layer, feature)
 				});
-				layer.bindTooltip(feature.properties.ZIP.toString(), { direction: "center", closeButton: false });
+				layer.bindTooltip(feature.properties.ZCTA5CE10.toString(), { direction: "center", closeButton: false });
 			},
 			style: style
 		}).addTo(map);
