@@ -8,7 +8,7 @@ let allData,
 	sidebarContent = $('#sidebar-content'),
 	sidebarOpen = false;
 // set map view to SD county
-const map = L.map('map').setView([33.0169285, -116.8460104], 9);
+const map = L.map('map').setView([32.85, -116.8460104], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
 	maxZoom:12,
 	attribution: '©OpenStreetMap, ©CartoDB'
