@@ -16,11 +16,9 @@
 
     <link rel="stylesheet" href="jquery-ui-1.14.0.custom/jquery-ui.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" /> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Responsive iFrame stuff -->
-    <!--
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
     <script type="text/javascript">
          document.addEventListener("DOMContentLoaded", function() {
@@ -28,21 +26,30 @@
             xtalk.init();
          });
     </script>
-    -->
 
 
   </head>
 
   <body>
 
-    <!-- Start content here-->
-    <div id="legend"></div>
-    <div id="graphic">
-      <div id="map"></div>
-      <div id="sidebar">
-        <button id="close-button" onclick="unSelectZipCode()">x</button>
-        <div id="sidebar-content"></div>
-      </div>  
+    <div id="sd-hhi-map" class="parent" style="width:100%; padding-bottom:30px;">
+      <div id="header">
+        <p id="instructions"><strong>Enter a zip code below:</strong></p> 
+        <div id='button-box'>
+          <input id="address-input" class="form-control" placeholder="91911" onchange="search(event)">
+          <div id="button-container"><button type="button" id="address-input-button" class="btn btn-primary">Submit</button><div class="loading-icon" id="search-loader"></div></div>
+        </div>
+        <p id="response"></p>
+        <p><em>Note: Data not available for all zip codes. Zip codes without data are not shown on the map.</em></p>
+        <div id="legend"></div>
+      </div>
+      <div id="graphic">
+        <div id="map"></div>
+        <div id="sidebar">
+          <button id="close-button" onclick="unSelectZipCode()">x</button>
+          <div id="sidebar-content"></div>
+        </div>  
+      </div>
     </div>
 
 
@@ -57,8 +64,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/5.0.0/js/bootstrap-switch.min.js"></script>
     <script type="text/javascript" src="https://media.nbcnewyork.com/assets/editorial/national/common/js/papaparse.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-sidebar@0.2.4/src/L.Control.Sidebar.min.js"></script>
     <script src="js/map.js"></script>
 
   </body>

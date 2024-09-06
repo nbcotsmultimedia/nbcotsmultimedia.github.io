@@ -1,0 +1,557 @@
+/* #region ROOT VARIABLES AND BASIC STYLES */
+:root {
+  /* Color variables */
+  --primary-color: #1a73e8;
+  --secondary-color: #202124;
+  --text-color: #202124;
+  --border-color: #dadce0;
+  --success-color: #337e4c;
+  --warning-color: #fbbc04;
+  --danger-color: #b63535;
+  --status-shortage: #f3b6b6;
+  --status-resolved: #c4e0c5;
+  --status-discontinued: #f0d277;
+  --white: #fff;
+  --black: #000;
+  --gray-dark: #343434;
+  --gray-medium: #6c6b6b;
+  --gray-light: #b6b5b5;
+  --headline-color: #191919;
+
+  /* Border radius */
+  --border-radius: 0.75rem;
+
+  /* Box shadow */
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  /* Font sizes */
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.75rem;
+}
+
+/* General Styles */
+body {
+  font-family: "Inter", sans-serif; /* Set Inter as the primary font */
+  line-height: 1.6;
+  color: var(--text-color);
+  max-width: 37.5rem; /* Limit max width for better readability */
+  margin: 0 auto; /* Center the content */
+  padding: 1.25rem;
+  font-size: var(--font-size-base);
+}
+/* #endregion */
+
+/* #region TYPOGRAPHY STYLES */
+
+/* Basic Typography Styles */
+h1,
+h2,
+h3 {
+  color: var(--secondary-color);
+  margin-bottom: 0.5em;
+}
+h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+}
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+}
+
+/* Custom Typography Styles */
+.headline,
+.subhead {
+  font-family: "ArtHouseBold", sans-serif;
+  margin-bottom: 0.625rem;
+}
+.headline {
+  font-size: var(--font-size-3xl);
+  color: var(--text-color);
+  margin-top: 1.875rem;
+}
+.subhead {
+  font-size: 1.0625rem;
+  color: var(--gray-medium);
+  line-height: 1.4;
+  font-family: "ArtHouseMed", sans-serif;
+}
+
+p {
+  font-weight: 300;
+  font-size: 1.0625rem;
+}
+.credits {
+  font-size: 0.875rem;
+  color: var(--gray-medium);
+  margin-top: 0.625rem;
+  line-height: 1.5;
+}
+
+/* #endregion */
+
+/* #region ROUTE ICON STYLES */
+
+/* SVG Container */
+#svg-container {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  border: 0;
+  margin: -1px;
+  padding: 0;
+}
+
+/* Route Icon Styles */
+.icon-route-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--gray-light);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0.625rem;
+}
+
+.icon-route {
+  width: 2rem;
+  height: 2rem;
+  padding: 0.375rem;
+  box-sizing: border-box;
+  fill: var(--white);
+  stroke-width: 5px;
+  stroke: var(--white);
+}
+
+/* #endregion */
+
+/* #region SEARCH STYLES */
+
+#search-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+#search-container p {
+  font-size: var(--font-size-base);
+  color: var(--gray-medium);
+  margin-bottom: 1.5rem;
+}
+
+.search-input-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+#search-input {
+  width: 100%;
+  padding: 1rem 2.5rem 0.75rem;
+  font-size: var(--font-size-base);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  transition: box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+#search-input:focus {
+  outline: none;
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+}
+.search-input-container::before {
+  content: "";
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%237b7b7b' d='M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6 .1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+
+#clear-search {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--gray-medium);
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: none;
+}
+
+#clear-search:hover {
+  color: var(--danger-color);
+}
+
+/* Autocomplete Results Styles */
+#autocomplete-results {
+  border-radius: var(--border-radius);
+  max-height: 18.75rem;
+  overflow-y: auto;
+  text-align: left;
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+}
+
+.autocomplete-item {
+  padding: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.autocomplete-item:hover {
+  background-color: var(--light-gray);
+}
+.autocomplete-item::before {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+/* Loading and No Results Styles */
+
+#loading,
+#no-results {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+}
+.no-results h2 {
+  font-size: var(--font-size-lg);
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+.no-results p {
+  font-size: var(--font-size-sm);
+  color: var(--gray-medium);
+}
+
+/* #endregion */
+
+/* #region RESULTS PANEL STYLES */
+
+/* Drug Details Top */
+.drug-result {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1.5rem;
+}
+
+.drug-category {
+  margin-bottom: 2rem; /* Add spacing above the brand section */
+}
+
+.brand-info {
+  margin-top: 1.75rem; /* Add spacing between brand sections */
+}
+
+.drug-category,
+.manufacturer {
+  font-size: var(--font-size-sm);
+  color: var(--gray-medium);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.manufacturer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.label {
+  font-weight: 600;
+  margin-right: 0.25rem;
+  color: var(--gray-medium);
+}
+
+.value {
+  color: var(--text-color);
+}
+
+/* Dosage Item Styles */
+.dosage-item {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.dosage-summary {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem;
+  cursor: pointer;
+  background-color: var(--white);
+  justify-content: space-between; /* This spreads out the child elements */
+}
+
+.dosage-value {
+  flex-grow: 1;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+.availability {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.availability.available {
+  background-color: var(--status-resolved);
+  color: var(--success-color);
+}
+.availability.shortage {
+  background-color: var(--status-shortage);
+  color: var(--danger-color);
+}
+.availability.discontinue {
+  background-color: var(--status-discontinued);
+  color: var(--warning-color);
+}
+
+.expand-icon {
+  font-size: var(--font-size-lg);
+  color: var(--gray-medium);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto; /* Push the icon to the right */
+}
+
+.spacer {
+  flex-grow: 0.025; /* Add space between status and expand icon */
+}
+
+.shortage-details {
+  padding: 1rem;
+  background-color: var(--light-gray);
+  border-top: 1px solid var(--border-color);
+}
+
+/* #endregion */
+
+/* #region TIMELINE STYLES */
+
+/* OUTER CONTAINER */
+.timeline-container {
+  position: relative;
+  margin: 1rem 0 2rem;
+  padding-left: 0.75rem;
+}
+
+.timeline {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+/* VERTICAL LINE */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+/* TIMELINE EVENT CONTAINERS */
+.timeline-item {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+/* ICONS - GENERAL STYLES */
+.timeline-item-icon {
+  position: absolute;
+  left: -0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background-color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  z-index: 1;
+}
+
+.timeline-item-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: var(--white);
+}
+
+/* ICON - SHORTAGE */
+.timeline-item-icon.shortage {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+/* ICON - RESOLVED/AVAILABLE */
+.timeline-item-icon.resolved,
+.timeline-item-icon.available {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+/* ICON - CURRENT STATUS */
+.timeline-item.current .timeline-item-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  left: -0.55rem;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-item.current .timeline-item-icon::after {
+  content: "";
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--gray-light);
+  box-sizing: border-box;
+}
+
+.timeline-item.current .timeline-item-icon .current-status-circle {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+/* Current status circle is always filled */
+.timeline-item.current.shortage .timeline-item-icon .current-status-circle {
+  background-color: var(--danger-color);
+}
+
+/* Add this new rule to handle the 'current' status */
+.timeline-item.current.current .timeline-item-icon .current-status-circle {
+  background-color: var(
+    --danger-color
+  ); /* or any other appropriate color for 'current' status */
+}
+
+.timeline-item.current.available .timeline-item-icon .current-status-circle,
+.timeline-item.current.resolved .timeline-item-icon .current-status-circle {
+  background-color: var(--success-color);
+}
+
+/* TIMELINE ITEM DESCRIPTION */
+.timeline-item-description {
+  padding-left: 2rem;
+}
+
+.timeline-item-description .date {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--gray-dark);
+  margin-bottom: 0;
+}
+
+.timeline-item-description .event {
+  font-size: var(--font-size-sm);
+  color: var(--gray-medium);
+}
+
+/* DURATION AND ADDITIONAL INFO */
+.timeline-duration {
+  position: absolute;
+  left: 2.75rem;
+  font-size: var(--font-size-sm);
+  color: var(--gray-medium);
+}
+
+.shortage-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: var(--light-gray);
+  border-radius: var(--border-radius);
+}
+
+.shortage-info p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--gray-medium);
+}
+
+.shortage-info p + p {
+  margin-top: 0.5rem;
+}
+
+/* #endregion */
+
+/* #region MEDIA QUERIES */
+
+@media (max-width: 37.5rem) {
+  body {
+    padding: 0.625rem;
+  }
+  #search-input {
+    font-size: var(--font-size-sm);
+  }
+  .drug-result {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 31.25rem) {
+  .headline {
+    font-size: var(--font-size-2xl);
+  }
+  .subhead,
+  p {
+    font-size: var(--font-size-base);
+  }
+  .credits {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* #endregion */
