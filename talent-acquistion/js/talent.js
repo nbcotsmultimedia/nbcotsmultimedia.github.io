@@ -238,7 +238,7 @@ function parseStations() {
 
 function displayTalent(which, myindex) {
 	//console.log(which + " // " + myindex);
-	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>LinkedIn</th><th>Employer</th><th>Smart Recuiters</th><th>Notes</th></tr></thead><tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table>");
+	$("#talent").html("<table id=\"allTalent\" class=\"display\" style=\"width:100%\"><thead><tr><th>Name</th><th>Title</th><th>Employers</th><th>Contract</th><th>Smart Recuiters</th><th>Notes</th></tr></thead><tbody><tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table>");
 	
 	//$("#currentSel").html("<h4>Current selection: " + which + " (" + "Hearst" + ")</h4>")
 	$("#currentSel").html("<h5>Current selection: " + which + "</h5><p>Alternate name: "  + allStations[myindex].AltCall + "<br/>Owner: " + allStations[myindex].Owner + "</p>");
@@ -253,10 +253,11 @@ function displayTalent(which, myindex) {
 				srlink = "<a href='" +  allData[i].SmartRecruiters + "' target='_blank'>Link</a>";
 			}
 			
-			$("#allTalent tr:last").after("<tr><td>" +  allData[i].Name + "</td>" + 
+			$("#allTalent tr:last").after("<tr><td><a href='" + allData[i].LinkedIn + "' target='_blank'>" +  allData[i].Name + "</a></td>" + 
 											  "<td>" +  allData[i].Title + "</td>" +
-											  "<td><a href='" +  allData[i].LinkedIn + "' target='_blank'>Link</a></td>" +
 											  "<td>" +  allData[i].Station + "</td>" +
+											  "<td>" +  allData[i].ContractDate + "</td>" +
+											 
 											  "<td>" + srlink +"</td>" +
 		  									  "<td>" + allData[i].Notes +"</td></tr>");
 			
