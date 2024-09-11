@@ -11,33 +11,35 @@ window.displayDrugDetails = function (drugs) {
   }
 };
 
-function createShortageDetailsHTML(dosage) {
-  console.log("Creating shortage details HTML for dosage:", dosage);
+function createShortageDetailsHTML(drug) {
+  console.log("Creating shortage details HTML for drug:", drug);
 
-  const reportedDate = new Date(dosage.reportedDate);
-  const resolvedDate = dosage.resolvedDate
-    ? new Date(dosage.resolvedDate)
-    : null;
+  const reportedDate = new Date(drug.shortageReportedDate);
+  const updateDate = new Date(drug.shortageUpdateDate);
   const currentDate = new Date();
 
-  const isResolved = resolvedDate && dosage.status.toLowerCase() === "resolved";
-
-  const timelineEvents = [
+  let timelineEvents = [
     { date: reportedDate, status: "shortage", label: "Shortage reported" },
-    ...(isResolved
-      ? [{ date: resolvedDate, status: "resolved", label: "Shortage resolved" }]
-      : []),
     {
-      date: currentDate,
-      status: dosage.status.toLowerCase(),
-      label: getStatusLabel(dosage.status),
+      date: updateDate,
+      status: drug.shortageStatus.toLowerCase(),
+      label: "Last updated",
     },
   ];
 
-  const shortageDuration = calculateDuration(
-    reportedDate,
-    isResolved ? resolvedDate : currentDate
-  );
+  // Add current date to timeline only if it's different from the update date
+  if (currentDate.getTime() !== updateDate.getTime()) {
+    timelineEvents.push({
+      date: currentDate,
+      status: drug.shortageStatus.toLowerCase(),
+      label: "Current status",
+    });
+  }
+
+  // Sort events chronologically
+  timelineEvents.sort((a, b) => a.date - b.date);
+
+  const shortageDuration = calculateDuration(reportedDate, currentDate);
 
   // Set a maximum height for the timeline
   const maxTimelineHeight = 302; // in pixels
@@ -52,13 +54,7 @@ function createShortageDetailsHTML(dosage) {
       <ol class="timeline" style="height: ${timelineHeight}px;">
         ${timelineEvents
           .map((event, index) =>
-            createTimelineItem(
-              event,
-              index,
-              timelineEvents,
-              isResolved,
-              timelineHeight
-            )
+            createTimelineItem(event, index, timelineEvents, timelineHeight)
           )
           .join("")}
       </ol>
@@ -66,29 +62,28 @@ function createShortageDetailsHTML(dosage) {
     </div>
     <div class="shortage-info">
       ${
-        dosage.shortageReason
-          ? `<p class="shortage-reason"><span class="label">Shortage reason: </span>${dosage.shortageReason}</p>`
+        drug.shortageReason
+          ? `<p class="shortage-reason"><span class="label">Shortage reason: </span>${drug.shortageReason}</p>`
           : ""
       }
       ${
-        dosage.relatedInfo
-          ? `<p class="related-info"><span class="label">Related information: </span>${dosage.relatedInfo}</p>`
+        drug.relatedShortageInfo
+          ? `<p class="related-info"><span class="label">Related information: </span>${drug.relatedShortageInfo}</p>`
+          : ""
+      }
+      ${
+        drug.resolvedShortageInfo
+          ? `<p class="resolved-info"><span class="label">Resolved shortage information: </span>${drug.resolvedShortageInfo}</p>`
           : ""
       }
     </div>
   `;
 }
 
-function createTimelineItem(
-  event,
-  index,
-  allEvents,
-  isResolved,
-  timelineHeight
-) {
+function createTimelineItem(event, index, allEvents, timelineHeight) {
   const isLast = index === allEvents.length - 1;
   const position = isLast ? "end" : index === 0 ? "start" : "middle";
-  const statusClass = event.status.toLowerCase();
+  const statusClass = getStatusClass(event.status);
   const currentClass = isLast ? "current" : "";
 
   const itemPosition = calculatePosition(
@@ -104,6 +99,11 @@ function createTimelineItem(
       <div class="timeline-item-description">
         <span class="date">${formatDate(event.date)}</span>
         <span class="event">${event.label}</span>
+        ${
+          isLast
+            ? `<span class="status">${getStatusLabel(event.status)}</span>`
+            : ""
+        }
       </div>
     </li>
   `;
@@ -143,22 +143,6 @@ function calculatePosition(date, startDate, endDate, totalHeight) {
   const total = endDate - startDate;
   const current = date - startDate;
   return (current / total) * totalHeight;
-}
-
-function getStatusLabel(status) {
-  status = status.toLowerCase();
-  switch (status) {
-    case "available":
-    case "resolved":
-      return "Drug available";
-    case "shortage":
-    case "current":
-      return "Shortage ongoing";
-    case "tobediscontinued":
-      return "To be discontinued";
-    default:
-      return status.charAt(0).toUpperCase() + status.slice(1);
-  }
 }
 
 function getStatusIconSVG(status, isCurrent = false) {
@@ -203,11 +187,11 @@ function createDrugResultHTML(drugs) {
   }
 
   const genericName = drugs[0].genericName || "Unknown Generic Name";
-  const category = drugs[0].category || "Unknown Category";
+  const category = drugs[0].therapeuticCategory || "Unknown Category";
 
-  // Group drugs by manufacturer
+  // Group drugs by manufacturer and brand name
   const groupedDrugs = drugs.reduce((acc, drug) => {
-    const key = `${drug.manufacturer}-${drug.brandName}`;
+    const key = `${drug.manufacturerName}-${drug.brandName}`;
     if (!acc[key]) {
       acc[key] = [];
     }
@@ -235,55 +219,41 @@ function createBrandInfoHTML(drugGroup) {
       <p class="manufacturer">
         <span class="label">Manufactured by:</span>
         <span class="value">${
-          drug.manufacturer || "Unknown Manufacturer"
+          drug.manufacturerName || "Unknown Manufacturer"
         }</span>
       </p>
+      <p class="manufacturer">
+        <span class="label">Contact:</span>
+        <span class="value">${drug.manufacturerContact || "N/A"}</span>
+      </p>
       <div class="dosages">
-        ${drugGroup.map(createDosageItemsHTML).join("")}
+        ${createDosageItemsHTML(drug)}
       </div>
     </div>
   `;
 }
 
 function createDosageItemsHTML(drug) {
-  const dosages =
-    Array.isArray(drug.dosages) && drug.dosages.length > 0
-      ? drug.dosages
-      : [
-          {
-            value: drug.dosage || "Unknown Dosage",
-            status: drug.status || "Unknown Status",
-            reportedDate: drug.reportedDate,
-            resolvedDate: drug.resolvedDate,
-            shortageReason: drug.shortageReason,
-            relatedInfo: drug.relatedInfo,
-          },
-        ];
-
-  return dosages
-    .map(
-      (dosage, index) => `
+  return `
     <div class="dosage-item">
-      <div class="dosage-summary" data-index="${index}">
+      <div class="dosage-summary" data-index="0">
         <div class="icon-route-wrapper">
           <svg class="icon-route">
             <use xlink:href="#${getRouteIcon(drug.route)}"></use>
           </svg>
         </div>
-        <span class="dosage-value">${dosage.value}</span>
+        <span class="dosage-value">${drug.dosage}</span>
         <span class="availability ${getStatusClass(
-          dosage.status
-        )}">${getStatusLabel(dosage.status)}</span>
+          drug.shortageStatus
+        )}">${getStatusLabel(drug.shortageStatus)}</span>
         <span class="spacer"></span>
         <span class="expand-icon">${createSVGIcon("down")}</span>
       </div>
       <div class="shortage-details" style="display: none;">
-        ${createShortageDetailsHTML(dosage)}
+        ${createShortageDetailsHTML(drug)}
       </div>
     </div>
-  `
-    )
-    .join("");
+  `;
 }
 
 function getRouteIcon(route) {
@@ -303,19 +273,34 @@ function getRouteIcon(route) {
   }
 }
 
-function getStatusClass(status) {
-  status = status.toLowerCase();
-  switch (status) {
-    case "available":
+function getStatusClass(shortageStatus) {
+  switch (shortageStatus.toLowerCase()) {
+    case "no shortage reported":
     case "resolved":
       return "available";
     case "shortage":
     case "current":
       return "shortage";
-    case "tobediscontinued":
+    case "discontinued":
       return "discontinue";
     default:
-      return "shortage"; // Default to shortage for unknown statuses
+      return "unknown"; // Default class for unknown statuses
+  }
+}
+
+function getStatusLabel(shortageStatus) {
+  switch (shortageStatus.toLowerCase()) {
+    case "no shortage reported":
+      return "No Shortage";
+    case "resolved":
+      return "Resolved";
+    case "shortage":
+    case "current":
+      return "Shortage";
+    case "discontinued":
+      return "Discontinued";
+    default:
+      return shortageStatus; // Return the original status if it doesn't match any known category
   }
 }
 

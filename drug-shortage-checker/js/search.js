@@ -58,7 +58,9 @@ function handleSearch(event) {
   const matchingDrugs = drugData.filter(
     (drug) =>
       drug.genericName.toLowerCase().includes(searchTerm) ||
-      drug.brandName.toLowerCase().includes(searchTerm)
+      drug.brandName.toLowerCase().includes(searchTerm) ||
+      drug.manufacturerName.toLowerCase().includes(searchTerm) ||
+      drug.therapeuticCategory.toLowerCase().includes(searchTerm)
   );
 
   if (matchingDrugs.length === 0) {
