@@ -443,6 +443,12 @@ p {
   border-color: var(--success-color);
 }
 
+/* ICON - DISCONTINUED */
+.timeline-item-icon.discontinued {
+  background-color: var(--status-discontinued);
+  border-color: var(--status-discontinued);
+}
+
 /* ICON - CURRENT STATUS */
 .timeline-item.current .timeline-item-icon {
   width: 1.25rem;
@@ -487,6 +493,11 @@ p {
 .timeline-item.current.available .timeline-item-icon .current-status-circle,
 .timeline-item.current.resolved .timeline-item-icon .current-status-circle {
   background-color: var(--success-color);
+}
+
+.timeline-item-icon.discontinued {
+  background-color: var(--status-discontinued);
+  border-color: var(--status-discontinued);
 }
 
 /* TIMELINE ITEM DESCRIPTION */

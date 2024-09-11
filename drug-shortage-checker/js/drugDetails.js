@@ -1,5 +1,6 @@
 // drugDetails.js
 
+// Main function to display drug details
 window.displayDrugDetails = function (drugs) {
   console.log("Displaying drug details for:", drugs);
   const resultsContainer = document.getElementById("results-container");
@@ -11,6 +12,7 @@ window.displayDrugDetails = function (drugs) {
   }
 };
 
+// Function to create shortage details HTML
 function createShortageDetailsHTML(drug) {
   console.log("Creating shortage details HTML for drug:", drug);
 
@@ -18,59 +20,74 @@ function createShortageDetailsHTML(drug) {
   const updateDate = new Date(drug.shortageUpdateDate);
   const currentDate = new Date();
 
+  // Create and sort timeline events
   let timelineEvents = [
-    { date: reportedDate, status: "shortage", label: "Shortage reported" },
-    {
-      date: updateDate,
-      status: drug.shortageStatus.toLowerCase(),
-      label: "Last updated",
-    },
-    {
-      date: currentDate,
-      status: drug.shortageStatus.toLowerCase(),
-      label: "Current status",
-    },
+    { date: reportedDate, status: "Shortage", label: "Shortage reported" },
   ];
 
-  // Remove duplicate dates, keeping the latest status
-  timelineEvents = timelineEvents.reduce((acc, event) => {
-    const existingEvent = acc.find(
-      (e) => e.date.getTime() === event.date.getTime()
-    );
-    if (existingEvent) {
-      existingEvent.status = event.status;
-      existingEvent.label = event.label;
-    } else {
-      acc.push(event);
-    }
-    return acc;
-  }, []);
+  // Determine the correct labels based on the status
+  if (drug.shortageStatus.toLowerCase() === "resolved") {
+    timelineEvents.push({
+      date: updateDate,
+      status: "Resolved",
+      label: "Shortage resolved",
+    });
+    timelineEvents.push({
+      date: currentDate,
+      status: "Available",
+      label: "Drug available",
+    });
+  } else if (
+    drug.shortageStatus.toLowerCase() === "shortage" ||
+    drug.shortageStatus.toLowerCase() === "current"
+  ) {
+    timelineEvents.push({
+      date: updateDate,
+      status: "Shortage",
+      label: "Last updated",
+    });
+    timelineEvents.push({
+      date: currentDate,
+      status: "Current",
+      label: "Shortage ongoing",
+    });
+  } else if (drug.shortageStatus.toLowerCase() === "discontinued") {
+    timelineEvents.push({
+      date: updateDate,
+      status: "Discontinued",
+      label: "Drug discontinued",
+    });
+  }
+
+  console.log("Timeline events before sorting:", timelineEvents);
 
   // Sort events chronologically
   timelineEvents.sort((a, b) => a.date - b.date);
 
-  const shortageDuration = calculateDuration(reportedDate, currentDate);
+  console.log("Sorted timeline events:", timelineEvents);
 
-  // Set a maximum height for the timeline
-  const maxTimelineHeight = 302; // in pixels
-  // Set a minimum height for very short durations
-  const minTimelineHeight = 180; // Increased to accommodate static spacing
-  // Calculate the timeline height based on the shortage duration
-  let timelineHeight = Math.min(
-    Math.max(shortageDuration * 3, minTimelineHeight),
-    maxTimelineHeight
-  );
+  // Generate timeline HTML
+  const timelineHeight = 300; // Adjust this value as needed
+
+  // Calculate top position for each event
+  const timelineHTML = timelineEvents
+    .map((event, index) => {
+      const topPosition = calculateTopPosition(
+        index,
+        timelineEvents.length,
+        timelineHeight
+      );
+      return createTimelineItem(event, index, timelineEvents, topPosition);
+    })
+    .join("");
+
+  console.log("Generated timeline HTML:", timelineHTML);
 
   return `
     <div class="timeline-container">
       <ol class="timeline" style="height: ${timelineHeight}px;">
-        ${timelineEvents
-          .map((event, index) =>
-            createTimelineItem(event, index, timelineEvents, timelineHeight)
-          )
-          .join("")}
+        ${timelineHTML}
       </ol>
-      ${createTimelineDurations(timelineEvents, timelineHeight)}
     </div>
     <div class="shortage-info">
       ${
@@ -92,92 +109,48 @@ function createShortageDetailsHTML(drug) {
   `;
 }
 
-function createTimelineItem(event, index, allEvents, timelineHeight) {
-  const totalEvents = allEvents.length;
-  const isLast = index === totalEvents - 1;
-  const isSecondToLast = index === totalEvents - 2;
-  const isFirst = index === 0;
+function calculateTopPosition(index, totalEvents, timelineHeight) {
+  return (index / (totalEvents - 1)) * timelineHeight;
+}
 
-  // Skip middle items if status hasn't changed
-  if (
-    !isFirst &&
-    !isLast &&
-    !isSecondToLast &&
-    event.status === allEvents[index - 1].status
-  ) {
-    return "";
-  }
+function createTimelineItem(event, index, timelineEvents, topPosition) {
+  const isLast = index === timelineEvents.length - 1;
+  const isCurrent = event.status.toLowerCase() === "current";
 
-  // Determine position class
-  const positionClass = isLast ? "end" : isFirst ? "start" : "middle";
+  const icon = getStatusIconSVG(event.status, isCurrent);
 
-  // Determine status class
-  const statusClass = getStatusClass(event.status);
-
-  // Determine if this is the current item
-  const currentClass = isLast ? "current" : "";
-
-  // Calculate item position
-  let itemPosition;
-  const bottomMargin = 60; // Space from bottom for last item
-  const staticSpacing = 40; // Static spacing between last two items
-
-  if (isLast) {
-    itemPosition = timelineHeight - bottomMargin;
-  } else if (isSecondToLast) {
-    itemPosition = timelineHeight - bottomMargin - staticSpacing;
-  } else if (isFirst) {
-    itemPosition = 0;
-  } else {
-    const availableHeight = timelineHeight - bottomMargin - staticSpacing;
-    itemPosition = calculatePosition(
-      event.date,
-      allEvents[0].date,
-      allEvents[totalEvents - 2].date,
-      availableHeight
-    );
-  }
-
-  // Determine event text
-  let eventText;
-  if (isFirst) {
-    eventText = "Shortage reported";
-  } else if (isLast && event.status === "shortage") {
-    eventText = "Shortage ongoing";
-  } else {
-    eventText = event.label || "Status update";
-  }
-
-  // Generate HTML
   return `
-    <li class="timeline-item ${positionClass} ${statusClass} ${currentClass}" style="top: ${itemPosition}px;">
-      ${getStatusIconSVG(event.status, isLast)}
+    <li class="timeline-item ${isLast ? "end" : ""} ${
+    isCurrent ? "current" : ""
+  }" style="top: ${topPosition}px;">
+      ${icon}
       <div class="timeline-item-description">
-        <span class="date">${formatDate(event.date)}</span>
-        <span class="event">${eventText}</span>
+        <p class="date">${formatDate(event.date)}</p>
+        <p class="event">${event.label}</p>
       </div>
     </li>
   `;
 }
+// tktk
 
 function createTimelineDurations(events, timelineHeight) {
   if (events.length < 2) return "";
 
   const durations = [];
-  for (let i = 0; i < events.length - 1; i++) {
+  for (let i = 0; i < events.length - 2; i++) {
     const duration = calculateDuration(events[i].date, events[i + 1].date);
     const position =
       (calculatePosition(
         events[i].date,
         events[0].date,
-        events[events.length - 1].date,
-        timelineHeight
+        events[events.length - 2].date,
+        timelineHeight - 100
       ) +
         calculatePosition(
           events[i + 1].date,
           events[0].date,
-          events[events.length - 1].date,
-          timelineHeight
+          events[events.length - 2].date,
+          timelineHeight - 100
         )) /
       2;
     durations.push(`
@@ -186,6 +159,8 @@ function createTimelineDurations(events, timelineHeight) {
       </div>
     `);
   }
+
+  // We're no longer adding a duration for the last two events
 
   return durations.join("");
 }
@@ -199,7 +174,7 @@ function calculatePosition(date, startDate, endDate, totalHeight) {
 function getStatusIconSVG(status, isCurrent = false) {
   const iconClass = getStatusClass(status);
   console.log(
-    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}`
+    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}, iconClass: ${iconClass}`
   );
 
   if (isCurrent) {
@@ -211,18 +186,18 @@ function getStatusIconSVG(status, isCurrent = false) {
   }
 
   const svgContent = {
-    shortage:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512"><path d="M96 64c0-17.7-14.3-32-32-32S32 46.3 32 64l0 256c0 17.7 14.3 32 32 32s32-14.3 32-32L96 64zM64 480a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"/></svg>',
-    available:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>',
-    discontinue:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M367.2 412.5L99.5 144.8C77.1 176.1 64 214.5 64 256c0 106 86 192 192 192c41.5 0 79.9-13.1 111.2-35.5zm45.3-45.3C434.9 335.9 448 297.5 448 256c0-106-86-192-192-192c-41.5 0-79.9 13.1-111.2 35.5L412.5 367.2zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>',
+    shortage: "<svg ...></svg>",
+    available: "<svg ...></svg>",
+    discontinued: "<svg ...></svg>",
   };
+
+  const svg = svgContent[iconClass] || "";
+  console.log(`SVG content for ${iconClass}:`, svg);
 
   return `
     <div class="timeline-item-icon ${iconClass}">
       <svg viewBox="0 0 512 512" class="icon icon-timeline">
-        ${svgContent[iconClass] || ""}
+        ${svg}
       </svg>
     </div>
   `;
@@ -326,16 +301,14 @@ function getRouteIcon(route) {
 
 function getStatusClass(shortageStatus) {
   switch (shortageStatus.toLowerCase()) {
-    case "no shortage reported":
     case "resolved":
       return "available";
-    case "shortage":
     case "current":
       return "shortage";
     case "discontinued":
       return "discontinue";
     default:
-      return "unknown"; // Default class for unknown statuses
+      return "unknown";
   }
 }
 
