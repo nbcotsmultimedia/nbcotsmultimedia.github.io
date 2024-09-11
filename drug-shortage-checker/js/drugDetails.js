@@ -25,16 +25,26 @@ function createShortageDetailsHTML(drug) {
       status: drug.shortageStatus.toLowerCase(),
       label: "Last updated",
     },
-  ];
-
-  // Add current date to timeline only if it's different from the update date
-  if (currentDate.getTime() !== updateDate.getTime()) {
-    timelineEvents.push({
+    {
       date: currentDate,
       status: drug.shortageStatus.toLowerCase(),
       label: "Current status",
-    });
-  }
+    },
+  ];
+
+  // Remove duplicate dates, keeping the latest status
+  timelineEvents = timelineEvents.reduce((acc, event) => {
+    const existingEvent = acc.find(
+      (e) => e.date.getTime() === event.date.getTime()
+    );
+    if (existingEvent) {
+      existingEvent.status = event.status;
+      existingEvent.label = event.label;
+    } else {
+      acc.push(event);
+    }
+    return acc;
+  }, []);
 
   // Sort events chronologically
   timelineEvents.sort((a, b) => a.date - b.date);
@@ -44,10 +54,12 @@ function createShortageDetailsHTML(drug) {
   // Set a maximum height for the timeline
   const maxTimelineHeight = 302; // in pixels
   // Set a minimum height for very short durations
-  const minTimelineHeight = 90; // in pixels
+  const minTimelineHeight = 180; // Increased to accommodate static spacing
   // Calculate the timeline height based on the shortage duration
-  let timelineHeight = Math.min(shortageDuration * 3, maxTimelineHeight);
-  timelineHeight = Math.max(timelineHeight, minTimelineHeight);
+  let timelineHeight = Math.min(
+    Math.max(shortageDuration * 3, minTimelineHeight),
+    maxTimelineHeight
+  );
 
   return `
     <div class="timeline-container">
@@ -81,29 +93,68 @@ function createShortageDetailsHTML(drug) {
 }
 
 function createTimelineItem(event, index, allEvents, timelineHeight) {
-  const isLast = index === allEvents.length - 1;
-  const position = isLast ? "end" : index === 0 ? "start" : "middle";
+  const totalEvents = allEvents.length;
+  const isLast = index === totalEvents - 1;
+  const isSecondToLast = index === totalEvents - 2;
+  const isFirst = index === 0;
+
+  // Skip middle items if status hasn't changed
+  if (
+    !isFirst &&
+    !isLast &&
+    !isSecondToLast &&
+    event.status === allEvents[index - 1].status
+  ) {
+    return "";
+  }
+
+  // Determine position class
+  const positionClass = isLast ? "end" : isFirst ? "start" : "middle";
+
+  // Determine status class
   const statusClass = getStatusClass(event.status);
+
+  // Determine if this is the current item
   const currentClass = isLast ? "current" : "";
 
-  const itemPosition = calculatePosition(
-    event.date,
-    allEvents[0].date,
-    allEvents[allEvents.length - 1].date,
-    timelineHeight
-  );
+  // Calculate item position
+  let itemPosition;
+  const bottomMargin = 60; // Space from bottom for last item
+  const staticSpacing = 40; // Static spacing between last two items
 
+  if (isLast) {
+    itemPosition = timelineHeight - bottomMargin;
+  } else if (isSecondToLast) {
+    itemPosition = timelineHeight - bottomMargin - staticSpacing;
+  } else if (isFirst) {
+    itemPosition = 0;
+  } else {
+    const availableHeight = timelineHeight - bottomMargin - staticSpacing;
+    itemPosition = calculatePosition(
+      event.date,
+      allEvents[0].date,
+      allEvents[totalEvents - 2].date,
+      availableHeight
+    );
+  }
+
+  // Determine event text
+  let eventText;
+  if (isFirst) {
+    eventText = "Shortage reported";
+  } else if (isLast && event.status === "shortage") {
+    eventText = "Shortage ongoing";
+  } else {
+    eventText = event.label || "Status update";
+  }
+
+  // Generate HTML
   return `
-    <li class="timeline-item ${position} ${statusClass} ${currentClass}" style="top: ${itemPosition}px;">
+    <li class="timeline-item ${positionClass} ${statusClass} ${currentClass}" style="top: ${itemPosition}px;">
       ${getStatusIconSVG(event.status, isLast)}
       <div class="timeline-item-description">
         <span class="date">${formatDate(event.date)}</span>
-        <span class="event">${event.label}</span>
-        ${
-          isLast
-            ? `<span class="status">${getStatusLabel(event.status)}</span>`
-            : ""
-        }
+        <span class="event">${eventText}</span>
       </div>
     </li>
   `;

@@ -377,6 +377,7 @@ p {
   padding: 0;
   margin: 0;
   position: relative;
+  height: 100%;
 }
 
 /* VERTICAL LINE */
@@ -384,7 +385,7 @@ p {
   content: "";
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: 60px;
   left: 0;
   width: 2px;
   background-color: var(--border-color);
@@ -401,12 +402,17 @@ p {
   padding-bottom: 0;
 }
 
+/* Add some spacing between timeline items */
+.timeline-item:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
 /* ICONS - GENERAL STYLES */
 .timeline-item-icon {
   position: absolute;
   left: -0.85rem;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  /* transform: translateY(-50%); */
   width: 1.875rem;
   height: 1.875rem;
   border-radius: 50%;
@@ -486,6 +492,7 @@ p {
 /* TIMELINE ITEM DESCRIPTION */
 .timeline-item-description {
   padding-left: 2rem;
+  padding-bottom: 1rem;
 }
 
 .timeline-item-description .date {
