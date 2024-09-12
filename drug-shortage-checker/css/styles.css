@@ -329,7 +329,7 @@ p {
   font-weight: 600;
 }
 
-.availability.available {
+.availability.resolved {
   background-color: var(--status-resolved);
   color: var(--success-color);
 }
@@ -385,7 +385,7 @@ p {
   content: "";
   position: absolute;
   top: 0;
-  bottom: 60px;
+  bottom: 0;
   left: 0;
   width: 2px;
   background-color: var(--border-color);
@@ -405,99 +405,6 @@ p {
 /* Add some spacing between timeline items */
 .timeline-item:not(:last-child) {
   margin-bottom: 1rem;
-}
-
-/* ICONS - GENERAL STYLES */
-.timeline-item-icon {
-  position: absolute;
-  left: -0.85rem;
-  top: 0;
-  /* transform: translateY(-50%); */
-  width: 1.875rem;
-  height: 1.875rem;
-  border-radius: 50%;
-  background-color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--border-color);
-  z-index: 1;
-}
-
-.timeline-item-icon svg {
-  width: 1rem;
-  height: 1rem;
-  fill: var(--white);
-}
-
-/* ICON - SHORTAGE */
-.timeline-item-icon.shortage {
-  background-color: var(--danger-color);
-  border-color: var(--danger-color);
-}
-
-/* ICON - RESOLVED/AVAILABLE */
-.timeline-item-icon.resolved,
-.timeline-item-icon.available {
-  background-color: var(--success-color);
-  border-color: var(--success-color);
-}
-
-/* ICON - DISCONTINUED */
-.timeline-item-icon.discontinued {
-  background-color: var(--status-discontinued);
-  border-color: var(--status-discontinued);
-}
-
-/* ICON - CURRENT STATUS */
-.timeline-item.current .timeline-item-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  left: -0.55rem;
-  border: none;
-  background-color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.timeline-item.current .timeline-item-icon::after {
-  content: "";
-  position: absolute;
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 50%;
-  border: 2px solid var(--gray-light);
-  box-sizing: border-box;
-}
-
-.timeline-item.current .timeline-item-icon .current-status-circle {
-  width: 0.875rem;
-  height: 0.875rem;
-  border-radius: 50%;
-  box-sizing: border-box;
-}
-
-/* Current status circle is always filled */
-.timeline-item.current.shortage .timeline-item-icon .current-status-circle {
-  background-color: var(--danger-color);
-}
-
-/* Add this new rule to handle the 'current' status */
-.timeline-item.current.current .timeline-item-icon .current-status-circle {
-  background-color: var(
-    --danger-color
-  ); /* or any other appropriate color for 'current' status */
-}
-
-.timeline-item.current.available .timeline-item-icon .current-status-circle,
-.timeline-item.current.resolved .timeline-item-icon .current-status-circle {
-  background-color: var(--success-color);
-}
-
-.timeline-item-icon.discontinued {
-  background-color: var(--status-discontinued);
-  border-color: var(--status-discontinued);
 }
 
 /* TIMELINE ITEM DESCRIPTION */
@@ -524,6 +431,13 @@ p {
   left: 2.75rem;
   font-size: var(--font-size-sm);
   color: var(--gray-medium);
+}
+
+.duration-text {
+  background-color: white;
+  padding: 2px 5px;
+  font-size: 0.8em;
+  color: #666;
 }
 
 .shortage-info {

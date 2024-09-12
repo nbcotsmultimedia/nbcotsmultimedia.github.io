@@ -1,0 +1,64 @@
+/* ICONS - GENERAL STYLES */
+.timeline-item-icon {
+  position: absolute;
+  left: -0.85rem;
+  top: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  z-index: 1;
+}
+
+.timeline-item-icon svg {
+  width: 1rem;
+  height: 1rem;
+  fill: var(--white);
+  z-index: 2;
+}
+
+/* ICON - STATUS SPECIFIC STYLES */
+.timeline-item-icon.shortage {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+.timeline-item-icon.resolved,
+.timeline-item-icon.available {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.timeline-item-icon.discontinued {
+  background-color: var(--status-discontinued);
+  border-color: var(--status-discontinued);
+}
+
+/* ICON - CURRENT STATUS STYLES */
+.timeline-item-icon.current {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--gray-light);
+  background-color: transparent;
+  left: -0.55rem; /* Adjust position to center the smaller circle */
+}
+
+.timeline-item-icon.current .current-status-circle {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background-color: var(
+    --success-color
+  ); /* Default color for resolved/available */
+}
+
+.timeline-item-icon.current.shortage .current-status-circle {
+  background-color: var(--danger-color);
+}
+
+.timeline-item-icon.current.discontinued .current-status-circle {
+  background-color: var(--status-discontinued);
+}

@@ -1,6 +1,15 @@
 // drugDetails.js
 
-// Main function to display drug details
+// Constants
+const STATUS_INFO = {
+  resolved: { class: "resolved", label: "Available" },
+  "no shortage reported": { class: "resolved", label: "No Shortage" },
+  shortage: { class: "shortage", label: "Shortage" },
+  current: { class: "shortage", label: "Shortage" },
+  discontinued: { class: "discontinue", label: "Discontinued" },
+};
+
+// Main function
 window.displayDrugDetails = function (drugs) {
   console.log("Displaying drug details for:", drugs);
   const resultsContainer = document.getElementById("results-container");
@@ -12,7 +21,13 @@ window.displayDrugDetails = function (drugs) {
   }
 };
 
-// Function to create shortage details HTML
+// HTML Generation Functions
+
+/**
+ * Creates the HTML for the shortage details of a drug
+ * @param {Object} drug - The drug object
+ * @returns {string} HTML string for shortage details
+ */
 function createShortageDetailsHTML(drug) {
   console.log("Creating shortage details HTML for drug:", drug);
 
@@ -20,38 +35,26 @@ function createShortageDetailsHTML(drug) {
   const updateDate = new Date(drug.shortageUpdateDate);
   const currentDate = new Date();
 
-  // Create and sort timeline events
+  console.log("Dates:", { reportedDate, updateDate, currentDate });
+
   let timelineEvents = [
     { date: reportedDate, status: "Shortage", label: "Shortage reported" },
   ];
 
-  // Determine the correct labels based on the status
-  if (drug.shortageStatus.toLowerCase() === "resolved") {
-    timelineEvents.push({
-      date: updateDate,
-      status: "Resolved",
-      label: "Shortage resolved",
-    });
-    timelineEvents.push({
-      date: currentDate,
-      status: "Available",
-      label: "Drug available",
-    });
-  } else if (
-    drug.shortageStatus.toLowerCase() === "shortage" ||
-    drug.shortageStatus.toLowerCase() === "current"
-  ) {
-    timelineEvents.push({
-      date: updateDate,
-      status: "Shortage",
-      label: "Last updated",
-    });
-    timelineEvents.push({
-      date: currentDate,
-      status: "Current",
-      label: "Shortage ongoing",
-    });
-  } else if (drug.shortageStatus.toLowerCase() === "discontinued") {
+  const lowerStatus = drug.shortageStatus.toLowerCase();
+  console.log("Current status:", lowerStatus);
+
+  if (lowerStatus === "resolved") {
+    timelineEvents.push(
+      { date: updateDate, status: "Resolved", label: "Shortage resolved" },
+      { date: currentDate, status: "Resolved", label: "Drug available" }
+    );
+  } else if (lowerStatus === "shortage" || lowerStatus === "current") {
+    timelineEvents.push(
+      { date: updateDate, status: "Shortage", label: "Shortage confirmed" },
+      { date: currentDate, status: "Current", label: "Shortage ongoing" }
+    );
+  } else if (lowerStatus === "discontinued") {
     timelineEvents.push({
       date: updateDate,
       status: "Discontinued",
@@ -59,23 +62,19 @@ function createShortageDetailsHTML(drug) {
     });
   }
 
-  console.log("Timeline events before sorting:", timelineEvents);
-
-  // Sort events chronologically
   timelineEvents.sort((a, b) => a.date - b.date);
-
   console.log("Sorted timeline events:", timelineEvents);
 
-  // Generate timeline HTML
-  const timelineHeight = 300; // Adjust this value as needed
-
-  // Calculate top position for each event
+  const timelineHeight = 300;
   const timelineHTML = timelineEvents
     .map((event, index) => {
-      const topPosition = calculateTopPosition(
-        index,
-        timelineEvents.length,
-        timelineHeight
+      const topPosition =
+        (index / (timelineEvents.length - 1)) * timelineHeight;
+      console.log(
+        `Creating timeline item for event:`,
+        event,
+        `at position:`,
+        topPosition
       );
       return createTimelineItem(event, index, timelineEvents, topPosition);
     })
@@ -109,73 +108,59 @@ function createShortageDetailsHTML(drug) {
   `;
 }
 
-function calculateTopPosition(index, totalEvents, timelineHeight) {
-  return (index / (totalEvents - 1)) * timelineHeight;
-}
-
+/**
+ * Creates a timeline item for the shortage details
+ * @param {Object} event - The timeline event
+ * @param {number} index - The index of the event
+ * @param {Array} timelineEvents - All timeline events
+ * @param {number} topPosition - The top position for the item
+ * @returns {string} HTML string for the timeline item
+ */
 function createTimelineItem(event, index, timelineEvents, topPosition) {
   const isLast = index === timelineEvents.length - 1;
-  const isCurrent = event.status.toLowerCase() === "current";
+  const iconHtml = getStatusIconSVG(event.status, isLast);
 
-  const icon = getStatusIconSVG(event.status, isCurrent);
+  console.log(`Creating timeline item:`, {
+    event,
+    index,
+    isLast,
+    topPosition,
+    iconHtml,
+  });
 
   return `
-    <li class="timeline-item ${isLast ? "end" : ""} ${
-    isCurrent ? "current" : ""
-  }" style="top: ${topPosition}px;">
-      ${icon}
+    <li class="timeline-item ${
+      isLast ? "current" : ""
+    }" style="top: ${topPosition}px;">
+      ${iconHtml}
       <div class="timeline-item-description">
-        <p class="date">${formatDate(event.date)}</p>
+        <p class="date">${event.date.toLocaleDateString("en-US", {
+          month: "numeric",
+          day: "numeric",
+          year: "numeric",
+        })}</p>
         <p class="event">${event.label}</p>
       </div>
     </li>
   `;
 }
-// tktk
 
-function createTimelineDurations(events, timelineHeight) {
-  if (events.length < 2) return "";
+/**
+ * Generates the SVG icon for a given status
+ * @param {string} status - The status
+ * @param {boolean} isCurrent - Whether the status is current
+ * @returns {string} HTML string for the status icon
+ */
+function getStatusIconSVG(status, isCurrent) {
+  const lowerStatus = status.toLowerCase();
+  const iconClass = lowerStatus;
 
-  const durations = [];
-  for (let i = 0; i < events.length - 2; i++) {
-    const duration = calculateDuration(events[i].date, events[i + 1].date);
-    const position =
-      (calculatePosition(
-        events[i].date,
-        events[0].date,
-        events[events.length - 2].date,
-        timelineHeight - 100
-      ) +
-        calculatePosition(
-          events[i + 1].date,
-          events[0].date,
-          events[events.length - 2].date,
-          timelineHeight - 100
-        )) /
-      2;
-    durations.push(`
-      <div class="timeline-duration" style="top: ${position}px;">
-        ${formatDuration(duration)}
-      </div>
-    `);
-  }
-
-  // We're no longer adding a duration for the last two events
-
-  return durations.join("");
-}
-
-function calculatePosition(date, startDate, endDate, totalHeight) {
-  const total = endDate - startDate;
-  const current = date - startDate;
-  return (current / total) * totalHeight;
-}
-
-function getStatusIconSVG(status, isCurrent = false) {
-  const iconClass = getStatusClass(status);
-  console.log(
-    `Generating status icon for status: ${status}, isCurrent: ${isCurrent}, iconClass: ${iconClass}`
-  );
+  console.log(`Generating icon for status:`, {
+    originalStatus: status,
+    lowerStatus,
+    iconClass,
+    isCurrent,
+  });
 
   if (isCurrent) {
     return `
@@ -186,27 +171,28 @@ function getStatusIconSVG(status, isCurrent = false) {
   }
 
   const svgContent = {
-    shortage: "<svg ...></svg>",
-    available: "<svg ...></svg>",
-    discontinued: "<svg ...></svg>",
+    shortage:
+      '<path d="M7.005 3.1a1 1 0 1 1 1.99 0l-.388 6.35a.61.61 0 0 1-1.214 0zM7 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>',
+    available:
+      '<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>',
+    discontinued:
+      '<path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>',
   };
-
-  const svg = svgContent[iconClass] || "";
-  console.log(`SVG content for ${iconClass}:`, svg);
 
   return `
     <div class="timeline-item-icon ${iconClass}">
-      <svg viewBox="0 0 512 512" class="icon icon-timeline">
-        ${svg}
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        ${svgContent[iconClass] || svgContent.shortage}
       </svg>
     </div>
   `;
 }
 
-function calculateDuration(startDate, endDate) {
-  return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-}
-
+/**
+ * Creates the main drug result HTML
+ * @param {Array} drugs - Array of drug objects
+ * @returns {string} HTML string for the drug result
+ */
 function createDrugResultHTML(drugs) {
   if (!drugs || drugs.length === 0) {
     return "<p>No drug information available.</p>";
@@ -237,8 +223,13 @@ function createDrugResultHTML(drugs) {
   `;
 }
 
+/**
+ * Creates the HTML for brand information
+ * @param {Array} drugGroup - Group of drugs with the same brand and manufacturer
+ * @returns {string} HTML string for brand information
+ */
 function createBrandInfoHTML(drugGroup) {
-  const drug = drugGroup[0]; // Take the first drug for brand and manufacturer info
+  const drug = drugGroup[0];
   return `
     <div class="brand-info">
       <h3>${drug.brandName || "Unknown Brand"}</h3>
@@ -259,7 +250,15 @@ function createBrandInfoHTML(drugGroup) {
   `;
 }
 
+/**
+ * Creates the HTML for dosage items
+ * @param {Object} drug - The drug object
+ * @returns {string} HTML string for dosage items
+ */
 function createDosageItemsHTML(drug) {
+  const lowerStatus = drug.shortageStatus.toLowerCase();
+  let statusInfo = STATUS_INFO[lowerStatus];
+
   return `
     <div class="dosage-item">
       <div class="dosage-summary" data-index="0">
@@ -269,9 +268,9 @@ function createDosageItemsHTML(drug) {
           </svg>
         </div>
         <span class="dosage-value">${drug.dosage}</span>
-        <span class="availability ${getStatusClass(
-          drug.shortageStatus
-        )}">${getStatusLabel(drug.shortageStatus)}</span>
+        <span class="availability ${statusInfo.class}">${
+    statusInfo.label
+  }</span>
         <span class="spacer"></span>
         <span class="expand-icon">${createSVGIcon("down")}</span>
       </div>
@@ -282,60 +281,35 @@ function createDosageItemsHTML(drug) {
   `;
 }
 
+// Utility Functions
+
+/**
+ * Gets the appropriate icon for a given route of administration
+ * @param {string} route - The route of administration
+ * @returns {string} The icon identifier
+ */
 function getRouteIcon(route) {
-  switch (route.toLowerCase()) {
-    case "inhalation":
-      return "icon-inhaler";
-    case "oral":
-    case "tablet":
-    case "capsule":
-      return "icon-pill";
-    case "injection":
-    case "injectable":
-      return "icon-syringe";
-    default:
-      console.warn(`Unknown route: ${route}, using default icon`);
-      return "icon-other";
+  const routeIcons = {
+    inhalation: "icon-inhaler",
+    oral: "icon-pill",
+    tablet: "icon-pill",
+    capsule: "icon-pill",
+    injection: "icon-syringe",
+    injectable: "icon-syringe",
+  };
+  const icon = routeIcons[route.toLowerCase()];
+  if (!icon) {
+    console.warn(`Unknown route: ${route}, using default icon`);
+    return "icon-other";
   }
+  return icon;
 }
 
-function getStatusClass(shortageStatus) {
-  switch (shortageStatus.toLowerCase()) {
-    case "resolved":
-      return "available";
-    case "current":
-      return "shortage";
-    case "discontinued":
-      return "discontinue";
-    default:
-      return "unknown";
-  }
-}
-
-function getStatusLabel(shortageStatus) {
-  switch (shortageStatus.toLowerCase()) {
-    case "no shortage reported":
-      return "No Shortage";
-    case "resolved":
-      return "Resolved";
-    case "shortage":
-    case "current":
-      return "Shortage";
-    case "discontinued":
-      return "Discontinued";
-    default:
-      return shortageStatus; // Return the original status if it doesn't match any known category
-  }
-}
-
-function formatDate(date) {
-  return date.toLocaleDateString("en-US", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
+/**
+ * Formats a duration in days to a human-readable string
+ * @param {number} days - The number of days
+ * @returns {string} Formatted duration string
+ */
 function formatDuration(days) {
   if (days < 30) {
     return `${days} day${days !== 1 ? "s" : ""}`;
@@ -353,6 +327,11 @@ function formatDuration(days) {
   }
 }
 
+/**
+ * Creates an SVG icon for the expand/collapse functionality
+ * @param {string} direction - The direction of the icon ("up" or "down")
+ * @returns {string} SVG string for the icon
+ */
 function createSVGIcon(direction) {
   return `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -363,23 +342,108 @@ function createSVGIcon(direction) {
   `;
 }
 
+// Event Listeners
+
+/**
+ * Adds click event listeners to all dosage summary elements
+ */
 function addAccordionEventListeners() {
-  const dosageSummaries = document.querySelectorAll(".dosage-summary");
-  dosageSummaries.forEach((summary) => {
+  document.querySelectorAll(".dosage-summary").forEach((summary) => {
     summary.addEventListener("click", toggleAccordion);
   });
 }
 
+/**
+ * Toggles the visibility of shortage details when a dosage summary is clicked
+ * @param {Event} event - The click event
+ */
 function toggleAccordion(event) {
   const dosageItem = event.currentTarget.closest(".dosage-item");
   const shortageDetails = dosageItem.querySelector(".shortage-details");
   const expandIcon = dosageItem.querySelector(".expand-icon");
 
-  if (shortageDetails.style.display === "none") {
-    shortageDetails.style.display = "block";
-    expandIcon.innerHTML = createSVGIcon("up");
-  } else {
-    shortageDetails.style.display = "none";
-    expandIcon.innerHTML = createSVGIcon("down");
+  shortageDetails.style.display =
+    shortageDetails.style.display === "none" ? "block" : "none";
+  expandIcon.innerHTML = createSVGIcon(
+    shortageDetails.style.display === "none" ? "down" : "up"
+  );
+}
+
+// tktk
+
+/**
+ * Creates a timeline item for the shortage details
+ * @param {Object} event - The timeline event
+ * @param {number} index - The index of the event
+ * @param {Array} timelineEvents - All timeline events
+ * @param {number} topPosition - The top position for the item
+ * @returns {string} HTML string for the timeline item
+ */
+function createTimelineItem(event, index, timelineEvents, topPosition) {
+  const isLast = index === timelineEvents.length - 1;
+  const iconHtml = getStatusIconSVG(event.status, isLast);
+
+  // Calculate duration line
+  let durationLine = "";
+  if (index < timelineEvents.length - 1) {
+    const nextEvent = timelineEvents[index + 1];
+    const duration = calculateDuration(event.date, nextEvent.date);
+    if (duration) {
+      const lineHeight = nextEvent.topPosition - topPosition - 20; // Adjust for icon size
+      durationLine = `
+        <div class="duration-line" style="height: ${lineHeight}px;">
+          <span class="duration-text">${duration}</span>
+        </div>
+      `;
+    }
   }
+
+  console.log(`Creating timeline item:`, {
+    event,
+    index,
+    isLast,
+    topPosition,
+    iconHtml,
+    durationLine,
+  });
+
+  return `
+    <li class="timeline-item ${
+      isLast ? "current" : ""
+    }" style="top: ${topPosition}px;">
+      ${iconHtml}
+      <div class="timeline-item-description">
+        <p class="date">${event.date.toLocaleDateString("en-US", {
+          month: "numeric",
+          day: "numeric",
+          year: "numeric",
+        })}</p>
+        <p class="event">${event.label}</p>
+      </div>
+      ${durationLine}
+    </li>
+  `;
+}
+
+/**
+ * Calculates the duration between two dates and formats it
+ * @param {Date} startDate - The start date
+ * @param {Date} endDate - The end date
+ * @returns {string|null} Formatted duration string or null if no duration should be shown
+ */
+function calculateDuration(startDate, endDate) {
+  const days = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+  // Don't show duration for certain cases
+  if (
+    days === 0 ||
+    (endDate.getTime() === new Date().setHours(0, 0, 0, 0) &&
+      ["Shortage resolved", "Drug available", "Drug discontinued"].includes(
+        endDate.label
+      ))
+  ) {
+    return null;
+  }
+
+  return formatDuration(days);
 }
