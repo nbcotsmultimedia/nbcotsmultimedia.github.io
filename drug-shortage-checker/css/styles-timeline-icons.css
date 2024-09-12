@@ -21,23 +21,27 @@
 }
 
 /* ICON - STATUS SPECIFIC STYLES */
+/* Shortage icon */
 .timeline-item-icon.shortage {
   background-color: var(--danger-color);
   border-color: var(--danger-color);
 }
 
+/* Resolved icon */
 .timeline-item-icon.resolved,
 .timeline-item-icon.available {
   background-color: var(--success-color);
   border-color: var(--success-color);
 }
 
+/* Discontinued icon */
 .timeline-item-icon.discontinued {
-  background-color: var(--status-discontinued);
-  border-color: var(--status-discontinued);
+  background-color: var(--warning-color-med);
+  border-color: var(--warning-color-med);
 }
 
 /* ICON - CURRENT STATUS STYLES */
+/* Outer border circle */
 .timeline-item-icon.current {
   width: 1.25rem;
   height: 1.25rem;
@@ -46,19 +50,27 @@
   left: -0.55rem; /* Adjust position to center the smaller circle */
 }
 
+/* Inner filled circle */
 .timeline-item-icon.current .current-status-circle {
   width: 0.875rem;
   height: 0.875rem;
   border-radius: 50%;
-  background-color: var(
+  /* background-color: var(
     --success-color
-  ); /* Default color for resolved/available */
+  ); */
 }
 
-.timeline-item-icon.current.shortage .current-status-circle {
+.current-status-circle.resolved {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.current-status-circle.shortage {
   background-color: var(--danger-color);
+  border-color: var(--danger-color);
 }
 
-.timeline-item-icon.current.discontinued .current-status-circle {
-  background-color: var(--status-discontinued);
+.current-status-circle.discontinued {
+  background-color: var(--warning-color-med);
+  border-color: var(--warning-color-med);
 }

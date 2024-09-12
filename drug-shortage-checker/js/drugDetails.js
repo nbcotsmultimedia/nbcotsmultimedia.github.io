@@ -5,11 +5,12 @@ const STATUS_INFO = {
   resolved: { class: "resolved", label: "Available" },
   "no shortage reported": { class: "resolved", label: "No Shortage" },
   shortage: { class: "shortage", label: "Shortage" },
-  current: { class: "shortage", label: "Shortage" },
-  discontinued: { class: "discontinue", label: "Discontinued" },
+  discontinued: { class: "discontinued", label: "Discontinued" },
+  // Add any other possible statuses here
+  unknown: { class: "unknown", label: "Unknown Status" },
 };
 
-// Main function
+// Main Function
 window.displayDrugDetails = function (drugs) {
   console.log("Displaying drug details for:", drugs);
   const resultsContainer = document.getElementById("results-container");
@@ -42,27 +43,54 @@ function createShortageDetailsHTML(drug) {
   ];
 
   const lowerStatus = drug.shortageStatus.toLowerCase();
-  console.log("Current status:", lowerStatus);
 
+  // If shortage status is resolved...
   if (lowerStatus === "resolved") {
     timelineEvents.push(
-      { date: updateDate, status: "Resolved", label: "Shortage resolved" },
-      { date: currentDate, status: "Resolved", label: "Drug available" }
+      {
+        date: updateDate,
+        status: "Resolved",
+        label: "Shortage resolved",
+      },
+      {
+        date: currentDate,
+        status: "Resolved",
+        label: "Drug available",
+      }
     );
-  } else if (lowerStatus === "shortage" || lowerStatus === "current") {
+    // If shortage status is ongoing...
+  } else if (lowerStatus === "current") {
     timelineEvents.push(
-      { date: updateDate, status: "Shortage", label: "Shortage confirmed" },
-      { date: currentDate, status: "Current", label: "Shortage ongoing" }
+      // { date: updateDate, status: "Shortage", label: "Shortage confirmed" },
+      {
+        date: currentDate,
+        status: "Shortage",
+        label: "Shortage ongoing",
+      }
     );
+    // If drug has been discontinued...
   } else if (lowerStatus === "discontinued") {
-    timelineEvents.push({
-      date: updateDate,
-      status: "Discontinued",
-      label: "Drug discontinued",
-    });
+    timelineEvents.push(
+      {
+        date: updateDate,
+        status: "Discontinued",
+        label: "Drug discontinued",
+      },
+      {
+        date: currentDate,
+        status: "Current",
+        label: "Drug unavailable",
+      }
+    );
   }
 
   timelineEvents.sort((a, b) => a.date - b.date);
+
+  // Set isCurrent for the last event
+  if (timelineEvents.length > 0) {
+    timelineEvents[timelineEvents.length - 1].isCurrent = true;
+  }
+
   console.log("Sorted timeline events:", timelineEvents);
 
   const timelineHeight = 300;
@@ -88,6 +116,7 @@ function createShortageDetailsHTML(drug) {
         ${timelineHTML}
       </ol>
     </div>
+    <div class="spacer" style="height: 1rem;"></div>
     <div class="shortage-info">
       ${
         drug.shortageReason
@@ -116,22 +145,32 @@ function createShortageDetailsHTML(drug) {
  * @param {number} topPosition - The top position for the item
  * @returns {string} HTML string for the timeline item
  */
-function createTimelineItem(event, index, timelineEvents, topPosition) {
+function createTimelineItem2(event, index, timelineEvents, topPosition) {
   const isLast = index === timelineEvents.length - 1;
   const iconHtml = getStatusIconSVG(event.status, isLast);
 
-  console.log(`Creating timeline item:`, {
-    event,
-    index,
-    isLast,
-    topPosition,
-    iconHtml,
-  });
+  let durationLine = "";
+  if (index < timelineEvents.length - 1) {
+    const nextEvent = timelineEvents[index + 1];
+    const duration = calculateDuration(event.date, nextEvent.date);
+    if (duration) {
+      const lineHeight = nextEvent.topPosition - topPosition - 20;
+      durationLine = `
+        <div class="duration-line" style="height: ${lineHeight}px;">
+          <span class="duration-text">${duration}</span>
+        </div>
+      `;
+    }
+  }
+
+  const statusClass = event.status.toLowerCase().replace(" ", "-");
+
+  console.log("Returning HTML:", returnHTML);
 
   return `
     <li class="timeline-item ${
       isLast ? "current" : ""
-    }" style="top: ${topPosition}px;">
+    } ${statusClass}" style="top: ${topPosition}px;">
       ${iconHtml}
       <div class="timeline-item-description">
         <p class="date">${event.date.toLocaleDateString("en-US", {
@@ -141,8 +180,51 @@ function createTimelineItem(event, index, timelineEvents, topPosition) {
         })}</p>
         <p class="event">${event.label}</p>
       </div>
+      ${durationLine}
     </li>
   `;
+}
+
+function createTimelineItem(event, index, timelineEvents, topPosition) {
+  const statusClass =
+    STATUS_INFO[event.status.toLowerCase()]?.class || "unknown";
+  const currentClass = event.isCurrent ? "current-event" : "";
+  const iconHtml = getStatusIconSVG(event.status, event.isCurrent);
+
+  let durationLine = "";
+  if (index < timelineEvents.length - 1) {
+    const nextEvent = timelineEvents[index + 1];
+    const duration = calculateDuration(event.date, nextEvent.date);
+    if (duration) {
+      const lineHeight = (nextEvent.topPosition || 0) - topPosition - 20;
+      durationLine = `
+        <div class="duration-line" style="height: ${lineHeight}px;">
+          <span class="duration-text">${duration}</span>
+        </div>
+      `;
+    }
+  }
+
+  const formattedDate = event.date.toLocaleDateString("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const itemHtml = `
+    <li class="timeline-item ${statusClass} ${currentClass}" style="top: ${topPosition}px;">
+      ${iconHtml}
+      <div class="timeline-item-description">
+        <p class="date">${formattedDate}</p>
+        <p class="event">${event.label}</p>
+      </div>
+      ${durationLine}
+    </li>
+  `;
+
+  console.log("Generated timeline item HTML:", itemHtml);
+
+  return itemHtml;
 }
 
 /**
@@ -152,33 +234,31 @@ function createTimelineItem(event, index, timelineEvents, topPosition) {
  * @returns {string} HTML string for the status icon
  */
 function getStatusIconSVG(status, isCurrent) {
-  const lowerStatus = status.toLowerCase();
-  const iconClass = lowerStatus;
-
-  console.log(`Generating icon for status:`, {
-    originalStatus: status,
-    lowerStatus,
-    iconClass,
-    isCurrent,
-  });
+  // Save status variable
+  const iconClass = status.toLowerCase();
 
   if (isCurrent) {
     return `
-      <div class="timeline-item-icon ${iconClass} current">
-        <div class="current-status-circle"></div>
+      <div class="timeline-item-icon current">
+        <div class="current-status-circle ${iconClass}"></div>
       </div>
     `;
   }
 
+  // Define SVG content for different statuses
   const svgContent = {
+    // Exclaimation point icon
     shortage:
       '<path d="M7.005 3.1a1 1 0 1 1 1.99 0l-.388 6.35a.61.61 0 0 1-1.214 0zM7 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>',
-    available:
-      '<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>',
+    // Check mark icon
+    resolved:
+      '<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>', // Check mark path
+    // Crossed circle icon
     discontinued:
       '<path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>',
   };
 
+  // Final return statement for non-current items
   return `
     <div class="timeline-item-icon ${iconClass}">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -256,8 +336,30 @@ function createBrandInfoHTML(drugGroup) {
  * @returns {string} HTML string for dosage items
  */
 function createDosageItemsHTML(drug) {
-  const lowerStatus = drug.shortageStatus.toLowerCase();
-  let statusInfo = STATUS_INFO[lowerStatus];
+  const status = drug.shortageStatus.toLowerCase();
+
+  // Derive class and label directly from the status
+  let statusClass, statusLabel;
+
+  switch (status) {
+    case "resolved":
+    case "no shortage reported":
+      statusClass = "resolved";
+      statusLabel = status === "resolved" ? "Available" : "No Shortage";
+      break;
+    case "current":
+      statusClass = "shortage";
+      statusLabel = "Shortage";
+      break;
+    case "discontinued":
+      statusClass = "discontinued";
+      statusLabel = "Discontinued";
+      break;
+    default:
+      statusClass = "unknown";
+      statusLabel = "Unknown Status";
+      console.warn(`Unknown shortage status: ${drug.shortageStatus}`);
+  }
 
   return `
     <div class="dosage-item">
@@ -268,9 +370,7 @@ function createDosageItemsHTML(drug) {
           </svg>
         </div>
         <span class="dosage-value">${drug.dosage}</span>
-        <span class="availability ${statusInfo.class}">${
-    statusInfo.label
-  }</span>
+        <span class="availability ${statusClass}">${statusLabel}</span>
         <span class="spacer"></span>
         <span class="expand-icon">${createSVGIcon("down")}</span>
       </div>
@@ -290,19 +390,36 @@ function createDosageItemsHTML(drug) {
  */
 function getRouteIcon(route) {
   const routeIcons = {
+    // Inhaler
     inhalation: "icon-inhaler",
+    // Pill
     oral: "icon-pill",
     tablet: "icon-pill",
+    pill: "icon-pill",
     capsule: "icon-pill",
+    // Syringe
     injection: "icon-syringe",
     injectable: "icon-syringe",
+    // Other
+    other: "icon-other",
   };
-  const icon = routeIcons[route.toLowerCase()];
-  if (!icon) {
-    console.warn(`Unknown route: ${route}, using default icon`);
-    return "icon-other";
+
+  const normalizedRoute = route.toLowerCase().trim();
+
+  // Check for exact matches
+  if (routeIcons.hasOwnProperty(normalizedRoute)) {
+    return routeIcons[normalizedRoute];
   }
-  return icon;
+
+  // Check for partial matches
+  for (const [key, value] of Object.entries(routeIcons)) {
+    if (normalizedRoute.includes(key)) {
+      return value;
+    }
+  }
+
+  // If no match is found, return the default icon without logging a warning
+  return "icon-other";
 }
 
 /**
@@ -368,8 +485,6 @@ function toggleAccordion(event) {
     shortageDetails.style.display === "none" ? "down" : "up"
   );
 }
-
-// tktk
 
 /**
  * Creates a timeline item for the shortage details

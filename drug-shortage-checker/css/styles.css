@@ -6,7 +6,8 @@
   --text-color: #202124;
   --border-color: #dadce0;
   --success-color: #337e4c;
-  --warning-color: #f4ac14;
+  --warning-color: #da9400;
+  --warning-color-med: #feb307;
   --danger-color: #b63535;
   --status-shortage: #f3b6b6;
   --status-resolved: #c4e0c5;
@@ -337,7 +338,7 @@ p {
   background-color: var(--status-shortage);
   color: var(--danger-color);
 }
-.availability.discontinue {
+.availability.discontinued {
   background-color: var(--status-discontinued);
   color: var(--warning-color);
 }
@@ -435,9 +436,12 @@ p {
 
 .duration-text {
   background-color: white;
-  padding: 2px 5px;
   font-size: 0.8em;
   color: #666;
+  position: absolute;
+  left: 2rem;
+  transform: translateY(-50%);
+  white-space: nowrap;
 }
 
 .shortage-info {
