@@ -1,6 +1,7 @@
 // app.js
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
+  initDarkModeToggle();
 });
 
 async function initApp() {
@@ -36,4 +37,48 @@ function showError(message) {
     errorElement.textContent = message;
     errorElement.style.display = "block";
   }
+}
+
+function initDarkModeToggle() {
+  const darkModeToggle = document.getElementById("darkModeToggle");
+
+  if (!darkModeToggle) {
+    console.error("Dark mode toggle element not found");
+    return;
+  }
+
+  // Check for saved theme preference or default to system preference
+  if (localStorage.getItem("darkMode") === "enabled") {
+    document.body.classList.add("dark-mode");
+    darkModeToggle.checked = true;
+  } else if (localStorage.getItem("darkMode") === "disabled") {
+    document.body.classList.remove("dark-mode");
+    darkModeToggle.checked = false;
+  } else if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    document.body.classList.add("dark-mode");
+    darkModeToggle.checked = true;
+  }
+
+  darkModeToggle.addEventListener("change", () => {
+    if (darkModeToggle.checked) {
+      document.body.classList.add("dark-mode");
+      localStorage.setItem("darkMode", "enabled");
+    } else {
+      document.body.classList.remove("dark-mode");
+      localStorage.setItem("darkMode", "disabled");
+    }
+  });
+
+  // Listen for changes in system color scheme
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      if (localStorage.getItem("darkMode") === null) {
+        darkModeToggle.checked = e.matches;
+        document.body.classList.toggle("dark-mode", e.matches);
+      }
+    });
 }

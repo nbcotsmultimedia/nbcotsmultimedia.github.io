@@ -367,9 +367,15 @@ p {
 /* #region TIMELINE STYLES */
 
 /* OUTER CONTAINER */
+
+.timeline-wrapper {
+  padding-bottom: 20px; /* Adjust this value as needed */
+}
+
 .timeline-container {
+  padding-bottom: 1px; /* This prevents margin collapse */
   position: relative;
-  margin: 1rem 0 2rem;
+  margin: 1rem 0 3rem;
   padding-left: 0.75rem;
 }
 
@@ -435,7 +441,6 @@ p {
 }
 
 .duration-text {
-  background-color: white;
   font-size: 0.8em;
   color: #666;
   position: absolute;
@@ -444,8 +449,16 @@ p {
   white-space: nowrap;
 }
 
+/* .duration-line {
+  position: absolute;
+  left: 7px;
+  top: 24px;
+  width: 2px;
+  background-color: var(--border-color);
+} */
+
 .shortage-info {
-  margin-top: 1.5rem;
+  /* margin-top: 1.5rem; */
   padding: 1rem;
   background-color: var(--light-gray);
   border-radius: var(--border-radius);

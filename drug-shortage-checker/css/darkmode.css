@@ -1,0 +1,255 @@
+/* Dark Mode Variables */
+:root {
+  --dm-background: #0c0c0c;
+  --dm-surface: #1e1e1e;
+  --dm-primary-color: #4e8ff1;
+  --dm-secondary-color: #b0b3b8;
+  --dm-text-color: #e4e6eb;
+  --dm-border-color: #3e4042;
+
+  /* Adjusted indicator colors */
+  --dm-success-color: #3a8c3a; /* Muted green */
+  --dm-warning-color: #d9a40e; /* Muted yellow */
+  --dm-warning-color-med: #c29414; /* Slightly darker muted yellow */
+  --dm-danger-color: #c53030; /* Muted red */
+
+  /* Adjusted status colors */
+  --dm-status-shortage: #3d1a1a; /* Darker muted red */
+  --dm-status-resolved: #1a2e1a; /* Darker muted green */
+  --dm-status-discontinued: #3d351a; /* Darker muted yellow */
+
+  /* Keep these as they are */
+  --dm-gray-dark: #b0b3b8;
+  --dm-gray-medium: #8a8d91;
+  --dm-gray-light: #3e4042;
+  --dm-headline-color: #e4e6eb;
+  --dm-input-background: #333333;
+  --dm-input-text: #ffffff;
+  --dm-icon-background: #333333;
+}
+
+/* #region - Dark Mode Toggle Switch */
+
+/* Dark Mode Toggle Switch */
+.dark-mode-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dark-mode-label {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--gray-medium);
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Dark mode specific styles */
+body.dark-mode .dark-mode-label {
+  color: var(--dm-gray-medium);
+}
+
+/* #endregion */
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: var(--dm-background);
+  color: var(--dm-text-color);
+}
+
+/* Typography */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode .headline {
+  color: var(--dm-headline-color);
+}
+
+body.dark-mode .subhead,
+body.dark-mode .credits {
+  color: var(--dm-secondary-color);
+}
+
+/* Search and Autocomplete */
+body.dark-mode #search-input {
+  background-color: var(--dm-input-background);
+  color: var(--dm-input-text);
+  border-color: var(--dm-border-color);
+}
+
+body.dark-mode #autocomplete-results {
+  background-color: var(--dm-surface);
+  border-color: var(--dm-border-color);
+}
+
+body.dark-mode .autocomplete-item:hover {
+  background-color: var(--dm-input-background);
+}
+
+/* Drug Result */
+body.dark-mode .drug-result {
+  background-color: var(--dm-surface);
+}
+
+body.dark-mode .drug-category .value,
+body.dark-mode .manufacturer .value {
+  color: var(--dm-text-color);
+}
+
+/* Dosage Item */
+body.dark-mode .dosage-item {
+  background-color: var(--dm-surface);
+  border-color: var(--dm-border-color);
+}
+
+body.dark-mode .dosage-summary {
+  background-color: var(--dm-input-background);
+  border-bottom-color: var(--dm-border-color);
+}
+
+body.dark-mode .icon-route {
+  fill: var(--dm-background);
+}
+
+body.dark-mode .dosage-value,
+body.dark-mode .availability {
+  color: var(--dm-text-color);
+}
+
+body.dark-mode .expand-icon svg {
+  stroke: var(--dm-text-color);
+}
+
+/* Availability Status */
+body.dark-mode .availability.resolved {
+  background-color: var(--dm-status-resolved);
+  color: var(--dm-success-color);
+}
+
+body.dark-mode .availability.shortage {
+  background-color: var(--dm-status-shortage);
+  color: var(--dm-danger-color);
+}
+
+body.dark-mode .availability.discontinued {
+  background-color: var(--dm-status-discontinued);
+  color: var(--dm-warning-color);
+}
+
+/* Timeline */
+body.dark-mode .timeline::before,
+body.dark-mode .duration-line {
+  background-color: var(--dm-border-color);
+}
+
+body.dark-mode .timeline-item-icon {
+  background-color: var(--dm-background);
+  border-color: var(--dm-border-color);
+}
+
+body.dark-mode .timeline-item-icon svg {
+  fill: var(--dm-text-color);
+}
+
+body.dark-mode .timeline-item-icon.shortage {
+  background-color: var(--dm-danger-color);
+  border-color: var(--dm-danger-color);
+}
+
+body.dark-mode .timeline-item-icon.resolved,
+body.dark-mode .timeline-item-icon.available {
+  background-color: var(--dm-success-color);
+  border-color: var(--dm-success-color);
+}
+
+body.dark-mode .timeline-item-icon.discontinued {
+  background-color: var(--dm-warning-color-med);
+  border-color: var(--dm-warning-color-med);
+}
+
+body.dark-mode .timeline-item-icon.current {
+  border-color: var(--dm-gray-light);
+}
+
+body.dark-mode .current-status-circle.resolved {
+  background-color: var(--dm-success-color);
+  border-color: var(--dm-success-color);
+}
+
+body.dark-mode .current-status-circle.shortage {
+  background-color: var(--dm-danger-color);
+  border-color: var(--dm-danger-color);
+}
+
+body.dark-mode .current-status-circle.discontinued {
+  background-color: var(--dm-warning-color-med);
+  border-color: var(--dm-warning-color-med);
+}
+
+body.dark-mode .timeline-item-description .date,
+body.dark-mode .timeline-item-description .event,
+body.dark-mode .duration-text {
+  color: var(--dm-text-color);
+}
+
+/* Shortage Details */
+body.dark-mode .shortage-details {
+  background-color: var(--dm-surface);
+  border-top: 1px solid var(--dm-border-color);
+  color: var(--dm-text-color);
+}
+
+body.dark-mode .shortage-info {
+  background-color: var(--dm-surface);
+  border-top-color: var(--dm-border-color);
+}
+
+body.dark-mode .shortage-info p {
+  color: var(--dm-gray-medium);
+}

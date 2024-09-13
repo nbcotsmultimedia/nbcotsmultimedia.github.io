@@ -30,13 +30,9 @@ window.displayDrugDetails = function (drugs) {
  * @returns {string} HTML string for shortage details
  */
 function createShortageDetailsHTML(drug) {
-  console.log("Creating shortage details HTML for drug:", drug);
-
   const reportedDate = new Date(drug.shortageReportedDate);
   const updateDate = new Date(drug.shortageUpdateDate);
   const currentDate = new Date();
-
-  console.log("Dates:", { reportedDate, updateDate, currentDate });
 
   let timelineEvents = [
     { date: reportedDate, status: "Shortage", label: "Shortage reported" },
@@ -44,96 +40,79 @@ function createShortageDetailsHTML(drug) {
 
   const lowerStatus = drug.shortageStatus.toLowerCase();
 
-  // If shortage status is resolved...
-  if (lowerStatus === "resolved") {
-    timelineEvents.push(
-      {
-        date: updateDate,
-        status: "Resolved",
-        label: "Shortage resolved",
-      },
-      {
-        date: currentDate,
-        status: "Resolved",
-        label: "Drug available",
-      }
-    );
-    // If shortage status is ongoing...
-  } else if (lowerStatus === "current") {
-    timelineEvents.push(
-      // { date: updateDate, status: "Shortage", label: "Shortage confirmed" },
-      {
+  switch (lowerStatus) {
+    case "resolved":
+      timelineEvents.push(
+        { date: updateDate, status: "Resolved", label: "Shortage resolved" },
+        { date: currentDate, status: "Resolved", label: "Drug available" }
+      );
+      break;
+    case "current":
+      timelineEvents.push({
         date: currentDate,
         status: "Shortage",
         label: "Shortage ongoing",
-      }
-    );
-    // If drug has been discontinued...
-  } else if (lowerStatus === "discontinued") {
-    timelineEvents.push(
-      {
-        date: updateDate,
-        status: "Discontinued",
-        label: "Drug discontinued",
-      },
-      {
-        date: currentDate,
-        status: "Current",
-        label: "Drug unavailable",
-      }
-    );
+      });
+      break;
+    case "discontinued":
+      timelineEvents.push(
+        {
+          date: updateDate,
+          status: "Discontinued",
+          label: "Drug discontinued",
+        },
+        { date: currentDate, status: "Discontinued", label: "Drug unavailable" }
+      );
+      break;
   }
 
   timelineEvents.sort((a, b) => a.date - b.date);
-
-  // Set isCurrent for the last event
-  if (timelineEvents.length > 0) {
-    timelineEvents[timelineEvents.length - 1].isCurrent = true;
-  }
-
-  console.log("Sorted timeline events:", timelineEvents);
+  timelineEvents[timelineEvents.length - 1].isCurrent = true;
 
   const timelineHeight = 300;
   const timelineHTML = timelineEvents
     .map((event, index) => {
       const topPosition =
         (index / (timelineEvents.length - 1)) * timelineHeight;
-      console.log(
-        `Creating timeline item for event:`,
-        event,
-        `at position:`,
-        topPosition
-      );
       return createTimelineItem(event, index, timelineEvents, topPosition);
     })
     .join("");
 
-  console.log("Generated timeline HTML:", timelineHTML);
+  let additionalInfo = "";
+  if (
+    drug.shortageReason ||
+    drug.relatedShortageInfo ||
+    drug.resolvedShortageInfo
+  ) {
+    additionalInfo = `
+      <div class="spacer" style="height: 0.5rem;"></div>
+      <div class="shortage-info">
+        ${
+          drug.shortageReason
+            ? `<p class="shortage-reason"><span class="label">Shortage reason: </span>${drug.shortageReason}</p>`
+            : ""
+        }
+        ${
+          drug.relatedShortageInfo
+            ? `<p class="related-info"><span class="label">Related information: </span>${drug.relatedShortageInfo}</p>`
+            : ""
+        }
+        ${
+          drug.resolvedShortageInfo
+            ? `<p class="resolved-info"><span class="label">Resolved shortage information: </span>${drug.resolvedShortageInfo}</p>`
+            : ""
+        }
+      </div>
+    `;
+  }
 
   return `
     <div class="timeline-container">
-      <ol class="timeline" style="height: ${timelineHeight}px;">
+      <ol class="timeline timeline-wrapper" style="height: ${timelineHeight}px;">
         ${timelineHTML}
       </ol>
     </div>
-    <div class="spacer" style="height: 1rem;"></div>
-    <div class="shortage-info">
-      ${
-        drug.shortageReason
-          ? `<p class="shortage-reason"><span class="label">Shortage reason: </span>${drug.shortageReason}</p>`
-          : ""
-      }
-      ${
-        drug.relatedShortageInfo
-          ? `<p class="related-info"><span class="label">Related information: </span>${drug.relatedShortageInfo}</p>`
-          : ""
-      }
-      ${
-        drug.resolvedShortageInfo
-          ? `<p class="resolved-info"><span class="label">Resolved shortage information: </span>${drug.resolvedShortageInfo}</p>`
-          : ""
-      }
-    </div>
+    ${additionalInfo}
   `;
 }
 
@@ -146,85 +125,54 @@ function createShortageDetailsHTML(drug) {
  * @returns {string} HTML string for the timeline item
  */
 function createTimelineItem2(event, index, timelineEvents, topPosition) {
-  const isLast = index === timelineEvents.length - 1;
-  const iconHtml = getStatusIconSVG(event.status, isLast);
-
-  let durationLine = "";
-  if (index < timelineEvents.length - 1) {
-    const nextEvent = timelineEvents[index + 1];
-    const duration = calculateDuration(event.date, nextEvent.date);
-    if (duration) {
-      const lineHeight = nextEvent.topPosition - topPosition - 20;
-      durationLine = `
-        <div class="duration-line" style="height: ${lineHeight}px;">
-          <span class="duration-text">${duration}</span>
-        </div>
-      `;
-    }
-  }
-
-  const statusClass = event.status.toLowerCase().replace(" ", "-");
-
-  console.log("Returning HTML:", returnHTML);
+  const status = event.status.toLowerCase();
+  const statusInfo = STATUS_INFO[status] || STATUS_INFO.unknown;
 
   return `
-    <li class="timeline-item ${
-      isLast ? "current" : ""
-    } ${statusClass}" style="top: ${topPosition}px;">
-      ${iconHtml}
-      <div class="timeline-item-description">
-        <p class="date">${event.date.toLocaleDateString("en-US", {
-          month: "numeric",
-          day: "numeric",
-          year: "numeric",
-        })}</p>
-        <p class="event">${event.label}</p>
+    <div class="timeline-item" style="top: ${topPosition}px">
+      <div class="timeline-item-icon ${event.isCurrent ? "current" : ""}">
+        <div class="current-status-circle ${statusInfo.class}"></div>
       </div>
-      ${durationLine}
-    </li>
+      <div class="timeline-item-content">
+        <div class="timeline-item-date">${event.date.toLocaleDateString()}</div>
+        <div class="timeline-item-label">${event.label}</div>
+      </div>
+    </div>
   `;
 }
 
 function createTimelineItem(event, index, timelineEvents, topPosition) {
-  const statusClass =
-    STATUS_INFO[event.status.toLowerCase()]?.class || "unknown";
-  const currentClass = event.isCurrent ? "current-event" : "";
-  const iconHtml = getStatusIconSVG(event.status, event.isCurrent);
+  let durationText = "";
 
-  let durationLine = "";
-  if (index < timelineEvents.length - 1) {
-    const nextEvent = timelineEvents[index + 1];
-    const duration = calculateDuration(event.date, nextEvent.date);
-    if (duration) {
-      const lineHeight = (nextEvent.topPosition || 0) - topPosition - 20;
-      durationLine = `
-        <div class="duration-line" style="height: ${lineHeight}px;">
-          <span class="duration-text">${duration}</span>
-        </div>
-      `;
+  if (event.status === "Resolved" || event.status === "Discontinued") {
+    const previousEvent = timelineEvents.find((e) => e.status === "Shortage");
+    if (previousEvent) {
+      const duration = Math.round(
+        (event.date - previousEvent.date) / (1000 * 60 * 60 * 24)
+      );
+      durationText = `${duration} days`;
     }
+  } else if (event.status === "Shortage" && event.isCurrent) {
+    const duration = Math.round(
+      (new Date() - event.date) / (1000 * 60 * 60 * 24)
+    );
+    durationText = `${duration} days ongoing`;
   }
 
-  const formattedDate = event.date.toLocaleDateString("en-US", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-  });
-
-  const itemHtml = `
-    <li class="timeline-item ${statusClass} ${currentClass}" style="top: ${topPosition}px;">
-      ${iconHtml}
-      <div class="timeline-item-description">
-        <p class="date">${formattedDate}</p>
-        <p class="event">${event.label}</p>
+  return `
+    <div class="timeline-item" style="top: ${topPosition}px">
+      <div class="timeline-item-icon ${event.isCurrent ? "current" : ""}">
+        <div class="current-status-circle ${event.status.toLowerCase()}"></div>
       </div>
-      ${durationLine}
-    </li>
+      <div class="timeline-item-content">
+        <div class="timeline-item-date">${event.date.toLocaleDateString()}</div>
+        <div class="timeline-item-label">${event.label}</div>
+        ${
+          durationText ? `<div class="duration-text">${durationText}</div>` : ""
+        }
+      </div>
+    </div>
   `;
-
-  console.log("Generated timeline item HTML:", itemHtml);
-
-  return itemHtml;
 }
 
 /**
@@ -252,9 +200,12 @@ function getStatusIconSVG(status, isCurrent) {
       '<path d="M7.005 3.1a1 1 0 1 1 1.99 0l-.388 6.35a.61.61 0 0 1-1.214 0zM7 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0"/>',
     // Check mark icon
     resolved:
-      '<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>', // Check mark path
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">' +
+      '<path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>' +
+      "</svg>",
     // Crossed circle icon
     discontinued:
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">' +
       '<path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"/>',
   };
 
