@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
   initDarkModeToggle();
+  xtalk.signalIframe();
 });
 
 async function initApp() {

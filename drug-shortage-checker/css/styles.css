@@ -43,6 +43,7 @@ body {
   margin: 0 auto; /* Center the content */
   padding: 1.25rem;
   font-size: var(--font-size-base);
+  overflow: hidden; /* For crosstalk */
 }
 /* #endregion */
 

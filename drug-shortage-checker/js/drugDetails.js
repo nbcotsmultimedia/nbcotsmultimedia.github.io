@@ -20,6 +20,7 @@ window.displayDrugDetails = function (drugs) {
   } else {
     console.error("Results container not found in the DOM");
   }
+  xtalk.signalIframe();
 };
 
 // HTML Generation Functions

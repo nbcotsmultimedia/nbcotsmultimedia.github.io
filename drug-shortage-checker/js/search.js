@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     console.error("Required elements not found in the DOM");
   }
+  xtalk.signalIframe();
 });
 
 function setupEventListeners(searchInput, clearButton, autocompleteResults) {
@@ -109,6 +110,7 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
         drugs[0].brandName,
         searchTerm
       )})</span>`;
+      xtalk.signalIframe();
     }
 
     div.addEventListener("mousedown", (event) => {
@@ -225,6 +227,7 @@ function clearSearch() {
   if (resultsContainer) {
     resultsContainer.innerHTML = "";
   }
+  xtalk.signalIframe();
 }
 
 function debounce(func, delay) {
