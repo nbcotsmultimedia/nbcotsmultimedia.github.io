@@ -27,3 +27,22 @@ function highlightMatch(text, searchTerm) {
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+// Define wrapper function for crosstalk to use throughout app
+function signalIframeResize() {
+  if (
+    window.parent !== window &&
+    typeof xtalk !== "undefined" &&
+    xtalk.signalIframe
+  ) {
+    try {
+      xtalk.signalIframe();
+    } catch (error) {
+      console.warn("Error calling xtalk.signalIframe:", error);
+    }
+  } else {
+    console.log(
+      "Page is not in an iframe or xtalk is not available. Skipping iframe resize signal."
+    );
+  }
+}

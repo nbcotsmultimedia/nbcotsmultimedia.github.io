@@ -20,7 +20,7 @@ window.displayDrugDetails = function (drugs) {
   } else {
     console.error("Results container not found in the DOM");
   }
-  xtalk.signalIframe(); // Call crosstalk
+  signalIframeResize(); // Use the wrapper function instead of xtalk.signalIframe()
 };
 
 // HTML Generation Functions
@@ -419,7 +419,7 @@ function createSVGIcon(direction) {
 function addAccordionEventListeners() {
   document.querySelectorAll(".dosage-summary").forEach((summary) => {
     summary.addEventListener("click", toggleAccordion);
-    xtalk.signalIframe(); // Call crosstalk
+    signalIframeResize(); // Call crosstalk
   });
 }
 

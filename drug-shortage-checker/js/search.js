@@ -7,13 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchInput = document.getElementById("search-input");
   const clearButton = document.getElementById("clear-search");
   const autocompleteResults = document.getElementById("autocomplete-results");
-
   if (searchInput && clearButton && autocompleteResults) {
     setupEventListeners(searchInput, clearButton, autocompleteResults);
   } else {
     console.error("Required elements not found in the DOM");
   }
-  xtalk.signalIframe();
+  signalIframeResize(); // Use the wrapper function instead of xtalk.signalIframe()
 });
 
 function setupEventListeners(searchInput, clearButton, autocompleteResults) {
@@ -110,7 +109,7 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
         drugs[0].brandName,
         searchTerm
       )})</span>`;
-      xtalk.signalIframe();
+      signalIframeResize();
     }
 
     div.addEventListener("mousedown", (event) => {
@@ -125,7 +124,7 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
 
     autocompleteResults.appendChild(div);
   });
-  xtalk.signalIframe(); // Call crosstalk
+  signalIframeResize(); // Call crosstalk
 }
 
 function getRouteIcon(route) {
