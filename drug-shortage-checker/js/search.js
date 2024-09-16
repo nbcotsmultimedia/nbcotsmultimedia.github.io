@@ -125,6 +125,7 @@ function displayAutocompleteResults(groupedDrugs, searchTerm) {
 
     autocompleteResults.appendChild(div);
   });
+  xtalk.signalIframe(); // Call crosstalk
 }
 
 function getRouteIcon(route) {
@@ -140,23 +141,6 @@ function getRouteIcon(route) {
       return "icon-syringe";
     default:
       console.log(`No specific icon for route: ${route}, using default`);
-      return "icon-other";
-  }
-}
-
-function getRouteIcon(route) {
-  switch (route.toLowerCase()) {
-    case "inhalation":
-      return "icon-inhaler";
-    case "oral":
-    case "tablet":
-    case "capsule":
-      return "icon-pill";
-    case "injection":
-    case "injectable":
-      return "icon-syringe";
-    default:
-      console.warn(`Unknown route: ${route}, using default icon`);
       return "icon-other";
   }
 }
@@ -227,7 +211,7 @@ function clearSearch() {
   if (resultsContainer) {
     resultsContainer.innerHTML = "";
   }
-  xtalk.signalIframe();
+  xtalk.signalIframe(); // Call crosstalk
 }
 
 function debounce(func, delay) {

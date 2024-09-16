@@ -72,7 +72,7 @@ h3 {
 /* Custom Typography Styles */
 .headline,
 .subhead {
-  font-family: "ArtHouseBold", sans-serif;
+  font-family: "ArtHouseMed", sans-serif;
   margin-bottom: 0.625rem;
 }
 .headline {

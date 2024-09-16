@@ -18,6 +18,7 @@ async function initApp() {
       );
     }
     showLoading(false);
+    xtalk.signalIframe(); // Call crosstalk
   } catch (error) {
     console.error("Failed to initialize app:", error);
     showError("Failed to load drug data. Please try again later.");

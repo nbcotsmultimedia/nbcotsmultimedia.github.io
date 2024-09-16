@@ -20,7 +20,7 @@ window.displayDrugDetails = function (drugs) {
   } else {
     console.error("Results container not found in the DOM");
   }
-  xtalk.signalIframe();
+  xtalk.signalIframe(); // Call crosstalk
 };
 
 // HTML Generation Functions
@@ -419,6 +419,7 @@ function createSVGIcon(direction) {
 function addAccordionEventListeners() {
   document.querySelectorAll(".dosage-summary").forEach((summary) => {
     summary.addEventListener("click", toggleAccordion);
+    xtalk.signalIframe(); // Call crosstalk
   });
 }
 
