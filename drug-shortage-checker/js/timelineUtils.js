@@ -53,20 +53,48 @@ function generateTimelineEvents(drug) {
 
 //#region - TIMELINE HTML GENERATION
 
-// Convert timeline events into HTML format
-function generateTimelineHTML(timelineEvents) {
+// Map all events' positions on the timeline and convert into HTML format
+function generateTimelineHTML1(timelineEvents) {
   const timelineHeight = 300;
   const timelineItems = timelineEvents
     // Map each event to a timeline item, calculating its vertical position within a fixed height (timelineHeight)
     .map((event, index) => {
       const topPosition =
+        // Divide 'index' by the number of gaps between events to get a fraction represention how far along the timeline this event should be placed; multiply by timeline height to convert it to a pixel value within the timeline's total height
         (index / (timelineEvents.length - 1)) * timelineHeight;
+
       // Call createTimelineItem for each event to generate its HTML
       return createTimelineItem(event, index, timelineEvents, topPosition);
     })
     .join("");
 
-  // Wrap all items in an ordered list with a specified height
+  // Wrap all items in an ordered list with a specified height, ensuring first event is always at the top (0px) and last event is always at the bottom (30px) - events in the middle are spaced evenly between these points
+  return `
+    <ol class="timeline timeline-wrapper" style="height: ${timelineHeight}px;">
+      ${timelineItems}
+    </ol>
+  `;
+}
+
+function generateTimelineHTML(timelineEvents) {
+  const timelineHeight = 300;
+  let prevTopPosition = 0;
+  const timelineItems = timelineEvents
+    .map((event, index) => {
+      const topPosition =
+        (index / (timelineEvents.length - 1)) * timelineHeight;
+      const item = createTimelineItem(
+        event,
+        index,
+        timelineEvents,
+        topPosition,
+        prevTopPosition
+      );
+      prevTopPosition = topPosition;
+      return item;
+    })
+    .join("");
+
   return `
     <ol class="timeline timeline-wrapper" style="height: ${timelineHeight}px;">
       ${timelineItems}
@@ -76,7 +104,7 @@ function generateTimelineHTML(timelineEvents) {
 
 //#endregion
 
-//#region - TIMELINE ITEM GENERATION
+//#region - TIMELINE ITEM HTML GENERATION
 
 // Generate HTML for each individual timeline item
 /**
@@ -86,7 +114,7 @@ function generateTimelineHTML(timelineEvents) {
  * @param {number} topPosition - The calculated vertical position for this item on the timeline
  * @returns {string} HTML string for the timeline item, including an icon and description
  */
-function createTimelineItem(event, index, timelineEvents, topPosition) {
+function createTimelineIte1(event, index, timelineEvents, topPosition) {
   // Determine if the current item is the last one in the list
   const isLast = index === timelineEvents.length - 1;
 
@@ -105,6 +133,63 @@ function createTimelineItem(event, index, timelineEvents, topPosition) {
       </div>
     </li>
   `;
+}
+
+function createTimelineItem(
+  event,
+  index,
+  timelineEvents,
+  topPosition,
+  prevTopPosition
+) {
+  const isLast = index === timelineEvents.length - 1;
+  const iconHtml = getStatusIconSVG(event.status, isLast);
+
+  let elapsedTimeHtml = "";
+  if (index > 0) {
+    const prevEvent = timelineEvents[index - 1];
+
+    // Check if this is not one of the cases where we don't want to show elapsed time
+    const skipElapsedTime =
+      (prevEvent.label === "Shortage resolved" &&
+        event.label === "Drug available") ||
+      (prevEvent.label === "Drug discontinued" &&
+        event.label === "Drug unavailable");
+
+    if (!skipElapsedTime) {
+      const duration = calculateDuration(prevEvent.date, event.date);
+      if (duration) {
+        elapsedTimeHtml = `
+          <div class="elapsed-time" style="top: ${
+            (topPosition + prevTopPosition) / 2
+          }px;">
+            ${duration}
+          </div>
+        `;
+      }
+    }
+  }
+
+  const itemHtml = `
+    <li class="timeline-item ${
+      isLast ? "current" : ""
+    }" style="top: ${topPosition}px;">
+      ${iconHtml}
+      <div class="timeline-item-description">
+        <p class="date">${formatDate(event.date)}</p>
+        <p class="event">${event.label}</p>
+      </div>
+    </li>
+  `;
+
+  return elapsedTimeHtml + itemHtml;
+}
+
+function calculateElapsedTime(startDate, endDate) {
+  const diff = endDate - startDate;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours} hours, ${minutes} minutes`;
 }
 
 //#endregion

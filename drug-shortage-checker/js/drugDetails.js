@@ -203,9 +203,26 @@ function createSVGIcon(direction) {
 
 // Set up click event listeners for all dosage summary elements
 function addAccordionEventListeners() {
-  document.querySelectorAll(".dosage-summary").forEach((summary) => {
+  const summaries = document.querySelectorAll(".dosage-summary");
+  console.log("Setting up accordion listeners:", summaries.length); // Debugging
+  summaries.forEach((summary) => {
     summary.addEventListener("click", toggleAccordion);
   });
+}
+
+function toggleAccordion(event) {
+  console.log("Accordion clicked"); // Debugging
+  const dosageItem = event.currentTarget.closest(".dosage-item");
+  const shortageDetails = dosageItem.querySelector(".shortage-details");
+  const expandIcon = dosageItem.querySelector(".expand-icon");
+
+  shortageDetails.style.display =
+    shortageDetails.style.display === "none" ? "block" : "none";
+  expandIcon.innerHTML = createSVGIcon(
+    shortageDetails.style.display === "none" ? "down" : "up"
+  );
+
+  setTimeout(signalIframeResize, 0);
 }
 
 // Handle the expanding and collapsing of the accordion when a dosage summary is clicked
