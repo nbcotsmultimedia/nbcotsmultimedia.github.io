@@ -17,6 +17,7 @@ function initializeSearch() {
   const autocompleteResults = document.getElementById("autocomplete-results");
 
   if (searchInput && clearButton && autocompleteResults) {
+    searchInput.spellcheck = false; // Add this line
     setupEventListeners(searchInput, clearButton, autocompleteResults);
   } else {
     console.error("Required elements not found in the DOM");
@@ -259,5 +260,9 @@ function highlightMatch(text, searchTerm) {
 
 //#endregion
 
+//#region - GLOBAL EXPORTS
+
 // Make initSearch function available globally
 window.initSearch = initSearch;
+
+//#endregion

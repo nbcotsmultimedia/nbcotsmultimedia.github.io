@@ -1,5 +1,15 @@
 // timelineUtils.js
 
+// #region - CONSTANTS
+
+const NORMAL_SPACING = 300; // This should match your current timelineHeight
+const REDUCED_SPACING = 60; // Adjust this value as needed
+function isValidDate(d) {
+  return d instanceof Date && !isNaN(d);
+}
+
+//#endregion
+
 //#region - TIMELINE EVENTS GENERATION
 
 // Create an array of timeline events based on drug shortage data
@@ -54,35 +64,22 @@ function generateTimelineEvents(drug) {
 //#region - TIMELINE HTML GENERATION
 
 // Map all events' positions on the timeline and convert into HTML format
-function generateTimelineHTML1(timelineEvents) {
-  const timelineHeight = 300;
-  const timelineItems = timelineEvents
-    // Map each event to a timeline item, calculating its vertical position within a fixed height (timelineHeight)
-    .map((event, index) => {
-      const topPosition =
-        // Divide 'index' by the number of gaps between events to get a fraction represention how far along the timeline this event should be placed; multiply by timeline height to convert it to a pixel value within the timeline's total height
-        (index / (timelineEvents.length - 1)) * timelineHeight;
-
-      // Call createTimelineItem for each event to generate its HTML
-      return createTimelineItem(event, index, timelineEvents, topPosition);
-    })
-    .join("");
-
-  // Wrap all items in an ordered list with a specified height, ensuring first event is always at the top (0px) and last event is always at the bottom (30px) - events in the middle are spaced evenly between these points
-  return `
-    <ol class="timeline timeline-wrapper" style="height: ${timelineHeight}px;">
-      ${timelineItems}
-    </ol>
-  `;
-}
-
 function generateTimelineHTML(timelineEvents) {
-  const timelineHeight = 300;
   let prevTopPosition = 0;
   const timelineItems = timelineEvents
     .map((event, index) => {
-      const topPosition =
-        (index / (timelineEvents.length - 1)) * timelineHeight;
+      let topPosition;
+      if (index > 0) {
+        const prevEvent = timelineEvents[index - 1];
+        const isSameTime = prevEvent.date.getTime() === event.date.getTime();
+        const spacing = isSameTime
+          ? REDUCED_SPACING
+          : NORMAL_SPACING / (timelineEvents.length - 1);
+        topPosition = prevTopPosition + spacing;
+      } else {
+        topPosition = 0;
+      }
+
       const item = createTimelineItem(
         event,
         index,
@@ -95,8 +92,10 @@ function generateTimelineHTML(timelineEvents) {
     })
     .join("");
 
+  const totalHeight = prevTopPosition;
+
   return `
-    <ol class="timeline timeline-wrapper" style="height: ${timelineHeight}px;">
+    <ol class="timeline timeline-wrapper" style="height: ${totalHeight}px;">
       ${timelineItems}
     </ol>
   `;
@@ -106,34 +105,10 @@ function generateTimelineHTML(timelineEvents) {
 
 //#region - TIMELINE ITEM HTML GENERATION
 
-// Generate HTML for each individual timeline item
-/**
- * @param {Object} event - The timeline event object containing details such as date, status, and label
- * @param {number} index - The index of the current event within the timeline events array
- * @param {Array} timelineEvents - The complete array of timeline events for the drug
- * @param {number} topPosition - The calculated vertical position for this item on the timeline
- * @returns {string} HTML string for the timeline item, including an icon and description
- */
-function createTimelineIte1(event, index, timelineEvents, topPosition) {
-  // Determine if the current item is the last one in the list
-  const isLast = index === timelineEvents.length - 1;
-
-  // Use getStatusIconSVG to generate an icon for the event's status
-  const iconHtml = getStatusIconSVG(event.status, isLast);
-
-  // Return an HTML list item for each event in the timeline - adding a 'current' class on the last item for styling
-  return `
-    <li class="timeline-item ${
-      isLast ? "current" : ""
-    }" style="top: ${topPosition}px;">
-      ${iconHtml}
-      <div class="timeline-item-description">
-        <p class="date">${formatDate(event.date)}</p>
-        <p class="event">${event.label}</p>
-      </div>
-    </li>
-  `;
-}
+const skipElapsedTimePairs = new Set([
+  "Shortage resolved|Drug available",
+  "Drug discontinued|Drug unavailable",
+]);
 
 function createTimelineItem(
   event,
@@ -143,53 +118,69 @@ function createTimelineItem(
   prevTopPosition
 ) {
   const isLast = index === timelineEvents.length - 1;
-  const iconHtml = getStatusIconSVG(event.status, isLast);
-
   let elapsedTimeHtml = "";
+  let currentTopPosition = topPosition;
+
   if (index > 0) {
     const prevEvent = timelineEvents[index - 1];
-
-    // Check if this is not one of the cases where we don't want to show elapsed time
-    const skipElapsedTime =
-      (prevEvent.label === "Shortage resolved" &&
-        event.label === "Drug available") ||
-      (prevEvent.label === "Drug discontinued" &&
-        event.label === "Drug unavailable");
-
-    if (!skipElapsedTime) {
-      const duration = calculateDuration(prevEvent.date, event.date);
-      if (duration) {
-        elapsedTimeHtml = `
-          <div class="elapsed-time" style="top: ${
-            (topPosition + prevTopPosition) / 2
-          }px;">
-            ${duration}
-          </div>
-        `;
-      }
+    if (!isValidDate(prevEvent.date) || !isValidDate(event.date)) {
+      console.error(
+        `Invalid date: prevEvent.date = ${prevEvent.date}, event.date = ${event.date}`
+      );
+      return "";
     }
+
+    currentTopPosition =
+      prevEvent.date.getTime() === event.date.getTime()
+        ? prevTopPosition + REDUCED_SPACING
+        : topPosition;
+
+    elapsedTimeHtml = generateElapsedTimeHtml(
+      prevEvent,
+      event,
+      currentTopPosition,
+      prevTopPosition
+    );
   }
 
-  const itemHtml = `
+  return `
+    ${elapsedTimeHtml}
     <li class="timeline-item ${
       isLast ? "current" : ""
-    }" style="top: ${topPosition}px;">
-      ${iconHtml}
+    }" style="top: ${currentTopPosition}px;">
+      ${getStatusIconSVG(event.status, isLast)}
       <div class="timeline-item-description">
-        <p class="date">${formatDate(event.date)}</p>
+        <p class="date">${
+          isValidDate(event.date) ? formatDate(event.date) : "Invalid Date"
+        }</p>
         <p class="event">${event.label}</p>
       </div>
     </li>
   `;
-
-  return elapsedTimeHtml + itemHtml;
 }
 
-function calculateElapsedTime(startDate, endDate) {
-  const diff = endDate - startDate;
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours} hours, ${minutes} minutes`;
+function generateElapsedTimeHtml(
+  prevEvent,
+  event,
+  topPosition,
+  prevTopPosition
+) {
+  if (skipElapsedTimePairs.has(`${prevEvent.label}|${event.label}`)) {
+    return "";
+  }
+
+  const duration = calculateDuration(prevEvent.date, event.date);
+  if (!duration) {
+    return "";
+  }
+
+  return `
+    <div class="elapsed-time" style="top: ${
+      (topPosition + prevTopPosition) / 2
+    }px;">
+      ${duration}
+    </div>
+  `;
 }
 
 //#endregion

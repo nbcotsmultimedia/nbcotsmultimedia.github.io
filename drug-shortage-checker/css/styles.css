@@ -443,18 +443,10 @@ p {
 
 .elapsed-time {
   position: absolute;
-  left: 50px;
-  transform: translateY(-50%);
-  font-size: 0.8em;
-  color: #666;
-}
-
-.duration-text {
-  font-size: 0.8em;
-  color: #666;
-  position: absolute;
   left: 2rem;
-  transform: translateY(-50%);
+  /* transform: translateY(-50%); */
+  font-size: 0.8em;
+  color: #666;
   white-space: nowrap;
 }
 

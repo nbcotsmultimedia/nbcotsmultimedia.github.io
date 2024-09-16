@@ -32,20 +32,25 @@ function formatDate(dateString) {
  * @returns {string} Formatted duration string
  */
 function formatDuration(days) {
-  if (days < 30) {
-    return `${days} day${days !== 1 ? "s" : ""}`;
-  } else if (days < 365) {
-    const months = Math.floor(days / 30);
-    return `${months} month${months !== 1 ? "s" : ""}`;
-  } else {
-    const years = Math.floor(days / 365);
-    const remainingMonths = Math.floor((days % 365) / 30);
-    return `${years} year${years !== 1 ? "s" : ""}${
-      remainingMonths > 0
-        ? ` ${remainingMonths} month${remainingMonths !== 1 ? "s" : ""}`
-        : ""
-    }`;
+  const years = Math.floor(days / 365);
+  const months = Math.floor((days % 365) / 30);
+  const remainingDays = days % 30;
+
+  const parts = [];
+
+  if (years > 0) {
+    parts.push(`${years} year${years !== 1 ? "s" : ""}`);
   }
+
+  if (months > 0) {
+    parts.push(`${months} month${months !== 1 ? "s" : ""}`);
+  }
+
+  if (remainingDays > 0 || (years === 0 && months === 0)) {
+    parts.push(`${remainingDays} day${remainingDays !== 1 ? "s" : ""}`);
+  }
+
+  return parts.join(", ");
 }
 
 // Calculate the duration between two dates and format it
@@ -182,9 +187,6 @@ window.signalIframeResize = function () {
       console.warn("Error calling xtalk.signalIframe:", error);
     }
   } else {
-    console.log(
-      "Page is not in an iframe or xtalk is not available. Skipping iframe resize signal."
-    );
   }
 };
 

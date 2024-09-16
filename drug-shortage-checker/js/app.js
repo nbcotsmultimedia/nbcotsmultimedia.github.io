@@ -9,7 +9,6 @@
  */
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
-  initDarkModeToggle();
   if (typeof signalIframeResize === "function") {
     signalIframeResize();
   } else {
@@ -104,76 +103,6 @@ function showError(message) {
     errorElement.textContent = message;
     errorElement.style.display = "block";
   }
-}
-
-//#endregion
-
-//#region - DARK MODE
-
-// Manage dark mode toggle functionality
-/**
- * Initializes the dark mode toggle functionality.
- * Handles user preferences, local storage, and system color scheme changes.
- */
-function initDarkModeToggle() {
-  const darkModeToggle = document.getElementById("darkModeToggle");
-
-  if (!darkModeToggle) {
-    console.error("Dark mode toggle element not found");
-    return;
-  }
-
-  // Set initial state based on saved preference or system preference
-  const savedTheme = localStorage.getItem("darkMode");
-  const prefersDarkScheme = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
-
-  if (savedTheme === "enabled" || (savedTheme === null && prefersDarkScheme)) {
-    enableDarkMode();
-  } else {
-    disableDarkMode();
-  }
-
-  // Handle toggle changes
-  darkModeToggle.addEventListener("change", () => {
-    if (darkModeToggle.checked) {
-      enableDarkMode();
-    } else {
-      disableDarkMode();
-    }
-  });
-
-  // Listen for system color scheme changes
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (e) => {
-      if (localStorage.getItem("darkMode") === null) {
-        if (e.matches) {
-          enableDarkMode();
-        } else {
-          disableDarkMode();
-        }
-      }
-    });
-}
-
-/**
- * Enables dark mode and updates related states.
- */
-function enableDarkMode() {
-  document.body.classList.add("dark-mode");
-  document.getElementById("darkModeToggle").checked = true;
-  localStorage.setItem("darkMode", "enabled");
-}
-
-/**
- * Disables dark mode and updates related states.
- */
-function disableDarkMode() {
-  document.body.classList.remove("dark-mode");
-  document.getElementById("darkModeToggle").checked = false;
-  localStorage.setItem("darkMode", "disabled");
 }
 
 //#endregion

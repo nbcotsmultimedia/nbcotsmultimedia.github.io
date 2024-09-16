@@ -204,14 +204,12 @@ function createSVGIcon(direction) {
 // Set up click event listeners for all dosage summary elements
 function addAccordionEventListeners() {
   const summaries = document.querySelectorAll(".dosage-summary");
-  console.log("Setting up accordion listeners:", summaries.length); // Debugging
   summaries.forEach((summary) => {
     summary.addEventListener("click", toggleAccordion);
   });
 }
 
 function toggleAccordion(event) {
-  console.log("Accordion clicked"); // Debugging
   const dosageItem = event.currentTarget.closest(".dosage-item");
   const shortageDetails = dosageItem.querySelector(".shortage-details");
   const expandIcon = dosageItem.querySelector(".expand-icon");
