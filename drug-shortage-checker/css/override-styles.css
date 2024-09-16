@@ -78,7 +78,12 @@ hr {
 
 /* #region - Header Typography */
 
-.part-title {
+/* Native featured class */
+.article-subtitle {
+  margin-top: 1.5rem !important;
+}
+
+.part-title-pharma {
   font-family: serif !important;
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -95,7 +100,7 @@ hr {
   transform: translateX(-50%) !important;
 }
 
-.article-title {
+.article-title-pharma {
   font-family: serif !important;
   text-align: center !important;
   color: #ffffff !important;
@@ -106,7 +111,7 @@ hr {
   margin-top: 1.5rem !important;
 }
 
-.article-subtitle {
+.article-subtitle-pharma {
   font-family: "Roboto", sans-serif !important;
   text-align: center !important;
   color: #b6c2cf !important;
@@ -135,9 +140,30 @@ hr {
 }
 
 .coming-soon {
-  text-align: center !important;
-  color: #85b8ff !important;
-  font-weight: bold !important;
+  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 500px;
+  transition-property: background-color, border-color, color, box-shadow, filter;
+  transition-duration: 0.3s;
+  border: 1px solid transparent;
+  letter-spacing: 2px;
+  min-width: 160px;
+  text-transform: uppercase;
+  white-space: normal;
+  font-weight: 700;
+  text-align: center;
+  padding: 17px 48px;
+  color: #fff;
+  background-color: #85b8ff;
+  height: 48px;
+}
+
+.coming-soon:hover {
+  transform: scale(1.04);
+  background-color: #85b8ff;
 }
 
 /* #endregion */
@@ -148,12 +174,16 @@ hr {
   .container {
     max-width: 100% !important;
   }
-  .image-wrapper {
-    padding-bottom: 56.25% !important;
-  }
   .article-content p {
     text-align: left !important;
     text-indent: 0 !important;
+  }
+}
+
+/* Gradient overlay adjustment */
+@media (max-width: 500px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 30rem !important;
   }
 }
 

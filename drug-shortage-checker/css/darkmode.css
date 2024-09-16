@@ -28,7 +28,7 @@
     color: var(--dm-text-color);
   }
 
-  #crosstalk-graphic {
+  #border-container {
     border: 0.5px solid var(--dm-border-color); /* Use the defined border color */
   }
 

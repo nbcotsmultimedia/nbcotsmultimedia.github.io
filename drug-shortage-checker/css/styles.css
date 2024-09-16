@@ -46,7 +46,7 @@ body {
   overflow: hidden;
 }
 
-#crosstalk-graphic {
+#border-container {
   border: 0.5px solid var(--border-color); /* Use the defined border color */
   border-radius: var(--border-radius); /* Optional: to round the corners */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional: adds a slight shadow for depth */
