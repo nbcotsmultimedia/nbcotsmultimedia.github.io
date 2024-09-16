@@ -1,5 +1,8 @@
 // app.js
 
+//#region - INITIALIZATION
+
+// On DOM load, run functions to initialize the app, toggle dark mode, and call crosstalk
 /**
  * Main entry point for the application.
  * Initializes the app, dark mode toggle, and signals iframe resize when DOM is ready.
@@ -7,8 +10,16 @@
 document.addEventListener("DOMContentLoaded", () => {
   initApp();
   initDarkModeToggle();
-  signalIframeResize(); // Use the wrapper function instead of direct xtalk.signalIframe() call
+  if (typeof signalIframeResize === "function") {
+    signalIframeResize();
+  } else {
+    console.error("signalIframeResize function not found");
+  }
 });
+
+//#endregion
+
+//#region - CROSSTALK
 
 // Initialize crosstalk
 /**
@@ -37,7 +48,11 @@ function initCrosstalk() {
   }
 }
 
-// Initialize app
+//#endregion
+
+//#region - MAIN APP
+
+// Initialize the app
 /**
  * Initializes the main application.
  * Fetches drug data, initializes search functionality, and handles loading states.
@@ -62,7 +77,11 @@ async function initApp() {
   }
 }
 
-// Define function to control visibility of loading indicator
+//#endregion
+
+//#region - UI HELPERS
+
+// Control visibility of the loading indicator
 /**
  * Controls the visibility of the loading indicator.
  * @param {boolean} isLoading - Whether to show or hide the loading indicator.
@@ -74,7 +93,7 @@ function showLoading(isLoading) {
   }
 }
 
-// Define function to show error message to user
+// Show an error message to the user
 /**
  * Displays an error message to the user.
  * @param {string} message - The error message to display.
@@ -87,8 +106,11 @@ function showError(message) {
   }
 }
 
-// Define functions to manage dark mode toggle functionality
+//#endregion
 
+//#region - DARK MODE
+
+// Manage dark mode toggle functionality
 /**
  * Initializes the dark mode toggle functionality.
  * Handles user preferences, local storage, and system color scheme changes.
@@ -153,3 +175,5 @@ function disableDarkMode() {
   document.getElementById("darkModeToggle").checked = false;
   localStorage.setItem("darkMode", "disabled");
 }
+
+//#endregion

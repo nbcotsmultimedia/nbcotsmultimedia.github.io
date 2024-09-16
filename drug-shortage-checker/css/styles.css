@@ -43,7 +43,7 @@ body {
   margin: 0 auto; /* Center the content */
   padding: 1.25rem;
   font-size: var(--font-size-base);
-  overflow: hidden; /* For crosstalk */
+  /* overflow: hidden; */
 }
 /* #endregion */
 
@@ -449,14 +449,6 @@ p {
   transform: translateY(-50%);
   white-space: nowrap;
 }
-
-/* .duration-line {
-  position: absolute;
-  left: 7px;
-  top: 24px;
-  width: 2px;
-  background-color: var(--border-color);
-} */
 
 .shortage-info {
   /* margin-top: 1.5rem; */
