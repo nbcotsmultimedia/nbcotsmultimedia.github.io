@@ -1,4 +1,4 @@
-/* #region ROOT VARIABLES AND BASIC STYLES */
+/* #region ROOT VARIABLES */
 :root {
   /* Color variables */
   --primary-color: #2673dd;
@@ -26,31 +26,54 @@
   --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
   /* Font sizes */
-  --font-size-base: 1rem;
-  --font-size-sm: 0.875rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.75rem;
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 24px */
+  --font-size-2xl: 1.9rem;
+  --font-size-3xl: 2.25rem; /* 36px */
+  --font-size-4xl: 3rem; /* 48px */
+  --font-size-5xl: 3.75rem; /* 60px */
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Line heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
 }
 
-/* General Styles */
+/* #endregion */
+
+/* #region - GENERAL STYLES */
+
 body {
-  font-family: "Inter", sans-serif; /* Set Inter as the primary font */
-  line-height: 1.6;
-  color: var(--text-color);
-  max-width: 40em; /* Limit max width for better readability */
-  margin: 0 auto; /* Center the content */
-  padding: 1.25rem;
+  /* Text */
+  font-family: "Inter", sans-serif;
   font-size: var(--font-size-base);
-  overflow: hidden;
+  line-height: var(--line-height-normal);
+  color: var(--text-color);
+
+  /* Spacing */
+  padding: var(--space-md);
+  margin: 0 auto; /* Center the content */
+  max-width: 42em; /* Limit max width for better readability */
+  /* overflow: hidden; */
 }
 
 #border-container {
   border: 0.5px solid var(--border-color); /* Use the defined border color */
   border-radius: var(--border-radius); /* Optional: to round the corners */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional: adds a slight shadow for depth */
-  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Add a slight shadow for depth */
+  padding: var(--space-md);
   min-height: 300px;
 }
 
@@ -63,48 +86,50 @@ h1,
 h2,
 h3 {
   color: var(--secondary-color);
-  margin-bottom: 0.5em;
+  margin-bottom: var(--space-sm);
+  line-height: var(--line-height-tight);
 }
+
 h1 {
   font-size: var(--font-size-2xl);
-  font-weight: 600;
 }
 h2 {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   font-weight: 600;
 }
 h3 {
-  font-size: var(--font-size-lg);
-  font-weight: 500;
+  font-size: var(--font-size-md);
+  font-weight: 400;
 }
 
 /* Custom Typography Styles */
 .headline,
 .subhead {
-  font-family: "ArtHouseMed", sans-serif;
-  margin-bottom: 0.625rem;
+  margin-bottom: var(--space-sm);
 }
 .headline {
+  font-family: Garamond, Baskerville, Baskerville Old Face, Hoefler Text,
+    Times New Roman, serif;
   font-size: var(--font-size-3xl);
   color: var(--text-color);
-  margin-top: 3rem;
+  margin-top: var(--space-2xl);
 }
 .subhead {
   font-size: 1.0625rem;
   color: var(--gray-medium);
-  line-height: 1.4;
+  line-height: var(--line-height-relaxed);
   font-family: "ArtHouseMed", sans-serif;
 }
 
 p {
+  font-size: var(--font-size-md);
   font-weight: 300;
-  font-size: 1.0625rem;
 }
 .credits {
-  font-size: 0.875rem;
+  font-size: var(--font-size-sm);
   color: var(--gray-medium);
-  margin-top: 0.625rem;
-  line-height: 1.5;
+  margin-top: var(--space-sm);
+  line-height: var(--line-height-relaxed);
 }
 
 /* #endregion */
@@ -132,7 +157,7 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 0.625rem;
+  margin-right: var(--space-sm);
 }
 
 .icon-route {
@@ -151,23 +176,23 @@ p {
 
 #search-container {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-md);
 }
 
 #search-container p {
   font-size: var(--font-size-base);
   color: var(--gray-medium);
-  margin-bottom: 1.5rem;
 }
 
 .search-input-container {
   position: relative;
-  margin-bottom: 1rem;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
 }
 
 #search-input {
   width: 100%;
-  padding: 1rem 2.5rem 0.75rem;
+  padding: var(--space-md) var(--space-xl) var(--space-md) var(--space-2xl);
   font-size: var(--font-size-base);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
@@ -175,7 +200,6 @@ p {
   transition: box-shadow 0.3s ease;
   box-sizing: border-box;
 }
-
 #search-input:focus {
   outline: none;
   box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
@@ -183,7 +207,7 @@ p {
 .search-input-container::before {
   content: "";
   position: absolute;
-  left: 0.875rem;
+  left: var(--space-md);
   top: 50%;
   transform: translateY(-50%);
   width: 1rem;
@@ -197,12 +221,12 @@ p {
 
 #clear-search {
   position: absolute;
-  right: 0.875rem;
+  right: var(--space-sm);
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 1.25rem;
+  font-size: var(--font-size-lg);
   color: var(--gray-medium);
   cursor: pointer;
   transition: color 0.3s ease;
@@ -224,27 +248,33 @@ p {
 }
 
 .autocomplete-item {
-  padding: 0.75rem;
+  padding: var(--space-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   transition: background-color 0.3s ease;
+  font-size: var(--font-size-sm);
 }
 
 .autocomplete-item:hover {
   background-color: var(--light-gray);
 }
 .autocomplete-item::before {
-  margin-right: 0.75rem;
-  font-size: 1.25rem;
+  margin-right: var(--space-sm);
+  font-size: var(--font-size-md);
 }
 
 /* Loading and No Results Styles */
 
 #loading,
+#no-results,
+.no-results {
+  padding: var(--space-xl);
+}
+
+#loading,
 #no-results {
   text-align: center;
-  padding: 2rem;
   background-color: var(--white);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
@@ -252,12 +282,11 @@ p {
 
 .no-results {
   text-align: center;
-  padding: 2rem;
 }
 .no-results h2 {
   font-size: var(--font-size-lg);
   color: var(--secondary-color);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
 }
 .no-results p {
   font-size: var(--font-size-sm);
@@ -273,15 +302,15 @@ p {
   background-color: var(--white);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  padding: 1.5rem;
+  padding: var(--space-lg);
 }
 
 .drug-category {
-  margin-bottom: 2rem; /* Add spacing above the brand section */
+  margin-bottom: var(--space-xl);
 }
 
 .brand-info {
-  margin-top: 1.75rem; /* Add spacing between brand sections */
+  margin-top: var(--space-lg);
 }
 
 .drug-category,
@@ -313,14 +342,14 @@ p {
 .dosage-item {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
   overflow: hidden;
 }
 
 .dosage-summary {
   display: flex;
   align-items: center;
-  padding: 0.625rem;
+  padding: var(--space-sm);
   cursor: pointer;
   background-color: var(--white);
   justify-content: space-between; /* This spreads out the child elements */
@@ -333,7 +362,7 @@ p {
 }
 
 .availability {
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 0.75rem;
   font-size: var(--font-size-sm);
   text-transform: uppercase;
@@ -367,7 +396,7 @@ p {
 }
 
 .shortage-details {
-  padding: 1rem;
+  padding: var(--space-md);
   background-color: var(--light-gray);
   border-top: 1px solid var(--border-color);
 }
@@ -379,14 +408,14 @@ p {
 /* OUTER CONTAINER */
 
 .timeline-wrapper {
-  padding-bottom: 20px; /* Adjust this value as needed */
+  padding-bottom: var(--space-xl);
 }
 
 .timeline-container {
-  padding-bottom: 1px; /* This prevents margin collapse */
+  padding-bottom: var(--space-xl);
   position: relative;
-  margin: 1rem 0 3rem;
-  padding-left: 0.75rem;
+  margin: var(--space-md) 0 var(--space-xl);
+  padding-left: var(--space-sm);
 }
 
 .timeline {
@@ -421,13 +450,13 @@ p {
 
 /* Add some spacing between timeline items */
 .timeline-item:not(:last-child) {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-md);
 }
 
 /* TIMELINE ITEM DESCRIPTION */
 .timeline-item-description {
-  padding-left: 2rem;
-  padding-bottom: 1rem;
+  padding-left: var(--space-xl);
+  padding-bottom: var(--space-md);
 }
 
 .timeline-item-description .date {
@@ -445,23 +474,21 @@ p {
 /* DURATION AND ADDITIONAL INFO */
 .timeline-duration {
   position: absolute;
-  left: 2.75rem;
+  left: var(--space-xl);
   font-size: var(--font-size-sm);
   color: var(--gray-medium);
 }
 
 .elapsed-time {
   position: absolute;
-  left: 2rem;
-  /* transform: translateY(-50%); */
-  font-size: 0.8em;
+  left: var(--space-xl);
+  font-size: var(--font-size-xs);
   color: #666;
   white-space: nowrap;
 }
 
 .shortage-info {
-  /* margin-top: 1.5rem; */
-  padding: 1rem;
+  padding: var(--space-md);
   background-color: var(--light-gray);
   border-radius: var(--border-radius);
 }
@@ -473,32 +500,35 @@ p {
 }
 
 .shortage-info p + p {
-  margin-top: 0.5rem;
+  margin-top: var(--space-xs);
 }
 
 /* #endregion */
 
 /* #region MEDIA QUERIES */
 
-@media (max-width: 37.5rem) {
+@media (max-width: 768px) {
   body {
-    padding: 0.625rem;
+    padding: var(--space-sm);
   }
   #search-input {
     font-size: var(--font-size-sm);
   }
   .drug-result {
-    padding: 1rem;
+    padding: var(--space-md);
   }
 }
 
-@media (max-width: 31.25rem) {
-  .headline {
-    font-size: var(--font-size-2xl);
-  }
+@media (max-width: 500px) {
   .subhead,
   p {
     font-size: var(--font-size-base);
+  }
+  h2 {
+    font-size: var(--font-size-lg);
+  }
+  h3 {
+    font-size: var(--font-size-md);
   }
   .credits {
     font-size: var(--font-size-sm);
