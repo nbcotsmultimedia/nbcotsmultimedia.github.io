@@ -66,7 +66,7 @@ body {
   padding: var(--space-md);
   margin: 0 auto; /* Center the content */
   max-width: 42em; /* Limit max width for better readability */
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 #border-container {
@@ -520,6 +520,9 @@ p {
 }
 
 @media (max-width: 500px) {
+  .headline {
+    font-size: var(--font-size-2xl);
+  }
   .subhead,
   p {
     font-size: var(--font-size-base);
