@@ -1,0 +1,59 @@
+body {
+    background-color: #e4e4e4 !important;
+  }
+  .navBtn {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  .copyBtn {
+    background-color:#0275d8;
+    border-radius: 4px;
+    color: #FFF;
+    font-size: 12px;
+    padding: 2px 4px;
+    font-weight: 500;
+  }
+  .copyBtn:hover {
+    color: #CCC;
+    cursor: pointer;
+  }
+  .output {
+    min-height: 150px;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 10px;
+    word-wrap: break-word;
+    font-family: "Courier", sans-serif;
+    font-size: 14px;
+  }
+  .output1 {
+    min-height: 40px;
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 10px;
+    word-wrap: break-word;
+    font-family: "Courier", sans-serif;
+    font-size: 14px;
+  }
+  .kicker {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 0px;
+  }
+  .redNote {
+    font-size: 11px;
+    color: red;
+    text-transform: uppercase;
+    margin-top: -10px;
+  }
+
+  .showLocal, .showPartner {
+    cursor: pointer;
+  }
+
+  #stations {
+    padding: 7px;
+    border-color: #CCC;
+    border-radius: 4px;
+    margin-top: 3px;
+  }

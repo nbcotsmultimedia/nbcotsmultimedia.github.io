@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Video Embed Code Generator NEW</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <link href="css/converter.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    
+ 
+  </head>
+
+  <body>
+
+    <!-- Start content here-->
+    <div class="container" style="background-color: #FFF; padding: 25px; margin-top: 15px;">
+      <div class="row">
+        <div class="col-3">
+          <img src="images/logos.png" class="img-fluid" />
+        </div>
+        <div class="col-9">
+          <h1>Video Embed Code Converter</h1>
+          <p></p>
+        </div>
+
+      </div>
+      
+      <div class="row">
+        <div class="col-12">
+          <hr/>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-3" style="padding-right: 45px; border-right: 1px dotted #CCC">
+          <h3>Which video player do you have embed code for?</h3>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showLocal navBtn">NBC Local Player</button>
+          <p class="showPartner"><img src="images/local.jpg" class="img-fluid" /></p>
+          <hr/>
+
+          <button type="button" class="btn btn-primary showPartner navBtn">NBC News Partners</button>
+          <p class="showPartner"><img src="images/nbcnews.jpg" class="img-fluid" /></p>
+         
+        </div>
+       
+        <div class="col-9">
+
+          <div id="localSec">
+            <h3>Convert NBC Local Player code</h3>
+            <p>The default embed code is a javscript embed that doesn't always work when embeded on other sites. This tool will take any OTS or LX embed and covert it an iframe embed.</p>
+            
+            <label>Paste embed code from Local player</label>
+            <p><input type="text" class="form-control" id="localPastedCode" placeholder="Should begin with <script type=..."></p>
+            <button type="button" class="btn btn-primary" id="localConvert">Convert to iFrame embed</button>
+    
+                
+            <div style="margin-top: 15px;">
+              <p class="kicker">Embed Code <a class="copyBtn" href="javascript:copyCode('#localCode');">COPY</a></p>
+              <p class="output" id="localCode">&nbsp;</p>
+            </div>
+
+            <hr/>
+
+            <label><strong>Already have the Video ID and Syndication ID from Wordpress?</strong></label>
+            <br/>
+     
+            <label>Video ID</label>
+            <p><input type="text" class="form-control" id="vidPaste" placeholder="0000000000000" maxlength="13" style="width: 150px"></p>
+            <label>Syndication ID</label>
+            <p><input type="text" class="form-control" id="cidPaste" placeholder="0:0:000000" maxlength="13" style="width: 150px"></p>
+
+            <span class="smTxt">Select an origin (if it doesn't matter, just select one)</span>
+            <br/>
+            <select id="stations" name="stations">
+              <option value="nbcbayarea.com">nbcbayarea.com</option>
+              <option value="nbcboston.com">nbcboston.com</option>
+              <option value="nbcconnecticut.com">nbcconnecticut.com</option>
+              <option value="nbcchicago.com">nbcchicago.com</option>
+              <option value="nbcdfw.com">nbcdfw.com</option>
+              <option value="nbclosangeles.com">nbclosangeles.com</option>
+              <option value="nbcmiami.com">nbcmiami.com</option>
+              <option value="nbcnewyork.com">nbcnewyork.com</option>
+              <option value="nbcphiladelphia.com">nbcphiladelphia.com</option>
+              <option value="nbcsandiego.com">nbcsandiego.com</option>
+              <option value="nbcwashington.com">nbcwashington.com</option>
+              <option value="necn.com">necn.com</option>
+              <option value="lx.com">lx.com</option>
+              <option value="telemundochicago.com">telemundoareadelabahia.com</option>
+              <option value="telemundochicago.com">telemundochicago.com</option>
+              <option value="telemundodallas.com">telemundodallas.com</option>
+              <option value="telemundodenver.com">telemundodenver.com</option>
+              <option value="telemundo48elpaso.com">telemundo48elpaso.com</option>
+              <option value="telemundohouston.com">telemundohouston.com</option>
+              <option value="telemundo52.com">telemundo52.com</option>
+              <option value="telemundolasvegas.com">telemundolasvegas.com</option>
+              <option value="telemundo40.com">telemundo40.com</option>
+              <option value="telemundo51.com">telemundo51.com</option>
+              <option value="telemundo47.com">telemundo47.com</option>
+              <option value="telemundonuevainglaterra.com">telemundonuevainglaterra.com</option>
+              <option value="telemundo31.com">telemundo31.com</option>
+              <option value="telemundo62.com">telemundo62.com</option>
+              <option value="telemundoarizona.com">telemundoarizona.com</option>
+              <option value="telemundopr.com">telemundopr.com</option>
+              <option value="telemundosanantonio.com">telemundosanantonio.com</option>
+              <option value="telemundo20.com">telemundo20.com</option>
+              <option value="telemundo49.com">telemundo49.com</option>
+              <option value="telemundowashingtondc.com">telemundowashingtondc.com</option>
+              <option value="telemundoutah.com">telemundoutah.com</option>
+              <option value="telemundo33.com">telemundo33.com</option>
+              <option value="telemundofresno.com">telemundofresno.com</option>
+            </select>
+            <br/>
+            <br/>
+
+            <button type="button" class="btn btn-primary" id="get">Get iFrame embed code</button>
+
+            <hr/>
+           
+            <div class="output" id="localCode2"></div>
+            <!--<p><a href="javascript:copyCode('#localCode2');">COPY CODE TO CLIPBOARD</a></p>-->
+            <p><a class="copyBtn" href="javascript:copyCode('#localCode2');">COPY</a></p>
+ 
+            
+          </div>
+
+          <div id="partnerSec">
+
+            <h3>Convert video embed code</h3>
+            <p>Make embeddedable video from NBC News, TODAY, or CNBC responsive on Local Wordpress sites.</p>
+            
+            <label>Copied embed code from partner sites</label>
+            <p><input type="text" class="form-control" id="partnerCode" placeholder="Paste code here"></p>
+            <p><button type="button" class="btn btn-primary" id="submitPartner">CONVERT CODE</button></p>
+
+              
+            <div id="convEmbedCode">
+              <p>&nbsp;</p>
+              <p class="kicker">Converted Embed Code <a class="copyBtn" href="javascript:copyCode('#embedCode');">COPY</a></p>
+              <p class="output" id="embedCode"></p>
+              
+            </div>
+          </div>
+
+                  
+        </div>
+      </div>
+      
+
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script src="js/converter.js"></script>
+
+  </body>
+</html>
