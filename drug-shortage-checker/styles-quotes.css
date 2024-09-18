@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "Romie";
+  src: url("https://assets.codepen.io/383755/Romie-Regular.woff2")
+    format("woff2");
+}
+
+.quote {
+  opacity: 0;
+}
