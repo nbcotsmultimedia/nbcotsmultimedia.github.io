@@ -19,8 +19,8 @@ function startRotation() {
   // Show the first quote initially
   quotes[0].classList.add("visible");
 
-  // Change quote every 6.5 seconds
-  setInterval(showNextQuote, 7000);
+  // Change quote every 8 seconds
+  setInterval(showNextQuote, 8000);
 }
 
 // Start rotation when the window loads
