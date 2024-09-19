@@ -349,6 +349,13 @@ body {
 
 /* #region - Media Queries */
 
+@media (max-width: 1200px) {
+  /* Constrain height of featured header image to view gradient */
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 35rem !important;
+  }
+}
+
 /* Desktop viewports */
 @media (max-width: 1024px) {
   .container {
@@ -357,11 +364,6 @@ body {
   /* Center the 'coming soon' text displayed at the bottom of each article section */
   div.coming-soon {
     text-align: center !important;
-  }
-
-  /* Constrain height of featured header image to view gradient */
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 35rem !important;
   }
 }
 
