@@ -134,7 +134,15 @@ body {
 
 @media (max-width: 768px) {
   .quote-text {
-    font-size: 1.25rem;
+    font-size: 1.75rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .quote-text {
+    font-size: 1.35rem;
     line-height: 1.5;
     margin-bottom: 1rem;
   }
