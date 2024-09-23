@@ -1,6 +1,6 @@
 var extractedURL;
 var callletters;
-
+var partner = "";
 
 function init() {
 	//console.log("ready");
@@ -23,9 +23,20 @@ function init() {
 	    var pattern;
 		var srcIndex;
 
-		if ($("#partnerCode").val().indexOf("nbcnews.com") > 0 || $("#partnerCode").val().indexOf("today.com") > 0) {
+		if ($("#partnerCode").val().indexOf("nbcnews.com") > 0 || $("#partnerCode").val().indexOf("today.com")  > 0) {
 			//console.log("nbc or today");
+			partner = "NBCTODAY";
 			$("#lead").show();
+			tmp1a = $("#partnerCode").val().replace(/\'/g,"\"");
+      		pattern = /"([^"]*)"/g;
+			srcIndex = 3;
+			
+		} 
+
+		if ($("#partnerCode").val().indexOf("msnbc.com")  > 0) {
+			//console.log("MSNBC");
+			partner = "MSNBC";
+			$("#lead").hide();
 			tmp1a = $("#partnerCode").val().replace(/\'/g,"\"");
       		pattern = /"([^"]*)"/g;
 			srcIndex = 3;
@@ -34,15 +45,31 @@ function init() {
 		
 		if ($("#partnerCode").val().indexOf("cnbc.com") > 0) {
 			//console.log("CNBC");
+			partner = "CNBC";
 			$("#lead").hide();
 			tmp1a = $("#partnerCode").val().replace(/\'/g,"\"");
 			pattern = /"([^"]*)"/g;
 			srcIndex = 0;
 		} 
-	  
-    
-      var matches = tmp1a.match(pattern);  //returns array
-	  //console.log(matches)
+
+		if ($("#partnerCode").val().indexOf("nbcsports.com") > 0) {
+			//console.log("NBCSports");
+			partner = "NBCSPORTS";
+			$("#lead").hide();
+			tmp1a = $("#partnerCode").val().substring(12,$("#partnerCode").val().indexOf("style"))
+			//<iframe src=https://www.nbcsports.com/video/embed/nbcsports/iR4tJy4samCa?autoPlay=true&mute=true style="width:480px; height:270px" frameBorder="0" seamless="seamless" allowFullScreen></iframe>
+			//console.log("SPORTS " + tmp1a);
+			srcIndex = 0;
+		} 
+		
+		var matches = [];
+
+		if (partner != "NBCSPORTS") {
+	      matches = tmp1a.match(pattern);  //returns array
+		  //console.log(matches)
+		} else {
+			matches[0] = tmp1a;
+		}
 	  
 	  if ($("#partnerCode").val().indexOf("nbcnews.com") > 0 || $("#partnerCode").val().indexOf("today.com") > 0) {
 		$("#leadURL").text(matches[3].substring(1, matches[3].length-1));
