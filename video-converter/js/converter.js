@@ -5,7 +5,7 @@ var partner = "";
 function init() {
 	//console.log("ready");
 	$("#localSec").hide();
-    $("#partnerSec").hide();
+    //$("#partnerSec").hide();
       
     $(".showLocal").click(function() {
       $("#localSec").show();
