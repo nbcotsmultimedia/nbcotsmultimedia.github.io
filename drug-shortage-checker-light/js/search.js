@@ -210,9 +210,10 @@ function clearSearch() {
   // After transition, set height to auto to allow for potential changes in image size
   setTimeout(() => {
     illustrationContainer.style.height = "auto";
+    signalIframeResize(); // Call crosstalk after expansion
   }, 300); // This should match the transition duration in CSS
 
-  signalIframeResize(); // Call crosstalk
+  signalIframeResize(); // Call crosstalk immediately when clearing
 }
 
 // Handle keydown events for navigation in autocomplete results
@@ -268,7 +269,10 @@ function selectDrug(genericName, drugs) {
   illustrationContainer.style.height = `${currentHeight}px`;
   setTimeout(() => {
     illustrationContainer.style.height = "0";
+    signalIframeResize(); // Call crosstalk after collapse
   }, 10);
+
+  signalIframeResize(); // Call crosstalk immediately when selecting a drug
 
   if (typeof window.displayDrugDetails === "function") {
     window.displayDrugDetails(drugs);
