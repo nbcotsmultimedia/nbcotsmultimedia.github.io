@@ -1,0 +1,97 @@
+:root {
+  --dm-background: #0c0c0c;
+  --dm-surface: #1e1e1e;
+  --dm-primary-color: #4e8ff1;
+  --dm-secondary-color: #b0b3b8;
+  --dm-text-color: #e4e6eb;
+  --dm-border-color: #3e4042;
+}
+
+body {
+  max-width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--dm-background);
+  color: var(--dm-text-color);
+  overflow: hidden;
+}
+
+.container {
+  height: 400vh;
+}
+
+.quote-section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.quote {
+  width: 80%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0; /* Start hidden */
+  transition: opacity 1s ease-in-out; /* Fade effect */
+  text-align: center;
+}
+
+.quote.visible {
+  opacity: 1; /* Show quote */
+}
+
+.quote-text {
+  font-size: 1.75rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-optical-sizing: auto;
+  color: var(--dm-text-color);
+
+  /* Crimson Pro */
+  font-family: "Crimson Pro", serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.quote-author {
+  margin-top: 1rem;
+  font-family: "Bodoni Moda", serif;
+  font-style: italic;
+  color: var(--dm-secondary-color);
+}
+
+.quote-details {
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--dm-secondary-color);
+  margin-top: 0.5rem;
+
+  /* Syne */
+  font-family: "Syne", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 768px) {
+  .quote-text {
+    font-size: 1.75rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .quote-text {
+    font-size: 1.35rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+}
