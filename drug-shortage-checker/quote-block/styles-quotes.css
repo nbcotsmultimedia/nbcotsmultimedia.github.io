@@ -12,8 +12,8 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--dm-background);
+  color: var(--dm-text-color);
   overflow: hidden;
 }
 
@@ -49,55 +49,27 @@ body {
   line-height: 1.6;
   margin-bottom: 1rem;
   font-optical-sizing: auto;
-
-  /* Playfair */
-  /* font-family: "Playfair Display", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal; */
-
-  /* Bodoni */
-  /* font-family: "Bodoni Moda", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
-  font-style: normal; */
-
-  /* Noto Serif */
-  /* font-family: "Noto Serif", serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: italic;
-  font-variation-settings: "wdth" 100; */
-
-  /* Crimson */
-  /* font-family: "Crimson Text", serif;
-  font-weight: 400;
-  font-style: italic; */
+  color: var(--dm-text-color);
 
   /* Crimson Pro */
   font-family: "Crimson Pro", serif;
   font-optical-sizing: auto;
   font-weight: 100;
   font-style: italic;
-
-  /* IBM Plex Serif */
-  /* font-family: "IBM Plex Serif", serif;
-  font-weight: 100;
-  font-style: italic; */
 }
 
 .quote-author {
   margin-top: 1rem;
   font-family: "Bodoni Moda", serif;
   font-style: italic;
-  color: #666;
+  color: var(--dm-secondary-color);
 }
 
 .quote-details {
   font-size: 0.8rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #888;
+  color: var(--dm-secondary-color);
   margin-top: 0.5rem;
 
   /* Syne */
@@ -108,30 +80,6 @@ body {
 }
 
 /* MEDIA QUERIES */
-/* For devices set to dark mode */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--dm-background);
-    color: var(--dm-text-color);
-  }
-
-  .quote-text {
-    color: var(--dm-text-color);
-  }
-
-  .quote-author {
-    color: var(--dm-secondary-color);
-  }
-
-  .quote-details {
-    color: var(--dm-secondary-color);
-  }
-
-  .line {
-    background: var(--dm-text-color);
-  }
-}
-
 @media (max-width: 768px) {
   .quote-text {
     font-size: 1.75rem;

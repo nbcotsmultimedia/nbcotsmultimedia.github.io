@@ -22,164 +22,163 @@
   --dm-icon-background: #333333;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: var(--dm-background);
-    color: var(--dm-text-color);
-  }
+/* Remove the media query to apply dark mode styles globally */
+body {
+  background-color: var(--dm-background);
+  color: var(--dm-text-color);
+}
 
-  #border-container {
-    border: 0.5px solid var(--dm-border-color); /* Use the defined border color */
-  }
+#border-container {
+  border: 0.5px solid var(--dm-border-color);
+}
 
-  /* Typography */
-  h1,
-  h2,
-  h3,
-  .headline {
-    color: var(--dm-headline-color);
-  }
+/* Typography */
+h1,
+h2,
+h3,
+.headline {
+  color: var(--dm-headline-color);
+}
 
-  .subhead,
-  .credits {
-    color: var(--dm-secondary-color);
-  }
+.subhead,
+.credits {
+  color: var(--dm-secondary-color);
+}
 
-  /* Search and Autocomplete */
-  #search-input {
-    background-color: var(--dm-input-background);
-    color: var(--dm-input-text);
-    border-color: var(--dm-border-color);
-  }
+/* Search and Autocomplete */
+#search-input {
+  background-color: var(--dm-input-background);
+  color: var(--dm-input-text);
+  border-color: var(--dm-border-color);
+}
 
-  #autocomplete-results {
-    background-color: var(--dm-surface);
-    border-color: var(--dm-border-color);
-  }
+#autocomplete-results {
+  background-color: var(--dm-surface);
+  border-color: var(--dm-border-color);
+}
 
-  .autocomplete-item:hover {
-    background-color: var(--dm-input-background);
-  }
+.autocomplete-item:hover {
+  background-color: var(--dm-input-background);
+}
 
-  /* Drug Result */
-  .drug-result {
-    background-color: var(--dm-surface);
-  }
+/* Drug Result */
+.drug-result {
+  background-color: var(--dm-surface);
+}
 
-  .drug-category .value,
-  .manufacturer .value {
-    color: var(--dm-text-color);
-  }
+.drug-category .value,
+.manufacturer .value {
+  color: var(--dm-text-color);
+}
 
-  /* Dosage Item */
-  .dosage-item {
-    background-color: var(--dm-surface);
-    border-color: var(--dm-border-color);
-  }
+/* Dosage Item */
+.dosage-item {
+  background-color: var(--dm-surface);
+  border-color: var(--dm-border-color);
+}
 
-  .dosage-summary {
-    background-color: var(--dm-input-background);
-    border-bottom-color: var(--dm-border-color);
-  }
+.dosage-summary {
+  background-color: var(--dm-input-background);
+  border-bottom-color: var(--dm-border-color);
+}
 
-  .icon-route {
-    fill: var(--dm-background);
-  }
+.icon-route {
+  fill: var(--dm-background);
+}
 
-  .dosage-value,
-  .availability {
-    color: var(--dm-text-color);
-  }
+.dosage-value,
+.availability {
+  color: var(--dm-text-color);
+}
 
-  .expand-icon svg {
-    stroke: var(--dm-text-color);
-  }
+.expand-icon svg {
+  stroke: var(--dm-text-color);
+}
 
-  /* Availability Status */
-  .availability.resolved {
-    background-color: var(--dm-status-resolved);
-    color: var(--dm-success-color);
-  }
+/* Availability Status */
+.availability.resolved {
+  background-color: var(--dm-status-resolved);
+  color: var(--dm-success-color);
+}
 
-  .availability.shortage {
-    background-color: var(--dm-status-shortage);
-    color: var(--dm-danger-color);
-  }
+.availability.shortage {
+  background-color: var(--dm-status-shortage);
+  color: var(--dm-danger-color);
+}
 
-  .availability.discontinued {
-    background-color: var(--dm-status-discontinued);
-    color: var(--dm-warning-color);
-  }
+.availability.discontinued {
+  background-color: var(--dm-status-discontinued);
+  color: var(--dm-warning-color);
+}
 
-  /* Timeline */
-  .timeline::before,
-  .duration-line {
-    background-color: var(--dm-border-color);
-  }
+/* Timeline */
+.timeline::before,
+.duration-line {
+  background-color: var(--dm-border-color);
+}
 
-  .timeline-item-icon {
-    background-color: var(--dm-background);
-    border-color: var(--dm-border-color);
-  }
+.timeline-item-icon {
+  background-color: var(--dm-background);
+  border-color: var(--dm-border-color);
+}
 
-  .timeline-item-icon svg {
-    fill: var(--dm-text-color);
-  }
+.timeline-item-icon svg {
+  fill: var(--dm-text-color);
+}
 
-  .timeline-item-icon.shortage {
-    background-color: var(--dm-danger-color);
-    border-color: var(--dm-danger-color);
-  }
+.timeline-item-icon.shortage {
+  background-color: var(--dm-danger-color);
+  border-color: var(--dm-danger-color);
+}
 
-  .timeline-item-icon.resolved,
-  .timeline-item-icon.available {
-    background-color: var(--dm-success-color);
-    border-color: var(--dm-success-color);
-  }
+.timeline-item-icon.resolved,
+.timeline-item-icon.available {
+  background-color: var(--dm-success-color);
+  border-color: var(--dm-success-color);
+}
 
-  .timeline-item-icon.discontinued {
-    background-color: var(--dm-warning-color-med);
-    border-color: var(--dm-warning-color-med);
-  }
+.timeline-item-icon.discontinued {
+  background-color: var(--dm-warning-color-med);
+  border-color: var(--dm-warning-color-med);
+}
 
-  .timeline-item-icon.current {
-    border-color: var(--dm-gray-light);
-  }
+.timeline-item-icon.current {
+  border-color: var(--dm-gray-light);
+}
 
-  .current-status-circle.resolved {
-    background-color: var(--dm-success-color);
-    border-color: var(--dm-success-color);
-  }
+.current-status-circle.resolved {
+  background-color: var(--dm-success-color);
+  border-color: var(--dm-success-color);
+}
 
-  .current-status-circle.shortage {
-    background-color: var(--dm-danger-color);
-    border-color: var(--dm-danger-color);
-  }
+.current-status-circle.shortage {
+  background-color: var(--dm-danger-color);
+  border-color: var(--dm-danger-color);
+}
 
-  .current-status-circle.discontinued {
-    background-color: var(--dm-warning-color-med);
-    border-color: var(--dm-warning-color-med);
-  }
+.current-status-circle.discontinued {
+  background-color: var(--dm-warning-color-med);
+  border-color: var(--dm-warning-color-med);
+}
 
-  .timeline-item-description .date,
-  .timeline-item-description .event,
-  .duration-text {
-    color: var(--dm-text-color);
-  }
+.timeline-item-description .date,
+.timeline-item-description .event,
+.duration-text {
+  color: var(--dm-text-color);
+}
 
-  /* Shortage Details */
-  .shortage-details {
-    background-color: var(--dm-surface);
-    border-top: 1px solid var(--dm-border-color);
-    color: var(--dm-text-color);
-  }
+/* Shortage Details */
+.shortage-details {
+  background-color: var(--dm-surface);
+  border-top: 1px solid var(--dm-border-color);
+  color: var(--dm-text-color);
+}
 
-  .shortage-info {
-    background-color: var(--dm-surface);
-    border-top-color: var(--dm-border-color);
-  }
+.shortage-info {
+  background-color: var(--dm-surface);
+  border-top-color: var(--dm-border-color);
+}
 
-  .shortage-info p {
-    color: var(--dm-gray-medium);
-  }
+.shortage-info p {
+  color: var(--dm-gray-medium);
 }

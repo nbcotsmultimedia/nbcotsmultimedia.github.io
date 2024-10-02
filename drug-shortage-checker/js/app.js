@@ -2,10 +2,10 @@
 
 //#region - INITIALIZATION
 
-// On DOM load, run functions to initialize the app, toggle dark mode, and call crosstalk
+// On DOM load, run functions to initialize the app and call crosstalk
 /**
  * Main entry point for the application.
- * Initializes the app, dark mode toggle, and signals iframe resize when DOM is ready.
+ * Initializes the app and signals iframe resize when DOM is ready.
  */
 document.addEventListener("DOMContentLoaded", () => {
   initApp();

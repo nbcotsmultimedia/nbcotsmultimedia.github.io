@@ -15,10 +15,16 @@ function initializeSearch() {
   const searchInput = document.getElementById("search-input");
   const clearButton = document.getElementById("clear-search");
   const autocompleteResults = document.getElementById("autocomplete-results");
+  const spotIllustration = document.getElementById("spotIllustration");
 
-  if (searchInput && clearButton && autocompleteResults) {
-    searchInput.spellcheck = false; // Add this line
-    setupEventListeners(searchInput, clearButton, autocompleteResults);
+  if (searchInput && clearButton && autocompleteResults && spotIllustration) {
+    searchInput.spellcheck = false;
+    setupEventListeners(
+      searchInput,
+      clearButton,
+      autocompleteResults,
+      spotIllustration
+    );
   } else {
     console.error("Required elements not found in the DOM");
   }
@@ -27,7 +33,12 @@ function initializeSearch() {
 }
 
 // Set up event listeners for search functionality
-function setupEventListeners(searchInput, clearButton, autocompleteResults) {
+function setupEventListeners(
+  searchInput,
+  clearButton,
+  autocompleteResults,
+  spotIllustration
+) {
   searchInput.addEventListener("input", debounce(handleSearch, 300));
   searchInput.addEventListener("focus", showAllResults);
   searchInput.addEventListener("click", showAllResults);
@@ -38,7 +49,10 @@ function setupEventListeners(searchInput, clearButton, autocompleteResults) {
     }, 200);
   });
 
-  clearButton.addEventListener("click", clearSearch);
+  clearButton.addEventListener("click", () => {
+    clearSearch();
+    spotIllustration.style.display = "block";
+  });
 
   document.addEventListener("click", (event) => {
     if (!event.target.closest("#search-section")) {
@@ -171,12 +185,16 @@ function displayNoResultsMessage() {
 
 // #region UTILITY FUNCTIONS
 
-// Clear the search input and results
+// Clear the search input and results, show the illustration
 function clearSearch() {
   const searchInput = document.getElementById("search-input");
   const clearButton = document.getElementById("clear-search");
   const autocompleteResults = document.getElementById("autocomplete-results");
   const resultsContainer = document.getElementById("results-container");
+  const illustrationContainer = document.getElementById(
+    "illustrationContainer"
+  );
+  const spotIllustration = document.getElementById("spotIllustration");
 
   searchInput.value = "";
   clearButton.style.display = "none";
@@ -184,7 +202,17 @@ function clearSearch() {
   if (resultsContainer) {
     resultsContainer.innerHTML = "";
   }
-  xtalk.signalIframe(); // Call crosstalk
+
+  // Smoothly expand the illustration container
+  const naturalHeight = spotIllustration.offsetHeight;
+  illustrationContainer.style.height = `${naturalHeight}px`;
+
+  // After transition, set height to auto to allow for potential changes in image size
+  setTimeout(() => {
+    illustrationContainer.style.height = "auto";
+  }, 300); // This should match the transition duration in CSS
+
+  signalIframeResize(); // Call crosstalk
 }
 
 // Handle keydown events for navigation in autocomplete results
@@ -227,10 +255,21 @@ function selectDrug(genericName, drugs) {
   const searchInput = document.getElementById("search-input");
   const autocompleteResults = document.getElementById("autocomplete-results");
   const clearButton = document.getElementById("clear-search");
+  const illustrationContainer = document.getElementById(
+    "illustrationContainer"
+  );
 
   searchInput.value = genericName;
   autocompleteResults.innerHTML = "";
   clearButton.style.display = "block";
+
+  // Smoothly collapse the illustration container
+  const currentHeight = illustrationContainer.offsetHeight;
+  illustrationContainer.style.height = `${currentHeight}px`;
+  setTimeout(() => {
+    illustrationContainer.style.height = "0";
+  }, 10);
+
   if (typeof window.displayDrugDetails === "function") {
     window.displayDrugDetails(drugs);
   } else {
