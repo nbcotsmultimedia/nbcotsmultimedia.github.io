@@ -30,6 +30,9 @@ body {
 
 .container {
   height: 100vh;
+  max-width: 800px; /* Add this line to limit the width */
+  margin: 0 auto; /* Center the container */
+  padding: 0 20px; /* Add some padding on the sides */
 }
 
 .quote-section {
@@ -56,7 +59,7 @@ cite {
 
 p {
   font-family: "Crimson Pro", Georgia, serif;
-  font-size: 2.7rem;
+  font-size: 2.2rem;
   font-style: italic;
   font-weight: 300;
   padding-bottom: 1rem;
@@ -89,18 +92,17 @@ cite.animate {
 
 .quote-author {
   margin-top: 0.75rem;
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-family: "Bodoni Moda", serif;
   font-style: italic;
   color: var(--dm-secondary-color);
 }
 
 .quote-details {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--dm-secondary-color);
-  margin-top: 0.15rem;
 
   /* Syne */
   font-family: "Syne", sans-serif;
@@ -111,10 +113,10 @@ cite.animate {
 
 @media (max-width: 768px) {
   p {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   .quote-author {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
   .quote-details {
     font-size: 0.75rem;
@@ -123,6 +125,6 @@ cite.animate {
 
 @media (max-width: 500px) {
   p {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 }

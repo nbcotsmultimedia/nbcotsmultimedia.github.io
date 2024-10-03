@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQuoteIndex = 0;
 
   const animate = (quote) => {
-    const words = quote.querySelectorAll("span");
-    const cite = quote.querySelector("cite");
+    const words = quote.querySelectorAll("p span");
+    const author = quote.querySelector(".quote-author");
+    const details = quote.querySelector(".quote-details");
     let maxDelay = 0;
     let maxDuration = 0;
 
@@ -27,23 +28,29 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    if (cite) {
-      gsap.set(cite, { opacity: 0 });
-      gsap.to(cite, {
-        opacity: 1,
-        duration: maxDuration,
-        delay: maxDelay,
-      });
-    }
+    // Animate author and details after the quote
+    const authorDelay = maxDelay + maxDuration + 0.5; // 0.5s after quote finishes
+    gsap.set([author, details], { opacity: 0 });
+    gsap.to(author, {
+      opacity: 1,
+      duration: 1,
+      delay: authorDelay,
+    });
+    gsap.to(details, {
+      opacity: 1,
+      duration: 1,
+      delay: authorDelay + 0.5, // 0.5s after author starts appearing
+    });
 
-    return maxDuration + maxDelay;
+    return authorDelay + 1.5; // Total animation duration
   };
 
   const resetQuote = (quote) => {
-    const words = quote.querySelectorAll("span");
-    const cite = quote.querySelector("cite");
+    const words = quote.querySelectorAll("p span");
+    const author = quote.querySelector(".quote-author");
+    const details = quote.querySelector(".quote-details");
     gsap.set(words, { filter: "blur(0px)", opacity: 0 });
-    if (cite) gsap.set(cite, { opacity: 0 });
+    gsap.set([author, details], { opacity: 0 });
   };
 
   const changeQuote = () => {
