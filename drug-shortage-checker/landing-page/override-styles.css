@@ -349,13 +349,6 @@ body {
 
 /* #region - Media Queries */
 
-@media (max-width: 1200px) {
-  /* Constrain height of featured header image to view gradient */
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 35rem !important;
-  }
-}
-
 /* Desktop viewports */
 @media (max-width: 1024px) {
   .container {
@@ -369,11 +362,6 @@ body {
 
 /* Mobile viewports */
 @media (max-width: 768px) {
-  /* Constrain height of featured header image to view gradient */
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 40rem !important;
-  }
-
   .container {
     max-width: 95% !important;
   }
@@ -422,11 +410,6 @@ body {
     min-height: 10rem !important;
   }
 
-  /* Constrain height of featured header image to view gradient */
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 35rem !important;
-  }
-
   .container {
     max-width: 100% !important;
     padding: 5px !important;
@@ -459,4 +442,61 @@ body {
     max-width: 100% !important;
   }
 }
+
+/* Hero background */
+/* Default style for larger screens */
+.featured-article.featured-article--dark-mode .hero-background {
+  height: 60vh; /* Use viewport height for better responsiveness */
+  min-height: 400px; /* Ensure a minimum height on very tall screens */
+  max-height: 800px; /* Limit maximum height on very large screens */
+}
+
+/* Large screens */
+@media (max-width: 1200px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 55vh;
+    max-height: 700px;
+  }
+}
+
+/* Medium screens */
+@media (max-width: 992px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 50vh;
+    max-height: 600px;
+  }
+}
+
+/* Tablet screens */
+@media (max-width: 768px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 45vh;
+    max-height: 500px;
+  }
+}
+
+/* Mobile screens */
+/* @media (max-width: 576px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 40vh;
+    min-height: 300px;
+    max-height: 400px;
+  }
+} */
+
+/* Smaller mobile screens */
+/* @media (max-width: 400px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 50vh;
+    min-height: 250px;
+  }
+} */
+
+/* Mobile screens */
+@media (max-width: 500px) {
+  .featured-article.featured-article--dark-mode .hero-background {
+    height: 35rem !important; /* Restored to original value */
+  }
+}
+
 /* #endregion */
