@@ -30,7 +30,7 @@ body {
 
 .container {
   height: 100vh;
-  max-width: 800px; /* Add this line to limit the width */
+  max-width: 600px; /* Add this line to limit the width */
   margin: 0 auto; /* Center the container */
   padding: 0 20px; /* Add some padding on the sides */
 }
@@ -59,10 +59,11 @@ cite {
 
 p {
   font-family: "Crimson Pro", Georgia, serif;
-  font-size: 2.2rem;
+  font-size: 1.2rem;
   font-style: italic;
   font-weight: 300;
   padding-bottom: 1rem;
+  line-height: 2.15rem;
 }
 
 span {
@@ -103,6 +104,7 @@ cite.animate {
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--dm-secondary-color);
+  margin-top: 0.75rem;
 
   /* Syne */
   font-family: "Syne", sans-serif;
@@ -113,18 +115,26 @@ cite.animate {
 
 @media (max-width: 768px) {
   p {
-    font-size: 1.8rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
   .quote-author {
     font-size: 1rem;
   }
   .quote-details {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 }
 
 @media (max-width: 500px) {
   p {
-    font-size: 1.3rem;
+    font-size: 1rem;
+    line-height: 1.45rem;
+  }
+  .container {
+    padding: 10px;
+  }
+  .quote-details {
+    font-size: 0.7rem;
   }
 }

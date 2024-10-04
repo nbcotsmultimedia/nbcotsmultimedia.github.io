@@ -3,16 +3,43 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQuoteIndex = 0;
 
   const animate = (quote) => {
-    const words = quote.querySelectorAll("p span");
+    const words = Array.from(quote.querySelectorAll("p span"));
     const author = quote.querySelector(".quote-author");
     const details = quote.querySelector(".quote-details");
     let maxDelay = 0;
     let maxDuration = 0;
 
-    words.forEach((word) => {
-      const duration = parseFloat(word.dataset.duration);
-      const delay = parseFloat(word.dataset.delay);
-      const blur = word.dataset.blur;
+    // Function to get a random index with a bias towards the original index
+    const getWeightedRandomIndex = (originalIndex, arrayLength) => {
+      const randomFactor = Math.random();
+      const maxDistance = arrayLength / 4; // Maximum distance from original index
+      const distance = Math.floor(randomFactor * maxDistance);
+      const direction = Math.random() < 0.5 ? -1 : 1;
+      let newIndex = originalIndex + direction * distance;
+      return Math.max(0, Math.min(newIndex, arrayLength - 1));
+    };
+
+    // Create a new array with mostly ordered, but slightly randomized indices
+    const semiRandomIndices = words.map((_, index) => ({
+      originalIndex: index,
+      newIndex: getWeightedRandomIndex(index, words.length),
+    }));
+
+    // Sort the indices based on the new, semi-random order
+    semiRandomIndices.sort((a, b) => a.newIndex - b.newIndex);
+
+    // Animate words based on the new semi-random order
+    semiRandomIndices.forEach((indexObj, i) => {
+      const word = words[indexObj.originalIndex];
+      const isLongQuote = words.length > 50;
+      const baseDuration = isLongQuote ? 1.0 : 2.0;
+      const baseDelay = 0.05;
+
+      const duration = baseDuration + Math.random() * 0.5;
+      const delay = baseDelay * i + Math.random() * 0.5;
+
+      const blur = Math.floor(Math.random() * 10) + 1;
+
       maxDelay = Math.max(delay, maxDelay);
       maxDuration = Math.max(duration, maxDuration);
 
@@ -25,24 +52,27 @@ document.addEventListener("DOMContentLoaded", () => {
         opacity: 1,
         duration: duration,
         delay: delay,
+        ease: "power2.out",
       });
     });
 
-    // Animate author and details after the quote
-    const authorDelay = maxDelay + maxDuration + 0.5; // 0.5s after quote finishes
+    const authorDelay = maxDelay + maxDuration + 0.5;
+
     gsap.set([author, details], { opacity: 0 });
     gsap.to(author, {
       opacity: 1,
-      duration: 1,
+      duration: 1.5,
       delay: authorDelay,
+      ease: "power2.out",
     });
     gsap.to(details, {
       opacity: 1,
-      duration: 1,
-      delay: authorDelay + 0.5, // 0.5s after author starts appearing
+      duration: 1.5,
+      delay: authorDelay,
+      ease: "power2.out",
     });
 
-    return authorDelay + 1.5; // Total animation duration
+    return authorDelay + 2;
   };
 
   const resetQuote = (quote) => {
@@ -56,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const changeQuote = () => {
     gsap.to(quotes[currentQuoteIndex], {
       opacity: 0,
-      duration: 1,
+      duration: 1.5,
       onComplete: () => {
         resetQuote(quotes[currentQuoteIndex]);
         quotes[currentQuoteIndex].style.display = "none";
@@ -66,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const animationDuration = animate(quotes[currentQuoteIndex]);
 
         // Schedule the next quote change
-        gsap.delayedCall(animationDuration + 5, changeQuote); // 5 seconds of pause after animation
+        gsap.delayedCall(animationDuration + 6, changeQuote);
       },
     });
   };
@@ -82,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (quotes.length > 0) {
     animate(quotes[0]);
     if (quotes.length > 1) {
-      gsap.delayedCall(10, changeQuote); // Start rotating quotes after 10 seconds
+      gsap.delayedCall(12, changeQuote);
     }
   } else {
     console.error("No quotes found on the page");

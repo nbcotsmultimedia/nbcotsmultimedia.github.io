@@ -4,114 +4,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drug Shortage Quotes</title>
-    <link href="styles-quotes.css" rel="stylesheet">
-    <style>
-        @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@1,300&display=swap");
-
-        @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
-
-        /* Bodoni */
-        @import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&display=swap");
-
-        /* Syne */
-        @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap");
-
-        /* Noto Serif */
-        @import url("https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap");
-
-        /* Crimson */
-        @import url("https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap");
-
-        /* Crimson Pro */
-        @import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&display=swap");
-
-        /* IBM Plex Serif */
-        @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
-    </style>
-    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            xtalk.responsive = false;
-            xtalk.init();
-        });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
+    <title>Quote Animation</title>
+    <link rel="stylesheet" href="styles-quotes.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="script-quotes.js"></script>
 </head>
 
 <body>
     <div class="container">
         <div class="section quote-section">
-            <blockquote class="quote">
-                <p>
-                    <span data-duration="1.1" data-delay=".23" data-blur="6">"I&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".43" data-blur="3">heard&nbsp;</span>
-                    <span data-duration="1.8" data-delay=".42" data-blur="5">about&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".25" data-blur="9">drug&nbsp;</span>
-                    <span data-duration="1.7" data-delay=".30" data-blur="4">shortages,&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".29" data-blur="3">but&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".26" data-blur="5">didn't&nbsp;</span>
-                    <span data-duration="1.7" data-delay=".19" data-blur="9">know&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".11" data-blur="5">that&nbsp;</span>
-                    <span data-duration="1.9" data-delay=".19" data-blur="2">chemo&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".36" data-blur="9">treatments&nbsp;</span>
-                    <span data-duration="1.8" data-delay=".17" data-blur="3">were&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".30" data-blur="10">falling&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".50" data-blur="4">into&nbsp;</span>
-                    <span data-duration="1.8" data-delay=".19" data-blur="2">that&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".18" data-blur="4">category&nbsp;</span>
-                    <span data-duration="1.1" data-delay=".23" data-blur="6">too."&nbsp;</span>
-                </p>
-                <p class="quote-author">Darcey Filus</p>
-                <p class="quote-details">Breast cancer patient</p>
-            </blockquote>
-
-            <blockquote class="quote">
-                <p>
-                    <span data-duration="1.2" data-delay=".20" data-blur="5">"Because&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".30" data-blur="3">of&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".25" data-blur="7">my&nbsp;</span>
-                    <span data-duration="1.6" data-delay=".35" data-blur="4">rare&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".28" data-blur="6">disease,&nbsp;</span>
-                    <span data-duration="1.1" data-delay=".22" data-blur="3">any&nbsp;</span>
-                    <span data-duration="1.7" data-delay=".33" data-blur="5">change&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".26" data-blur="4">can&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".31" data-blur="7">cause&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".24" data-blur="3">me&nbsp;</span>
-                    <span data-duration="1.6" data-delay=".32" data-blur="5">to&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".27" data-blur="6">go&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".26" data-blur="4">into&nbsp;</span>
-                    <span data-duration="1.8" data-delay=".36" data-blur="7">anaphylactic&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".30" data-blur="5">shock."&nbsp;</span>
-                </p>
-                <p class="quote-author">Tammie Largent-Phillips</p>
-                <p class="quote-details">Systemic mastocytosis patient</p>
-            </blockquote>
-
-            <blockquote class="quote">
-                <p>
-                    <span data-duration="1.3" data-delay=".26" data-blur="4">"It&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".30" data-blur="6">does&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".24" data-blur="3">make&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".28" data-blur="5">you&nbsp;</span>
-                    <span data-duration="1.6" data-delay=".32" data-blur="7">realize&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".26" data-blur="4">that&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".30" data-blur="6">any&nbsp;</span>
-                    <span data-duration="1.7" data-delay=".34" data-blur="5">type&nbsp;</span>
-                    <span data-duration="1.4" data-delay=".28" data-blur="3">of&nbsp;</span>
-                    <span data-duration="1.6" data-delay=".32" data-blur="7">situation&nbsp;</span>
-                    <span data-duration="1.3" data-delay=".26" data-blur="4">like&nbsp;</span>
-                    <span data-duration="1.5" data-delay=".30" data-blur="6">this&nbsp;</span>
-                    <span data-duration="1.2" data-delay=".24" data-blur="3">is&nbsp;</span>
-                    <span data-duration="1.7" data-delay=".34" data-blur="5">just&nbsp;</span>
-                    <span data-duration="1.8" data-delay=".36" data-blur="7">unacceptable."&nbsp;</span>
-                </p>
-                <p class="quote-author">Dylan Rice</p>
-                <p class="quote-details">ADHD patient</p>
-            </blockquote>
+            <div class="quote-block">
+                <blockquote class="quote">
+                    <p>
+                        <span data-duration="1.1" data-delay=".23" data-blur="6">"I </span>
+                        <span data-duration="1.4" data-delay=".43" data-blur="3">heard </span>
+                        <span data-duration="1.8" data-delay=".42" data-blur="5">about </span>
+                        <span data-duration="1.2" data-delay=".25" data-blur="9">drug </span>
+                        <span data-duration="1.7" data-delay=".30" data-blur="4">shortages, </span>
+                        <span data-duration="1.2" data-delay=".29" data-blur="3">but </span>
+                        <span data-duration="1.4" data-delay=".26" data-blur="5">didn't </span>
+                        <span data-duration="1.7" data-delay=".19" data-blur="9">know </span>
+                        <span data-duration="1.2" data-delay=".11" data-blur="5">that </span>
+                        <span data-duration="1.9" data-delay=".19" data-blur="2">chemo </span>
+                        <span data-duration="1.2" data-delay=".36" data-blur="9">treatments </span>
+                        <span data-duration="1.8" data-delay=".17" data-blur="3">were </span>
+                        <span data-duration="1.2" data-delay=".30" data-blur="10">falling </span>
+                        <span data-duration="1.5" data-delay=".50" data-blur="4">into </span>
+                        <span data-duration="1.8" data-delay=".19" data-blur="2">that </span>
+                        <span data-duration="1.3" data-delay=".18" data-blur="4">category </span>
+                        <span data-duration="1.1" data-delay=".23" data-blur="6">too." </span>
+                    </p>
+                    <div class="quote-author">Darcey Filus</div>
+                    <div class="quote-details">Breast cancer patient</div>
+                </blockquote>
+                <blockquote class="quote">
+                    <p>
+                        <span data-duration="1.2" data-delay=".20" data-blur="5">"Because </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="3">of </span>
+                        <span data-duration="1.3" data-delay=".25" data-blur="7">my </span>
+                        <span data-duration="1.6" data-delay=".35" data-blur="4">rare </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="6">disease, </span>
+                        <span data-duration="1.1" data-delay=".22" data-blur="3">any </span>
+                        <span data-duration="1.7" data-delay=".33" data-blur="5">change </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">in </span>
+                        <span data-duration="1.5" data-delay=".31" data-blur="7">anything </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">can </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">cause </span>
+                        <span data-duration="1.4" data-delay=".27" data-blur="6">me </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">to </span>
+                        <span data-duration="1.8" data-delay=".36" data-blur="7">go </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="5">into </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="6">anaphylactic </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="4">shock. </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">When </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="3">the </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="7">shortage </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="4">happened, </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">my </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">fear </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">was </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">ok, </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="6">my </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">blood </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">sugars </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">are </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">going </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">to </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">go </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="7">nuts, </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">I'm </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="6">going </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="3">to </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">end </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">up </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="7">in </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">anaphylaxis </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">again, </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="5">and </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">I'm </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">going </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">to </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="7">end </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">up </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="4">in </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="6">the </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="3">hospital </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">on </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">a </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">vent." </span>
+                    </p>
+                    <div class="quote-author">Tammie Largent-Phillips</div>
+                    <div class="quote-details">Systemic mastocytosis patient</div>
+                </blockquote>
+                <blockquote class="quote">
+                    <p>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">"It </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">does </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">make </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">you </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">realize </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">that </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">any </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="5">type </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">of </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">situation </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">like </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">this </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">is </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="5">just </span>
+                        <span data-duration="1.8" data-delay=".36" data-blur="7">unacceptable. </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="4">It </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">shouldn't </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">be </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">happening </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">in </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="6">a </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">society </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">that </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">prides </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">itself </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">on </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">being </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="7">the </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">richest </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="6">and </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="3">most </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">prosperous </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">society, </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="7">[that] </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">things </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">like </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="5">this </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">can </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">fall </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">through </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="7">the </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">cracks." </span>
+                    </p>
+                    <div class="quote-author">Dylan Rice</div>
+                    <div class="quote-details">ADHD patient</div>
+                </blockquote>
+                <blockquote class="quote">
+                    <p>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">"We </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">know </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">what </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">the </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">demand </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">is. </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">We </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="5">know </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">how </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">many </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">people </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">are </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">diagnosed </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="5">with </span>
+                        <span data-duration="1.8" data-delay=".36" data-blur="7">cancer </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="4">each </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="6">year </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">in </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">the </span>
+                        <span data-duration="1.2" data-delay=".24" data-blur="3">U.S., </span>
+                        <span data-duration="1.7" data-delay=".34" data-blur="6">we </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">know </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">what </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">type </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">of </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">regimens </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">are </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="7">given. </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">We </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="6">should </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="3">be </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">able </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">to </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">ensure </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="4">that </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="6">there </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="3">is </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="5">an </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="7">adequate </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="4">pricing </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="6">model </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="3">that </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="5">ensures </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="7">that </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">that </span>
+                        <span data-duration="1.4" data-delay=".28" data-blur="6">supply </span>
+                        <span data-duration="1.6" data-delay=".32" data-blur="3">meets </span>
+                        <span data-duration="1.3" data-delay=".26" data-blur="5">that </span>
+                        <span data-duration="1.5" data-delay=".30" data-blur="4">demand." </span>
+                    </p>
+                    <div class="quote-author">Dr. Kari Wisinski</div>
+                    <div class="quote-details">Oncologist</div>
+                </blockquote>
+            </div>
         </div>
     </div>
-    <script src="script-quotes.js"></script>
 </body>
 
 </html>
