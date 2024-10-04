@@ -21,6 +21,10 @@ body {
   padding: 10px !important;
 }
 
+p {
+  text-align: center;
+}
+
 .article-section {
   margin-bottom: 70px !important;
 }
@@ -402,6 +406,10 @@ body {
   .image-container {
     min-height: 10rem !important;
   }
+
+  p {
+    text-align: left;
+  }
 }
 
 /* Smaller mobile viewports */
@@ -441,12 +449,17 @@ body {
     text-align: left !important;
     max-width: 100% !important;
   }
+
+  p {
+    text-align: left;
+  }
 }
 
 /* Hero background */
+
 /* Default style for larger screens */
 .featured-article.featured-article--dark-mode .hero-background {
-  height: 60vh; /* Use viewport height for better responsiveness */
+  height: 100vh; /* Use viewport height for better responsiveness */
   min-height: 400px; /* Ensure a minimum height on very tall screens */
   max-height: 800px; /* Limit maximum height on very large screens */
 }
@@ -454,15 +467,14 @@ body {
 /* Large screens */
 @media (max-width: 1200px) {
   .featured-article.featured-article--dark-mode .hero-background {
-    height: 55vh;
-    max-height: 700px;
+    height: 100vh;
   }
 }
 
 /* Medium screens */
 @media (max-width: 992px) {
   .featured-article.featured-article--dark-mode .hero-background {
-    height: 50vh;
+    height: 100vh;
     max-height: 600px;
   }
 }
@@ -470,32 +482,16 @@ body {
 /* Tablet screens */
 @media (max-width: 768px) {
   .featured-article.featured-article--dark-mode .hero-background {
-    height: 45vh;
+    height: 100vh;
+    min-width: 100vh;
     max-height: 500px;
   }
 }
 
 /* Mobile screens */
-/* @media (max-width: 576px) {
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 40vh;
-    min-height: 300px;
-    max-height: 400px;
-  }
-} */
-
-/* Smaller mobile screens */
-/* @media (max-width: 400px) {
-  .featured-article.featured-article--dark-mode .hero-background {
-    height: 50vh;
-    min-height: 250px;
-  }
-} */
-
-/* Mobile screens */
 @media (max-width: 500px) {
   .featured-article.featured-article--dark-mode .hero-background {
-    height: 35rem !important; /* Restored to original value */
+    height: 100vh !important; /* Restored to original value */
   }
 }
 
