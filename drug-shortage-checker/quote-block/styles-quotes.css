@@ -51,7 +51,7 @@ blockquote p {
 }
 
 p {
-  font-size: clamp(14px, 3.5vw, 18px);
+  font-size: 1.25rem;
   font-style: italic;
   line-height: 1.4;
   margin-bottom: 15px;

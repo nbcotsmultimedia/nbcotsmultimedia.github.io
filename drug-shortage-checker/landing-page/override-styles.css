@@ -19,6 +19,7 @@ body {
 .container {
   margin: 0 auto !important;
   padding: 10px !important;
+  max-width: 80%;
 }
 
 p {
@@ -106,6 +107,9 @@ p {
 
   /* Optional: add a subtle shadow for depth */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+  /* Line height for line breaks */
+  line-height: 2rem;
 }
 
 /* Text for part divider */
@@ -155,7 +159,7 @@ p {
   max-width: 90% !important;
   margin-left: auto !important;
   margin-right: auto !important;
-  margin-top: 2rem !important;
+  margin-top: 1rem !important;
   margin-bottom: 1.15em !important;
 }
 
@@ -179,17 +183,27 @@ p {
 
 /* #region - Horizontal Rules */
 
+hr {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
 /* Line for section divider */
 .section-divider-line {
-  border: none !important; /* Remove default border */
-  height: 1px !important; /* Set height */
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.1
-  ); /* Light gray with transparency for subtlety */
-  width: 100% !important; /* Adjust width as needed */
+  border-style: none !important;
+  border-top-style: dotted !important;
+  border-color: lightgrey !important;
+  border-width: 5px !important;
+  width: 5% !important;
+
+  /* Reset conflicting styles */
+  background: none !important;
+  background-image: none !important;
+  height: auto !important;
+  margin: 2rem auto !important;
+  display: block !important;
 }
 
 /* Line for part divider */
@@ -212,10 +226,11 @@ p {
   margin: 0 auto !important;
 }
 
-/* Text of article blurb */
+/* Text of article blurb paragraph */
 .article-content p {
   margin-bottom: 1em !important;
   margin-top: 1em !important;
+  text-align: center;
 }
 
 /* Coming soon text displayed at the bottom of each article section */
@@ -287,7 +302,9 @@ p {
 
 /* Container to center button on page */
 .button-container {
-  margin: 50px !important;
+  margin-left: 2.5rem !important;
+  margin-right: 2.5rem !important;
+  margin-top: 2rem !important;
   display: flex !important;
   justify-content: center !important;
 }
@@ -318,7 +335,7 @@ p {
   vertical-align: middle !important;
   white-space: nowrap !important;
   margin: auto !important;
-  width: 50% !important;
+  /* width: 50% !important; */
   transition: background-color 0.3s, transform 0.3s !important;
 }
 
@@ -355,9 +372,6 @@ p {
 
 /* Desktop viewports */
 @media (max-width: 1024px) {
-  .container {
-    max-width: 90% !important;
-  }
   /* Center the 'coming soon' text displayed at the bottom of each article section */
   div.coming-soon {
     text-align: center !important;
@@ -367,7 +381,7 @@ p {
 /* Mobile viewports */
 @media (max-width: 768px) {
   .container {
-    max-width: 95% !important;
+    max-width: 100% !important;
   }
 
   .article-content p {
@@ -379,7 +393,7 @@ p {
   }
 
   .article-title-pharma {
-    font-size: 1.65em !important;
+    font-size: 1.55em !important;
   }
 
   .article-subtitle-pharma {
@@ -405,6 +419,7 @@ p {
 
   .image-container {
     min-height: 10rem !important;
+    margin-bottom: 2rem !important;
   }
 
   p {
@@ -428,7 +443,7 @@ p {
   }
 
   .article-title-pharma {
-    font-size: 1.75em !important;
+    font-size: 1.6em !important;
   }
 
   .article-subtitle-pharma {
