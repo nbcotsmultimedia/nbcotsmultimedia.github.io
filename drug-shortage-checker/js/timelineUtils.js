@@ -4,8 +4,10 @@
 
 const NORMAL_SPACING = 300; // This should match your current timelineHeight
 const REDUCED_SPACING = 60; // Adjust this value as needed
-function isValidDate(d) {
-  return d instanceof Date && !isNaN(d);
+
+// Check if valid date
+function isValidDate(date) {
+  return date instanceof Date && !isNaN(date.getTime());
 }
 
 //#endregion
@@ -13,7 +15,7 @@ function isValidDate(d) {
 //#region - TIMELINE EVENTS GENERATION
 
 // Create an array of timeline events based on drug shortage data
-function generateTimelineEvents(drug) {
+function generateTimelineEvents1(drug) {
   // Create a 'reportedDate' event to represent when a drug shortage was initially reported
   const reportedDate = new Date(drug.shortageReportedDate);
   const updateDate = new Date(drug.shortageUpdateDate);
@@ -55,6 +57,165 @@ function generateTimelineEvents(drug) {
   timelineEvents.sort((a, b) => a.date - b.date);
   // Mark last event as current
   timelineEvents[timelineEvents.length - 1].isCurrent = true;
+
+  return timelineEvents;
+}
+
+function generateTimelineEvents2(drug) {
+  const currentDate = new Date();
+  let timelineEvents = [];
+
+  function addEvent(date, status, label) {
+    const parsedDate = parseDate(date);
+    if (parsedDate && !isNaN(parsedDate.getTime())) {
+      timelineEvents.push({ date: parsedDate, status, label });
+    } else {
+      console.warn(`Invalid date for event: ${label}, date: ${date}`);
+    }
+  }
+
+  // Add reported date event
+  addEvent(drug.shortageReportedDate, "Shortage", "Shortage reported");
+
+  // Add update date event if different from reported date
+  if (
+    drug.shortageUpdateDate &&
+    drug.shortageUpdateDate !== drug.shortageReportedDate
+  ) {
+    addEvent(drug.shortageUpdateDate, drug.shortageStatus, "Status updated");
+  }
+
+  // Add current status event
+  const lowerStatus = drug.shortageStatus.toLowerCase();
+  switch (lowerStatus) {
+    case "resolved":
+      addEvent(currentDate, "Resolved", "Drug available");
+      break;
+    case "current":
+      addEvent(currentDate, "Shortage", "Shortage ongoing");
+      break;
+    case "discontinued":
+      addEvent(currentDate, "Discontinued", "Drug unavailable");
+      break;
+    default:
+      addEvent(currentDate, "Unknown", "Current status unknown");
+  }
+
+  // Sort events chronologically and mark last as current
+  timelineEvents.sort((a, b) => a.date - b.date);
+  if (timelineEvents.length > 0) {
+    timelineEvents[timelineEvents.length - 1].isCurrent = true;
+  }
+
+  return timelineEvents;
+}
+
+function generateTimelineEvents3(drug) {
+  console.log(
+    "Generating timeline events for drug:",
+    JSON.stringify(drug, null, 2)
+  );
+
+  const currentDate = new Date();
+  let timelineEvents = [];
+
+  function addEvent(dateString, status, label) {
+    const parsedDate = parseDate(dateString);
+    if (isValidDate(parsedDate)) {
+      timelineEvents.push({ date: parsedDate, status, label });
+    } else {
+      console.warn(`Invalid date for event: ${label}, date: ${dateString}`);
+    }
+  }
+
+  if (drug.shortageReportedDate) {
+    addEvent(drug.shortageReportedDate, "Shortage", "Shortage reported");
+  }
+
+  if (drug.shortageUpdateDate) {
+    addEvent(drug.shortageUpdateDate, drug.shortageStatus, "Status updated");
+  }
+
+  const lowerStatus = (drug.shortageStatus || "").toLowerCase();
+  switch (lowerStatus) {
+    case "resolved":
+      addEvent(currentDate.toISOString(), "Resolved", "Drug available");
+      break;
+    case "current":
+      addEvent(currentDate.toISOString(), "Shortage", "Shortage ongoing");
+      break;
+    case "discontinued":
+      addEvent(currentDate.toISOString(), "Discontinued", "Drug unavailable");
+      break;
+    default:
+      addEvent(currentDate.toISOString(), "Unknown", "Current status unknown");
+  }
+
+  timelineEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  if (timelineEvents.length > 0) {
+    timelineEvents[timelineEvents.length - 1].isCurrent = true;
+  }
+
+  console.log(
+    "Generated timeline events:",
+    JSON.stringify(timelineEvents, null, 2)
+  );
+
+  return timelineEvents;
+}
+
+function generateTimelineEvents(drug) {
+  console.log(
+    "Generating timeline events for drug:",
+    JSON.stringify(drug, null, 2)
+  );
+
+  const currentDate = new Date();
+  let timelineEvents = [];
+
+  function addEvent(dateString, status, label) {
+    const parsedDate = parseDate(dateString);
+    if (parsedDate && !isNaN(parsedDate.getTime())) {
+      timelineEvents.push({ date: parsedDate, status, label });
+    } else {
+      console.warn(`Invalid date for event: ${label}, date: ${dateString}`);
+    }
+  }
+
+  if (drug.shortageReportedDate) {
+    addEvent(drug.shortageReportedDate, "Shortage", "Shortage reported");
+  }
+
+  if (drug.shortageUpdateDate) {
+    addEvent(drug.shortageUpdateDate, drug.shortageStatus, "Status updated");
+  }
+
+  const lowerStatus = (drug.shortageStatus || "").toLowerCase();
+  switch (lowerStatus) {
+    case "resolved":
+      addEvent(currentDate.toISOString(), "Resolved", "Drug available");
+      break;
+    case "current":
+      addEvent(currentDate.toISOString(), "Shortage", "Shortage ongoing");
+      break;
+    case "discontinued":
+      addEvent(currentDate.toISOString(), "Discontinued", "Drug unavailable");
+      break;
+    default:
+      addEvent(currentDate.toISOString(), "Unknown", "Current status unknown");
+  }
+
+  timelineEvents.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  if (timelineEvents.length > 0) {
+    timelineEvents[timelineEvents.length - 1].isCurrent = true;
+  }
+
+  console.log(
+    "Generated timeline events:",
+    JSON.stringify(timelineEvents, null, 2)
+  );
 
   return timelineEvents;
 }
@@ -110,7 +271,7 @@ const skipElapsedTimePairs = new Set([
   "Drug discontinued|Drug unavailable",
 ]);
 
-function createTimelineItem(
+function createTimelineItem1(
   event,
   index,
   timelineEvents,
@@ -153,6 +314,118 @@ function createTimelineItem(
         <p class="date">${
           isValidDate(event.date) ? formatDate(event.date) : "Invalid Date"
         }</p>
+        <p class="event">${event.label}</p>
+      </div>
+    </li>
+  `;
+}
+
+function createTimelineItem2(
+  event,
+  index,
+  timelineEvents,
+  topPosition,
+  prevTopPosition
+) {
+  const isLast = index === timelineEvents.length - 1;
+  let elapsedTimeHtml = "";
+  let currentTopPosition = topPosition;
+
+  if (index > 0) {
+    const prevEvent = timelineEvents[index - 1];
+
+    if (isValidDate(prevEvent.date) && isValidDate(event.date)) {
+      currentTopPosition =
+        prevEvent.date.getTime() === event.date.getTime()
+          ? prevTopPosition + REDUCED_SPACING
+          : topPosition;
+
+      elapsedTimeHtml = generateElapsedTimeHtml(
+        prevEvent,
+        event,
+        currentTopPosition,
+        prevTopPosition
+      );
+    } else {
+      console.warn(`Invalid date for timeline item: ${event.label}`);
+      currentTopPosition = topPosition;
+    }
+  }
+
+  return `
+    ${elapsedTimeHtml}
+    <li class="timeline-item ${
+      isLast ? "current" : ""
+    }" style="top: ${currentTopPosition}px;">
+      ${getStatusIconSVG(event.status, isLast)}
+      <div class="timeline-item-description">
+        <p class="date">${
+          isValidDate(event.date) ? formatDate(event.date) : "Date unknown"
+        }</p>
+        <p class="event">${event.label}</p>
+      </div>
+    </li>
+  `;
+}
+
+function createTimelineItem(
+  event,
+  index,
+  timelineEvents,
+  topPosition,
+  prevTopPosition
+) {
+  console.log(
+    `Creating timeline item: index=${index}, event=`,
+    JSON.stringify(event, null, 2)
+  );
+
+  const isLast = index === timelineEvents.length - 1;
+  let elapsedTimeHtml = "";
+  let currentTopPosition = topPosition;
+
+  if (index > 0) {
+    const prevEvent = timelineEvents[index - 1];
+    console.log("Previous event:", JSON.stringify(prevEvent, null, 2));
+
+    if (
+      prevEvent.date instanceof Date &&
+      !isNaN(prevEvent.date.getTime()) &&
+      event.date instanceof Date &&
+      !isNaN(event.date.getTime())
+    ) {
+      currentTopPosition =
+        prevEvent.date.getTime() === event.date.getTime()
+          ? prevTopPosition + REDUCED_SPACING
+          : topPosition;
+
+      elapsedTimeHtml = generateElapsedTimeHtml(
+        prevEvent,
+        event,
+        currentTopPosition,
+        prevTopPosition
+      );
+    } else {
+      console.warn(`Invalid date for timeline item: ${event.label}`);
+      console.warn(
+        `prevEvent.date = ${prevEvent.date}, event.date = ${event.date}`
+      );
+      currentTopPosition = topPosition;
+    }
+  }
+
+  const dateString = isValidDate(event.date)
+    ? formatDate(event.date)
+    : "Date unknown";
+
+  return `
+    ${elapsedTimeHtml}
+    <li class="timeline-item ${
+      isLast ? "current" : ""
+    }" style="top: ${currentTopPosition}px;">
+      ${getStatusIconSVG(event.status, isLast)}
+      <div class="timeline-item-description">
+        <p class="date">${dateString}</p>
         <p class="event">${event.label}</p>
       </div>
     </li>

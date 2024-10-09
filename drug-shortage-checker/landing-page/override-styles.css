@@ -19,7 +19,7 @@ body {
 .container {
   margin: 0 auto !important;
   padding: 10px !important;
-  max-width: 80%;
+  max-width: 50% !important;
 }
 
 p {
@@ -100,7 +100,7 @@ p {
   /* Display and spacing */
   display: block !important;
   padding: 10px 20px !important;
-  margin: 2.15em auto 2em !important;
+  margin: 2.15em auto 1em !important;
 
   /* Max width to prevent overly long lines */
   max-width: 80% !important;
@@ -194,9 +194,9 @@ hr {
 .section-divider-line {
   border-style: none !important;
   border-top-style: dotted !important;
-  border-color: lightgrey !important;
-  border-width: 5px !important;
-  width: 5% !important;
+  border-color: #6c6c6c !important;
+  border-width: 3px !important;
+  width: 10% !important;
 
   /* Reset conflicting styles */
   background: none !important;
@@ -220,6 +220,11 @@ hr {
 
 /* #region - Content Typography */
 
+/* Coming soon text displayed at the bottom of each article section */
+.article-section .coming-soon p {
+  text-align: center !important;
+}
+
 /* Container for text of article blurb */
 .article-content {
   color: #d1d1d1 !important;
@@ -230,13 +235,10 @@ hr {
 .article-content p {
   margin-bottom: 1em !important;
   margin-top: 1em !important;
-  text-align: center;
+  text-align: justify;
+  word-spacing: -1px;
 }
 
-/* Coming soon text displayed at the bottom of each article section */
-.coming-soon {
-  text-align: center !important;
-}
 /* #endregion */
 
 /* #region - Buttons */
