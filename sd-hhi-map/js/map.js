@@ -28,7 +28,7 @@ const search = e => {
 	const response = $("#response");
 	let newSidebarTop = "150px";
 	try {
-		const feature = allData["features"].filter(feature => feature.properties.ZCTA5CE10 === parseInt(val))[0];
+		const feature = allData["features"].filter(feature => feature.properties.ZCTA5CE10 == parseInt(val))[0];
 		selectZipCode(e, feature);
 		response.html("");
 		newSidebarTop = mobile ? "500px" : "150px";
