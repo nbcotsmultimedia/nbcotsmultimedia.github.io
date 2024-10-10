@@ -1,0 +1,510 @@
+/*
+* Prefixed by https://autoprefixer.github.io
+* PostCSS: v7.0.29,
+* Autoprefixer: v9.7.6
+* Browsers: last 4 version
+*/
+
+body { 
+	background-color: #FFF !important; 
+	overflow: hidden;
+	padding: 10px;
+	font-family: 'Roboto', sans-serif;
+	width: 100%;
+}
+
+.headline {
+	font-family: 'ArtHouseBold', sans-serif;
+	font-size: 24px;
+	color: #191919;
+	margin-bottom: 10px;
+}
+
+.subhead {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+	color: #707070;
+	margin-bottom: 10px;
+	line-height: 1.4em;
+}
+
+
+p {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 17px;
+	color: #191919;
+}
+
+.credits {
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	color: #666;
+	margin-top: 10px;
+	line-height: 1.5em;
+}
+
+button {
+	font-family: 'ArtHouseMed', sans-serif;
+	font-size: 17px;
+}
+
+@media (max-width: 500px ) {
+	.headline {
+		font-size: 20px;
+	}
+	.subhead {
+		font-size: 16px;
+	}
+	p {
+		font-size: 16px;
+	}
+	.credits {
+		font-size: 12px;
+	}
+
+}
+
+.graphics-wrapper {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+}
+
+
+.geo-wrapper {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: start;
+	    -ms-flex-align: start;
+	        align-items: flex-start;
+}
+
+hr {
+	border-top: 3px solid grey;
+}
+
+#map {
+	width: 100%;
+}
+
+h2 {
+	font-weight: 400;
+	font-size: 1.75rem;
+	margin-bottom: 1rem;
+}
+
+.nav-item:not(:first-child) {
+	margin-left: 10px;
+}
+
+.nav-link {
+	padding: 1px 8px;
+	color: #144aa8;
+	font-size: 13px;
+	text-transform: uppercase;
+	font-weight: 700;
+
+}
+
+.nav-pills .nav-link.active {
+	background-color: black;
+	color: white;
+}
+
+#pills-tab {
+	margin-bottom: 1.5rem !important;
+}
+
+.county-block {
+	display: none;
+}
+
+.geo-wrapper {
+	width: 100%;
+}
+
+.state-wrapper {
+	width: 50%;
+	margin-right: 30px;
+}
+
+.county-wrapper {
+	width: 50%;
+}
+
+.house .county-wrapper {
+	margin-top: 0;
+}
+
+#map-reporting {
+	font-size: 12px;
+}
+
+.county-placeholder-title {
+	text-transform: initial;
+	font-weight: 700;
+	font-size: 14px;
+	min-height: 40px;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: end;
+	    -ms-flex-align: end;
+	        align-items: flex-end;
+}
+
+.county-placeholder {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+
+}
+
+.graphics-title h4 {
+	font-size: 18px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.subhead{
+	font-size: 12px;
+}
+
+  .feature {
+	fill: #ccc;
+  }
+  
+  .mesh {
+	fill: none;
+	stroke: #fff;
+	stroke-width: .5px;
+	stroke-linejoin: round;
+  }
+  
+.grey-rects {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+}
+
+.grey-rect {
+	height: 20px;
+    background-color: #e1e1e1;
+    margin-bottom: 15px;
+    margin-left: 0;
+    width: 100%;
+}
+
+.seeAll {
+	margin-top: 1rem;
+}
+
+.seeAll p {
+	font-size: 12px;
+	margin: 1rem 0;
+}
+
+
+#candTitle {
+	font-weight: 700;
+	margin-right: 10px;
+	font-size: 14px !important;
+	/* width: 10%; */
+}
+
+.Dem span {
+	color: #0878ce;
+}
+
+.GOP span {
+	color: #dd231f;
+}
+
+.Grn span {
+	color: #339933;
+}
+
+.Lib span {
+	color: #cc9933;
+}
+
+.progress-bar {
+	background-color: #8c8c8c;
+}
+
+.DemParty .progress-bar {
+	background-color: #0878ce;
+}
+
+.GOPParty .progress-bar {
+	background-color: #dd231f;
+}
+
+.GrnParty .progress-bar {
+	background-color: #339933;
+}
+
+.LibParty .progress-bar {
+	background-color: #cc9933;
+}
+
+#voteCount {
+	margin-left: 20px;
+	color: #707070;
+	font-size: 12px;
+}
+
+#map, #map-house, #map-senate {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: center;
+	    -ms-flex-pack: center;
+	        justify-content: center;
+	margin-bottom: 20px;
+}
+
+.cand-info progress {
+	display: none;
+}
+
+.svg-container {
+	width: 100%;
+}
+
+/* color legend */
+
+.colorLeg {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.colorLeg p {
+	font-size: 12px;
+}
+
+.colorLeg .title {
+	margin-right: 5px;
+}
+
+.biden, .trump {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: baseline;
+	    -ms-flex-align: baseline;
+	        align-items: baseline;
+}
+
+.trump {
+	margin-left: 50px;
+}
+
+.colBox {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.colBox p {
+	font-size: 10px;
+	color: #707070;
+}
+
+.colBox-wrapper {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	    -ms-flex-direction: column;
+	        flex-direction: column;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+#biden-colLead {
+	width: 30px;
+	height: 10px; 
+	background-color: #79C0F0;
+}
+
+#biden-colWin {
+	width: 30px;
+	height: 10px; 
+	background-color: #0878ce;
+}
+
+#trump-colLead {
+	width: 30px;
+	height: 10px; 
+	background-color: #ED7A7A;
+}
+
+#trump-colWin {
+	width: 30px;
+	height: 10px; 
+	background-color: #dd231f;
+}
+
+.progress {
+	display: none;
+}
+
+.cand-info {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	    -ms-flex-align: center;
+	        align-items: center;
+}
+
+
+.hover {
+	stroke-width: 1px;
+	stroke: #000;
+}
+
+.reset {
+	display: inline-block;
+	font-family: 'Roboto', sans-serif;
+	padding: 1px 8px;
+	font-size: 13px;
+	text-transform: uppercase;
+	font-weight: 700;
+	border-radius: .25rem;
+	cursor: default;
+	background-color: white;
+	color:black;
+	cursor: pointer;
+}
+
+.resetText {
+	font-size: 12px;
+	display: inline;
+    margin-left: 8px;
+}
+
+.zoomItems {
+	position: relative;
+	bottom: 35px;
+	display: none;
+}
+
+@media (min-width: 600px ) {
+
+	body {
+		padding: 0px;
+	}
+
+	.graphics-wrapper {
+		-webkit-box-orient: horizontal;
+		-webkit-box-direction: normal;
+		    -ms-flex-direction: row;
+		        flex-direction: row;
+	}
+
+	.geo-wrapper {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		    -ms-flex-direction: column;
+		        flex-direction: column;
+		width: 40%;
+	}
+
+	.map-wrapper {
+		width: 60%;
+	}
+
+	.state-wrapper {
+		width: 100%;
+		min-height: 240px;
+	}
+	.county-wrapper {
+		width: 100%;
+		margin-top: 2rem;
+		min-height: 240px;
+	}
+
+	.map-wrapper {
+		margin-right: 40px;
+	}
+
+	hr {
+		width: 100%;
+	}
+
+	.cand-info {
+		-webkit-box-pack: justify;
+		    -ms-flex-pack: justify;
+		        justify-content: space-between;
+		width: 100%;
+		-webkit-box-align: center;
+		    -ms-flex-align: center;
+		        align-items: center;
+	}
+
+	#candTitle {
+		width: 35px;
+		margin-right: 10px;
+	}
+
+	#voteCount {
+		width: 70px;
+	}
+
+	#voteCount {
+		margin-left: 0;
+		text-align: right;
+	}
+	.state-wrapper {
+		margin-right: 0;
+	}
+
+	.progress {
+		display: block;
+	}
+
+	.prog-wrapper {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		width: 100%;
+		-webkit-box-align: baseline;
+		    -ms-flex-align: baseline;
+		        align-items: baseline;
+	}
+
+	.progress {
+		width: 80%;
+	}
+	.progress, .progress-bar {
+		height: 10px;
+	}
+}
+
+@media (min-width: 500px ) {
+	.zoomItems {
+		display: block;
+	}
+}
+
+  
