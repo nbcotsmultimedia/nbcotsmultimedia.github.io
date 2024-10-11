@@ -340,6 +340,11 @@ h2 {
 	        align-items: center;
 }
 
+.lead,
+.win {
+	margin-right:5px;
+}
+
 #biden-colLead {
 	width: 30px;
 	height: 10px; 

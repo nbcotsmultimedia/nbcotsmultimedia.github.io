@@ -51,6 +51,29 @@ function aFunction() {
         var market = 'NECN'
     } else {
         var market = url.match(/index\.html\?market=(.*)/)[1]
+        if (market.includes("&")) {
+            market = market.split("&")[0]
+        }
+    }
+
+    let esp;
+
+    try{
+        esp = url.match(/\&esp=(\w)/)[1] === "y";
+    }catch(e){
+        esp = false;
+    }
+
+    if (esp) {
+        $('#president').html('Presidente');
+        $('#senate').html('Senado');
+        $('#house').html('Cámara de Representantes');
+        $('.lead').html('A LA DELANTERA')
+        $('.win').html('GANADOR')
+        $('.resetPres').html('REINICIAR')
+        $('.reset').html('REINICIAR')
+        $('.resetText').html('Desplace para ampliar imagen')
+        $('.county-placeholder-title').html('Selecciona condado o distrito en el mapa')
     }
 
     console.log('market:', market)
@@ -163,7 +186,8 @@ function aFunction() {
     // Update last time script ran
     d3.text("https://media.nbcnewyork.com/assets/editorial/national/optimized/decision2024/map-data/last-updated.txt" + '?' + Math.floor((Math.random() * 1000) + 1))
         .then(function(time) {
-            d3.selectAll("#map-reporting").html("Results as of " + time)
+            const reportedText = esp ? "Resultados del" + time : "Results as of " + time;
+            d3.selectAll("#map-reporting").html(reportedText)
         }).catch(function(error){
         // handle error   
     })
@@ -339,7 +363,8 @@ function aFunction() {
                     d3.select(".county-block").style('display', 'block')
 
                     d3.select("#county-title").html(d.properties['NAME'] + ", " + d.properties.stateAbbr)
-                    d3.select("#county-precinct-percent").html(parseFloat(d.properties['percentIn']).toFixed(1) + "% of expected votes")
+                    const countyPrecinctExpectedText = esp ? parseFloat(d.properties.percentIn).toFixed(1) + "% estimado del voto total": parseFloat(d.properties.percentIn).toFixed(1) + "% of expected votes";
+                    d3.select("#county-precinct-percent").html(countyPrecinctExpectedText)
 
                     var candidates = d.properties.candidates
 
@@ -390,7 +415,8 @@ function aFunction() {
                                 } else {
                                     d3.select("#state-precinct-percent-president").html(d.percentIn + "% of precincts reporting")
                                 }*/
-                                d3.select("#state-precinct-percent-president").html(parseFloat(d.percentIn).toFixed(1) + "% of expected votes")
+                                const percExpectedText = esp ? parseFloat(d.percentIn).toFixed(1) + "% estimado del voto total": parseFloat(d.percentIn).toFixed(1) + "% of expected votes";
+                                d3.select("#state-precinct-percent-president").html(percExpectedText)
 
                                 try{
                                     d.candidates = d.candidates.replace(/'/g, '"');
@@ -627,7 +653,8 @@ function aFunction() {
                     d3.selectAll(".county-block").style('display', 'block')
 
                     d3.select("#county-title-senate").html(d.properties['NAME'] + ", " + d.properties.stateAbbr)
-                    d3.select("#county-precinct-percent-senate").html(parseFloat(d.properties['percentIn']).toFixed(1) + "% of expected votes")
+                    const countyExpectedText = esp ? parseFloat(d.properties.percentIn).toFixed(1) + "% estimado del voto total": parseFloat(d.properties.percentIn).toFixed(1) + "% of expected votes";
+                    d3.select("#county-precinct-percent-senate").html(countyExpectedText);
 
                     var candidates = d.properties.candidates
 
@@ -673,7 +700,8 @@ function aFunction() {
                                 } else {
                                     d3.select("#state-precinct-percent-president").html(d.percentIn + "% of precincts reporting")
                                 }*/
-                                d3.select("#state-precinct-percent-president").html(parseFloat(d.percentIn).toFixed(1) + "% of expected votes")
+                                const stateExpectedText = esp ? parseFloat(d.percentIn).toFixed(1) + "% estimado del voto total": parseFloat(d.percentIn).toFixed(1) + "% of expected votes";
+                                d3.select("#state-precinct-percent-president").html(stateExpectedText)
 
                                 try{
                                     d.candidates = d.candidates.replace(/'/g, '"');
@@ -896,7 +924,8 @@ function aFunction() {
                     d3.selectAll(".county-block").style('display', 'block')
 
                     d3.select("#house-county-title").html(d.properties['raceName'] + ", " + d.properties.stateAbbr)
-                    d3.select("#house-county-precinct-percent").html(parseFloat(d.properties['percentIn']).toFixed(1) + "% of expected votes")
+                    const houseExpectedText = esp ? parseFloat(d.properties.percentIn).toFixed(1) + "% estimado del voto total": parseFloat(d.properties.percentIn).toFixed(1) + "% of expected votes";
+                    d3.select("#house-county-precinct-percent").html(houseExpectedText)
 
                     var candidates = d.properties.candidates
 
