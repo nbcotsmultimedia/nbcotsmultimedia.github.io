@@ -187,7 +187,7 @@ function aFunction() {
     // Update last time script ran
     d3.text("https://media.nbcnewyork.com/assets/editorial/national/optimized/decision2024/map-data/last-updated.txt" + '?' + Math.floor((Math.random() * 1000) + 1))
         .then(function(time) {
-            const reportedText = esp ? "Resultados del" + time : "Results as of " + time;
+            const reportedText = esp ? "Resultados  del " + time : "Results as of " + time;
             d3.selectAll("#map-reporting").html(reportedText)
         }).catch(function(error){
         // handle error   
