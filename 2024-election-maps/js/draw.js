@@ -69,7 +69,7 @@ function aFunction() {
         $('#senate').html('Senado');
         $('#house').html('Cámara de Representantes');
         $('#statewide').html('A nivel estatal (<span id="state-letters"></span>)')
-        $('.lead').html('A LA DELANTERA')
+        $('.lead').html('AVENTAJA')
         $('.win').html('GANADOR')
         $('.resetPres').html('REINICIAR')
         $('.reset').html('REINICIAR')
@@ -779,6 +779,18 @@ function aFunction() {
             // d3.json("data/" + market + "/house.json" + '?' + Math.floor((Math.random() * 1000) + 1))
             d3.csv("https://media.nbcnewyork.com/assets/editorial/national/optimized/decision2024/map-data/" + market + "/house.csv" + '?' + Math.floor((Math.random() * 1000) + 1))
             .then(function(data) {
+
+                const translateDistricts = district => {
+                    const districtCopy = {...district};
+                    districtCopy["raceName"] = district["raceName"].replace(/District/g, "Distrito");
+
+                    return districtCopy;
+                };
+
+                console.log(data)
+                if (esp) {
+                    data = data.map(d => translateDistricts(d));
+                }
 
                 var selected = d3.set(stateCodes[market]);
 
