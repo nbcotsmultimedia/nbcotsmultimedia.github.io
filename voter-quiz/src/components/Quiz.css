@@ -221,7 +221,7 @@ body {
 
 /* #endregion */
 
-/* #region - Results Page */
+/* #region - RESULTS SCREEN */
 
 .results-page {
   display: flex;
@@ -247,6 +247,7 @@ body {
 }
 
 /* Profile Section */
+/* "You are..." */
 .profile-tag {
   font-size: 14px;
   color: #666;
@@ -254,8 +255,8 @@ body {
 }
 
 .profile-title {
-  font-size: 1.75rem;
-  font-weight: bold;
+  font-size: 1.6rem;
+  font-weight: 40;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
 }
@@ -336,3 +337,5 @@ body {
   justify-content: center;
   gap: 0.5rem;
 }
+
+/* #endregion */

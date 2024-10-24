@@ -92,6 +92,14 @@ function EmblemRenderer({
         return null;
     }
   }
+
+  // Determine opacity based on whether feeling has been selected
+  const getOpacity = () => {
+    if (!progressive) return 1; // Final emblem always full opacity
+    if (currentQuestion >= 5) return 1; // After feeling question, full opacity
+    return 0.5; // Before feeling question, 50% opacity
+  };
+
   // Determine repetition based on news hours
   const getPatternRepetition = (hours) => {
     // Add debug logging
@@ -115,6 +123,7 @@ function EmblemRenderer({
     console.log("Calculated repetition:", repetition);
     return repetition;
   };
+
   // Update how we determine the news hours and repetition
   const determineRepetition = () => {
     // For progressive emblem
@@ -143,6 +152,8 @@ function EmblemRenderer({
 
   // Use the new determineRepetition function
   const repetition = determineRepetition();
+
+  const opacity = getOpacity();
 
   // Update the pattern mapping section
   const intentionPattern =
@@ -173,17 +184,16 @@ function EmblemRenderer({
     <div className={progressive ? "progressive-emblem" : "voter-emblem"}>
       <div className="emblem-container">
         <svg
-          viewBox="0 0 100 100" // Changed from 200 200 to make content relatively larger
+          viewBox="0 0 100 100"
           xmlns="http://www.w3.org/2000/svg"
           className="emblem-svg"
         >
-          {/* Centered transform that scales patterns to fill more space */}
           <g transform="translate(50,50)">
             {/* Key Issue Pattern Layer */}
             {issuePattern && (
               <g
                 className="pattern-layer"
-                transform="translate(-40,-40) scale(0.8)" // Adjusted scale and translation
+                transform="translate(-40,-40) scale(0.8)"
               >
                 {Array.from({ length: repetition }).map((_, index) => {
                   const x =
@@ -202,12 +212,12 @@ function EmblemRenderer({
                       <path
                         d={issuePattern.bd}
                         fill={colorScheme?.keyIssue?.[0] || "#CCCCCC"}
-                        opacity="1"
+                        opacity={opacity}
                       />
                       <path
                         d={issuePattern.be}
                         fill={colorScheme?.keyIssue?.[1] || "#DDDDDD"}
-                        opacity="1"
+                        opacity={opacity}
                       />
                     </g>
                   );
@@ -219,17 +229,17 @@ function EmblemRenderer({
             {intentionPattern && (
               <g
                 className="pattern-layer"
-                transform="translate(-25,-25) scale(0.5)" // Adjusted scale and translation
+                transform="translate(-25,-25) scale(0.5)"
               >
                 <path
                   d={intentionPattern.bd}
                   fill={colorScheme?.votingIntention?.[0] || "#AAAAAA"}
-                  opacity="0.9"
+                  opacity={opacity}
                 />
                 <path
                   d={intentionPattern.be}
                   fill={colorScheme?.votingIntention?.[1] || "#BBBBBB"}
-                  opacity="0.9"
+                  opacity={opacity}
                 />
               </g>
             )}
@@ -238,17 +248,17 @@ function EmblemRenderer({
             {motivationPattern && (
               <g
                 className="pattern-layer motivation"
-                transform="translate(-20,-20) scale(0.4)" // Adjusted scale and translation
+                transform="translate(-20,-20) scale(0.4)"
               >
                 <path
                   d={motivationPattern.bd}
                   fill={colorScheme?.votingMotivation?.[0] || "#888888"}
-                  opacity="0.9"
+                  opacity={opacity}
                 />
                 <path
                   d={motivationPattern.be}
                   fill={colorScheme?.votingMotivation?.[1] || "#999999"}
-                  opacity="0.9"
+                  opacity={opacity}
                 />
               </g>
             )}

@@ -6,6 +6,7 @@ import EmblemRenderer from "./EmblemRenderer";
 import ProgressiveEmblem from "./ProgressiveEmblem";
 import ArchetypeResult from "./ArchetypeResult";
 import { determineArchetype, archetypes } from "./archetypeData"; // Add archetypes import
+import IntentionSelection from "./IntentionSelection";
 
 function Quiz() {
   // Quiz questions configuration - defines all possible questions and their conditions
@@ -223,12 +224,19 @@ function Quiz() {
       </div>
 
       {/* Progressive Emblem Visualization */}
-      <div className="emblem-visualization">
-        <ProgressiveEmblem
-          answers={answers}
-          currentQuestion={currentQuestionIndex + 1}
-          newsHours={answers[10]} // Assuming question 10 is about news hours
-        />
+      <div className="emblem-visualization w-full flex justify-center items-center">
+        {currentQuestion.id === 1 || currentQuestion.id === 2 ? (
+          <IntentionSelection
+            currentQuestion={currentQuestion.id}
+            selectedAnswer={answers[1]}
+          />
+        ) : (
+          <ProgressiveEmblem
+            answers={answers}
+            currentQuestion={currentQuestionIndex + 1}
+            newsHours={answers[10]}
+          />
+        )}
       </div>
 
       {/* Question text and description */}
