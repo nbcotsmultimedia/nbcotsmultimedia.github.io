@@ -92,42 +92,81 @@ function EmblemRenderer({
         return null;
     }
   }
+  // Determine repetition based on news hours
+  const getPatternRepetition = (hours) => {
+    // Add debug logging
+    console.log("Calculating repetition for hours:", hours);
 
-  // Map patterns for each component of the emblem
+    if (!hours) {
+      console.log("No hours provided, defaulting to 1");
+      return 1;
+    }
+
+    // Map news consumption to repetition values
+    const repetitionMap = {
+      "0-1": 1,
+      "1-3": 1,
+      "3-5": 4,
+      "5-10": 16,
+      "10+": 16,
+    };
+
+    const repetition = repetitionMap[hours] || 1;
+    console.log("Calculated repetition:", repetition);
+    return repetition;
+  };
+  // Update how we determine the news hours and repetition
+  const determineRepetition = () => {
+    // For progressive emblem
+    if (progressive) {
+      console.log("Progressive mode, current question:", currentQuestion);
+      // Only show pattern repetition if we've reached the news hours question
+      if (currentQuestion >= 9) {
+        // News hours is question 9 now
+        const newsHoursAnswer = answers?.[9];
+        console.log(
+          "Progressive emblem - showing repetition for hours:",
+          newsHoursAnswer
+        );
+        return getPatternRepetition(newsHoursAnswer);
+      }
+      console.log(
+        "Progressive emblem - before news hours question, using default"
+      );
+      return 1;
+    }
+
+    // For final emblem
+    console.log("Final emblem mode");
+    return getPatternRepetition(answers?.[9]);
+  };
+
+  // Use the new determineRepetition function
+  const repetition = determineRepetition();
+
+  // Update the pattern mapping section
   const intentionPattern =
-    answers && (!progressive || currentQuestion >= 2)
+    answers && (!progressive || currentQuestion >= 1)
       ? getPatternPaths("intention", answers[1])
       : null;
+
   const issuePattern =
-    answers && (!progressive || currentQuestion >= 9)
+    answers && (!progressive || currentQuestion >= 8)
       ? getPatternPaths("issue", answers[8])
       : null;
+
   const motivationPattern =
-    answers && (!progressive || currentQuestion >= 3)
+    answers && (!progressive || currentQuestion >= 2)
       ? getPatternPaths("motivation", answers[2] || answers[3])
       : null;
 
   // Get color scheme based on emotional response
-  const selectedFeeling = answers?.[4] || "Indifferent";
+  const selectedFeeling = answers?.[5] || "Indifferent";
   const colorScheme =
     FEELING_SCHEMES[selectedFeeling] || FEELING_SCHEMES.Indifferent;
 
-  // Determine repetition based on news hours
-  const getPatternRepetition = (hours) => {
-    if (!hours || hours === "0-1" || hours === "1-3") return 1;
-    if (hours === "3-5") return 4;
-    if (hours === "5-10" || hours === "10+") return 16;
-    return 1; // Default to 1 if unknown value
-  };
-
   // Get news hours from the correct answer index
   const actualNewsHours = answers?.[9]; // Question 10 is at index 9
-
-  const repetition = progressive
-    ? currentQuestion >= 10
-      ? getPatternRepetition(actualNewsHours)
-      : 1
-    : getPatternRepetition(actualNewsHours);
 
   // Render the emblem
   return (

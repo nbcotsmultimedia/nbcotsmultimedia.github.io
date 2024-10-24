@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import "./Quiz.css";
 import EmblemRenderer from "./EmblemRenderer";
 import ProgressiveEmblem from "./ProgressiveEmblem";
+import ArchetypeResult from "./ArchetypeResult";
+import { determineArchetype, archetypes } from "./archetypeData"; // Add archetypes import
 
 function Quiz() {
   // Quiz questions configuration - defines all possible questions and their conditions
@@ -83,11 +85,6 @@ function Quiz() {
     },
     {
       id: 7,
-      text: "What gender most accurately describes you?",
-      options: ["Man", "Woman", "Non-binary", "Other/I prefer not to say"],
-    },
-    {
-      id: 8,
       text: "Which political party do you identify with, if any?",
       options: [
         "Democratic Party",
@@ -98,7 +95,7 @@ function Quiz() {
       ],
     },
     {
-      id: 9,
+      id: 8,
       text: "Which of these issues is most important to you?",
       options: [
         "Economy and jobs",
@@ -114,12 +111,12 @@ function Quiz() {
       ],
     },
     {
-      id: 10,
+      id: 9,
       text: "How many hours per week do you spend following election news?",
       options: ["0-1", "1-3", "3-5", "5-10", "10+"],
     },
     {
-      id: 11,
+      id: 10,
       text: "What percentage of your social media feed is related to politics?",
       options: ["0-25%", "26-50%", "51-75%", "76-100%"],
     },
@@ -149,14 +146,19 @@ function Quiz() {
 
   const handleOptionClick = (option) => {
     const visibleQuestions = getVisibleQuestions();
-    const currentQuestion = questions[currentQuestionIndex];
+    const currentVisibleQuestion = visibleQuestions[currentQuestionIndex];
 
-    // Immediately update the answers state
+    // Store answer using the actual question ID
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
-      [currentQuestionIndex + 1]: option, // Store by index + 1 to match question IDs
+      [currentVisibleQuestion.id]: option, // Use the question's ID directly
     }));
 
+    // Debug logging (optional, can be removed)
+    console.log("Question ID:", currentVisibleQuestion.id);
+    console.log("Selected option:", option);
+
+    // Move to next question or complete quiz
     if (currentQuestionIndex < visibleQuestions.length - 1) {
       setTimeout(() => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -210,6 +212,7 @@ function Quiz() {
           Question {currentQuestionIndex + 1} of {visibleQuestions.length}
         </div>
       </div>
+
       {/* Navigation and question counter */}
       <div className="quiz-header">
         {currentQuestionIndex > 0 && (
@@ -237,7 +240,7 @@ function Quiz() {
       {/* Answer options with fixed selection logic */}
       <div className="options">
         {currentQuestion.options.map((option, index) => {
-          const isSelected = answers[currentQuestionIndex + 1] === option;
+          const isSelected = answers[currentQuestion.id] === option; // Use question.id instead of index
 
           return (
             <button
@@ -254,73 +257,88 @@ function Quiz() {
   );
 
   // Results page
-  const renderResults = () => (
-    <div className="results-page">
-      {/* Progress dots */}
-      <div className="progress-dots-final">
-        {Array(10)
-          .fill(null)
-          .map((_, i) => (
-            <div key={i} className="dot" />
-          ))}
-      </div>
+  const renderResults = () => {
+    const archetypeKey = determineArchetype(answers);
+    const archetype = archetypes[archetypeKey];
 
-      {/* Voter emblem visualization */}
-      <div className="voter-emblem-container">
-        <EmblemRenderer
-          answers={answers}
-          newsHours={answers[9]} // News hours question
-        />
-      </div>
+    // Debug logging
+    console.log("All answers:", answers);
+    console.log("Archetype:", archetypeKey, archetype);
 
-      {/* Profile description */}
-      <div className="profile-description">
-        <p className="profile-tag">You are</p>
-        <h1 className="profile-title">TK TEXT HERE LATER</h1>
-        <p className="profile-text">
-          You're a political maverick with a sprinkle of cynicism, navigating
-          the tumultuous waters of today's political landscape.
-        </p>
-        <p className="profile-detail">
-          You embrace your independence, often feeling caught between the
-          extremes of party loyalty and personal conviction. Your diverse
-          interests—ranging from the economy to healthcare and
-          immigration—reflect a nuanced understanding of the issues that matter
-          most to you.
-        </p>
-      </div>
+    // Format news hours value
+    const newsHoursValue = answers[10] || "0-1"; // Use answers[10] consistently
+    console.log("News hours value:", newsHoursValue); // Debug log
 
-      {/* Response categories */}
-      <div className="response-categories">
-        <div className="category">
-          <h2>VOTING INTENTION</h2>
-          <p>tk dynamic text here</p>
-        </div>
-        <div className="category">
-          <h2>MOTIVATION</h2>
-          <p>tk dynamic text here</p>
-        </div>
-        <div className="category">
-          <h2>KEY POLICY ISSUE</h2>
-          <p>tk dynamic text here</p>
-        </div>
-        <div className="category">
-          <h2>FEELING</h2>
-          <p>tk dynamic text here</p>
-        </div>
-      </div>
+    const getResponseText = () => {
+      const responseText = {
+        votingIntention: answers[1] || "Not specified",
+        motivation: answers[2] || answers[3] || "Not specified",
+        keyIssue: answers[8] || "Not specified",
+        feeling: answers[5] || "Not specified",
+      };
 
-      {/* Action buttons */}
-      <div className="action-buttons">
-        <button className="share-button">
-          <span className="share-icon">↗</span> Share results
-        </button>
-        <button className="restart-button" onClick={handleRestartQuiz}>
-          Take quiz again
-        </button>
+      return responseText;
+    };
+
+    const responseText = getResponseText();
+
+    return (
+      <div className="results-page">
+        <div className="progress-dots-final">
+          {Array(10)
+            .fill(null)
+            .map((_, i) => (
+              <div key={i} className="dot" />
+            ))}
+        </div>
+
+        <div className="voter-emblem-container">
+          <EmblemRenderer
+            answers={answers}
+            newsHours={newsHoursValue} // Pass the formatted news hours value
+          />
+        </div>
+
+        {/* Rest of the component remains the same */}
+        <div className="profile-section">
+          <p className="profile-tag">You are</p>
+          <h2 className="profile-title">
+            {archetype?.title || "Archetype Title"}
+          </h2>
+          <p className="profile-text">{archetype?.profile || "Profile text"}</p>
+          <p className="profile-detail">{archetype?.detail || "Detail text"}</p>
+        </div>
+
+        <div className="response-categories">
+          <div className="category">
+            <h3>VOTING INTENTION</h3>
+            <p className="category-response">{responseText.votingIntention}</p>
+          </div>
+          <div className="category">
+            <h3>MOTIVATION</h3>
+            <p className="category-response">{responseText.motivation}</p>
+          </div>
+          <div className="category">
+            <h3>KEY POLICY ISSUE</h3>
+            <p className="category-response">{responseText.keyIssue}</p>
+          </div>
+          <div className="category">
+            <h3>FEELING</h3>
+            <p className="category-response">{responseText.feeling}</p>
+          </div>
+        </div>
+
+        <div className="action-buttons">
+          <button className="share-button">
+            <span>Share your results</span>
+          </button>
+          <button className="restart-button" onClick={handleRestartQuiz}>
+            Take quiz again
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // Main render
   return (
