@@ -1,25 +1,16 @@
-// Create a new file: src/components/TestEmblem.js
 import React, { useState } from "react";
 import VoterEmblem from "./VoterEmblem";
 
 function TestEmblem() {
-  // Function to generate random answers
   const generateRandomAnswers = () => {
-    const randomAnswers = {
-      1: getRandomItem([
-        "Yes, I plan on voting",
-        "No, I do not plan on voting",
-        "I am unsure",
-      ]),
-      4: getRandomItem([
-        "Hopeful",
-        "Excited",
-        "Anxious",
-        "Frustrated",
-        "Indifferent",
-        "Confused",
-        "Scared",
-      ]),
+    const votingIntention = getRandomItem([
+      "Yes, I plan on voting",
+      "No, I do not plan on voting",
+      "I am unsure",
+    ]);
+
+    const baseAnswers = {
+      1: votingIntention,
       8: getRandomItem([
         "Economy and jobs",
         "Healthcare",
@@ -34,64 +25,53 @@ function TestEmblem() {
       ]),
     };
 
-    // Add conditional motivation answer based on voting intention
-    if (randomAnswers[1] === "Yes, I plan on voting") {
-      randomAnswers[2] = getRandomItem([
+    // Add motivation based on voting intention
+    if (votingIntention === "Yes, I plan on voting") {
+      baseAnswers[2] = getRandomItem([
         "To express my opinion on important issues",
         "To support a specific candidate or party",
         "To fulfill my civic duty",
         "To influence change in my community",
       ]);
     } else {
-      randomAnswers[2] = getRandomItem([
+      baseAnswers[3] = getRandomItem([
         "I don't think any of the candidates will make a good president",
         "I'm just not interested in politics",
-        "I do not feel my vote will make a difference",
-        "I am unable to vote due to personal circumstances",
-        "I am not registered to vote",
-        "I am not eligible to vote",
+        "I don't feel my vote will make a difference",
+        "Personal circumstances prevent me from voting (work, health, transportation)",
+        "I'm not registered to vote",
+        "I'm not eligible to vote",
       ]);
     }
 
-    return randomAnswers;
+    return baseAnswers;
   };
 
-  // Helper function to get random item from array
   const getRandomItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
   };
 
-  // State to store current answers
   const [answers, setAnswers] = useState(generateRandomAnswers());
 
   return (
     <div className="quiz-container">
       <div className="results-page">
-        <h2 className="results-title">Test Emblem</h2>
+        <h2 className="results-title">Test Emblem Generator</h2>
 
-        {/* Display the emblem */}
         <VoterEmblem answers={answers} />
 
-        {/* Display current answers for debugging */}
-        <div
-          style={{
-            textAlign: "left",
-            margin: "20px",
-            padding: "20px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-          }}
-        >
-          <h3>Current Answers:</h3>
-          <pre style={{ whiteSpace: "pre-wrap" }}>
-            {JSON.stringify(answers, null, 2)}
-          </pre>
-        </div>
-
-        {/* Button to generate new random answers */}
         <button
-          className="restart-button"
-          onClick={() => setAnswers(generateRandomAnswers())}
+          onClick={() => {
+            const newAnswers = generateRandomAnswers();
+            console.log("Generated new answers:", newAnswers);
+            setAnswers(newAnswers);
+          }}
+          style={{
+            margin: "20px",
+            padding: "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer",
+          }}
         >
           Generate New Random Answers
         </button>
