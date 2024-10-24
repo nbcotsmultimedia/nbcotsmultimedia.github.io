@@ -23,10 +23,6 @@ function VoterEmblem({ answers }) {
       }
 
       case "issue": {
-        // Let's add some debug logging to see what we're getting
-        console.log("Issue answer:", answer);
-        console.log("Available patterns:", PATTERNS.issue);
-
         const issueMap = {
           [KEY_ISSUE_CHOICES.ECONOMY]: PATTERNS.issue["economy-and-jobs"],
           [KEY_ISSUE_CHOICES.HEALTHCARE]: PATTERNS.issue.healthcare,
@@ -44,10 +40,7 @@ function VoterEmblem({ answers }) {
           [KEY_ISSUE_CHOICES.CRIME]:
             PATTERNS.issue["crime-and-criminal-justice"],
         };
-
-        const pattern = issueMap[answer];
-        console.log("Selected pattern:", pattern);
-        return pattern || null;
+        return issueMap[answer] || null;
       }
 
       case "motivation": {
@@ -88,28 +81,22 @@ function VoterEmblem({ answers }) {
     }
   }
 
-  // Add logging to see what answers we're getting
-  console.log("All answers:", answers);
-
   const intentionPattern = answers
     ? getPatternPaths("intention", answers[1])
     : null;
-  // Changed from answers[9] to answers[8] to match the quiz structure
   const issuePattern = answers ? getPatternPaths("issue", answers[8]) : null;
   const motivationPattern = answers
     ? getPatternPaths("motivation", answers[2] || answers[3])
     : null;
 
-  // Get the feeling from answers and use its color scheme
-  const colorScheme =
-    FEELING_SCHEMES[answers[5]] || FEELING_SCHEMES[FEELING_CHOICES.INDIFFERENT];
+  // Get the feeling from index 4 (not 5)
+  const selectedFeeling = answers?.[4] || "Indifferent";
+  console.log("Selected feeling:", selectedFeeling);
 
-  // Log patterns for debugging
-  console.log("Patterns:", {
-    intentionPattern,
-    issuePattern,
-    motivationPattern,
-  });
+  // Get color scheme based on feeling
+  const colorScheme =
+    FEELING_SCHEMES[selectedFeeling] || FEELING_SCHEMES.Indifferent;
+  console.log("Using color scheme:", colorScheme);
 
   return (
     <div className="voter-emblem">
