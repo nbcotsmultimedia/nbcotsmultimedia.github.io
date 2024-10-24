@@ -1,209 +1,148 @@
+/* Quiz Container Styles */
 .quiz-container {
   max-width: 800px;
   margin: 0 auto;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+  width: 100%;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+/* Results Page Styles */
+.results-page {
+  text-align: center;
+  padding: 20px;
+}
+
+.results-title {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Voter Emblem Styles */
+.voter-emblem {
+  margin: 40px auto;
+  max-width: 400px;
+}
+
+.emblem-container {
+  width: 100%;
+  padding-bottom: 100%; /* Makes container square */
+  position: relative;
+  margin: 20px auto;
+}
+
+.emblem-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Results Summary Styles */
+.results-summary {
+  margin-top: 40px;
+  text-align: left;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+}
+
+.response-item {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.question-text {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.answer-text {
+  color: #666;
+  margin-left: 20px;
+}
+
+/* Restart Button Style */
+.restart-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.restart-button:hover {
+  background-color: #45a049;
+}
+
+/* Quiz Question Styles */
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .question {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+  font-size: 1.5em;
+  margin-bottom: 30px;
   color: #333;
 }
 
 .options {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 10px;
 }
 
 .option-button {
-  width: 100%;
-  padding: 1rem;
-  text-align: left;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 15px 20px;
+  background-color: white;
+  border: 2px solid #ddd;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
 .option-button:hover {
-  background-color: #f8f8f8;
-  border-color: #bbb;
+  border-color: #4caf50;
 }
 
 .option-button.selected {
-  background-color: #e6f3ff;
-  border-color: #3b82f6;
-  color: #1e40af;
-}
-
-/* Style for the container that holds the gray background of the progress bar */
-.progress-bar-container {
-  width: 100%; /* Take up full width of parent */
-  height: 8px; /* Height of the bar */
-  background-color: #eee; /* Light gray background */
-  border-radius: 4px; /* Rounded corners */
-  margin-bottom: 1rem; /* Space below the progress bar */
-}
-
-/* Style for the actual progress bar that fills up */
-.progress-bar {
-  height: 100%; /* Fill entire height of container */
-  background-color: #3b82f6; /* Blue color for the progress */
-  border-radius: 4px; /* Rounded corners matching container */
-  transition: width 0.3s ease; /* Smooth animation when width changes */
-}
-
-/* Style for the text showing current question number */
-.question-counter {
-  text-align: center; /* Center the text */
-  color: #666; /* Medium gray color */
-  margin-bottom: 1.5rem; /* Space below the counter */
-  font-size: 0.9rem; /* Slightly smaller text */
-}
-
-/* Style for the answer buttons */
-.option-button {
-  width: 100%; /* Take up full width */
-  padding: 1rem; /* Space inside the button */
-  text-align: left; /* Align text to the left */
-  background: white; /* White background */
-  border: 1px solid #ddd; /* Light gray border */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Show pointer cursor on hover */
-  transition: all 0.2s ease; /* Smooth animation for all changes */
-}
-
-/* Style for buttons when hovered */
-.option-button:hover {
-  background-color: #f8f8f8; /* Slightly gray background */
-  border-color: #bbb; /* Darker border */
-}
-
-/* Style for the selected button */
-.option-button.selected {
-  background-color: #e6f3ff; /* Light blue background */
-  border-color: #3b82f6; /* Blue border */
-  color: #1e40af; /* Dark blue text */
-}
-
-/* Add to Quiz.css */
-.quiz-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.back-button {
-  background: none;
-  border: none;
-  color: #3b82f6;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0.5rem;
-  transition: color 0.2s ease;
-}
-
-.back-button:hover {
-  color: #2563eb;
-}
-
-/* Add to Quiz.css */
-.results-page {
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.results-title {
-  text-align: center;
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-.results-summary {
-  margin-bottom: 2rem;
-}
-
-.response-item {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.question-text {
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.answer-text {
-  color: #666;
-  padding-left: 1rem;
-}
-
-.restart-button {
-  display: block;
-  width: 100%;
-  padding: 1rem;
-  background-color: #3b82f6;
+  background-color: #4caf50;
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.restart-button:hover {
-  background-color: #2563eb;
-}
-
-.voter-emblem .emblem-svg {
-  width: 150px;
-  height: 150px;
-}
-
-.voter-emblem {
-  text-align: center;
-  margin: 2rem auto;
-}
-
-.voter-emblem .pattern-layer {
-  transform-origin: center;
-}
-
-.voter-emblem .pattern-layer.issue {
-  transform: scale(1.2);
-}
-
-.voter-emblem .pattern-layer.intention {
-  transform: scale(0.8);
-}
-
-.voter-emblem .pattern-layer.motivation {
-  transform: scale(0.6);
-}
-
-.emblem-container {
-  /* width: 300px;
-  height: 300px; */
-  margin: 0 auto;
-  position: relative;
-  background: white;
-  border: 1px solid #ccc;
-}
-
-.emblem-svg {
-  /* width: 100%;
-  height: 100%; */
-  display: block;
+  border-color: #4caf50;
 }

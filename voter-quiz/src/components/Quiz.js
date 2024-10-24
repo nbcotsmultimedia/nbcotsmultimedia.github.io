@@ -258,7 +258,9 @@ function Quiz() {
           <h2 className="results-title">Your Voter Profile</h2>
 
           {/* Voter emblem visualization */}
-          <VoterEmblem answers={answers} />
+          <div className="voter-emblem-container">
+            <VoterEmblem answers={answers} />
+          </div>
 
           {/* Summary of all answers */}
           <div className="results-summary">
