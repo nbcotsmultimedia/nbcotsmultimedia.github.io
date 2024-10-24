@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import "./Quiz.css";
-import VoterEmblem from "./VoterEmblem";
+import EmblemRenderer from "./EmblemRenderer";
+import ProgressiveEmblem from "./ProgressiveEmblem";
 
 function Quiz() {
   // Quiz questions configuration - defines all possible questions and their conditions
@@ -135,6 +136,8 @@ function Quiz() {
     });
   };
 
+  const newsHours = answers[9]; // Assuming the news hours question is the 10th question (index 9)
+
   // Navigation handlers
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
@@ -194,6 +197,15 @@ function Quiz() {
         </div>
       </div>
 
+      {/* Progressive Emblem Visualization */}
+      <div className="emblem-visualization">
+        <ProgressiveEmblem
+          answers={answers}
+          currentQuestion={currentQuestionIndex + 1}
+          newsHours={answers[10]} // Assuming question 10 is about news hours
+        />
+      </div>
+
       {/* Question text */}
       <h2 className="question">{currentQuestion.text}</h2>
 
@@ -214,13 +226,17 @@ function Quiz() {
     </>
   );
 
+  // Results page
   const renderResults = () => (
     <div className="results-page">
       <h2 className="results-title">Your Voter Profile</h2>
 
       {/* Voter emblem visualization */}
       <div className="voter-emblem-container">
-        <VoterEmblem answers={answers} />
+        <EmblemRenderer
+          answers={answers}
+          newsHours={answers[10]} // Assuming question 10 is about news hours
+        />
       </div>
 
       {/* Answer summary */}

@@ -61,19 +61,43 @@ export const ISSUE_PATTERNS = {
 };
 
 // Color schemes for different emotional responses to the election
+// Color schemes for different feelings
 export const FEELING_SCHEMES = {
-  // Each scheme contains three color pairs for different pattern layers
   Hopeful: {
-    keyIssue: ["#F5B517", "#FFB451"], // Golden tones
-    votingIntention: ["#F8623F", "#F8A6CA"], // Warm coral & pink
-    votingMotivation: ["#3439FF", "#42CEEA"], // Bright blues
+    keyIssue: ["#F5B517", "#FFB451"], // Goldenrod & Med yellow
+    votingIntention: ["#F8623F", "#F8A6CA"], // Hot coral & Lavender pink
+    votingMotivation: ["#3439FF", "#42CEEA"], // Royal blue & Bright blue
   },
   Anxious: {
-    keyIssue: ["#4B083B", "#6D155C"], // Deep purples
-    votingIntention: ["#F53864", "#BD1864"], // Hot pinks
-    votingMotivation: ["#F77FFE", "#F7A8ED"], // Light pinks
+    keyIssue: ["#4B083B", "#6D155C"], // Eggplant & Dark purple
+    votingIntention: ["#F53864", "#BD1864"], // Hot coral & Magenta
+    votingMotivation: ["#F77FFE", "#F7A8ED"], // Pepto pink & Pale pink
   },
-  // ... (other feeling schemes follow the same pattern)
+  Frustrated: {
+    keyIssue: ["#FF5B14", "#C44923"], // Bright orange & Burnt orange
+    votingIntention: ["#E5172B", "#C21C68"], // Bright red & Magenta
+    votingMotivation: ["#770F02", "#1B1A42"], // Dark burgundy & Dark navy
+  },
+  Indifferent: {
+    keyIssue: ["#A0A0A0", "#C8C8C8"], // Lighter mid-gray & Very light gray
+    votingIntention: ["#666666", "#989898"], // Darker gray & Medium gray
+    votingMotivation: ["#424242", "#747474"], // Deep gray & Gray tone
+  },
+  Confused: {
+    keyIssue: ["#E48569", "#8E5572"], // Burnt sienna & Magenta haze
+    votingIntention: ["#CBE896", "#C5D86D"], // Pale lime & Mindaro
+    votingMotivation: ["#5C573E", "#95AA89"], // Olive & Dark olive
+  },
+  Scared: {
+    keyIssue: ["#171A4D", "#28407C"], // Dark navy & Medium navy
+    votingIntention: ["#3E0A5C", "#6634BB"], // Russian violet & Grape
+    votingMotivation: ["#D8E63B", "#a7a871"], // Pear & Sage
+  },
+  Excited: {
+    keyIssue: ["#119822", "#2a7221"], // Forest green & Office green
+    votingIntention: ["#06D6A0", "#E4CC37"], // Emerald & Citrine
+    votingMotivation: ["#145C9E", "#BBADFF"], // Lapis lazuli & Mauve
+  },
 };
 
 // Helper function to get the color scheme based on the user's feeling

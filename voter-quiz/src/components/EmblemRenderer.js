@@ -1,4 +1,4 @@
-// src/components/VoterEmblem.js
+// src/components/EmblemRenderer.js
 
 import React from "react";
 import { PATTERNS } from "./PatternConstants";
@@ -10,7 +10,12 @@ import {
   KEY_ISSUE_CHOICES,
 } from "./QuizConstants";
 
-function VoterEmblem({ answers }) {
+function EmblemRenderer({
+  answers,
+  progressive = false,
+  currentQuestion = 0,
+  newsHours,
+}) {
   // Helper function to get the appropriate pattern paths based on user responses
   function getPatternPaths(type, answer) {
     if (!answer) return null;
@@ -88,35 +93,47 @@ function VoterEmblem({ answers }) {
     }
   }
 
-  // Get patterns for each component of the emblem
-  const intentionPattern = answers
-    ? getPatternPaths("intention", answers[1])
-    : null;
-  const issuePattern = answers ? getPatternPaths("issue", answers[8]) : null;
-  const motivationPattern = answers
-    ? getPatternPaths("motivation", answers[2] || answers[3])
-    : null;
+  // Map patterns for each component of the emblem
+  const intentionPattern =
+    answers && (!progressive || currentQuestion >= 2)
+      ? getPatternPaths("intention", answers[1])
+      : null;
+  const issuePattern =
+    answers && (!progressive || currentQuestion >= 9)
+      ? getPatternPaths("issue", answers[8])
+      : null;
+  const motivationPattern =
+    answers && (!progressive || currentQuestion >= 3)
+      ? getPatternPaths("motivation", answers[2] || answers[3])
+      : null;
 
   // Get color scheme based on emotional response
   const selectedFeeling = answers?.[4] || "Indifferent";
-  console.log("Selected feeling:", selectedFeeling);
-
   const colorScheme =
     FEELING_SCHEMES[selectedFeeling] || FEELING_SCHEMES.Indifferent;
-  console.log("Using color scheme:", colorScheme);
+
+  // Determine repetition based on news hours
+  const getPatternRepetition = (hours) => {
+    if (!hours || hours === "0-1" || hours === "1-3") return 1;
+    if (hours === "3-5") return 4;
+    return 16;
+  };
+
+  const repetition = progressive
+    ? currentQuestion >= 10
+      ? getPatternRepetition(newsHours)
+      : 1
+    : getPatternRepetition(newsHours);
 
   // Render the emblem
   return (
-    <div className="voter-emblem">
-      <h3>Your Voter Emblem</h3>
-
+    <div className={progressive ? "progressive-emblem" : "voter-emblem"}>
       <div className="emblem-container">
         <svg
           viewBox="0 0 200 200"
           xmlns="http://www.w3.org/2000/svg"
           className="emblem-svg"
         >
-          {/* Center and scale the emblem */}
           <g transform="translate(100,100)">
             {/* Key Issue Pattern Layer */}
             {issuePattern && (
@@ -124,16 +141,33 @@ function VoterEmblem({ answers }) {
                 className="pattern-layer"
                 transform="translate(-50,-50) scale(1)"
               >
-                <path
-                  d={issuePattern.bd}
-                  fill={colorScheme.keyIssue[0]}
-                  opacity="1"
-                />
-                <path
-                  d={issuePattern.be}
-                  fill={colorScheme.keyIssue[1]}
-                  opacity="1"
-                />
+                {Array.from({ length: repetition }).map((_, index) => {
+                  const x =
+                    (index % Math.sqrt(repetition)) *
+                    (100 / Math.sqrt(repetition));
+                  const y =
+                    Math.floor(index / Math.sqrt(repetition)) *
+                    (100 / Math.sqrt(repetition));
+                  return (
+                    <g
+                      key={index}
+                      transform={`translate(${x},${y}) scale(${
+                        1 / Math.sqrt(repetition)
+                      })`}
+                    >
+                      <path
+                        d={issuePattern.bd}
+                        fill={colorScheme?.keyIssue?.[0] || "#CCCCCC"}
+                        opacity="1"
+                      />
+                      <path
+                        d={issuePattern.be}
+                        fill={colorScheme?.keyIssue?.[1] || "#DDDDDD"}
+                        opacity="1"
+                      />
+                    </g>
+                  );
+                })}
               </g>
             )}
 
@@ -145,12 +179,12 @@ function VoterEmblem({ answers }) {
               >
                 <path
                   d={intentionPattern.bd}
-                  fill={colorScheme.votingIntention[0]}
+                  fill={colorScheme?.votingIntention?.[0] || "#AAAAAA"}
                   opacity="0.9"
                 />
                 <path
                   d={intentionPattern.be}
-                  fill={colorScheme.votingIntention[1]}
+                  fill={colorScheme?.votingIntention?.[1] || "#BBBBBB"}
                   opacity="0.9"
                 />
               </g>
@@ -164,12 +198,12 @@ function VoterEmblem({ answers }) {
               >
                 <path
                   d={motivationPattern.bd}
-                  fill={colorScheme.votingMotivation[0]}
+                  fill={colorScheme?.votingMotivation?.[0] || "#888888"}
                   opacity="0.9"
                 />
                 <path
                   d={motivationPattern.be}
-                  fill={colorScheme.votingMotivation[1]}
+                  fill={colorScheme?.votingMotivation?.[1] || "#999999"}
                   opacity="0.9"
                 />
               </g>
@@ -181,4 +215,4 @@ function VoterEmblem({ answers }) {
   );
 }
 
-export default VoterEmblem;
+export default EmblemRenderer;
