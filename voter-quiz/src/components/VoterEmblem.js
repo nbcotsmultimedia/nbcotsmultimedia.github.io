@@ -1,3 +1,5 @@
+// src/components/VoterEmblem.js
+
 import React from "react";
 import { PATTERNS } from "./PatternConstants";
 import { FEELING_SCHEMES } from "./EmblemPatterns";
@@ -9,10 +11,12 @@ import {
 } from "./QuizConstants";
 
 function VoterEmblem({ answers }) {
+  // Helper function to get the appropriate pattern paths based on user responses
   function getPatternPaths(type, answer) {
     if (!answer) return null;
 
     switch (type) {
+      // Get patterns for voting intention (Yes/No/Unsure)
       case "intention": {
         const intentionMap = {
           [INTENTION_CHOICES.YES]: PATTERNS.intention.yes,
@@ -22,6 +26,7 @@ function VoterEmblem({ answers }) {
         return intentionMap[answer] || null;
       }
 
+      // Get patterns for key political issues
       case "issue": {
         const issueMap = {
           [KEY_ISSUE_CHOICES.ECONOMY]: PATTERNS.issue["economy-and-jobs"],
@@ -43,9 +48,11 @@ function VoterEmblem({ answers }) {
         return issueMap[answer] || null;
       }
 
+      // Get patterns for voting motivation
       case "motivation": {
         if (!answers[1]) return null;
 
+        // Different patterns for Yes voters vs No/Unsure voters
         if (answers[1] === INTENTION_CHOICES.YES) {
           const votingMap = {
             [MOTIVATION_CHOICES.OPINION]: PATTERNS.motivation.voting.opinion,
@@ -81,6 +88,7 @@ function VoterEmblem({ answers }) {
     }
   }
 
+  // Get patterns for each component of the emblem
   const intentionPattern = answers
     ? getPatternPaths("intention", answers[1])
     : null;
@@ -89,15 +97,15 @@ function VoterEmblem({ answers }) {
     ? getPatternPaths("motivation", answers[2] || answers[3])
     : null;
 
-  // Get the feeling from index 4 (not 5)
+  // Get color scheme based on emotional response
   const selectedFeeling = answers?.[4] || "Indifferent";
   console.log("Selected feeling:", selectedFeeling);
 
-  // Get color scheme based on feeling
   const colorScheme =
     FEELING_SCHEMES[selectedFeeling] || FEELING_SCHEMES.Indifferent;
   console.log("Using color scheme:", colorScheme);
 
+  // Render the emblem
   return (
     <div className="voter-emblem">
       <h3>Your Voter Emblem</h3>
@@ -108,7 +116,9 @@ function VoterEmblem({ answers }) {
           xmlns="http://www.w3.org/2000/svg"
           className="emblem-svg"
         >
+          {/* Center and scale the emblem */}
           <g transform="translate(100,100)">
+            {/* Key Issue Pattern Layer */}
             {issuePattern && (
               <g
                 className="pattern-layer"
@@ -127,6 +137,7 @@ function VoterEmblem({ answers }) {
               </g>
             )}
 
+            {/* Voting Intention Pattern Layer */}
             {intentionPattern && (
               <g
                 className="pattern-layer"
@@ -145,6 +156,7 @@ function VoterEmblem({ answers }) {
               </g>
             )}
 
+            {/* Voting Motivation Pattern Layer */}
             {motivationPattern && (
               <g
                 className="pattern-layer motivation"

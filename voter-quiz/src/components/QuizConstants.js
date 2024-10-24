@@ -1,19 +1,21 @@
-// QuizConstants.js
+// src/components/QuizConstants.js
 
+// Constants for voting intention options
 export const INTENTION_CHOICES = {
   YES: "Yes, I plan on voting",
   NO: "No, I do not plan on voting",
   UNSURE: "I am unsure",
 };
 
+// Constants for motivation responses
 export const MOTIVATION_CHOICES = {
-  // For "Yes" voters
+  // Motivations for "Yes" voters
   OPINION: "To express my opinion on important issues",
   SUPPORT_CANDIDATE: "To support a specific candidate or party",
   CIVIC_DUTY: "To fulfill my civic duty",
   COMMUNITY_CHANGE: "To influence change in my community",
 
-  // For "No" or "Unsure" voters
+  // Reasons for "No" or "Unsure" voters
   DISLIKE_CANDIDATES:
     "I don't think any of the candidates will make a good president",
   NOT_INTERESTED: "I'm just not interested in politics",
@@ -23,6 +25,7 @@ export const MOTIVATION_CHOICES = {
   INELIGIBLE: "I'm not eligible to vote",
 };
 
+// Constants for emotional responses about the election
 export const FEELING_CHOICES = {
   HOPEFUL: "Hopeful",
   ANXIOUS: "Anxious",
@@ -33,6 +36,7 @@ export const FEELING_CHOICES = {
   EXCITED: "Excited",
 };
 
+// Constants for key political issues
 export const KEY_ISSUE_CHOICES = {
   ECONOMY: "Economy and jobs",
   HEALTHCARE: "Healthcare",
