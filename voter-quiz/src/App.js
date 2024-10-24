@@ -1,12 +1,13 @@
-// App.js
+// App.js - Main application component
+
 import React from "react";
-import "./App.css";
-import Quiz from "./components/Quiz"; // Import the main Quiz component
+import "./App.css"; // Import component-specific styles
+import Quiz from "./components/Quiz";
 
 function App() {
   return (
     <div className="app">
-      <Quiz /> {/* Use the main Quiz component */}
+      <Quiz />
     </div>
   );
 }

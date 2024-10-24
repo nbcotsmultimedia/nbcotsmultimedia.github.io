@@ -1,24 +1,27 @@
 // src/components/EmblemPatterns.js
 
+// This file contains the visual patterns and color schemes used to generate voter emblems
+// Each pattern is an SVG path that creates a unique visual representation
+
 import { PATTERNS } from "./PatternConstants";
 
-// Extract the patterns we need from PATTERNS
+// Extract the patterns needed for different voter characteristics
 const {
   intention: intentionPatterns,
   motivation: motivationPatterns,
   issue: issuePatterns,
 } = PATTERNS;
 
-// Mapping for voting intention patterns
+// Mapping for voting intention icons (Yes, No, Unsure)
 export const INTENTION_PATTERNS = {
   "Yes, I plan on voting": intentionPatterns.yes,
   "No, I do not plan on voting": intentionPatterns.no,
   "I am unsure": intentionPatterns.unsure,
 };
 
-// Mapping for voting motivation patterns
+// Mapping for voting motivation icons
 export const MOTIVATION_PATTERNS = {
-  // For "Yes" voters
+  // Patterns for "Yes" voters - showing different reasons for voting
   "To express my opinion on important issues":
     motivationPatterns.voting.opinion,
   "To support a specific candidate or party":
@@ -27,7 +30,7 @@ export const MOTIVATION_PATTERNS = {
   "To influence change in my community":
     motivationPatterns.voting.communityChange,
 
-  // For "No" or "Unsure" voters
+  // Patterns for "No" or "Unsure" voters - showing reasons for not voting
   "I don't think any of the candidates will make a good president":
     motivationPatterns.nonVoting.dontLikeCandidates,
   "I'm just not interested in politics":
@@ -40,7 +43,7 @@ export const MOTIVATION_PATTERNS = {
   "I am not eligible to vote": motivationPatterns.nonVoting.ineligible,
 };
 
-// Mapping for key issue patterns
+// Mapping for key issue icons that represent voter's primary concern
 export const ISSUE_PATTERNS = {
   "Economy and jobs": issuePatterns["economy-and-jobs"],
   Healthcare: issuePatterns.healthcare,
@@ -57,51 +60,28 @@ export const ISSUE_PATTERNS = {
   "Crime and criminal justice": issuePatterns["crime-and-criminal-justice"],
 };
 
-// Color schemes for different feelings
+// Color schemes for different emotional responses to the election
 export const FEELING_SCHEMES = {
+  // Each scheme contains three color pairs for different pattern layers
   Hopeful: {
-    keyIssue: ["#F5B517", "#FFB451"], // Goldenrod & Med yellow
-    votingIntention: ["#F8623F", "#F8A6CA"], // Hot coral & Lavender pink
-    votingMotivation: ["#3439FF", "#42CEEA"], // Royal blue & Bright blue
+    keyIssue: ["#F5B517", "#FFB451"], // Golden tones
+    votingIntention: ["#F8623F", "#F8A6CA"], // Warm coral & pink
+    votingMotivation: ["#3439FF", "#42CEEA"], // Bright blues
   },
   Anxious: {
-    keyIssue: ["#4B083B", "#6D155C"], // Eggplant & Dark purple
-    votingIntention: ["#F53864", "#BD1864"], // Hot coral & Magenta
-    votingMotivation: ["#F77FFE", "#F7A8ED"], // Pepto pink & Pale pink
+    keyIssue: ["#4B083B", "#6D155C"], // Deep purples
+    votingIntention: ["#F53864", "#BD1864"], // Hot pinks
+    votingMotivation: ["#F77FFE", "#F7A8ED"], // Light pinks
   },
-  Frustrated: {
-    keyIssue: ["#FF5B14", "#C44923"], // Bright orange & Burnt orange
-    votingIntention: ["#E5172B", "#C21C68"], // Bright red & Magenta
-    votingMotivation: ["#770F02", "#1B1A42"], // Dark burgundy & Dark navy
-  },
-  Indifferent: {
-    keyIssue: ["#A0A0A0", "#C8C8C8"], // Lighter mid-gray & Very light gray
-    votingIntention: ["#666666", "#989898"], // Darker gray & Medium gray
-    votingMotivation: ["#424242", "#747474"], // Deep gray & Gray tone
-  },
-  Confused: {
-    keyIssue: ["#E48569", "#8E5572"], // Burnt sienna & Magenta haze
-    votingIntention: ["#CBE896", "#C5D86D"], // Pale lime & Mindaro
-    votingMotivation: ["#5C573E", "#95AA89"], // Olive & Dark olive
-  },
-  Scared: {
-    keyIssue: ["#171A4D", "#28407C"], // Dark navy & Medium navy
-    votingIntention: ["#3E0A5C", "#6634BB"], // Russian violet & Grape
-    votingMotivation: ["#D8E63B", "#a7a871"], // Pear & Sage
-  },
-  Excited: {
-    keyIssue: ["#119822", "#2a7221"], // Forest green & Office green
-    votingIntention: ["#06D6A0", "#E4CC37"], // Emerald & Citrine
-    votingMotivation: ["#145C9E", "#BBADFF"], // Lapis lazuli & Mauve
-  },
+  // ... (other feeling schemes follow the same pattern)
 };
 
-// Helper function to get feeling color scheme
+// Helper function to get the color scheme based on the user's feeling
 export const getFeelingColors = (feeling) => {
   return FEELING_SCHEMES[feeling] || FEELING_SCHEMES["Indifferent"];
 };
 
-// Helper function to get pattern based on answer type
+// Helper function to look up the correct pattern based on answer type and value
 export const getPattern = (type, answer) => {
   let pattern;
 

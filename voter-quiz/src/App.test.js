@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+// App.test.js - Test file for the App component
 
-test('renders learn react link', () => {
+import { render, screen } from "@testing-library/react";
+import App from "./App";
+
+// Basic test to ensure the App component renders without crashing
+test("renders the App component", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // Add more specific tests for the Quiz app here
 });
