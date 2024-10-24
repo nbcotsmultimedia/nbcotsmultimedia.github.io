@@ -1,4 +1,5 @@
-/* Global Styles */
+/* #region - GLOBAL STYLES */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -7,26 +8,90 @@ body {
 
 /* Quiz Container */
 .quiz-container {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 20px;
+  text-align: center;
 }
 
-/* Progress Bar */
-.progress-bar-container {
+/* #endregion */
+
+/* #region - PROGRESS BAR */
+
+/* Progress Track */
+.progress-track {
+  position: relative;
+  width: 320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Progress Container */
+.progress-container {
+  position: relative;
   width: 100%;
-  height: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  margin-bottom: 20px;
+  height: 6px; /* Height of dots */
+  margin-bottom: 18px;
 }
 
-.progress-bar {
-  height: 100%;
-  background-color: #4caf50;
-  border-radius: 5px;
+/* Progress Line */
+.progress-line-bg {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e5e5e5;
+  transform: translateY(-50%);
+}
+
+.progress-line-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 1px;
+  background-color: #666;
+  transform: translateY(-50%);
   transition: width 0.3s ease;
 }
+
+/* Progress Dots */
+.progress-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.progress-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #e5e5e5;
+  transition: background-color 0.3s ease;
+}
+
+.progress-dot.active {
+  background-color: #000; /* Darker color for active dots */
+}
+
+/* Progress Title */
+.progress-title {
+  font-size: 12px;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+/* #endregion */
+
+/* #region - QUESTION SECTION */
 
 /* Quiz Header */
 .quiz-header {
@@ -36,57 +101,90 @@ body {
   margin-bottom: 20px;
 }
 
-.back-button {
-  padding: 8px 16px;
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 /* Question */
 .question {
-  font-size: 1.5em;
-  margin-bottom: 30px;
-  color: #333;
+  font-size: 24px;
+  font-weight: 500;
+  color: #000;
+  margin-top: 48px;
+  margin-bottom: 16px;
+  line-height: 1.3;
 }
 
-/* Answer Options */
+/* Question Description */
+.question-description {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+  line-height: 1.5;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Options */
 .options {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .option-button {
-  padding: 15px 20px;
+  width: 100%;
+  padding: 16px;
   background-color: white;
-  border: 2px solid #ddd;
-  border-radius: 5px;
+  border: 1px solid #e5e5e5;
+  border-radius: 100px;
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .option-button:hover {
-  border-color: #4caf50;
+  border-color: #000;
+  background-color: #f5f5f5;
 }
 
 .option-button.selected {
-  background-color: #4caf50;
+  background-color: #000;
+  color: white;
+  border-color: #000;
 }
 
+/* #endregion */
+
+/* #region - EMBLEM */
+
 /* Emblem Visualization */
-.emblem-visualization,
+.emblem-visualization {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto; /* Removed vertical margin */
+  width: 100%;
+  padding: 8px 0; /* Added minimal padding */
+}
+
+/* Emblem Container */
+.emblem-container {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  margin: 0 auto;
+}
+
+/* Emblem Visualization for Results Page */
 .voter-emblem-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto;
+  margin: 0 auto; /* Removed vertical margin */
+  padding: 8px 0; /* Added minimal padding */
   width: 100%;
-}
-
-.emblem-container {
-  width: 300px; /* Adjust the size as needed */
-  height: 300px; /* Ensure height matches width for a square */
-  position: relative;
 }
 
 .emblem-svg {
@@ -97,57 +195,138 @@ body {
   height: 100%;
 }
 
-/* Results Page */
-.results-page {
-  text-align: center;
-  padding: 20px;
-}
+/* #endregion */
 
-.results-title {
-  font-size: 2em;
-  color: #333;
-  margin-bottom: 30px;
-}
+/* #region - BUTTONS */
 
-/* Results Summary */
-.results-summary {
-  margin-top: 40px;
-  text-align: left;
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-}
-
-.response-item {
-  margin-bottom: 20px;
-  padding: 15px;
-  border-bottom: 1px solid #eee;
-}
-
-.question-text {
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.answer-text {
-  color: #666;
-  margin-left: 20px;
-}
-
-/* Restart Button */
-.restart-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px; /* Corrected syntax */
+/* Back Button */
+.back-button {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  background: none;
   border: none;
-  border-radius: 5px;
+  font-size: 16px;
+  color: #000;
   cursor: pointer;
-  font-size: 16px; /* Corrected syntax */
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.restart-button:hover {
-  background-color: #45a049;
+.back-button:hover {
+  color: #000;
 }
+
+/* #endregion */
+
+/* #region - Results Page */
+
+.results-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Progress Dots */
+.progress-dots-final {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.progress-dots-final .dot {
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 50%;
+}
+
+/* Profile Section */
+.profile-tag {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.profile-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.profile-text {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.profile-detail {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Response Categories */
+.response-categories {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.category {
+  text-align: center;
+}
+
+.category h2 {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.category p {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.share-button,
+.restart-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #e5e5e5;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.share-icon {
+  font-size: 18px;
+}
+
+/* #endregion */

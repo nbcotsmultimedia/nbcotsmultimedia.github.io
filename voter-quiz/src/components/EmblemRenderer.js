@@ -116,30 +116,35 @@ function EmblemRenderer({
   const getPatternRepetition = (hours) => {
     if (!hours || hours === "0-1" || hours === "1-3") return 1;
     if (hours === "3-5") return 4;
-    return 16;
+    if (hours === "5-10" || hours === "10+") return 16;
+    return 1; // Default to 1 if unknown value
   };
+
+  // Get news hours from the correct answer index
+  const actualNewsHours = answers?.[9]; // Question 10 is at index 9
 
   const repetition = progressive
     ? currentQuestion >= 10
-      ? getPatternRepetition(newsHours)
+      ? getPatternRepetition(actualNewsHours)
       : 1
-    : getPatternRepetition(newsHours);
+    : getPatternRepetition(actualNewsHours);
 
   // Render the emblem
   return (
     <div className={progressive ? "progressive-emblem" : "voter-emblem"}>
       <div className="emblem-container">
         <svg
-          viewBox="0 0 200 200"
+          viewBox="0 0 100 100" // Changed from 200 200 to make content relatively larger
           xmlns="http://www.w3.org/2000/svg"
           className="emblem-svg"
         >
-          <g transform="translate(100,100)">
+          {/* Centered transform that scales patterns to fill more space */}
+          <g transform="translate(50,50)">
             {/* Key Issue Pattern Layer */}
             {issuePattern && (
               <g
                 className="pattern-layer"
-                transform="translate(-50,-50) scale(1)"
+                transform="translate(-40,-40) scale(0.8)" // Adjusted scale and translation
               >
                 {Array.from({ length: repetition }).map((_, index) => {
                   const x =
@@ -175,7 +180,7 @@ function EmblemRenderer({
             {intentionPattern && (
               <g
                 className="pattern-layer"
-                transform="translate(-30,-30) scale(0.6)"
+                transform="translate(-25,-25) scale(0.5)" // Adjusted scale and translation
               >
                 <path
                   d={intentionPattern.bd}
@@ -194,7 +199,7 @@ function EmblemRenderer({
             {motivationPattern && (
               <g
                 className="pattern-layer motivation"
-                transform="translate(-25,-25) scale(0.5)"
+                transform="translate(-20,-20) scale(0.4)" // Adjusted scale and translation
               >
                 <path
                   d={motivationPattern.bd}

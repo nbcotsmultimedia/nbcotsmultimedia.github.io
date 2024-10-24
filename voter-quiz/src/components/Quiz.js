@@ -11,6 +11,8 @@ function Quiz() {
     {
       id: 1,
       text: "Are you planning to vote in the upcoming election?",
+      description:
+        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
       options: [
         "Yes, I plan on voting",
         "No, I do not plan on voting",
@@ -149,20 +151,21 @@ function Quiz() {
     const visibleQuestions = getVisibleQuestions();
     const currentQuestion = questions[currentQuestionIndex];
 
-    // Save the user's answer
+    // Immediately update the answers state
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
-      [currentQuestion.id]: option,
+      [currentQuestionIndex + 1]: option, // Store by index + 1 to match question IDs
     }));
 
-    // Add small delay for animation and user feedback
-    setTimeout(() => {
-      if (currentQuestionIndex < visibleQuestions.length - 1) {
+    if (currentQuestionIndex < visibleQuestions.length - 1) {
+      setTimeout(() => {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
+      }, 300);
+    } else {
+      setTimeout(() => {
         setIsCompleted(true);
-      }
-    }, 300);
+      }, 300);
+    }
   };
 
   // Add function to restart quiz
@@ -181,10 +184,32 @@ function Quiz() {
   const renderQuiz = () => (
     <>
       {/* Progress bar */}
-      <div className="progress-bar-container">
-        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+      <div className="progress-track">
+        <div className="progress-container">
+          <div className="progress-line-bg" />
+          <div
+            className="progress-line-fill"
+            style={{
+              width: `${
+                (currentQuestionIndex / (visibleQuestions.length - 1)) * 100
+              }%`,
+            }}
+          />
+          <div className="progress-dots">
+            {visibleQuestions.map((_, index) => (
+              <div
+                key={index}
+                className={`progress-dot ${
+                  index <= currentQuestionIndex ? "active" : ""
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="progress-title">
+          Question {currentQuestionIndex + 1} of {visibleQuestions.length}
+        </div>
       </div>
-
       {/* Navigation and question counter */}
       <div className="quiz-header">
         {currentQuestionIndex > 0 && (
@@ -192,9 +217,6 @@ function Quiz() {
             ← Back
           </button>
         )}
-        <div className="question-counter">
-          Question {currentQuestionIndex + 1} of {visibleQuestions.length}
-        </div>
       </div>
 
       {/* Progressive Emblem Visualization */}
@@ -206,22 +228,27 @@ function Quiz() {
         />
       </div>
 
-      {/* Question text */}
+      {/* Question text and description */}
       <h2 className="question">{currentQuestion.text}</h2>
+      {currentQuestion.description && (
+        <p className="question-description">{currentQuestion.description}</p>
+      )}
 
-      {/* Answer options */}
+      {/* Answer options with fixed selection logic */}
       <div className="options">
-        {currentQuestion.options.map((option, index) => (
-          <button
-            key={index}
-            className={`option-button ${
-              answers[currentQuestion.id] === option ? "selected" : ""
-            }`}
-            onClick={() => handleOptionClick(option)}
-          >
-            {option}
-          </button>
-        ))}
+        {currentQuestion.options.map((option, index) => {
+          const isSelected = answers[currentQuestionIndex + 1] === option;
+
+          return (
+            <button
+              key={index}
+              className={`option-button ${isSelected ? "selected" : ""}`}
+              onClick={() => handleOptionClick(option)}
+            >
+              {option}
+            </button>
+          );
+        })}
       </div>
     </>
   );
@@ -229,33 +256,69 @@ function Quiz() {
   // Results page
   const renderResults = () => (
     <div className="results-page">
-      <h2 className="results-title">Your Voter Profile</h2>
+      {/* Progress dots */}
+      <div className="progress-dots-final">
+        {Array(10)
+          .fill(null)
+          .map((_, i) => (
+            <div key={i} className="dot" />
+          ))}
+      </div>
 
       {/* Voter emblem visualization */}
       <div className="voter-emblem-container">
         <EmblemRenderer
           answers={answers}
-          newsHours={answers[10]} // Assuming question 10 is about news hours
+          newsHours={answers[9]} // News hours question
         />
       </div>
 
-      {/* Answer summary */}
-      <div className="results-summary">
-        <h3>Your Responses:</h3>
-        {Object.entries(answers).map(([questionId, answer]) => {
-          const question = questions.find((q) => q.id === parseInt(questionId));
-          return (
-            <div key={questionId} className="response-item">
-              <p className="question-text">{question.text}</p>
-              <p className="answer-text">{answer}</p>
-            </div>
-          );
-        })}
+      {/* Profile description */}
+      <div className="profile-description">
+        <p className="profile-tag">You are</p>
+        <h1 className="profile-title">TK TEXT HERE LATER</h1>
+        <p className="profile-text">
+          You're a political maverick with a sprinkle of cynicism, navigating
+          the tumultuous waters of today's political landscape.
+        </p>
+        <p className="profile-detail">
+          You embrace your independence, often feeling caught between the
+          extremes of party loyalty and personal conviction. Your diverse
+          interests—ranging from the economy to healthcare and
+          immigration—reflect a nuanced understanding of the issues that matter
+          most to you.
+        </p>
       </div>
 
-      <button className="restart-button" onClick={handleRestartQuiz}>
-        Take Quiz Again
-      </button>
+      {/* Response categories */}
+      <div className="response-categories">
+        <div className="category">
+          <h2>VOTING INTENTION</h2>
+          <p>tk dynamic text here</p>
+        </div>
+        <div className="category">
+          <h2>MOTIVATION</h2>
+          <p>tk dynamic text here</p>
+        </div>
+        <div className="category">
+          <h2>KEY POLICY ISSUE</h2>
+          <p>tk dynamic text here</p>
+        </div>
+        <div className="category">
+          <h2>FEELING</h2>
+          <p>tk dynamic text here</p>
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="action-buttons">
+        <button className="share-button">
+          <span className="share-icon">↗</span> Share results
+        </button>
+        <button className="restart-button" onClick={handleRestartQuiz}>
+          Take quiz again
+        </button>
+      </div>
     </div>
   );
 
