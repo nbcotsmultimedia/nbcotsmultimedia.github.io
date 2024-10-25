@@ -12,56 +12,55 @@ const {
   issue: issuePatterns,
 } = PATTERNS;
 
-// Mapping for voting intention icons (Yes, No, Unsure)
-export const INTENTION_PATTERNS = {
-  "Yes, I plan on voting": intentionPatterns.yes,
-  "No, I do not plan on voting": intentionPatterns.no,
-  "I am unsure": intentionPatterns.unsure,
-};
-
-// Mapping for voting motivation icons
-export const MOTIVATION_PATTERNS = {
-  // Patterns for "Yes" voters - showing different reasons for voting
-  "To express my opinion on important issues":
-    motivationPatterns.voting.opinion,
-  "To support a specific candidate or party":
-    motivationPatterns.voting.supportCandidate,
-  "To fulfill my civic duty": motivationPatterns.voting.civicDuty,
-  "To influence change in my community":
-    motivationPatterns.voting.communityChange,
-
-  // Patterns for "No" or "Unsure" voters - showing reasons for not voting
-  "I don't think any of the candidates will make a good president":
-    motivationPatterns.nonVoting.dontLikeCandidates,
-  "I'm just not interested in politics":
-    motivationPatterns.nonVoting.notInterested,
-  "I do not feel my vote will make a difference":
-    motivationPatterns.nonVoting.voteWontMatter,
-  "I am unable to vote due to personal circumstances":
-    motivationPatterns.nonVoting.cantVote,
-  "I am not registered to vote": motivationPatterns.nonVoting.notRegistered,
-  "I am not eligible to vote": motivationPatterns.nonVoting.ineligible,
-};
-
-// Mapping for key issue icons that represent voter's primary concern
-export const ISSUE_PATTERNS = {
-  "Economy and jobs": issuePatterns["economy-and-jobs"],
-  Healthcare: issuePatterns.healthcare,
-  "Climate change and the environment":
-    issuePatterns["climate-change-and-the-environment"],
-  Immigration: issuePatterns.immigration,
-  Education: issuePatterns.education,
-  "National security and foreign policy":
-    issuePatterns["national-security-and-foreign-policy"],
-  "Gun policy": issuePatterns["gun-policy"],
-  "Abortion and reproductive rights":
-    issuePatterns["abortion-and-reproductive-rights"],
-  "Racial and ethnic inequality": issuePatterns["racial-and-ethnic-inequality"],
-  "Crime and criminal justice": issuePatterns["crime-and-criminal-justice"],
+// Simplified pattern mappings
+export const PATTERNS_MAP = {
+  intention: {
+    "Yes, I plan on voting": PATTERNS.intention.yes,
+    "No, I do not plan on voting": PATTERNS.intention.no,
+    "I am unsure": PATTERNS.intention.unsure,
+  },
+  motivation: {
+    voting: {
+      "To express my opinion on important issues":
+        PATTERNS.motivation.voting.opinion,
+      "To support a specific candidate or party":
+        PATTERNS.motivation.voting.supportCandidate,
+      "To fulfill my civic duty": PATTERNS.motivation.voting.civicDuty,
+      "To influence change in my community":
+        PATTERNS.motivation.voting.communityChange,
+    },
+    nonVoting: {
+      "I don't think any of the candidates will make a good president":
+        PATTERNS.motivation.nonVoting.dontLikeCandidates,
+      "I'm just not interested in politics":
+        PATTERNS.motivation.nonVoting.notInterested,
+      "I don't feel my vote will make a difference":
+        PATTERNS.motivation.nonVoting.voteWontMatter,
+      "Personal circumstances prevent me from voting (work, health, transportation)":
+        PATTERNS.motivation.nonVoting.cantVote,
+      "I'm not registered to vote": PATTERNS.motivation.nonVoting.notRegistered,
+      "I'm not eligible to vote": PATTERNS.motivation.nonVoting.ineligible,
+    },
+  },
+  issue: {
+    "Economy and jobs": PATTERNS.issue["economy-and-jobs"],
+    Healthcare: PATTERNS.issue.healthcare,
+    "Climate change and the environment":
+      PATTERNS.issue["climate-change-and-the-environment"],
+    Immigration: PATTERNS.issue.immigration,
+    Education: PATTERNS.issue.education,
+    "National security and foreign policy":
+      PATTERNS.issue["national-security-and-foreign-policy"],
+    "Gun policy": PATTERNS.issue["gun-policy"],
+    "Abortion and reproductive rights":
+      PATTERNS.issue["abortion-and-reproductive-rights"],
+    "Racial and ethnic inequality":
+      PATTERNS.issue["racial-and-ethnic-inequality"],
+    "Crime and criminal justice": PATTERNS.issue["crime-and-criminal-justice"],
+  },
 };
 
 // Color schemes for different emotional responses to the election
-// Color schemes for different feelings
 export const FEELING_SCHEMES = {
   Hopeful: {
     keyIssue: ["#F5B517", "#FFB451"], // Goldenrod & Med yellow

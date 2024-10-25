@@ -1,7 +1,7 @@
 /* #region - GLOBAL STYLES */
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -101,17 +101,17 @@ body {
   margin-bottom: 20px;
 }
 
-/* Question */
+/* Question text */
 .question {
+  font-family: "ArtHouseMed", sans-serif;
   font-size: 24px;
-  font-weight: 500;
   color: #000;
-  margin-top: 48px;
+  margin-top: 20px;
   margin-bottom: 16px;
   line-height: 1.3;
 }
 
-/* Question Description */
+/* Question description text */
 .question-description {
   font-size: 16px;
   color: #666;
@@ -122,7 +122,7 @@ body {
   margin-right: auto;
 }
 
-/* Options */
+/* Options (answer buttons) */
 .options {
   display: flex;
   flex-direction: column;
@@ -133,7 +133,7 @@ body {
 
 .option-button {
   width: 100%;
-  padding: 16px;
+  padding: 8px;
   background-color: white;
   border: 1px solid #e5e5e5;
   border-radius: 100px;
@@ -223,6 +223,11 @@ body {
 
 /* #region - RESULTS SCREEN */
 
+/* Profile section */
+.profile-section {
+  padding: 0;
+}
+
 .results-page {
   display: flex;
   flex-direction: column;
@@ -230,20 +235,6 @@ body {
   padding: 40px 20px;
   max-width: 600px;
   margin: 0 auto;
-}
-
-/* Progress Dots */
-.progress-dots-final {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 40px;
-}
-
-.progress-dots-final .dot {
-  width: 8px;
-  height: 8px;
-  background-color: #000;
-  border-radius: 50%;
 }
 
 /* Profile Section */
@@ -254,9 +245,10 @@ body {
   margin-bottom: 8px;
 }
 
+/* "The Voter Archetype" */
 .profile-title {
-  font-size: 1.6rem;
-  font-weight: 40;
+  font-size: 1.5rem;
+  font-weight: 400;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
 }
@@ -286,18 +278,16 @@ body {
   text-align: center;
 }
 
-.category h2 {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  letter-spacing: 0.05em;
-}
-
 .category h3 {
   font-size: 0.875rem;
-  font-weight: bold;
+  font-weight: 400;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
+  /* Add these new styles */
+  border-bottom: 1px solid #666;
+  padding-bottom: 0.25rem;
+  display: inline-block; /* This makes the border only as wide as the text */
+  min-width: 120px; /* Ensures a minimum width for the underline */
 }
 
 .category p {
@@ -306,36 +296,56 @@ body {
 }
 
 /* Action Buttons */
+
+/* Action Buttons */
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-}
-
-.share-button,
-.restart-button {
+  gap: 12px;
   width: 100%;
-  padding: 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-  background-color: #666;
-  color: white;
-  transition: background-color 0.2s;
+  max-width: 400px;
+  margin: 32px auto 0;
 }
 
-.share-button:hover,
-.restart-button:hover {
-  background-color: #555;
-}
-
-.share-button {
+.action-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.action-button svg {
+  flex-shrink: 0;
+}
+
+.action-button-share {
+  background-color: #666;
+}
+
+.action-button-share:hover {
+  background-color: #555;
+}
+
+.action-button-retake {
+  background-color: #777;
+}
+
+.action-button-retake:hover {
+  background-color: #666;
+}
+
+/* Add this to your existing SVG styles or create new section */
+.action-button svg {
+  stroke: currentColor;
 }
 
 /* #endregion */

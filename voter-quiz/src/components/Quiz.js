@@ -5,8 +5,10 @@ import "./Quiz.css";
 import EmblemRenderer from "./EmblemRenderer";
 import ProgressiveEmblem from "./ProgressiveEmblem";
 import ArchetypeResult from "./ArchetypeResult";
-import { determineArchetype, archetypes } from "./archetypeData"; // Add archetypes import
+import { determineArchetype, archetypes } from "./archetypeData";
 import IntentionSelection from "./IntentionSelection";
+import ActionButtons from "./ActionButtons";
+import { QUESTIONS } from "./QuizConstants"; // Move questions to constants
 
 function Quiz() {
   // Quiz questions configuration - defines all possible questions and their conditions
@@ -136,8 +138,6 @@ function Quiz() {
     });
   };
 
-  const newsHours = answers[9]; // Assuming the news hours question is the 10th question (index 9)
-
   // Navigation handlers
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
@@ -233,8 +233,8 @@ function Quiz() {
         ) : (
           <ProgressiveEmblem
             answers={answers}
-            currentQuestion={currentQuestionIndex + 1}
-            newsHours={answers[10]}
+            currentQuestionId={currentQuestion.id}
+            newsHours={answers[9]} // This is correct - using question 9 for news hours
           />
         )}
       </div>
@@ -273,9 +273,9 @@ function Quiz() {
     console.log("All answers:", answers);
     console.log("Archetype:", archetypeKey, archetype);
 
-    // Format news hours value
-    const newsHoursValue = answers[10] || "0-1"; // Use answers[10] consistently
-    console.log("News hours value:", newsHoursValue); // Debug log
+    // Use answers[9] for news hours, NOT answers[10]
+    const newsHoursValue = answers[9] || "0-1"; // Changed from answers[10]
+    console.log("News hours value:", newsHoursValue);
 
     const getResponseText = () => {
       const responseText = {
@@ -292,22 +292,38 @@ function Quiz() {
 
     return (
       <div className="results-page">
-        <div className="progress-dots-final">
-          {Array(10)
-            .fill(null)
-            .map((_, i) => (
-              <div key={i} className="dot" />
-            ))}
+        {/* Progress bar */}
+        <div className="progress-track">
+          <div className="progress-container">
+            <div className="progress-line-bg" />
+            <div
+              className="progress-line-fill"
+              style={{
+                width: `${
+                  (currentQuestionIndex / (visibleQuestions.length - 1)) * 100
+                }%`,
+              }}
+            />
+            <div className="progress-dots">
+              {visibleQuestions.map((_, index) => (
+                <div
+                  key={index}
+                  className={`progress-dot ${
+                    index <= currentQuestionIndex ? "active" : ""
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="voter-emblem-container">
           <EmblemRenderer
             answers={answers}
-            newsHours={newsHoursValue} // Pass the formatted news hours value
+            newsHours={answers[9]} // Pass the formatted news hours value
           />
         </div>
 
-        {/* Rest of the component remains the same */}
         <div className="profile-section">
           <p className="profile-tag">You are</p>
           <h2 className="profile-title">
@@ -317,6 +333,7 @@ function Quiz() {
           <p className="profile-detail">{archetype?.detail || "Detail text"}</p>
         </div>
 
+        {/* Response categories */}
         <div className="response-categories">
           <div className="category">
             <h3>VOTING INTENTION</h3>
@@ -336,14 +353,13 @@ function Quiz() {
           </div>
         </div>
 
-        <div className="action-buttons">
-          <button className="share-button">
-            <span>Share your results</span>
-          </button>
-          <button className="restart-button" onClick={handleRestartQuiz}>
-            Take quiz again
-          </button>
-        </div>
+        {/* Action buttons */}
+        <ActionButtons
+          onShare={() => {
+            // Your share logic here
+          }}
+          onRetake={handleRestartQuiz}
+        />
       </div>
     );
   };
