@@ -12,7 +12,7 @@ const {
   issue: issuePatterns,
 } = PATTERNS;
 
-// Simplified pattern mappings
+// Patterns mapping
 export const PATTERNS_MAP = {
   intention: {
     "Yes, I plan on voting": PATTERNS.intention.yes,
@@ -36,7 +36,7 @@ export const PATTERNS_MAP = {
         PATTERNS.motivation.nonVoting.notInterested,
       "I don't feel my vote will make a difference":
         PATTERNS.motivation.nonVoting.voteWontMatter,
-      "Personal circumstances prevent me from voting (work, health, transportation)":
+      "I am unable to vote due to personal circumstances":
         PATTERNS.motivation.nonVoting.cantVote,
       "I'm not registered to vote": PATTERNS.motivation.nonVoting.notRegistered,
       "I'm not eligible to vote": PATTERNS.motivation.nonVoting.ineligible,
@@ -58,6 +58,31 @@ export const PATTERNS_MAP = {
       PATTERNS.issue["racial-and-ethnic-inequality"],
     "Crime and criminal justice": PATTERNS.issue["crime-and-criminal-justice"],
   },
+};
+
+// Helper function to get the correct pattern based on answer type and value
+export const getPattern = (type, answer) => {
+  if (!answer) return null;
+
+  switch (type) {
+    case "intention":
+      return PATTERNS_MAP.intention[answer];
+
+    case "motivation":
+      // Check if it's a voting or non-voting motivation
+      if (answer in PATTERNS_MAP.motivation.voting) {
+        return PATTERNS_MAP.motivation.voting[answer];
+      } else if (answer in PATTERNS_MAP.motivation.nonVoting) {
+        return PATTERNS_MAP.motivation.nonVoting[answer];
+      }
+      return null;
+
+    case "issue":
+      return PATTERNS_MAP.issue[answer];
+
+    default:
+      return null;
+  }
 };
 
 // Color schemes for different emotional responses to the election
@@ -83,7 +108,7 @@ export const FEELING_SCHEMES = {
     votingMotivation: ["#424242", "#747474"], // Deep gray & Gray tone
   },
   Confused: {
-    keyIssue: ["#E48569", "#8E5572"], // Burnt sienna & Magenta haze
+    keyIssue: ["#E48569", "#ff9689"], // Burnt sienna & Coral pink
     votingIntention: ["#CBE896", "#C5D86D"], // Pale lime & Mindaro
     votingMotivation: ["#5C573E", "#95AA89"], // Olive & Dark olive
   },
@@ -102,32 +127,4 @@ export const FEELING_SCHEMES = {
 // Helper function to get the color scheme based on the user's feeling
 export const getFeelingColors = (feeling) => {
   return FEELING_SCHEMES[feeling] || FEELING_SCHEMES["Indifferent"];
-};
-
-// Helper function to look up the correct pattern based on answer type and value
-export const getPattern = (type, answer) => {
-  let pattern;
-
-  switch (type) {
-    case "intention":
-      pattern = INTENTION_PATTERNS[answer];
-      console.log("Intention pattern lookup:", { answer, found: !!pattern });
-      break;
-    case "motivation":
-      pattern = MOTIVATION_PATTERNS[answer];
-      console.log("Motivation pattern lookup:", { answer, found: !!pattern });
-      break;
-    case "issue":
-      pattern = ISSUE_PATTERNS[answer];
-      console.log("Issue pattern lookup:", { answer, found: !!pattern });
-      break;
-    default:
-      pattern = null;
-  }
-
-  if (!pattern) {
-    console.warn(`No pattern found for ${type} answer: "${answer}"`);
-  }
-
-  return pattern;
 };

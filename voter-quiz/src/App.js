@@ -1,14 +1,19 @@
-// App.js - Main application component
-
 import React from "react";
-import "./App.css"; // Import component-specific styles
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
 import Quiz from "./components/Quiz";
+import DownloadPreview from "./components/DownloadPreview"; // Updated import path
 
 function App() {
   return (
-    <div className="app">
-      <Quiz />
-    </div>
+    <BrowserRouter>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<Quiz />} />
+          <Route path="/preview-download" element={<DownloadPreview />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -36,6 +36,12 @@ function EmblemRenderer({
         ? answers[answers[1] === "Yes, I plan on voting" ? 2 : 3]
         : answers[type === "intention" ? 1 : 8];
 
+    console.log(`Pattern lookup for ${type}:`, {
+      votingIntent: answers[1],
+      answerIndex: answers[1] === "Yes, I plan on voting" ? 2 : 3,
+      answer,
+    });
+
     if (!answer) return null;
 
     if (type === "motivation") {

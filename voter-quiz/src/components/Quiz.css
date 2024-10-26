@@ -1,69 +1,218 @@
-/* #region - GLOBAL STYLES */
-
-body {
-  font-family: "Roboto", sans-serif;
-  margin: 0;
-  padding: 0;
+/* Category layout adjustments */
+.download-category-wrapper {
+  position: relative;
+  padding-bottom: 32px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: flex-start;
 }
 
-/* Quiz Container */
-.quiz-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 40px 20px;
+/* Pattern backgrounds */
+.pattern-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  z-index: -1;
+}
+
+.pattern-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.category-content-download h3 {
+  font-size: var(--fs-lg);
+  font-weight: bold;
+  letter-spacing: 0.075em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  color: rgb(33, 33, 33);
+}
+
+.category-content-download p {
+  font-size: var(--fs-lg);
+  color: rgb(82, 82, 82);
+  line-height: 1.4;
+}
+
+/* Category icon containers */
+.category-icon-container {
+  position: relative;
+  width: 100px; /* Increased from 48px */
+  height: 100px; /* Increased from 48px */
+  flex-shrink: 0;
+  margin-right: 24px;
+}
+
+.download-profile {
+  max-width: 800px;
+  font-size: var(--fs-xl);
+  line-height: 1.5;
   text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.download-traits {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--spacing-xl);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* #region - Root */
+
+/* Keep Step 1 CSS (Custom Properties and Base Styles) */
+:root {
+  /* Colors */
+  --color-primary: #000;
+  --color-secondary: #666;
+  --color-light: #e5e5e5;
+  --color-white: #fff;
+
+  /* Fluid Typography */
+  --fs-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --fs-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --fs-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --fs-lg: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --fs-xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+
+  /* Spacing */
+  --spacing-xs: 0.45rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1.25rem;
+  --spacing-lg: 1.75rem;
+  --spacing-xl: 2.25rem;
+
+  /* Border Radius */
+  --radius-pill: 100px;
+  --radius-sm: 4px;
 }
 
 /* #endregion */
 
-/* #region - PROGRESS BAR */
-
-/* Progress Track */
-.progress-track {
-  position: relative;
-  width: 320px;
-  margin: 0 auto;
+.download-container {
+  width: 1080px;
+  height: 1350px;
+  background-color: var(--color-white);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Progress Container */
+.download-header {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  margin-bottom: 64px;
+  text-transform: uppercase;
+}
+
+/* Much larger emblem */
+.download-emblem {
+  width: 600px; /* Significantly increased */
+  height: 400px; /* Maintained aspect ratio */
+  position: relative;
+}
+
+/* Make sure SVG fills the container */
+.download-emblem svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Target the voter-emblem class specifically */
+.voter-emblem {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Force any nested emblem containers to full size */
+.emblem-container,
+.voter-emblem-container {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+}
+
+/* Ensure SVG viewBox is properly scaled */
+.emblem-svg {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* #region - Base Styles */
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.quiz-container {
+  max-width: min(600px, 90vw);
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+/* #endregion */
+
+/* #region - Progress Bar */
+.progress-track {
+  width: min(320px, 90%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .progress-container {
   position: relative;
   width: 100%;
-  height: 6px; /* Height of dots */
-  margin-bottom: 18px;
+  height: 6px;
 }
 
-/* Progress Line */
-.progress-line-bg {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #e5e5e5;
-  transform: translateY(-50%);
-}
-
+.progress-line-bg,
 .progress-line-fill {
   position: absolute;
   top: 50%;
-  left: 0;
   height: 1px;
-  background-color: #666;
   transform: translateY(-50%);
+}
+
+.progress-line-bg {
+  width: 100%;
+  background-color: var(--color-light);
+}
+
+.progress-line-fill {
+  background-color: var(--color-secondary);
   transition: width 0.3s ease;
 }
 
-/* Progress Dots */
 .progress-dots {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
+  inset: 0; /* Shorthand for top/right/bottom/left: 0 */
   display: flex;
   justify-content: space-between;
 }
@@ -72,18 +221,17 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #e5e5e5;
+  background-color: var(--color-light);
   transition: background-color 0.3s ease;
 }
 
 .progress-dot.active {
-  background-color: #000; /* Darker color for active dots */
+  background-color: var(--color-primary);
 }
 
-/* Progress Title */
 .progress-title {
-  font-size: 12px;
-  color: #000;
+  font-size: var(--fs-xs);
+  color: var(--color-primary);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 500;
@@ -91,244 +239,144 @@ body {
 
 /* #endregion */
 
-/* #region - QUESTION SECTION */
+/* #region - Quiz Content */
 
 /* Quiz Header */
 .quiz-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-md);
 }
 
-/* Question text */
+/* Question Styles */
 .question {
   font-family: "ArtHouseMed", sans-serif;
-  font-size: 24px;
-  color: #000;
-  margin-top: 20px;
-  margin-bottom: 16px;
+  font-size: var(--fs-xl);
+  color: var(--color-primary);
+  margin: var(--spacing-md) 0 var(--spacing-sm);
   line-height: 1.3;
 }
 
-/* Question description text */
-.question-description {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 32px;
-  line-height: 1.5;
-  max-width: 480px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Options (answer buttons) */
+/* Options Container */
 .options {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 400px;
+  gap: var(--spacing-xs);
+  width: 100%;
+  max-width: min(400px, 90%);
   margin: 0 auto;
 }
 
+/* Option Buttons */
 .option-button {
+  position: relative;
   width: 100%;
-  padding: 8px;
-  background-color: white;
-  border: 1px solid #e5e5e5;
-  border-radius: 100px;
-  font-size: 16px;
-  color: #000;
+  min-height: 44px; /* Minimum touch target size */
+  padding: var(--spacing-sm);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-light);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-base);
+  color: var(--color-primary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
+
+  /* Improve text alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
 .option-button:hover {
-  border-color: #000;
-  background-color: #f5f5f5;
+  border-color: var(--color-primary);
+  background-color: var(--color-hover);
+  transform: translateY(-1px);
+}
+
+.option-button:active {
+  transform: translateY(0);
 }
 
 .option-button.selected {
-  background-color: #000;
-  color: white;
-  border-color: #000;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
 }
 
 /* #endregion */
 
-/* #region - EMBLEM */
-
-/* Emblem Visualization */
-.emblem-visualization {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto; /* Removed vertical margin */
-  width: 100%;
-  padding: 8px 0; /* Added minimal padding */
-}
-
-/* Emblem Container */
-.emblem-container {
-  width: 200px;
-  height: 200px;
-  position: relative;
-  margin: 0 auto;
-}
-
-/* Emblem Visualization for Results Page */
-.voter-emblem-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto; /* Removed vertical margin */
-  padding: 8px 0; /* Added minimal padding */
-  width: 100%;
-}
-
-.emblem-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* #endregion */
-
-/* #region - BUTTONS */
+/* #region - Buttons */
 
 /* Back Button */
 .back-button {
   position: absolute;
-  left: 20px;
-  top: 20px;
+  left: var(--spacing-md);
+  top: var(--spacing-md);
   background: none;
   border: none;
-  font-size: 16px;
-  color: #000;
+  font-size: var(--fs-base);
+  color: var(--color-primary);
   cursor: pointer;
-  padding: 0;
+  padding: var(--spacing-xs);
+  min-height: 44px;
+
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--spacing-xs);
+  transition: color var(--transition-fast);
 }
 
 .back-button:hover {
-  color: #000;
+  color: var(--color-secondary);
 }
-
-/* #endregion */
-
-/* #region - RESULTS SCREEN */
-
-/* Profile section */
-.profile-section {
-  padding: 0;
-}
-
-.results-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* Profile Section */
-/* "You are..." */
-.profile-tag {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-/* "The Voter Archetype" */
-.profile-title {
-  font-size: 1.5rem;
-  font-weight: 400;
-  margin-bottom: 1.5rem;
-  text-transform: uppercase;
-}
-
-.profile-text {
-  font-size: 1.1rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.profile-detail {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: #666;
-  margin-bottom: 2rem;
-}
-
-/* Response Categories */
-.response-categories {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin: 3rem 0;
-}
-
-.category {
-  text-align: center;
-}
-
-.category h3 {
-  font-size: 0.875rem;
-  font-weight: 400;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  /* Add these new styles */
-  border-bottom: 1px solid #666;
-  padding-bottom: 0.25rem;
-  display: inline-block; /* This makes the border only as wide as the text */
-  min-width: 120px; /* Ensures a minimum width for the underline */
-}
-
-.category p {
-  font-size: 1rem;
-  color: #666;
-}
-
-/* Action Buttons */
 
 /* Action Buttons */
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-sm);
   width: 100%;
-  max-width: 400px;
-  margin: 32px auto 0;
+  max-width: min(400px, 90%);
+  margin: var(--spacing-xl) auto 0;
 }
 
 .action-button {
+  position: relative;
+  min-height: 44px;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--color-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  gap: var(--spacing-xs);
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: translateY(0);
 }
 
 .action-button svg {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
 .action-button-share {
-  background-color: #666;
+  background-color: var(--color-secondary);
 }
 
 .action-button-share:hover {
@@ -340,12 +388,437 @@ body {
 }
 
 .action-button-retake:hover {
-  background-color: #666;
+  background-color: var(--color-secondary);
 }
 
-/* Add this to your existing SVG styles or create new section */
-.action-button svg {
-  stroke: currentColor;
+/* Media query for touch devices */
+@media (hover: none) {
+  .option-button:hover,
+  .action-button:hover {
+    transform: none;
+  }
+}
+
+/* #endregion */
+
+/* #region - Emblem */
+
+/* Specific styles for the download version emblem */
+.download-emblem-container {
+  width: 400px; /* Base size */
+  height: 400px;
+  margin: var(--spacing-xl) auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Emblem Visualization */
+.emblem-visualization {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-sm) 0;
+  margin: 0 auto;
+}
+
+.emblem-container,
+.voter-emblem-container {
+  position: relative;
+  width: min(200px, 50vw);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+/* Emblem Section with Adjusted Height */
+.voter-emblem-container {
+  width: min(400px, 90%);
+  aspect-ratio: 16/9; /* Changed from 1/1 to make it less tall */
+  margin: var(--spacing-sm) auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* If you have a background pattern, ensure it fills correctly */
+.voter-emblem-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  background-size: cover;
+}
+
+/* Ensure the emblem SVG maintains proper sizing */
+.emblem-svg {
+  position: absolute;
+  height: 90%; /* Adjust this value to control emblem size */
+  width: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+}
+
+.emblem-pattern {
+  margin: 1rem 0;
+  min-height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* #endregion */
+
+/* #region - Results Page */
+
+/* Profile Section */
+.profile-section {
+  width: 100%;
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Results Page Layout */
+.results-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  max-width: min(600px, 90vw);
+  margin: 0 auto;
+}
+
+/* Profile Section */
+/* "You are..." */
+.profile-tag {
+  font-size: var(--fs-sm);
+  color: var(--color-secondary);
+  margin-bottom: var(--spacing-xs);
+  display: block;
+}
+
+/* "The Voter Archetype" */
+.profile-title {
+  font-size: var(--fs-lg);
+  font-weight: 400;
+  margin-bottom: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.profile-text {
+  font-size: var(--fs-base);
+  line-height: 1.45;
+  margin-bottom: var(--spacing-sm);
+  max-width: min(480px, 90%);
+  margin-inline: auto;
+}
+
+.profile-detail {
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--color-secondary);
+  margin-bottom: var(--spacing-lg);
+  max-width: min(480px, 90%);
+  margin-inline: auto;
+}
+
+/* Response Categories */
+.response-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Always two columns */
+  gap: var(--spacing-lg);
+  width: 100%;
+  margin: var(--spacing-xl) 0;
+  padding: 0 var(--spacing-sm);
+}
+
+.category {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.color-scheme-display {
+  margin: 1rem 0;
+}
+
+.category h3 {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  color: var(--color-primary);
+  position: relative;
+  padding-bottom: var(--spacing-xs);
+  min-width: min(120px, 90%);
+}
+
+.category h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background-color: var(--color-secondary);
+}
+
+.category p {
+  font-size: var(--fs-sm);
+  color: var(--color-secondary);
+  margin: 0;
+}
+
+/* #endregion */
+
+/* #region - Mobile Styles */
+
+@media (max-width: 480px) {
+  .response-categories {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .category h3 {
+    min-width: 100px;
+  }
+
+  .profile-title {
+    font-size: var(--fs-base);
+  }
+
+  .emblem-container,
+  .voter-emblem-container {
+    width: min(150px, 40vw);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .results-page {
+    padding: 0;
+  }
+
+  .action-buttons {
+    display: none;
+  }
+
+  .profile-section {
+    page-break-inside: avoid;
+  }
+}
+
+/* #endregion */
+
+/* #region - Download */
+
+/* Download Results Styles */
+
+.download-container {
+  width: 1080px;
+  height: 1350px;
+  background-color: var(--color-white);
+  padding: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.download-header {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  margin-bottom: 64px;
+  text-transform: uppercase;
+}
+
+.download-title {
+  font-size: 54px;
+  font-weight: bold;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.trait-separator {
+  color: rgb(82, 82, 82);
+}
+
+.download-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 64px 120px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.download-category {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.category-content {
+  flex-grow: 1;
+}
+
+.category-content h3 {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  color: rgb(33, 33, 33);
+}
+
+.category-content p {
+  font-size: 20px;
+  color: rgb(82, 82, 82);
+  line-height: 1.4;
+}
+
+.feeling-indicator {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.feeling-circle {
+  position: absolute;
+  width: 42px; /* Increased from 32px */
+  height: 42px; /* Increased from 32px */
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+}
+
+.feeling-circle-1 {
+  left: 0;
+}
+
+.feeling-circle-2 {
+  left: 22px;
+}
+
+.nbc-logo-container {
+  margin-top: auto;
+}
+
+.nbc-logo {
+  width: 48px;
+  height: 48px;
+  color: rgb(82, 82, 82);
+  opacity: 0.6;
+}
+
+/* Download-specific container and layout */
+.download-container {
+  width: 1080px;
+  min-height: 1350px;
+  background-color: var(--color-white);
+  padding: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Categories grid */
+.download-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 64px 120px; /* Vertical gap 64px, horizontal gap 120px */
+  width: 100%;
+  max-width: 900px;
+  margin-top: 48px;
+}
+
+/* Category styles */
+.download-category {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.category-content h3 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.category-content p {
+  font-size: 18px;
+  color: var(--color-secondary);
+  line-height: 1.4;
+}
+
+/* NBC Logo */
+.nbc-logo {
+  margin-top: auto;
+  margin-bottom: 32px;
+}
+
+.nbc-logo svg {
+  width: 48px;
+  height: 48px;
+}
+
+.download-container {
+  width: 1080px;
+  height: 1350px;
+  background-color: var(--color-white);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.download-header {
+  font-size: var(--fs-lg);
+  letter-spacing: 2px;
+  margin-bottom: var(--spacing-xl);
+  text-transform: uppercase;
+}
+
+.download-emblem-container {
+  width: 400px;
+  height: 400px;
+  margin-bottom: var(--spacing-xl);
+}
+
+.download-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 80px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.download-category {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.category-content h3 {
+  font-size: var(--fs-base);
+  font-weight: bold;
+  margin-bottom: var(--spacing-xs);
+}
+
+.category-content p {
+  font-size: var(--fs-base);
+  color: var(--color-secondary);
+}
+
+.nbc-logo {
+  margin-top: auto;
+  width: 48px;
+  height: 48px;
 }
 
 /* #endregion */

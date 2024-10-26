@@ -11,9 +11,6 @@ import { QUESTIONS } from "./QuizConstants";
 const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   <>
     <h2 className="question">{currentQuestion.text}</h2>
-    {currentQuestion.description && (
-      <p className="question-description">{currentQuestion.description}</p>
-    )}
     <div className="options">
       {currentQuestion.options.map((option, index) => (
         <button
