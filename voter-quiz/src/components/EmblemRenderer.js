@@ -31,63 +31,63 @@ function EmblemRenderer({
   const getPattern = (type) => {
     if (!shouldRenderPattern(type)) return null;
 
-    const answer =
-      type === "motivation"
-        ? answers[answers[1] === "Yes, I plan on voting" ? 2 : 3]
-        : answers[type === "intention" ? 1 : 8];
-
-    console.log(`Pattern lookup for ${type}:`, {
-      votingIntent: answers[1],
-      answerIndex: answers[1] === "Yes, I plan on voting" ? 2 : 3,
-      answer,
-    });
+    let answer;
+    if (type === "motivation") {
+      // Simplified motivation pattern lookup
+      answer = answers[2] || answers[3];
+    } else if (type === "intention") {
+      answer = answers[1];
+    } else if (type === "issue") {
+      answer = answers[8];
+    }
 
     if (!answer) return null;
 
     if (type === "motivation") {
-      const patterns =
-        answers[1] === "Yes, I plan on voting"
-          ? PATTERNS_MAP.motivation.voting
-          : PATTERNS_MAP.motivation.nonVoting;
+      const isVoting = answers[1] === "Yes, I plan on voting";
+      const patterns = isVoting
+        ? PATTERNS_MAP.motivation.voting
+        : PATTERNS_MAP.motivation.nonVoting;
       return patterns[answer];
     }
 
-    return PATTERNS_MAP[type][answer];
+    return PATTERNS_MAP[type]?.[answer];
   };
 
   const renderPatternLayer = (pattern, type, transform, opacity) => {
-    if (!pattern) return null;
+    if (!pattern) {
+      console.log(`No pattern for ${type}`);
+      return null;
+    }
 
+    const colorScheme =
+      FEELING_SCHEMES[answers?.[5] || "Indifferent"] ||
+      FEELING_SCHEMES.Indifferent;
     const colors = {
-      issue: [
-        colorScheme?.keyIssue?.[0] || "#CCCCCC",
-        colorScheme?.keyIssue?.[1] || "#DDDDDD",
-      ],
-      intention: [
-        colorScheme?.votingIntention?.[0] || "#AAAAAA",
-        colorScheme?.votingIntention?.[1] || "#BBBBBB",
-      ],
-      motivation: [
-        colorScheme?.votingMotivation?.[0] || "#888888",
-        colorScheme?.votingMotivation?.[1] || "#999999",
-      ],
+      issue: colorScheme.keyIssue,
+      intention: colorScheme.votingIntention,
+      motivation: colorScheme.votingMotivation,
     };
 
-    if (type === "issue") {
+    // Debug log
+    console.log(`Rendering ${type} pattern:`, {
+      pattern,
+      colors: colors[type],
+      transform,
+      opacity,
+    });
+
+    if (type === "issue" && repetition > 1) {
       return (
         <g className="pattern-layer" transform={transform}>
           {Array.from({ length: repetition }).map((_, index) => {
-            const x =
-              (index % Math.sqrt(repetition)) * (100 / Math.sqrt(repetition));
-            const y =
-              Math.floor(index / Math.sqrt(repetition)) *
-              (100 / Math.sqrt(repetition));
+            const gridSize = Math.sqrt(repetition);
+            const x = (index % gridSize) * (100 / gridSize);
+            const y = Math.floor(index / gridSize) * (100 / gridSize);
             return (
               <g
                 key={index}
-                transform={`translate(${x},${y}) scale(${
-                  1 / Math.sqrt(repetition)
-                })`}
+                transform={`translate(${x},${y}) scale(${1 / gridSize})`}
               >
                 <path d={pattern.bd} fill={colors[type][0]} opacity={opacity} />
                 <path d={pattern.be} fill={colors[type][1]} opacity={opacity} />
@@ -109,14 +109,18 @@ function EmblemRenderer({
   // Calculate values
   const opacity = !progressive ? 0.9 : currentQuestion >= 5 ? 0.9 : 0.5;
   const repetition = getRepetition();
-  const colorScheme =
-    FEELING_SCHEMES[answers?.[5] || "Indifferent"] ||
-    FEELING_SCHEMES.Indifferent;
 
   // Get patterns
   const issuePattern = getPattern("issue");
   const intentionPattern = getPattern("intention");
   const motivationPattern = getPattern("motivation");
+
+  // Adjusted scales and positions
+  const transforms = {
+    issue: "translate(-50,-50) scale(1)",
+    intention: "translate(-35,-35) scale(0.7)",
+    motivation: "translate(-30,-30) scale(0.6)",
+  };
 
   return (
     <div className={progressive ? "progressive-emblem" : "voter-emblem"}>
@@ -130,19 +134,19 @@ function EmblemRenderer({
             {renderPatternLayer(
               issuePattern,
               "issue",
-              "translate(-40,-40) scale(0.8)",
+              transforms.issue,
               opacity
             )}
             {renderPatternLayer(
               intentionPattern,
               "intention",
-              "translate(-25,-25) scale(0.5)",
+              transforms.intention,
               opacity
             )}
             {renderPatternLayer(
               motivationPattern,
               "motivation",
-              "translate(-20,-20) scale(0.4)",
+              transforms.motivation,
               opacity
             )}
           </g>

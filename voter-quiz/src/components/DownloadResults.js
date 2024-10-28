@@ -1,8 +1,13 @@
 // DownloadResults.js
+
+// Imports
 import React from "react";
 import EmblemRenderer from "./EmblemRenderer";
 import { getPattern, getFeelingColors } from "./EmblemPatterns";
+import { archetypes } from "./archetypeData";
+import "./Quiz.css";
 
+// Renders SVG patterns with specific colors based on user responses
 const PatternDisplay = ({ type, pattern, colors }) => {
   // Ensure we have valid colors before rendering
   if (!colors || !colors[0] || !colors[1] || !pattern) {
@@ -36,6 +41,7 @@ const PatternDisplay = ({ type, pattern, colors }) => {
   );
 };
 
+// Shows a circular indicator with two colors to represent emotions
 const FeelingIndicator = ({ colors }) => {
   // Ensure we have valid colors before rendering
   if (!colors || !colors[0] || !colors[1]) {
@@ -70,38 +76,57 @@ const FeelingIndicator = ({ colors }) => {
   );
 };
 
+// Renders the NBC logo in SVG format
 const NBCLogo = () => (
-  <svg viewBox="0 0 1000 1000" className="nbc-logo" aria-label="NBC Logo">
-    <path
-      d="M500 722.7L363.8 622.5c-4.8-3.3-10.1-6-15.9-7.8-30.5-9.5-63 7.5-72.5 38.1-9.5 30.5 7.5 63 38.1 72.5 5.9 1.8 11.8 2.6 17.7 2.6L500 722.7z"
-      fill="currentColor"
-    />
-    <path
-      d="M500 696.8l-75-180.5c-2.3-5.4-5.1-10.6-8.9-15.4-20.2-25-57.5-28.9-81.8-8.8-25 20.1-29 56.7-8.8 81.6 3.9 4.8 8.5 8.7 13.3 12.1L500 696.8z"
-      fill="currentColor"
-    />
-    <path
-      d="M524.7 396.5c-31.7-3.8-60.5 18.8-64.4 50.6-0.3 2.9-0.4 5.8-0.3 8.6h23.3c5.7 0 15.9-0.4 18.8 6.3-15.9 10.1-38.6 18.6-34.4 46l24.5 157.8l78.3-187.7c2.3-5.4 4.1-11.1 4.8-17.2C579.1 429.2 556.5 400.3 524.7 396.5z"
-      fill="currentColor"
-    />
-    <path
-      d="M475.3 447.1c-3.8-31.7-32.6-54.4-64.4-50.6s-54.4 32.6-50.6 64.4c0.7 6.1 2.6 11.8 4.8 17.2l78.3 187.7l31.2-201c0.8-6.6 1.2-12.4 0.5-18.5L475.3 447.1z"
-      fill="currentColor"
-    />
-    <path
-      d="M435.9 696.8l75-180.5c2.3-5.4 5.1-10.6 8.9-15.4 20.2-25 57.5-28.9 81.8-8.8 25 20.1 29 56.7 8.8 81.6-3.9 4.8-8.5 8.7-13.3 12.1L435.9 696.8z"
-      fill="currentColor"
-    />
-    <path
-      d="M500 722.7l136.2-100.2c4.8-3.3 10.1-6 15.9-7.8 30.5-9.5 63 7.5 72.5 38.1 9.5 30.5-7.5 63-38.1 72.5-5.9 1.8-11.8 2.6-17.7 2.6L500 722.7z"
-      fill="currentColor"
-    />
+  <svg
+    version="1.1"
+    viewBox="0 0 1920 1080"
+    className="nbc-logo"
+    aria-label="NBC Logo"
+  >
+    <g>
+      <path
+        className="logo-path"
+        d="M997.99,687.75l140.47-96.28c4.4-3.02,9.23-5.46,14.57-7.12 c27.91-8.68,57.57,6.9,66.25,34.81c8.68,27.91-6.9,57.57-34.81,66.25c-5.37,1.67-10.81,2.4-16.14,2.4L997.99,687.75z"
+      />
+      <path
+        className="logo-path"
+        d="M1006.45,664.14L1074.92,499c2.06-4.98,4.65-9.71,8.17-14.07 c18.43-22.83,51.92-26.43,74.8-8.04c22.88,18.39,26.49,51.8,8.06,74.62c-3.55,4.39-7.73,7.99-12.13,11.02L1006.45,664.14z"
+      />
+      <path
+        className="logo-path"
+        d="M1029,395.66c-29.02-3.48-55.36,17.22-58.85,46.24c-0.32,2.67-0.39,5.29-0.3,7.88 c8.08,0,19.89,0,21.28,0c5.23,0,14.53-0.33,17.17,5.76c-14.53,9.19-35.26,17.03-31.47,42.07l22.43,144.29l71.57-171.67 c2.07-4.95,3.74-10.13,4.41-15.71C1078.72,425.49,1058.02,399.14,1029,395.66z"
+      />
+      <path
+        className="logo-path"
+        d="M949.87,441.9c-3.48-29.02-29.83-49.72-58.85-46.24s-49.72,29.83-46.24,58.85 c0.67,5.58,2.34,10.77,4.41,15.71l71.57,171.67l28.57-183.78C950.16,452.74,950.54,447.45,949.87,441.9z"
+      />
+      <path
+        className="logo-path"
+        d="M913.57,664.14L845.1,499c-2.06-4.98-4.65-9.71-8.17-14.07 c-18.43-22.83-51.92-26.43-74.8-8.04c-22.88,18.39-26.49,51.8-8.06,74.62c3.55,4.39,7.73,7.99,12.13,11.02L913.57,664.14z"
+      />
+      <path
+        className="logo-path"
+        d="M922.01,687.75l-140.47-96.28c-4.4-3.02-9.23-5.46-14.57-7.12 c-27.91-8.68-57.57,6.9-66.25,34.81c-8.68,27.91,6.9,57.57,34.81,66.25c5.37,1.67,10.81,2.4,16.14,2.4L922.01,687.75z"
+      />
+    </g>
   </svg>
 );
 
+// Main component; takes two props (archetype and answers)
+// Creates a visual report/card showing a user's "voting personality"
 const DownloadResults = ({ archetype, answers }) => {
   if (!archetype || !answers) return null;
 
+  const archetypeData = archetypes[archetype];
+
+  // Add these console.logs for debugging
+  console.log("archetype:", archetype);
+  console.log("personalityTraits:", archetypeData?.personalityTraits);
+
+  // Response processing
+  // Processes survey answers with fallback values
+  // Maps specific answer indices to different aspects of the voting profile
   const responseText = {
     votingIntention: answers[1] || "No, I do not plan on voting",
     motivation:
@@ -140,28 +165,42 @@ const DownloadResults = ({ archetype, answers }) => {
 
   return (
     <div className="download-container">
+      {/* NBC Logo */}
+      <div className="logo-header">
+        <NBCLogo />
+      </div>
+
+      {/* Archetype Title */}
       <h1 className="download-header">MY VOTING PERSONALITY</h1>
 
       <div className="download-emblem">
         <EmblemRenderer answers={answers} newsHours={answers[9]} />
       </div>
 
+      {/* Large Complete Emblem */}
       <h2 className="download-title">
-        {archetype?.title || "The Reluctant Voter"}
+        {archetype.title || "The Reluctant Voter"}
       </h2>
+
+      {/* Three Archetype Traits */}
       <div className="download-traits">
-        <span>DISCERNING</span>
-        <span className="trait-separator">·</span>
-        <span>RESILIENT</span>
-        <span className="trait-separator">·</span>
-        <span>INQUISITIVE</span>
+        {archetype.personalityTraits?.map((trait, index) => (
+          <React.Fragment key={trait}>
+            <span>{trait}</span>
+            {index < archetype.personalityTraits.length - 1 && (
+              <span className="trait-separator">·</span>
+            )}
+          </React.Fragment>
+        ))}
       </div>
 
+      {/* Archetype Summary Text */}
       <p className="download-profile">
-        {archetype?.profile ||
+        {archetype.profile ||
           "You approach politics with a degree of skepticism, yet maintain a sense of civic responsibility."}
       </p>
 
+      {/* Categories Grid */}
       <div className="download-categories">
         {[
           ["VOTING INTENTION", responseText.votingIntention, "intention"],
@@ -186,9 +225,19 @@ const DownloadResults = ({ archetype, answers }) => {
           </div>
         ))}
       </div>
-
-      <div className="nbc-logo-container">
-        <NBCLogo />
+      <div className="quiz-link">
+        See your voting personality at{" "}
+        <a
+          href={`https://${getComputedStyle(document.documentElement)
+            .getPropertyValue("--quiz-url")
+            .trim()
+            .replace(/['"]+/g, "")}`}
+        >
+          {getComputedStyle(document.documentElement)
+            .getPropertyValue("--quiz-url")
+            .trim()
+            .replace(/['"]+/g, "")}
+        </a>
       </div>
     </div>
   );

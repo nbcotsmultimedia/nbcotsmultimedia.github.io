@@ -1,78 +1,5 @@
-/* Category layout adjustments */
-.download-category-wrapper {
-  position: relative;
-  padding-bottom: 32px;
-  margin-bottom: 32px;
-  display: flex;
-  align-items: flex-start;
-}
+/* #region - ROOT */
 
-/* Pattern backgrounds */
-.pattern-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  opacity: 0.1;
-  z-index: -1;
-}
-
-.pattern-icon {
-  width: 100%;
-  height: 100%;
-}
-
-.category-icon {
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
-}
-
-.category-content-download h3 {
-  font-size: var(--fs-lg);
-  font-weight: bold;
-  letter-spacing: 0.075em;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  color: rgb(33, 33, 33);
-}
-
-.category-content-download p {
-  font-size: var(--fs-lg);
-  color: rgb(82, 82, 82);
-  line-height: 1.4;
-}
-
-/* Category icon containers */
-.category-icon-container {
-  position: relative;
-  width: 100px; /* Increased from 48px */
-  height: 100px; /* Increased from 48px */
-  flex-shrink: 0;
-  margin-right: 24px;
-}
-
-.download-profile {
-  max-width: 800px;
-  font-size: var(--fs-xl);
-  line-height: 1.5;
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.download-traits {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: var(--fs-lg);
-  letter-spacing: 0.2em;
-  margin-bottom: var(--spacing-xl);
-  text-transform: uppercase;
-  color: var(--color-primary);
-}
-
-/* #region - Root */
-
-/* Keep Step 1 CSS (Custom Properties and Base Styles) */
 :root {
   /* Colors */
   --color-primary: #000;
@@ -97,35 +24,77 @@
   /* Border Radius */
   --radius-pill: 100px;
   --radius-sm: 4px;
+
+  /* URL */
+  --quiz-url: "urlgoeshere.com";
 }
 
 /* #endregion */
 
+/* #region - BASE STYLES */
+
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.quiz-container {
+  max-width: min(600px, 90vw);
+  margin: 0 auto;
+  padding: var(--spacing-xl) var(--spacing-md);
+  text-align: center;
+}
+
+/* #endregion */
+
+/* #region - DOWNLOAD PAGE */
+
+/* Outer container */
 .download-container {
   width: 1080px;
   height: 1350px;
   background-color: var(--color-white);
+  padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* NBC logo */
+.nbc-logo {
+  width: 250px;
+  height: 150px;
+}
+
+.logo-path {
+  fill: currentColor;
+}
+
+.nbc-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-secondary);
+  opacity: 0.6;
+}
+
+/* Header and Profile */
 .download-header {
-  font-size: 24px;
+  font-size: var(--fs-lg);
   font-weight: bold;
   letter-spacing: 0.2em;
-  margin-bottom: 64px;
   text-transform: uppercase;
 }
 
-/* Much larger emblem */
 .download-emblem {
-  width: 600px; /* Significantly increased */
-  height: 400px; /* Maintained aspect ratio */
+  width: 450px;
+  height: 300px;
   position: relative;
+  margin: var(--spacing-xl) 0;
 }
 
-/* Make sure SVG fills the container */
 .download-emblem svg {
   width: 100%;
   height: 100%;
@@ -134,6 +103,114 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.download-profile {
+  max-width: 800px;
+  font-size: var(--fs-lg);
+  line-height: 1.5;
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.download-traits {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--fs-lg);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--spacing-xl);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+/* Categories Grid */
+.download-categories {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-xs);
+  width: 100%;
+  max-width: 900px;
+  margin-top: var(--spacing-md);
+}
+
+.download-category-wrapper {
+  position: relative;
+  padding-bottom: var(--spacing-md);
+  margin-bottom: 0.25em;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Category Content */
+.category-content h3,
+.category-content-download h3 {
+  font-size: var(--fs-lg);
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.category-content p,
+.category-content-download p {
+  font-size: var(--fs-lg);
+  color: var(--color-secondary);
+  line-height: 1.4;
+}
+
+/* Category Icons */
+.category-icon-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  margin-right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mini pattern container */
+.pattern-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.1;
+  z-index: -1;
+}
+
+/* Mini pattern SVG */
+.pattern-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* #endregion */
+
+/* #region - QUIZ lINK */
+
+/* Add these styles to your download page section */
+.quiz-link {
+  font-size: var(--fs-lg);
+  color: var(--color-secondary);
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+  opacity: 70%;
+}
+
+.quiz-link a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.quiz-link a:hover {
+  opacity: 0.8;
+}
+
+/* #endregion */
 
 /* Target the voter-emblem class specifically */
 .voter-emblem {
@@ -158,23 +235,6 @@
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
 }
-
-/* #region - Base Styles */
-body {
-  font-family: "Roboto", sans-serif;
-  margin: 0;
-  padding: 0;
-  line-height: 1.5;
-}
-
-.quiz-container {
-  max-width: min(600px, 90vw);
-  margin: 0 auto;
-  padding: var(--spacing-xl) var(--spacing-md);
-  text-align: center;
-}
-
-/* #endregion */
 
 /* #region - Progress Bar */
 .progress-track {
@@ -618,26 +678,6 @@ body {
 
 /* #region - Download */
 
-/* Download Results Styles */
-
-.download-container {
-  width: 1080px;
-  height: 1350px;
-  background-color: var(--color-white);
-  padding: 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.download-header {
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 0.2em;
-  margin-bottom: 64px;
-  text-transform: uppercase;
-}
-
 .download-title {
   font-size: 54px;
   font-weight: bold;
@@ -649,50 +689,25 @@ body {
   color: rgb(82, 82, 82);
 }
 
-.download-categories {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 64px 120px;
-  width: 100%;
-  max-width: 900px;
-}
-
-.download-category {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-
 .category-content {
   flex-grow: 1;
 }
 
-.category-content h3 {
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 0.1em;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  color: rgb(33, 33, 33);
-}
-
-.category-content p {
-  font-size: 20px;
-  color: rgb(82, 82, 82);
-  line-height: 1.4;
-}
-
 .feeling-indicator {
-  width: 100%;
-  height: 100%;
   position: relative;
+  width: 64px; /* Adjusted to accommodate both circles */
+  height: 42px; /* Match circle height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .feeling-circle {
   position: absolute;
-  width: 42px; /* Increased from 32px */
-  height: 42px; /* Increased from 32px */
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
+  opacity: 80%;
   mix-blend-mode: multiply;
 }
 
@@ -704,121 +719,10 @@ body {
   left: 22px;
 }
 
-.nbc-logo-container {
-  margin-top: auto;
-}
-
-.nbc-logo {
-  width: 48px;
-  height: 48px;
-  color: rgb(82, 82, 82);
-  opacity: 0.6;
-}
-
-/* Download-specific container and layout */
-.download-container {
-  width: 1080px;
-  min-height: 1350px;
-  background-color: var(--color-white);
-  padding: 64px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Categories grid */
-.download-categories {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 64px 120px; /* Vertical gap 64px, horizontal gap 120px */
-  width: 100%;
-  max-width: 900px;
-  margin-top: 48px;
-}
-
-/* Category styles */
-.download-category {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.category-content h3 {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-}
-
-.category-content p {
-  font-size: 18px;
-  color: var(--color-secondary);
-  line-height: 1.4;
-}
-
-/* NBC Logo */
-.nbc-logo {
-  margin-top: auto;
-  margin-bottom: 32px;
-}
-
-.nbc-logo svg {
-  width: 48px;
-  height: 48px;
-}
-
-.download-container {
-  width: 1080px;
-  height: 1350px;
-  background-color: var(--color-white);
-  padding: var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.download-header {
-  font-size: var(--fs-lg);
-  letter-spacing: 2px;
-  margin-bottom: var(--spacing-xl);
-  text-transform: uppercase;
-}
-
 .download-emblem-container {
   width: 400px;
   height: 400px;
   margin-bottom: var(--spacing-xl);
-}
-
-.download-categories {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 80px;
-  width: 100%;
-  max-width: 900px;
-}
-
-.download-category {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-md);
-}
-
-.category-content h3 {
-  font-size: var(--fs-base);
-  font-weight: bold;
-  margin-bottom: var(--spacing-xs);
-}
-
-.category-content p {
-  font-size: var(--fs-base);
-  color: var(--color-secondary);
-}
-
-.nbc-logo {
-  margin-top: auto;
-  width: 48px;
-  height: 48px;
 }
 
 /* #endregion */

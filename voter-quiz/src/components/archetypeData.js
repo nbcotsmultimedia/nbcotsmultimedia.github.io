@@ -7,6 +7,7 @@ export const archetypes = {
       "You're politically engaged and deeply invested in progressive causes, balancing concern about the future with determination to make positive change.",
     detail:
       "Your commitment to issues like healthcare, climate change, and reproductive rights reflects your progressive values. While you may feel anxious about political developments, you channel that energy into civic engagement and advocacy.",
+    personalityTraits: ["PASSIONATE", "VIGILANT", "PROGRESSIVE"],
     traits: {
       issuesFocus: ["Healthcare", "Climate Change", "Reproductive Rights"],
       newsConsumption: "Moderate to High",
@@ -21,6 +22,7 @@ export const archetypes = {
       "You're a dedicated voter who sees participation in democracy as both a privilege and responsibility.",
     detail:
       "Your approach to politics is measured and thoughtful, prioritizing civic duty over partisan loyalty. You stay informed on key issues while maintaining a balanced perspective.",
+    personalityTraits: ["DEDICATED", "THOUGHTFUL", "BALANCED"],
     traits: {
       issuesFocus: ["Healthcare", "Economy", "National Security"],
       newsConsumption: "Low to Moderate",
@@ -35,6 +37,7 @@ export const archetypes = {
       "You're part of a new generation of politically engaged citizens using digital platforms to advocate for change.",
     detail:
       "Your high engagement with political content online reflects your commitment to issues like climate change and social justice. You see voting as a crucial tool for creating systemic change.",
+    personalityTraits: ["ENERGETIC", "INNOVATIVE", "ENGAGED"],
     traits: {
       issuesFocus: ["Climate Change", "Social Justice", "Economic Inequality"],
       newsConsumption: "High",
@@ -49,6 +52,7 @@ export const archetypes = {
       "You're a political maverick with a sprinkle of cynicism, navigating the tumultuous waters of today's political landscape.",
     detail:
       "You embrace your independence, often feeling caught between the extremes of party loyalty and personal conviction. Your diverse interests reflect a nuanced understanding of the issues that matter most to you.",
+    personalityTraits: ["INDEPENDENT", "DISCERNING", "PRAGMATIC"],
     traits: {
       issuesFocus: ["Economy", "Healthcare", "Immigration"],
       newsConsumption: "Moderate",
@@ -63,6 +67,7 @@ export const archetypes = {
       "You approach politics with a degree of skepticism, yet maintain a sense of civic responsibility.",
     detail:
       "While you may feel disconnected from the political process, you recognize the importance of participating in democracy, even if sometimes reluctantly.",
+    personalityTraits: ["SKEPTICAL", "MINDFUL", "RESERVED"],
     traits: {
       issuesFocus: ["Economy"],
       newsConsumption: "Low",
@@ -77,6 +82,7 @@ export const archetypes = {
       "You're deeply engaged in political news and strongly aligned with your chosen party's positions.",
     detail:
       "Your high consumption of political news and active participation in political discussions reflect your strong commitment to your political beliefs and party values.",
+    personalityTraits: ["INFORMED", "COMMITTED", "ANALYTICAL"],
     traits: {
       issuesFocus: ["Party-Aligned Issues"],
       newsConsumption: "Very High",
@@ -91,6 +97,7 @@ export const archetypes = {
       "You maintain an optimistic outlook about America's future, particularly regarding economic opportunities and growth.",
     detail:
       "Your focus on economic issues and traditional values shapes your political perspective, while maintaining hope for positive change through conservative policies.",
+    personalityTraits: ["OPTIMISTIC", "TRADITIONAL", "PATRIOTIC"],
     traits: {
       issuesFocus: ["Economy", "Jobs", "Immigration"],
       newsConsumption: "Moderate",
