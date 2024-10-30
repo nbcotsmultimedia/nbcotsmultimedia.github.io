@@ -1,6 +1,6 @@
 // Define constants first
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/1-GYSW-7XiAm4vQ7kOkfOYmjBpEyw1RJfnqzrHy8L2N8/edit?gid=1668582288#gid=1668582288`;
-const MINIMUM_SIZE_FOR_DETAILS = 120; // Minimum pixel size to show details
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTP2jDjweObrdYMewZakqJnuGFCgUQ0zr0AYy0--C3t4vYv-knAiZ-LRJJ3DPMi5drlLC00qvosmSUI/pub?gid=1668582288&single=true&output=csv`;
+const MINIMUM_SIZE_FOR_DETAILS = 160; // Minimum pixel size to show details
 const MINIMUM_SIZE_FOR_LABEL = 80; // Minimum pixel size to show label
 
 // Color palette

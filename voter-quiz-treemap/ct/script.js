@@ -1,7 +1,7 @@
 // Define constants first
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/1477_OYt3gzEpxZaIoR6wtsrbiDMgjTSV7IHElHStFao/edit?gid=664937285#gid=664937285`;
-const MINIMUM_SIZE_FOR_DETAILS = 120; // Minimum pixel size to show details
-const MINIMUM_SIZE_FOR_LABEL = 80; // Minimum pixel size to show label
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQKZEhqvFfMk132Qb4CLvm521RVaxiCrjJsWQIDtf2EfOWnVpRf-xpAM24SkIpR4UEsqYMdqvNgdxbs/pub?gid=664937285&single=true&output=csv`;
+const MINIMUM_SIZE_FOR_DETAILS = 160; // Minimum pixel size to show details
+const MINIMUM_SIZE_FOR_LABEL = 100; // Minimum pixel size to show label
 
 // Color palette
 const COLOR_DOMAIN = [
@@ -33,6 +33,10 @@ const COLOR_RANGE = [
 function createTreemap() {
   // Get container dimensions
   const container = document.getElementById("treemap");
+  console.log("Container dimensions:", {
+    width: container.clientWidth,
+    height: container.clientHeight,
+  });
   const width = container.clientWidth;
   const height = container.clientHeight;
 
@@ -240,11 +244,17 @@ function createTreemap() {
   return d3
     .csv(SHEET_URL)
     .then((data) => {
+      console.log("Raw data:", data); // Check if data is loading
       const root = processData(data);
+      console.log("Processed root:", root); // Check processed data
       updateTreemap(root);
     })
     .catch((error) => {
       console.error("Error loading or processing data:", error);
+      // Add more specific error handling
+      if (error.name === "TypeError") {
+        console.error("Network error - check CORS settings");
+      }
     });
 }
 

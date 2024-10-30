@@ -1,0 +1,44 @@
+body {
+  margin: 0;
+  font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+#chart-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.node:hover circle {
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.legend-item text {
+  fill: #333;
+  font-size: 12px;
+}
+
+.legend-item:hover {
+  cursor: pointer;
+}
+
+text {
+  user-select: none;
+}
+
+/* For better visibility on light backgrounds */
+.node text {
+  fill: #333;
+  font-weight: 500;
+}
+
+/* Ensure SVG is responsive */
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
