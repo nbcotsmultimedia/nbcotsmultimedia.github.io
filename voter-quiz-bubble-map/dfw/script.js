@@ -8,6 +8,9 @@ const colorScale = d3
     "#ED6A5A", // Bittersweet for negative
   ]);
 
+// Add Pym
+var pymChild = new pym.Child({ polling: 500 });
+
 // Add tooltip div
 d3.select("body")
   .append("div")
@@ -235,6 +238,7 @@ function debounce(func, wait) {
     };
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
+    pymChild.sendHeight();
   };
 }
 
@@ -253,5 +257,6 @@ window.addEventListener(
   debounce(async () => {
     const data = await fetchData();
     createBubbleChart(data);
+    pymChild.sendHeight();
   }, 250)
 );

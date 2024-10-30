@@ -3,6 +3,9 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/1UOhqRYV_TlJWWXGUIr8gO
 const MINIMUM_SIZE_FOR_DETAILS = 160; // Minimum pixel size to show details
 const MINIMUM_SIZE_FOR_LABEL = 80; // Minimum pixel size to show label
 
+// Add Pym
+var pymChild = new pym.Child({ polling: 500 });
+
 // Color palette
 const COLOR_DOMAIN = [
   "The economy",
@@ -259,6 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       createTreemap();
+      pymChild.sendHeight();
     }, 250);
   });
 });
