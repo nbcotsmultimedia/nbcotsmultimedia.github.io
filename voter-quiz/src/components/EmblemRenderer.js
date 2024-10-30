@@ -1,3 +1,4 @@
+// EmblemRenderer.js
 import React from "react";
 import { PATTERNS_MAP, FEELING_SCHEMES } from "./EmblemPatterns";
 
@@ -33,7 +34,6 @@ function EmblemRenderer({
 
     let answer;
     if (type === "motivation") {
-      // Simplified motivation pattern lookup
       answer = answers[2] || answers[3];
     } else if (type === "intention") {
       answer = answers[1];
@@ -55,10 +55,7 @@ function EmblemRenderer({
   };
 
   const renderPatternLayer = (pattern, type, transform, opacity) => {
-    if (!pattern) {
-      console.log(`No pattern for ${type}`);
-      return null;
-    }
+    if (!pattern) return null;
 
     const colorScheme =
       FEELING_SCHEMES[answers?.[5] || "Indifferent"] ||
@@ -68,14 +65,6 @@ function EmblemRenderer({
       intention: colorScheme.votingIntention,
       motivation: colorScheme.votingMotivation,
     };
-
-    // Debug log
-    console.log(`Rendering ${type} pattern:`, {
-      pattern,
-      colors: colors[type],
-      transform,
-      opacity,
-    });
 
     if (type === "issue" && repetition > 1) {
       return (
@@ -123,35 +112,28 @@ function EmblemRenderer({
   };
 
   return (
-    <div className={progressive ? "progressive-emblem" : "voter-emblem"}>
-      <div className="emblem-container">
-        <svg
-          viewBox="0 0 100 100"
-          xmlns="http://www.w3.org/2000/svg"
-          className="emblem-svg"
-        >
-          <g transform="translate(50,50)">
-            {renderPatternLayer(
-              issuePattern,
-              "issue",
-              transforms.issue,
-              opacity
-            )}
-            {renderPatternLayer(
-              intentionPattern,
-              "intention",
-              transforms.intention,
-              opacity
-            )}
-            {renderPatternLayer(
-              motivationPattern,
-              "motivation",
-              transforms.motivation,
-              opacity
-            )}
-          </g>
-        </svg>
-      </div>
+    <div className={progressive ? "progressive-emblem" : "emblem-container"}>
+      <svg
+        viewBox="0 0 100 100"
+        xmlns="http://www.w3.org/2000/svg"
+        className="emblem-svg"
+      >
+        <g transform="translate(50,50)">
+          {renderPatternLayer(issuePattern, "issue", transforms.issue, opacity)}
+          {renderPatternLayer(
+            intentionPattern,
+            "intention",
+            transforms.intention,
+            opacity
+          )}
+          {renderPatternLayer(
+            motivationPattern,
+            "motivation",
+            transforms.motivation,
+            opacity
+          )}
+        </g>
+      </svg>
     </div>
   );
 }

@@ -112,21 +112,13 @@ const NBCLogo = () => (
     </g>
   </svg>
 );
-
-// Main component; takes two props (archetype and answers)
 // Creates a visual report/card showing a user's "voting personality"
 const DownloadResults = ({ archetype, answers }) => {
   if (!archetype || !answers) return null;
 
   const archetypeData = archetypes[archetype];
 
-  // Add these console.logs for debugging
-  console.log("archetype:", archetype);
-  console.log("personalityTraits:", archetypeData?.personalityTraits);
-
-  // Response processing
-  // Processes survey answers with fallback values
-  // Maps specific answer indices to different aspects of the voting profile
+  // Response Processing
   const responseText = {
     votingIntention: answers[1] || "No, I do not plan on voting",
     motivation:
