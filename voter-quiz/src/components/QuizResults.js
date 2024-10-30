@@ -158,14 +158,14 @@ const QuizResults = ({
         />
 
         {/* Debug Link */}
-        {process.env.NODE_ENV === "development" && (
+        {/* {process.env.NODE_ENV === "development" && (
           <Link
             to="/preview-download"
             className="block text-center p-2 text-blue-600 hover:underline"
           >
             View Download Preview
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );

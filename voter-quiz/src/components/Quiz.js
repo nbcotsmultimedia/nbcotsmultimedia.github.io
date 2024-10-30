@@ -1,5 +1,4 @@
-// src/components/Quiz.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Quiz.css";
 import { ProgressBar } from "./ProgressComponents";
 import ProgressiveEmblem from "./ProgressiveEmblem";
@@ -7,7 +6,6 @@ import IntentionSelection from "./IntentionSelection";
 import QuizResults from "./QuizResults";
 import { QUESTIONS } from "./QuizConstants";
 
-// Question Display Component
 const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   <>
     <h2 className="question">{currentQuestion.text}</h2>
@@ -27,7 +25,6 @@ const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   </>
 );
 
-// Quiz Component
 function Quiz() {
   const [state, setState] = useState({
     currentQuestionIndex: 0,
@@ -37,11 +34,32 @@ function Quiz() {
 
   const { currentQuestionIndex, answers, isCompleted } = state;
 
+  // Initialize Pym
+  useEffect(() => {
+    window.pymChild = new window.pym.Child({ polling: 500 });
+    return () => {
+      window.pymChild.remove();
+    };
+  }, []);
+
+  // Update height on state changes
+  useEffect(() => {
+    if (window.pymChild) {
+      window.pymChild.sendHeight();
+    }
+  }, [currentQuestionIndex, answers, isCompleted]);
+
   const updateState = (newState) => {
     setState((prevState) => ({
       ...prevState,
       ...newState,
     }));
+    // Send height after state update
+    requestAnimationFrame(() => {
+      if (window.pymChild) {
+        window.pymChild.sendHeight();
+      }
+    });
   };
 
   const getVisibleQuestions = () => {
@@ -59,12 +77,10 @@ function Quiz() {
   const handleOptionClick = (option) => {
     const visibleQuestions = getVisibleQuestions();
     const currentQuestion = visibleQuestions[currentQuestionIndex];
-
     const newAnswers = {
       ...answers,
       [currentQuestion.id]: option,
     };
-
     const isLastQuestion = currentQuestionIndex === visibleQuestions.length - 1;
 
     setTimeout(() => {
@@ -104,14 +120,13 @@ function Quiz() {
 
   return (
     <div className="quiz-container">
-      {/* Progress Bar */}
       <ProgressBar
         visibleQuestions={visibleQuestions}
         currentQuestionIndex={currentQuestionIndex}
         onNavigate={(index) => updateState({ currentQuestionIndex: index })}
       />
 
-      <div className="emblem-visualization w-full flex justify-center items-center">
+      <div className="emblem-visualization">
         {[1, 2].includes(currentQuestion.id) ? (
           <IntentionSelection
             currentQuestion={currentQuestion.id}
