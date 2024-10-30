@@ -2,7 +2,25 @@
 const colorScale = d3
   .scaleOrdinal()
   .domain(["positive", "neutral", "negative"])
-  .range(["#4ade80", "#94a3b8", "#f87171"]);
+  .range([
+    "#139A43", // Pigment green for positive
+    "#D3D0CB", // Light gray for neutral
+    "#ED6A5A", // Bittersweet for negative
+  ]);
+
+// Add tooltip div
+d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0)
+  .style("position", "absolute")
+  .style("background-color", "white")
+  .style("border", "1px solid #ddd")
+  .style("border-radius", "4px")
+  .style("padding", "8px")
+  .style("font-size", "12px")
+  .style("pointer-events", "none")
+  .style("box-shadow", "0 2px 4px rgba(0,0,0,0.1)");
 
 // Function to determine sentiment
 function getSentiment(feeling) {
@@ -26,44 +44,54 @@ async function fetchData() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const text = await response.text();
-    console.log("Raw data:", text);
 
     // Parse CSV
     const csvData = d3.csvParse(text);
-    console.log("Parsed CSV:", csvData);
 
-    // Process the data
+    // Process and group the data by sentiment
     const processedData = csvData
       .map((row) => ({
-        id: row.Feeling,
-        feeling: row.Feeling,
-        percentage: parseFloat(row.Percent.replace("%", "")),
-        sentiment: getSentiment(row.Feeling),
+        name: row.Feeling,
         value: parseFloat(row.Percent.replace("%", "")),
+        sentiment: getSentiment(row.Feeling),
       }))
-      .filter((item) => !isNaN(item.percentage));
+      .filter((item) => !isNaN(item.value));
 
-    console.log("Processed data:", processedData);
+    // Group by sentiment
+    const groupedData = d3.group(processedData, (d) => d.sentiment);
 
-    if (processedData.length === 0) {
-      throw new Error("No valid data after processing");
-    }
+    // Create hierarchical structure
+    const hierarchicalData = {
+      name: "root",
+      children: Array.from(groupedData, ([key, values]) => ({
+        name: key,
+        children: values,
+      })),
+    };
 
-    return processedData;
+    console.log("Processed hierarchical data:", hierarchicalData);
+
+    return hierarchicalData;
   } catch (error) {
     console.error("Error fetching or parsing data:", error);
-    return [];
+    return null;
   }
 }
 
 function createBubbleChart(data) {
+  if (!data) return;
+
   // Clear previous chart if any
   d3.select("#chart-container").selectAll("*").remove();
 
   // Get container dimensions
   const container = document.getElementById("chart-container");
   const width = container.clientWidth;
-  const height = Math.min(width, 600);
+  const height = width * (504.7 / 721); // Match the aspect ratio from your example
+  const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // Minimal margins
+
+  // Minimum radius for showing labels
+  const MIN_RADIUS_FOR_LABEL = 30;
 
   // Create SVG
   const svg = d3
@@ -75,155 +103,126 @@ function createBubbleChart(data) {
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   // Create pack layout
-  const pack = d3
-    .pack()
-    .size([width - 20, height - 20])
-    .padding(3);
+  const pack = d3.pack().size([width, height]).padding(2);
 
-  // Create hierarchy
-  const root = d3.hierarchy({ children: data }).sum((d) => d.value);
+  // Create hierarchy and compute the layout
+  const root = d3
+    .hierarchy(data)
+    .sum((d) => d.value)
+    .sort((a, b) => b.value - a.value);
 
-  // Generate bubble layout
-  const circles = pack(root).leaves();
+  pack(root);
 
-  // Create group for bubbles
-  const bubbleGroup = svg.append("g").attr("transform", `translate(10, 10)`);
+  // Create group for the chart
+  const chartGroup = svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Add bubbles with transition
-  const nodes = bubbleGroup
-    .selectAll(".node")
-    .data(circles)
+  // Add sentiment group clusters
+  const sentimentGroups = chartGroup
+    .selectAll(".sentiment-group")
+    .data(root.children)
     .join("g")
-    .attr("class", "node")
+    .attr("class", "sentiment-group");
+
+  // Add sentiment labels
+  //   sentimentGroups
+  //     .append("text")
+  //     .attr("class", "sentiment-label")
+  //     .attr("x", (d) => d.x)
+  //     .attr("y", (d) => d.y - d.r - 10)
+  //     .attr("text-anchor", "middle")
+  //     .style("font-size", "16px")
+  //     .style("font-weight", "bold")
+  //     .style("fill", (d) => d3.color(colorScale(d.data.name)).darker())
+  //     .text((d) => d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1));
+
+  // Add circles for each feeling
+  const nodes = sentimentGroups
+    .selectAll(".feeling-node")
+    .data((d) => d.children)
+    .join("g")
+    .attr("class", "feeling-node")
     .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
   // Add circles with transition
   nodes
     .append("circle")
     .attr("r", 0)
-    .attr("fill", (d) => colorScale(d.data.sentiment))
+    .attr("fill", (d) => colorScale(d.parent.data.name))
     .attr("opacity", 0.7)
-    .attr("stroke", (d) => d3.color(colorScale(d.data.sentiment)).darker())
+    .attr("stroke", (d) => d3.color(colorScale(d.parent.data.name)).darker())
     .attr("stroke-width", 2)
     .transition()
     .duration(1000)
     .attr("r", (d) => d.r);
 
-  // Add hover effects
+  // Add hover effects and tooltip
   nodes
     .selectAll("circle")
     .on("mouseover", function (event, d) {
+      // Highlight circle
       d3.select(this)
         .transition()
         .duration(200)
         .attr("opacity", 0.9)
         .attr("stroke-width", 3);
 
-      // Highlight legend item
-      legendGroup
-        .selectAll(".legend-item")
-        .filter((item) => item === d.data.sentiment)
-        .select("circle")
-        .transition()
-        .duration(200)
-        .attr("r", 8);
+      // Show tooltip
+      d3.select(".tooltip")
+        .style("opacity", 1)
+        .html(
+          `
+                    <div class="tooltip-title">${d.data.name}</div>
+                    <div class="tooltip-value">${d.data.value}%</div>
+                `
+        )
+        .style("left", event.pageX + 10 + "px")
+        .style("top", event.pageY - 10 + "px");
+    })
+    .on("mousemove", function (event) {
+      // Move tooltip with mouse
+      d3.select(".tooltip")
+        .style("left", event.pageX + 10 + "px")
+        .style("top", event.pageY - 10 + "px");
     })
     .on("mouseout", function (event, d) {
+      // Reset circle
       d3.select(this)
         .transition()
         .duration(200)
         .attr("opacity", 0.7)
         .attr("stroke-width", 2);
 
-      // Reset legend item
-      legendGroup
-        .selectAll(".legend-item circle")
-        .transition()
-        .duration(200)
-        .attr("r", 6);
+      // Hide tooltip
+      d3.select(".tooltip").style("opacity", 0);
     });
 
-  // Add text for feeling with fade-in
+  // Add text for feeling names (only for larger bubbles)
   nodes
     .append("text")
     .attr("dy", "-0.2em")
     .style("text-anchor", "middle")
     .style("font-size", (d) => `${Math.min(d.r / 3, 16)}px`)
     .style("opacity", 0)
-    .text((d) => d.data.feeling)
+    .text((d) => (d.r >= MIN_RADIUS_FOR_LABEL ? d.data.name : ""))
     .transition()
     .delay(1000)
     .duration(500)
-    .style("opacity", 1);
+    .style("opacity", (d) => (d.r >= MIN_RADIUS_FOR_LABEL ? 1 : 0));
 
-  // Add text for percentage with fade-in
+  // Add text for percentages (only for larger bubbles)
   nodes
     .append("text")
     .attr("dy", "1em")
     .style("text-anchor", "middle")
     .style("font-size", (d) => `${Math.min(d.r / 3, 14)}px`)
     .style("opacity", 0)
-    .text((d) => `${d.data.percentage}%`)
+    .text((d) => (d.r >= MIN_RADIUS_FOR_LABEL ? `${d.data.value}%` : ""))
     .transition()
     .delay(1000)
     .duration(500)
-    .style("opacity", 1);
-
-  // Add legend
-  const legendData = ["positive", "neutral", "negative"];
-  const legendGroup = svg
-    .append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${width - 120}, 20)`);
-
-  const legend = legendGroup
-    .selectAll(".legend-item")
-    .data(legendData)
-    .join("g")
-    .attr("class", "legend-item")
-    .attr("transform", (d, i) => `translate(0, ${i * 25})`);
-
-  legend
-    .append("circle")
-    .attr("r", 6)
-    .attr("fill", (d) => colorScale(d))
-    .attr("opacity", 0.7)
-    .attr("stroke", (d) => d3.color(colorScale(d)).darker())
-    .attr("stroke-width", 2);
-
-  legend
-    .append("text")
-    .attr("x", 15)
-    .attr("y", 5)
-    .text((d) => d.charAt(0).toUpperCase() + d.slice(1));
-
-  // Add legend interactivity
-  legend
-    .on("mouseover", function (event, d) {
-      // Highlight related bubbles
-      nodes
-        .filter((node) => node.data.sentiment === d)
-        .selectAll("circle")
-        .transition()
-        .duration(200)
-        .attr("opacity", 0.9)
-        .attr("stroke-width", 3);
-
-      // Highlight legend item
-      d3.select(this).select("circle").transition().duration(200).attr("r", 8);
-    })
-    .on("mouseout", function (event, d) {
-      // Reset bubbles
-      nodes
-        .selectAll("circle")
-        .transition()
-        .duration(200)
-        .attr("opacity", 0.7)
-        .attr("stroke-width", 2);
-
-      // Reset legend item
-      d3.select(this).select("circle").transition().duration(200).attr("r", 6);
-    });
+    .style("opacity", (d) => (d.r >= MIN_RADIUS_FOR_LABEL ? 1 : 0));
 }
 
 // Function to handle window resize
