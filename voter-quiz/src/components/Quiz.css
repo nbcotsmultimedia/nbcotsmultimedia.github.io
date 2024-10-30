@@ -147,31 +147,18 @@ body {
   height: 200px;
   margin: 0 auto;
 }
-/* .emblem-container,
-.voter-emblem-container {
-  width: 100% !important;
-  height: 100% !important;
-  position: relative !important;
-} */
-
-/* .voter-emblem-container {
-  width: min(400px, 90%);
-  aspect-ratio: 16/9;
-  margin: var(--spacing-sm) auto;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-} */
 
 .emblem-container,
 .voter-emblem-container {
   position: relative;
   width: min(200px, 50vw);
   aspect-ratio: 1;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
 }
-*/ .voter-emblem-container::before {
+.voter-emblem-container::before {
   content: "";
   position: absolute;
   inset: 0;

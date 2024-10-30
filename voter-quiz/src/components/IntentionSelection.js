@@ -25,7 +25,7 @@ const IntentionSelection = ({ currentQuestion, selectedAnswer }) => {
         {displayIntentions.map((intention) => (
           <div
             key={intention}
-            className="w-1/3 aspect-square transition-all duration-500 opacity-50"
+            className="aspect-square transition-all duration-500 opacity-50"
           >
             <EmblemRenderer
               answers={{ 1: intention }}
