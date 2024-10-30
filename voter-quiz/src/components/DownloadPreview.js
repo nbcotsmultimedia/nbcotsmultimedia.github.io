@@ -1,6 +1,7 @@
+// DownloadPreview.js
+
 import React from "react";
 import DownloadResults from "./DownloadResults";
-import { getPattern, getFeelingColors, PATTERNS_MAP } from "./EmblemPatterns";
 import { archetypes } from "./archetypeData";
 
 const TEST_DATA = {
@@ -56,6 +57,7 @@ const TEST_DATA = {
   socialMediaPercent: ["0-25%", "26-50%", "51-75%", "76-100%"],
 };
 
+// Generate Random Answer Combination
 const generateRandomCombination = () => {
   const randomFrom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -95,13 +97,11 @@ const DownloadPreview = () => {
   const testData = generateRandomCombination();
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="download-container" style={{ padding: "64px" }}>
-        <DownloadResults
-          archetype={testData.archetype}
-          answers={testData.answers}
-        />
-      </div>
+    <div className="download-preview-container">
+      <DownloadResults
+        archetype={testData.archetype}
+        answers={testData.answers}
+      />
     </div>
   );
 };

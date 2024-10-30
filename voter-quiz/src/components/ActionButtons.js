@@ -1,5 +1,6 @@
 import React from "react";
 
+// Draw Share Icon SVG
 const ShareIcon = () => (
   <svg
     width="16"
@@ -32,6 +33,7 @@ const ShareIcon = () => (
   </svg>
 );
 
+// Draw Retake Quiz Icon SVG
 const RetakeIcon = () => (
   <svg
     width="18"
@@ -64,12 +66,13 @@ const RetakeIcon = () => (
   </svg>
 );
 
+// Create Action Buttons
 const ActionButtons = ({ onShare, onRetake }) => {
   return (
     <div className="action-buttons">
       <button className="action-button action-button-share" onClick={onShare}>
         <ShareIcon />
-        <span>Share your results</span>
+        <span>Save your results</span>
       </button>
 
       <button className="action-button action-button-retake" onClick={onRetake}>

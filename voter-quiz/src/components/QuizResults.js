@@ -1,8 +1,10 @@
+// QuizResults.js
+
 import React from "react";
 import { ProgressBar } from "./ProgressComponents";
 import EmblemRenderer from "./EmblemRenderer";
 import ActionButtons from "./ActionButtons";
-import ShareButtons from "./ShareButtons";
+import ShareButton from "./ShareButton";
 import { determineArchetype, archetypes } from "./archetypeData";
 import { getPattern, getFeelingColors } from "./EmblemPatterns";
 import { Link } from "react-router-dom";
@@ -45,9 +47,10 @@ const ResponseCategories = ({ responseText, answers }) => {
   const colorScheme = getFeelingColors(answers[5] || "Indifferent");
 
   return (
+    // Two-Column Grid
     <div className="grid grid-cols-2 gap-6">
       {" "}
-      {/* Two-column grid with consistent gap */}
+      {/* Intention */}
       <div className="category flex flex-col items-center">
         <PatternDisplay
           type="intention"
@@ -63,6 +66,7 @@ const ResponseCategories = ({ responseText, answers }) => {
         </h3>
         <p className="text-center">{responseText.votingIntention}</p>
       </div>
+      {/* Motivation */}
       <div className="category flex flex-col items-center">
         <PatternDisplay
           type="motivation"
@@ -80,6 +84,7 @@ const ResponseCategories = ({ responseText, answers }) => {
         <h3 className="text-sm font-semibold uppercase mb-2">MOTIVATION</h3>
         <p className="text-center">{responseText.motivation}</p>
       </div>
+      {/* Issue */}
       <div className="category flex flex-col items-center">
         <PatternDisplay
           type="issue"
@@ -92,6 +97,7 @@ const ResponseCategories = ({ responseText, answers }) => {
         </h3>
         <p className="text-center">{responseText.keyIssue}</p>
       </div>
+      {/* Feeing */}
       <div className="category flex flex-col items-center">
         <ColorSchemeDisplay colors={colorScheme.votingMotivation} />
         <h3 className="text-sm font-semibold uppercase mb-2">FEELING</h3>
@@ -119,16 +125,19 @@ const QuizResults = ({
 
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
+      {/* Progress Bar */}
       <ProgressBar
         visibleQuestions={visibleQuestions}
         currentQuestionIndex={currentQuestionIndex}
         showTitle={false}
       />
 
+      {/* Emblem */}
       <div className="voter-emblem-container my-8">
         <EmblemRenderer answers={answers} newsHours={answers[9]} />
       </div>
 
+      {/* Profile Details */}
       <div className="profile-section mb-8 text-center">
         <p className="profile-tag">You are</p>
         <h2 className="profile-title text-2xl font-bold my-2">
@@ -137,12 +146,18 @@ const QuizResults = ({
         <p className="profile-text">{archetype?.profile || "Profile text"}</p>
       </div>
 
+      {/* Category Grid */}
       <ResponseCategories responseText={responseText} answers={answers} />
 
       <div className="mt-8 space-y-4">
-        <ShareButtons archetype={archetype} answers={answers} />
-        <ActionButtons onRetake={onRetake} />
-        {/* Add this debug link */}
+        {/* Download / Retake Buttons */}
+        <ShareButton
+          archetype={archetype}
+          answers={answers}
+          onRetake={onRetake}
+        />
+
+        {/* Debug Link */}
         {process.env.NODE_ENV === "development" && (
           <Link
             to="/preview-download"

@@ -7,7 +7,7 @@ import IntentionSelection from "./IntentionSelection";
 import QuizResults from "./QuizResults";
 import { QUESTIONS } from "./QuizConstants";
 
-// Separate component for question display
+// Question Display Component
 const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   <>
     <h2 className="question">{currentQuestion.text}</h2>
@@ -27,6 +27,7 @@ const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   </>
 );
 
+// Quiz Component
 function Quiz() {
   const [state, setState] = useState({
     currentQuestionIndex: 0,
@@ -103,18 +104,12 @@ function Quiz() {
 
   return (
     <div className="quiz-container">
+      {/* Progress Bar */}
       <ProgressBar
         visibleQuestions={visibleQuestions}
         currentQuestionIndex={currentQuestionIndex}
+        onNavigate={(index) => updateState({ currentQuestionIndex: index })}
       />
-
-      <div className="quiz-header">
-        {currentQuestionIndex > 0 && (
-          <button className="back-button" onClick={handleBack}>
-            ← Back
-          </button>
-        )}
-      </div>
 
       <div className="emblem-visualization w-full flex justify-center items-center">
         {[1, 2].includes(currentQuestion.id) ? (

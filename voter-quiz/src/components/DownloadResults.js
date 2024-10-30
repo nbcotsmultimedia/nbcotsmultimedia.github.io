@@ -7,9 +7,8 @@ import { getPattern, getFeelingColors } from "./EmblemPatterns";
 import { archetypes } from "./archetypeData";
 import "./Quiz.css";
 
-// Renders SVG patterns with specific colors based on user responses
+// Render SVG Patterns with Specific Colors
 const PatternDisplay = ({ type, pattern, colors }) => {
-  // Ensure we have valid colors before rendering
   if (!colors || !colors[0] || !colors[1] || !pattern) {
     return <div className="pattern-icon" />;
   }
@@ -18,21 +17,32 @@ const PatternDisplay = ({ type, pattern, colors }) => {
     <div className="category-icon-container">
       {/* Background pattern element */}
       <div className="pattern-background">
-        <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <svg viewBox="0 0 100 100" className="pattern-svg">
           <g transform="translate(50,50)">
             <g transform="translate(-40,-40) scale(0.8)">
-              <path d={pattern.bd} fill={colors[0]} />
+              <path
+                d={pattern.bd}
+                className="pattern-path"
+                style={{ fill: colors[0] }}
+              />
             </g>
           </g>
         </svg>
       </div>
-      {/* Main icon */}
       <div className="pattern-icon">
         <svg viewBox="0 0 100 100">
           <g transform="translate(50,50)">
             <g transform="translate(-40,-40) scale(0.8)">
-              <path d={pattern.bd} fill={colors[0]} opacity={0.9} />
-              <path d={pattern.be} fill={colors[1]} opacity={0.9} />
+              <path
+                d={pattern.bd}
+                className="pattern-path-main"
+                style={{ fill: colors[0] }}
+              />
+              <path
+                d={pattern.be}
+                className="pattern-path-secondary"
+                style={{ fill: colors[1] }}
+              />
             </g>
           </g>
         </svg>
@@ -43,25 +53,18 @@ const PatternDisplay = ({ type, pattern, colors }) => {
 
 // Shows a circular indicator with two colors to represent emotions
 const FeelingIndicator = ({ colors }) => {
-  // Ensure we have valid colors before rendering
   if (!colors || !colors[0] || !colors[1]) {
     return <div className="feeling-indicator" />;
   }
 
   return (
     <div className="category-icon-container">
-      {/* Background pattern */}
       <div className="pattern-background">
         <div
-          style={{
-            backgroundColor: colors[0],
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-          }}
+          className="feeling-background"
+          style={{ backgroundColor: colors[0] }}
         />
       </div>
-      {/* Main indicator */}
       <div className="feeling-indicator">
         <div
           className="feeling-circle feeling-circle-1"
@@ -112,6 +115,7 @@ const NBCLogo = () => (
     </g>
   </svg>
 );
+
 // Creates a visual report/card showing a user's "voting personality"
 const DownloadResults = ({ archetype, answers }) => {
   if (!archetype || !answers) return null;
@@ -127,6 +131,7 @@ const DownloadResults = ({ archetype, answers }) => {
     feeling: answers[5] || "Frustrated",
   };
 
+  // Get feeling colors
   const colorScheme = getFeelingColors(answers[5] || "Indifferent");
 
   const getColorsForType = (type) => {
@@ -165,11 +170,12 @@ const DownloadResults = ({ archetype, answers }) => {
       {/* Archetype Title */}
       <h1 className="download-header">MY VOTING PERSONALITY</h1>
 
+      {/* Large Complete Emblem */}
       <div className="download-emblem">
         <EmblemRenderer answers={answers} newsHours={answers[9]} />
       </div>
 
-      {/* Large Complete Emblem */}
+      {/* Archetype Name */}
       <h2 className="download-title">
         {archetype.title || "The Reluctant Voter"}
       </h2>
@@ -217,6 +223,8 @@ const DownloadResults = ({ archetype, answers }) => {
           </div>
         ))}
       </div>
+
+      {/* Quiz Link */}
       <div className="quiz-link">
         See your voting personality at{" "}
         <a
