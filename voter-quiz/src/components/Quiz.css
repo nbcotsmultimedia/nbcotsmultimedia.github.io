@@ -298,6 +298,7 @@ body {
   white-space: normal; /* Allow text to wrap */
   word-wrap: break-word; /* Break long words if necessary */
   max-width: 100%; /* Ensure button doesn't overflow container */
+  background-color: #fafafa;
 }
 
 /* Quiz Header */

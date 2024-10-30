@@ -7,7 +7,6 @@ import ActionButtons from "./ActionButtons";
 import ShareButton from "./ShareButton";
 import { determineArchetype, archetypes } from "./archetypeData";
 import { getPattern, getFeelingColors } from "./EmblemPatterns";
-import { Link } from "react-router-dom";
 
 const PatternDisplay = ({ type, pattern, colors, transform }) => (
   <div className="h-16 flex items-center justify-center">
