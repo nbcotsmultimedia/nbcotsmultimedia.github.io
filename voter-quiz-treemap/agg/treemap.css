@@ -1,4 +1,22 @@
-/* Base size variables and scaling */
+/* #region - Treemap Container */
+
+#treemap,
+#treemap-container {
+  width: 100vw;
+  height: min(90vh, var(--container-max-height));
+  margin: 0;
+  position: relative;
+}
+
+#treemap svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* #endregion */
+
+/* #region - Root Styles */
+
 :root {
   /* Base sizes */
   --base-font: 16px;
@@ -34,19 +52,6 @@
   --font-arthouse: "ArtHouseMed", sans-serif;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1199px) {
-  :root {
-    --base-font: 14px;
-  }
-}
-
-@media (max-width: 767px) {
-  :root {
-    --base-font: 13px;
-  }
-}
-
 body {
   background-color: #fff !important;
 }
@@ -59,20 +64,10 @@ body {
   line-height: 1.5em;
 }
 
-/* Container styles */
-#treemap {
-  width: min(90vw, var(--container-max-width));
-  height: min(90vh, var(--container-max-height));
-  margin: 0 auto;
-  position: relative;
-}
+/* #endregion */
 
-#treemap svg {
-  width: 100%;
-  height: 100%;
-}
+/* #region - Node Styles */
 
-/* Node styles */
 .node {
   stroke: var(--color-stroke);
   stroke-width: 1.5px;
@@ -83,7 +78,10 @@ body {
   opacity: 0.9;
 }
 
-/* Text styles */
+/* #endregion */
+
+/* #region - Text Styles */
+
 .text-group {
   pointer-events: none;
   user-select: none;
@@ -107,26 +105,6 @@ body {
   letter-spacing: 0.01em;
 }
 
-/* Small viewport optimizations */
-@container (max-width: 600px) {
-  .node-label {
-    font-size: var(--text-lg);
-  }
-  .node-value {
-    font-size: var(--text-base);
-  }
-}
-
-/* Large viewport optimizations */
-@container (min-width: 1200px) {
-  .node-label {
-    font-size: var(--text-2xl);
-  }
-  .node-value {
-    font-size: var(--text-xl);
-  }
-}
-
 /* Add contrast for better text legibility on darker backgrounds */
 [data-background-lightness="dark"] .node-label,
 [data-background-lightness="dark"] .node-value {
@@ -138,22 +116,10 @@ body {
   display: none;
 }
 
-/* Previous CSS remains the same until container styles */
+/* #endregion */
 
-/* Container styles */
-#treemap {
-  width: min(90vw, var(--container-max-width));
-  height: min(90vh, var(--container-max-height));
-  margin: 0 auto;
-  position: relative;
-}
+/* #region - Tooltip Styles */
 
-#treemap svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Tooltip styles */
 .treemap-tooltip {
   position: absolute;
   padding: 8px 12px;
@@ -169,21 +135,47 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.1);
   max-width: 200px;
 }
-
 .treemap-tooltip.hidden {
   opacity: 0;
 }
-
 .tooltip-title {
   font-weight: 600;
   font-size: var(--text-base);
   margin-bottom: 4px;
   color: var(--color-text-primary);
 }
-
 .tooltip-value {
   font-weight: 500;
   color: var(--color-text-secondary);
 }
 
-/* Rest of the previous CSS remains the same */
+/* #endregion */
+
+/* #region - Mobile Styles */
+
+/* Responsive adjustments */
+@media (max-width: 1199px) {
+  :root {
+    --base-font: 14px;
+  }
+  .node-label {
+    font-size: var(--text-2xl);
+  }
+  .node-value {
+    font-size: var(--text-xl);
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --base-font: 13px;
+  }
+  .node-label {
+    font-size: var(--text-lg);
+  }
+  .node-value {
+    font-size: var(--text-base);
+  }
+}
+
+/* #endregion */
