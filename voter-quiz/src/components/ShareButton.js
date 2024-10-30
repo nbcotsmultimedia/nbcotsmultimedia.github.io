@@ -1,11 +1,10 @@
 // ShareButton.js
-
 import React, { useCallback } from "react";
 import html2canvas from "html2canvas";
 import DownloadResults from "./DownloadResults";
 import { createRoot } from "react-dom/client";
 
-// Draw Share Icon SVG
+// ShareIcon and RetakeIcon SVG components remain unchanged
 const ShareIcon = () => (
   <svg
     width="16"
@@ -38,7 +37,6 @@ const ShareIcon = () => (
   </svg>
 );
 
-// Draw Retake Quiz Icon SVG
 const RetakeIcon = () => (
   <svg
     width="18"
@@ -71,22 +69,17 @@ const RetakeIcon = () => (
   </svg>
 );
 
-// Define a Component 'ShareButton'
 const ShareButton = ({ archetype, answers, onRetake }) => {
-  // When the button is clicked, trigger handleDownload
   const handleDownload = useCallback(async () => {
     try {
-      // Create temporary container off-screen
       const downloadContainer = document.createElement("div");
       downloadContainer.style.position = "absolute";
       downloadContainer.style.left = "-9999px";
       document.body.appendChild(downloadContainer);
 
-      // Create root and render
       const root = createRoot(downloadContainer);
       root.render(<DownloadResults archetype={archetype} answers={answers} />);
 
-      // Wait for any images to load
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       const element = downloadContainer.firstChild;
@@ -109,7 +102,6 @@ const ShareButton = ({ archetype, answers, onRetake }) => {
         link.click();
         URL.revokeObjectURL(url);
 
-        // Clean up
         root.unmount();
         document.body.removeChild(downloadContainer);
       }, "image/png");
@@ -119,24 +111,18 @@ const ShareButton = ({ archetype, answers, onRetake }) => {
     }
   }, [archetype, answers]);
 
-  // Function to handle retaking the quiz
-  const handleRetakeQuiz = () => {
-    router.push("/quiz"); // Adjust this path to your quiz start page
-  };
-
-  // Return a div containing download button
   return (
     <div className="action-buttons">
-      <div className="flex justify-center gap-4">
+      <div className="flex flex-col space-y-4 items-center w-full">
         <button
-          className="action-button action-button-share"
+          className="action-button action-button-share w-full max-w-sm"
           onClick={handleDownload}
         >
           <ShareIcon />
           <span>Download your results</span>
         </button>
         <button
-          className="action-button action-button-retake"
+          className="action-button action-button-retake w-full max-w-sm"
           onClick={onRetake}
         >
           <RetakeIcon />

@@ -126,11 +126,11 @@ const QuizResults = ({
   return (
     <div className="w-full max-w-2xl mx-auto px-4">
       {/* Progress Bar */}
-      <ProgressBar
+      {/* <ProgressBar
         visibleQuestions={visibleQuestions}
         currentQuestionIndex={currentQuestionIndex}
         showTitle={false}
-      />
+      /> */}
 
       {/* Emblem */}
       <div className="voter-emblem-container my-8">
