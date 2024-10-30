@@ -1,10 +1,67 @@
 // Define constants first
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQKZEhqvFfMk132Qb4CLvm521RVaxiCrjJsWQIDtf2EfOWnVpRf-xpAM24SkIpR4UEsqYMdqvNgdxbs/pub?gid=664937285&single=true&output=csv`;
-const MINIMUM_SIZE_FOR_DETAILS = 160; // Minimum pixel size to show details
-const MINIMUM_SIZE_FOR_LABEL = 100; // Minimum pixel size to show label
+const MINIMUM_SIZE_FOR_DETAILS = 160;
+const MINIMUM_SIZE_FOR_LABEL = 80;
+const RESIZE_DELAY = 250; // Debounce delay in milliseconds
+const RESIZE_THROTTLE = 60; // Throttle rate in fps
 
 // Add Pym
 var pymChild = new pym.Child({ polling: 500 });
+
+// ResizeObserver configuration
+const resizeObserverOptions = {
+  box: "border-box",
+};
+
+// Create a more efficient debounce function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Create a throttle function for smooth resize handling
+function throttle(func, limit) {
+  let inThrottle;
+  let lastRan;
+  return function (...args) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      lastRan = Date.now();
+      inThrottle = true;
+      requestAnimationFrame(() => {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(this, args);
+          lastRan = Date.now();
+        }
+        inThrottle = false;
+      });
+    }
+  };
+}
+
+// Function to check if resize is significant enough to warrant redraw
+function isSignificantResize(
+  oldWidth,
+  oldHeight,
+  newWidth,
+  newHeight,
+  threshold = 0.05
+) {
+  const widthDiff = Math.abs(oldWidth - newWidth) / oldWidth;
+  const heightDiff = Math.abs(oldHeight - newHeight) / oldHeight;
+  return widthDiff > threshold || heightDiff > threshold;
+}
+
+// Keep track of container dimensions
+let lastWidth = 0;
+let lastHeight = 0;
 
 // Color palette
 const COLOR_DOMAIN = [
@@ -33,15 +90,17 @@ const COLOR_RANGE = [
   "#8E97A4", // Blue-gray for education
 ];
 
-function createTreemap() {
+function createTreemap(providedWidth, providedHeight) {
   // Get container dimensions
   const container = document.getElementById("treemap");
-  console.log("Container dimensions:", {
-    width: container.clientWidth,
-    height: container.clientHeight,
-  });
-  const width = container.clientWidth;
-  const height = container.clientHeight;
+
+  // Use provided dimensions or get from container
+  const width = providedWidth || container.clientWidth;
+  const height = providedHeight || container.clientHeight;
+
+  // Store new dimensions
+  lastWidth = width;
+  lastHeight = height;
 
   // Clear existing SVG
   d3.select("#treemap svg").remove();
@@ -247,18 +306,54 @@ function createTreemap() {
   return d3
     .csv(SHEET_URL)
     .then((data) => {
-      console.log("Raw data:", data); // Check if data is loading
       const root = processData(data);
-      console.log("Processed root:", root); // Check processed data
       updateTreemap(root);
     })
     .catch((error) => {
       console.error("Error loading or processing data:", error);
-      // Add more specific error handling
-      if (error.name === "TypeError") {
-        console.error("Network error - check CORS settings");
-      }
     });
+}
+
+// Initialize ResizeObserver
+function initializeResizeHandling() {
+  const container = document.getElementById("treemap");
+
+  // Create ResizeObserver instance
+  const resizeObserver = new ResizeObserver(
+    debounce((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+
+        // Only redraw if the size change is significant
+        if (isSignificantResize(lastWidth, lastHeight, width, height)) {
+          createTreemap(width, height);
+          pymChild.sendHeight();
+        }
+      }
+    }, RESIZE_DELAY)
+  );
+
+  // Fallback for browsers that don't support ResizeObserver
+  if (!window.ResizeObserver) {
+    const throttledResize = throttle(() => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      if (isSignificantResize(lastWidth, lastHeight, width, height)) {
+        createTreemap(width, height);
+        pymChild.sendHeight();
+      }
+    }, 1000 / RESIZE_THROTTLE);
+
+    window.addEventListener("resize", throttledResize);
+    return () => window.removeEventListener("resize", throttledResize);
+  }
+
+  // Start observing
+  resizeObserver.observe(container, resizeObserverOptions);
+
+  // Return cleanup function
+  return () => resizeObserver.disconnect();
 }
 
 // Initialize after the DOM is loaded
@@ -266,13 +361,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial creation
   createTreemap();
 
-  // Add resize handler with debounce
-  let resizeTimeout;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      createTreemap();
-      pymChild.sendHeight();
-    }, 250);
-  });
+  // Initialize resize handling
+  const cleanup = initializeResizeHandling();
+
+  // Clean up on page unload if needed
+  window.addEventListener("unload", cleanup);
 });
