@@ -203,7 +203,7 @@ function aFunction() {
         }
 
 
-        d3.json("data/updated-shapes.json")
+        d3.json("data/final-data.json")
             .then(function (us) {
 
                 d3.selectAll('.nav-item').on('click', function (d) {
