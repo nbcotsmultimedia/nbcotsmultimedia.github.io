@@ -128,7 +128,7 @@ export const QUESTIONS = [
   },
   {
     id: 8,
-    text: "Which of these issues is most important to you?",
+    text: "Which one of these issues is most important to you?",
     options: Object.values(KEY_ISSUE_CHOICES),
   },
   {
