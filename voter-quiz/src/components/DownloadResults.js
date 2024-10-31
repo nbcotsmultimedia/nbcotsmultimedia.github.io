@@ -225,7 +225,7 @@ const DownloadResults = ({ archetype, answers }) => {
       </div>
 
       {/* Quiz Link */}
-      <div className="quiz-link">
+      {/* <div className="quiz-link">
         See your voting personality at{" "}
         <a
           href={`https://${getComputedStyle(document.documentElement)
@@ -238,7 +238,7 @@ const DownloadResults = ({ archetype, answers }) => {
             .trim()
             .replace(/['"]+/g, "")}
         </a>
-      </div>
+      </div> */}
     </div>
   );
 };

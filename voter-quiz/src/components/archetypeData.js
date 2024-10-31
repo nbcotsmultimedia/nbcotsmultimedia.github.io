@@ -1,18 +1,18 @@
-// src/components/archetypeData.js
+// Archetype definitions
 export const archetypes = {
-  anxiousDemocrat: {
-    title: "The Anxious Democrat",
-    description: "A Political Worrier with a side of hope",
+  concernedProgressive: {
+    title: "The Concerned Progressive",
+    description: "Channeling worry into meaningful action",
     profile:
-      "You're politically engaged and deeply invested in progressive causes, balancing concern about the future with determination to make positive change.",
+      "You care deeply about progressive causes and stay actively involved in politics, even though current events sometimes make you worried.",
     detail:
-      "Your commitment to issues like healthcare, climate change, and reproductive rights reflects your progressive values. While you may feel anxious about political developments, you channel that energy into civic engagement and advocacy.",
-    personalityTraits: ["PASSIONATE", "VIGILANT", "PROGRESSIVE"],
+      "You're especially interested in issues like healthcare, climate change, and civil rights. While political news can make you anxious, you channel those feelings into taking action and supporting causes you believe in.",
+    personalityTraits: ["EMPATHETIC", "VIGILANT", "DETERMINED"],
     traits: {
-      issuesFocus: ["Healthcare", "Climate Change", "Reproductive Rights"],
+      issuesFocus: ["Healthcare", "Climate Change", "Civil Rights"],
       newsConsumption: "High",
       socialMedia: "Moderate to High",
-      emotionalState: "Anxious but Engaged",
+      emotionalState: "Concerned but Active",
     },
     minimumVotingIntent: true,
   },
@@ -21,10 +21,10 @@ export const archetypes = {
     title: "The Civic-Minded Voter",
     description: "A Democracy Guardian with years of wisdom",
     profile:
-      "You're a dedicated voter who sees participation in democracy as both a privilege and responsibility.",
+      "You see voting and civic participation as both a privilege and a responsibility.",
     detail:
-      "Your approach to politics is measured and thoughtful, prioritizing civic duty over partisan loyalty. You stay informed on key issues while maintaining a balanced perspective.",
-    personalityTraits: ["DEDICATED", "THOUGHTFUL", "BALANCED"],
+      "You stay informed about issues and make voting decisions carefully. You believe that every vote matters and that being an active citizen makes our democracy stronger.",
+    personalityTraits: ["DUTIFUL", "CONSISTENT", "METHODICAL"],
     traits: {
       issuesFocus: ["Civic Participation", "Education", "Local Government"],
       newsConsumption: "Moderate",
@@ -34,14 +34,14 @@ export const archetypes = {
     minimumVotingIntent: true,
   },
 
-  youngProgressive: {
-    title: "The Young Progressive",
-    description: "A Digital Activist with a zest for change",
+  passionateActivist: {
+    title: "The Passionate Activist",
+    description: "Energetically working for political and social change",
     profile:
-      "You're part of a new generation of politically engaged citizens using digital platforms to advocate for change.",
+      "You're deeply committed to creating change and use multiple channels to advocate for causes you believe in.",
     detail:
-      "Your high engagement with political content online reflects your commitment to issues like climate change and social justice. You see voting as one of many tools for creating systemic change.",
-    personalityTraits: ["ENERGETIC", "INNOVATIVE", "ENGAGED"],
+      "You're dedicated to making a difference, especially on issues like climate change and social justice. You see voting as one of many ways to create change, alongside activism and community involvement.",
+    personalityTraits: ["MOTIVATED", "OUTSPOKEN", "RESOLUTE"],
     traits: {
       issuesFocus: ["Climate Change", "Social Justice", "Economic Inequality"],
       newsConsumption: "High",
@@ -57,8 +57,8 @@ export const archetypes = {
     profile:
       "You approach politics with a critical eye, questioning traditional party structures while remaining engaged in civic discourse.",
     detail:
-      "While you may feel disconnected from mainstream political institutions, you maintain an active interest in political issues and seek alternative ways to create change.",
-    personalityTraits: ["ANALYTICAL", "INDEPENDENT", "QUESTIONING"],
+      "While you may not fully trust the current political system, you stay informed and think critically about issues. You're interested in finding new ways to improve how democracy works.",
+    personalityTraits: ["ANALYTICAL", "DISCERNING", "INDEPENDENT"],
     traits: {
       issuesFocus: ["Government Reform", "Transparency", "Accountability"],
       newsConsumption: "Moderate to High",
@@ -68,48 +68,48 @@ export const archetypes = {
     minimumVotingIntent: false,
   },
 
-  disengagedCitizen: {
-    title: "The Disengaged Citizen",
-    description: "A Political Outsider seeking connection",
+  selectiveEngager: {
+    title: "The Selective Engager",
+    description: "Choosing when and how to engage with politics",
     profile:
-      "You've stepped back from traditional political participation, feeling disconnected from the current political system.",
+      "You take a measured approach to political engagement, focusing your attention on specific issues or moments that matter most to you.",
     detail:
-      "Whether due to disillusionment, lack of trust, or other priorities, you've chosen to focus your energy elsewhere. However, you remain open to re-engaging when you feel meaningful change is possible.",
-    personalityTraits: ["DISTANT", "PRACTICAL", "SELECTIVE"],
+      "Rather than constant political involvement, you choose specific issues and times to engage. You stay aware of major events while maintaining balance with other life priorities.",
+    personalityTraits: ["DELIBERATE", "MEASURED", "AUTONOMOUS"],
     traits: {
-      issuesFocus: ["Daily Life Issues", "Community Matters"],
-      newsConsumption: "Low",
+      issuesFocus: ["Selected Key Issues", "Local Impact"],
+      newsConsumption: "Low to Moderate",
       socialMedia: "Low",
-      emotionalState: "Detached",
+      emotionalState: "Balanced",
     },
     minimumVotingIntent: false,
   },
 
-  highInfoPartisan: {
-    title: "The High-Information Partisan",
-    description: "A Political Expert with strong convictions",
+  issuesExpert: {
+    title: "The Issues Expert",
+    description: "Deeply knowledgeable about political issues and policy",
     profile:
-      "You're deeply engaged in political news and strongly aligned with your chosen party's positions.",
+      "You follow politics closely and have well-researched opinions about political issues and policy details.",
     detail:
-      "Your high consumption of political news and active participation in political discussions reflect your strong commitment to your political beliefs and party values.",
-    personalityTraits: ["INFORMED", "COMMITTED", "ANALYTICAL"],
+      "You spend significant time following political news and understanding policy details. You're confident in your political knowledge and enjoy exploring complex political topics.",
+    personalityTraits: ["THOROUGH", "STUDIOUS", "PRECISE"],
     traits: {
-      issuesFocus: ["Party Platform", "Policy Details", "Electoral Strategy"],
+      issuesFocus: ["Policy Details", "Multiple Issues", "Current Events"],
       newsConsumption: "Very High",
       socialMedia: "High",
-      emotionalState: "Passionate",
+      emotionalState: "Engaged",
     },
     minimumVotingIntent: true,
   },
 
   pragmaticCentrist: {
     title: "The Pragmatic Centrist",
-    description: "A Balanced Voice seeking practical solutions",
+    description: "Finding common ground and practical solutions",
     profile:
-      "You maintain a measured approach to politics, focusing on practical solutions rather than ideological positions.",
+      "You prefer finding middle ground and practical solutions rather than sticking to strict party positions.",
     detail:
-      "Your political perspective emphasizes finding common ground and workable solutions, while remaining skeptical of extreme positions from any side.",
-    personalityTraits: ["PRACTICAL", "BALANCED", "SOLUTION-ORIENTED"],
+      "You believe the best solutions often come from combining different viewpoints and focusing on what works rather than ideology. You're interested in bringing people together to solve problems.",
+    personalityTraits: ["REASONABLE", "COLLABORATIVE", "ADAPTABLE"],
     traits: {
       issuesFocus: [
         "Economic Growth",
@@ -124,6 +124,7 @@ export const archetypes = {
   },
 };
 
+// Updated archetype determination algorithm
 export const determineArchetype = (answers) => {
   let scores = Object.keys(archetypes).reduce((acc, key) => {
     acc[key] = 0;
@@ -131,6 +132,7 @@ export const determineArchetype = (answers) => {
   }, {});
 
   const planToVote = answers[1] === "Yes, I plan on voting";
+  const partyAffiliation = answers[7];
 
   // First filter out archetypes that don't match voting intention
   Object.keys(scores).forEach((key) => {
@@ -138,6 +140,19 @@ export const determineArchetype = (answers) => {
       delete scores[key];
     }
   });
+
+  // Filter out incompatible archetypes based on party affiliation
+  if (partyAffiliation === "Republican Party") {
+    delete scores.concernedProgressive;
+    delete scores.passionateActivist;
+  } else if (partyAffiliation === "Democratic Party") {
+    // Keep progressive archetypes
+  } else if (partyAffiliation === "Independent") {
+    scores.pragmaticCentrist += 2;
+    scores.politicalSkeptic += 1;
+  } else if (partyAffiliation === "None") {
+    scores.selectiveEngager += 2;
+  }
 
   // Only proceed with scoring for valid archetypes
   if (Object.keys(scores).length > 0) {
@@ -149,15 +164,19 @@ export const determineArchetype = (answers) => {
           scores.pragmaticCentrist += 1;
           break;
         case "To influence change in my community":
-          scores.youngProgressive += 3;
-          scores.anxiousDemocrat += 1;
+          scores.passionateActivist += 3;
+          scores.concernedProgressive += 2;
           break;
         case "To support a specific candidate or party":
-          scores.highInfoPartisan += 3;
+          scores.issuesExpert += 3;
+          break;
+        case "To express my opinion on important issues":
+          scores.civicMinded += 2;
+          scores.pragmaticCentrist += 2;
           break;
       }
     } else {
-      scores.disengagedCitizen += 2;
+      scores.selectiveEngager += 2;
       scores.politicalSkeptic += 2;
     }
 
@@ -165,34 +184,84 @@ export const determineArchetype = (answers) => {
     switch (answers[5]) {
       case "Anxious":
       case "Scared":
-        scores.anxiousDemocrat += 2;
+        scores.concernedProgressive += 3;
         break;
       case "Frustrated":
         scores.politicalSkeptic += 2;
         break;
       case "Hopeful":
         scores.pragmaticCentrist += 2;
+        scores.passionateActivist += 1;
         break;
       case "Indifferent":
-        scores.disengagedCitizen += 2;
+        scores.selectiveEngager += 2;
         break;
       case "Excited":
-        scores.youngProgressive += 2;
+        scores.passionateActivist += 2;
+        break;
+      case "Confused":
+        scores.selectiveEngager += 1;
+        scores.politicalSkeptic += 1;
         break;
     }
 
-    // News consumption (answers[10])
-    if (answers[10] === "10+") {
-      scores.highInfoPartisan += 3;
-    } else if (answers[10] === "0-1") {
-      scores.disengagedCitizen += 2;
+    // Key issues alignment
+    const keyIssue = answers[8];
+    if (keyIssue === "Climate change and the environment") {
+      scores.passionateActivist += 2;
+      scores.concernedProgressive += 2;
+    } else if (keyIssue === "Economy and jobs") {
+      scores.pragmaticCentrist += 2;
+      scores.issuesExpert += 1;
+    } else if (
+      keyIssue === "Healthcare" ||
+      keyIssue === "Abortion and reproductive rights"
+    ) {
+      scores.concernedProgressive += 2;
+    } else if (keyIssue === "Education" || keyIssue === "Local Government") {
+      scores.civicMinded += 2;
+    } else if (keyIssue === "Racial and ethnic inequality") {
+      scores.passionateActivist += 2;
     }
 
-    // Social media political content (answers[11])
-    if (answers[11] === "76-100%" || answers[11] === "51-75%") {
-      scores.youngProgressive += 2;
-      scores.highInfoPartisan += 1;
+    // News consumption (answers[9])
+    if (answers[9] === "10+") {
+      scores.issuesExpert += 3;
+      scores.concernedProgressive += 1;
+    } else if (answers[9] === "0-1") {
+      scores.selectiveEngager += 2;
+    } else if (answers[9] === "1-3") {
+      scores.pragmaticCentrist += 1;
+      scores.selectiveEngager += 1;
+    } else if (answers[9] === "5-10") {
+      scores.passionateActivist += 1;
+      scores.issuesExpert += 1;
     }
+
+    // Social media political content (answers[10])
+    if (answers[10] === "76-100%" || answers[10] === "51-75%") {
+      scores.passionateActivist += 2;
+      scores.issuesExpert += 1;
+      scores.concernedProgressive += 1;
+    } else if (answers[10] === "0-25%") {
+      scores.selectiveEngager += 2;
+      scores.civicMinded += 1;
+    } else if (answers[10] === "26-50%") {
+      scores.pragmaticCentrist += 1;
+    }
+
+    // Age-based adjustments (more subtle now)
+    const age = answers[6];
+    if (age === "18-24" || age === "25-34") {
+      scores.passionateActivist += 1;
+    } else if (age === "65 and older") {
+      scores.civicMinded += 1;
+    }
+  }
+
+  // If no valid archetypes remain, default to pragmaticCentrist
+  if (Object.keys(scores).length === 0) {
+    return "pragmaticCentrist";
   }
 
   // Return the archetype with the highest score

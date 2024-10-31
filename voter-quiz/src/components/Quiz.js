@@ -5,6 +5,7 @@ import ProgressiveEmblem from "./ProgressiveEmblem";
 import IntentionSelection from "./IntentionSelection";
 import QuizResults from "./QuizResults";
 import { QUESTIONS } from "./QuizConstants";
+import HeaderTitle from "./HeaderTitle"; // Add this import
 
 const QuestionDisplay = ({ currentQuestion, onOptionClick, answers }) => (
   <>
@@ -120,6 +121,11 @@ function Quiz() {
 
   return (
     <div className="quiz-container">
+      <HeaderTitle
+        title="What is your voting personality?"
+        centered={true}
+        size="large"
+      />
       <ProgressBar
         visibleQuestions={visibleQuestions}
         currentQuestionIndex={currentQuestionIndex}
