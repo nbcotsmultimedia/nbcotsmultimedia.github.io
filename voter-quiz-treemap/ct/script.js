@@ -1,69 +1,9 @@
-// Define constants first
+// Constants
+const RESIZE_DELAY = 250;
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQKZEhqvFfMk132Qb4CLvm521RVaxiCrjJsWQIDtf2EfOWnVpRf-xpAM24SkIpR4UEsqYMdqvNgdxbs/pub?gid=664937285&single=true&output=csv`;
-const MINIMUM_SIZE_FOR_DETAILS = 160;
-const MINIMUM_SIZE_FOR_LABEL = 80;
-const RESIZE_DELAY = 250; // Debounce delay in milliseconds
-const RESIZE_THROTTLE = 60; // Throttle rate in fps
+const MINIMUM_SIZE_FOR_TEXT = 100;
 
-// Add Pym
-var pymChild = new pym.Child({ polling: 500 });
-
-// ResizeObserver configuration
-const resizeObserverOptions = {
-  box: "border-box",
-};
-
-// Create a more efficient debounce function
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-// Create a throttle function for smooth resize handling
-function throttle(func, limit) {
-  let inThrottle;
-  let lastRan;
-  return function (...args) {
-    if (!inThrottle) {
-      func.apply(this, args);
-      lastRan = Date.now();
-      inThrottle = true;
-      requestAnimationFrame(() => {
-        if (Date.now() - lastRan >= limit) {
-          func.apply(this, args);
-          lastRan = Date.now();
-        }
-        inThrottle = false;
-      });
-    }
-  };
-}
-
-// Function to check if resize is significant enough to warrant redraw
-function isSignificantResize(
-  oldWidth,
-  oldHeight,
-  newWidth,
-  newHeight,
-  threshold = 0.05
-) {
-  const widthDiff = Math.abs(oldWidth - newWidth) / oldWidth;
-  const heightDiff = Math.abs(oldHeight - newHeight) / oldHeight;
-  return widthDiff > threshold || heightDiff > threshold;
-}
-
-// Keep track of container dimensions
-let lastWidth = 0;
-let lastHeight = 0;
-
-// Color palette
+// Color configurations
 const COLOR_DOMAIN = [
   "The economy",
   "Abortion rights",
@@ -78,34 +18,174 @@ const COLOR_DOMAIN = [
 ];
 
 const COLOR_RANGE = [
-  "#5B7BB4", // Clear blue for economy
-  "#E1875E", // Warm coral for abortion rights
-  "#9C6B98", // Distinct purple for immigration
-  "#63A8A4", // Turquoise for national security
-  "#7FB069", // Fresh green for healthcare
-  "#D6A344", // Golden yellow for climate
-  "#8B5E83", // Deep mauve for gun policy
-  "#DB7F7F", // Salmon pink for racial inequality
-  "#B47E4D", // Warm brown for crime
-  "#8E97A4", // Blue-gray for education
+  "#B4C9F9",
+  "#E5A9B3",
+  "#CEBDF4",
+  "#FBD451",
+  "#CBE896",
+  "#F5B517",
+  "#CC9FFF",
+  "#7C869B",
+  "#C6C112",
+  "#C6A8B9",
 ];
 
-function createTreemap(providedWidth, providedHeight) {
-  // Get container dimensions
-  const container = document.getElementById("treemap");
+// State management
+let isLoading = true;
+let cachedData = null;
+let svg, treemapContainer;
 
-  // Use provided dimensions or get from container
-  const width = providedWidth || container.clientWidth;
-  const height = providedHeight || container.clientHeight;
+// Initialize Pym
+// const pymChild = new pym.Child({ polling: 500 });
 
-  // Store new dimensions
-  lastWidth = width;
-  lastHeight = height;
+// Data processing function
+function processData(data) {
+  const processedData = [
+    { id: "root", parent: "", value: 0 },
+    ...data.map((d) => ({
+      id: d.Issues,
+      parent: "root",
+      value: parseFloat(d.Percent) || 0,
+    })),
+  ];
 
-  // Clear existing SVG
-  d3.select("#treemap svg").remove();
+  return d3
+    .stratify()
+    .id((d) => d.id)
+    .parentId((d) => d.parent)(processedData)
+    .sum((d) => d.value);
+}
 
-  // Create tooltip div if it doesn't exist
+// Text wrapping function
+function wrap(text, width) {
+  text.each(function () {
+    const textElement = d3.select(this);
+    const words = textElement.text().split(/\s+/);
+    let line = [];
+    let lineNumber = 0;
+    const lineHeight = 1.2;
+    const y = parseFloat(textElement.attr("y"));
+    const dy = 0;
+    let tspan = textElement
+      .text(null)
+      .append("tspan")
+      .attr("x", 4)
+      .attr("y", y)
+      .attr("dy", dy + "em");
+
+    for (let word of words) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width && line.length > 1) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = textElement
+          .append("tspan")
+          .attr("x", 4)
+          .attr("y", y)
+          .attr("dy", ++lineNumber * lineHeight + dy + "em")
+          .text(word);
+      }
+    }
+  });
+}
+
+// Efficient resize handler using requestAnimationFrame
+function efficientResize() {
+  if (!svg || !cachedData) return;
+
+  const container = treemapContainer;
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+
+  // Update SVG dimensions
+  svg
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  // Recalculate treemap layout
+  const treemap = d3
+    .treemap()
+    .size([width, height])
+    .padding(4)
+    .tile(d3.treemapSquarify.ratio(1))
+    .round(true);
+
+  const root = treemap(cachedData);
+  root.sort((a, b) => b.value - a.value);
+
+  // Update existing elements
+  const nodes = svg.selectAll("g.node-group").data(root.leaves());
+
+  // Transition node positions
+  nodes
+    .transition()
+    .duration(300)
+    .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
+
+  // Update rectangles
+  nodes
+    .select("rect")
+    .transition()
+    .duration(300)
+    .attr("width", (d) => d.x1 - d.x0)
+    .attr("height", (d) => d.y1 - d.y0);
+
+  // Update text
+  nodes.select("g.text-group").each(function (d) {
+    const textGroup = d3.select(this);
+    const nodeWidth = d.x1 - d.x0;
+    const nodeHeight = d.y1 - d.y0;
+    const shouldShowText =
+      nodeWidth > MINIMUM_SIZE_FOR_TEXT && nodeHeight > MINIMUM_SIZE_FOR_TEXT;
+
+    textGroup
+      .select("text")
+      .style("display", shouldShowText ? "block" : "none")
+      .style(
+        "font-size",
+        `${Math.max(8, Math.min(14, Math.min(nodeWidth, nodeHeight) / 5))}px`
+      )
+      .call(wrap, Math.max(0, nodeWidth - 8));
+  });
+
+  // Notify Pym
+  // pymChild.sendHeight();
+
+  // Notify Crosstalk
+  setTimeout(function () {
+    xtalk.signalIframe();
+  }, 1000);
+}
+
+// Debounced resize using requestAnimationFrame
+function debouncedResize() {
+  let frame;
+  return () => {
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(efficientResize);
+  };
+}
+
+// Initialize visualization
+function initializeTreemap() {
+  treemapContainer = document.getElementById("treemap");
+  if (!treemapContainer) return;
+
+  const width = treemapContainer.clientWidth;
+  const height = treemapContainer.clientHeight;
+
+  // Create SVG once
+  svg = d3
+    .select("#treemap")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+  // Create tooltip once
   let tooltip = d3.select("body").select(".treemap-tooltip");
   if (tooltip.empty()) {
     tooltip = d3
@@ -115,255 +195,119 @@ function createTreemap(providedWidth, providedHeight) {
       .style("position", "absolute");
   }
 
-  // Create new SVG with current dimensions
-  const svg = d3
-    .select("#treemap")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewBox", `0 0 ${width} ${height}`);
-
-  function processData(data) {
-    const processedData = [
-      { id: "root", parent: "", value: 0 },
-      ...data.map((d) => ({
-        id: d.Issues,
-        parent: "root",
-        value: parseFloat(d.Percent) || 0,
-      })),
-    ];
-
-    const root = d3
-      .stratify()
-      .id((d) => d.id)
-      .parentId((d) => d.parent)(processedData)
-      .sum((d) => d.value);
-
-    return root;
-  }
-
-  function getLightness(color) {
-    const rgb = d3.color(color);
-    return (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) / 255;
-  }
-
-  function updateTooltipPosition(event, bounds) {
-    const tooltipWidth = tooltip.node().offsetWidth;
-    const tooltipHeight = tooltip.node().offsetHeight;
-    const padding = 10;
-
-    let left = event.pageX + padding;
-    let top = event.pageY + padding;
-
-    // Adjust if tooltip would go off screen
-    if (left + tooltipWidth > window.innerWidth - padding) {
-      left = event.pageX - tooltipWidth - padding;
-    }
-    if (top + tooltipHeight > window.innerHeight - padding) {
-      top = event.pageY - tooltipHeight - padding;
-    }
-
-    tooltip.style("left", `${left}px`).style("top", `${top}px`);
-  }
-
-  function showTooltip(event, d) {
-    tooltip.classed("hidden", false).html(`
-        <div class="tooltip-title">${d.id}</div>
-        <div class="tooltip-value">${d.value}% of voters</div>
-      `);
-
-    updateTooltipPosition(event, d);
-  }
-
-  function hideTooltip() {
-    tooltip.classed("hidden", true);
-  }
-
-  function moveTooltip(event, d) {
-    updateTooltipPosition(event, d);
-  }
-
-  function wrap(text, width) {
-    text.each(function (d) {
-      const text = d3.select(this);
-      const words = text.text().split(/\s+/);
-      let line = [];
-      let lineNumber = 0;
-      const lineHeight = 1.2;
-      const y = text.attr("y");
-      const dy = 0;
-      let tspan = text
-        .text(null)
-        .append("tspan")
-        .attr("x", 4)
-        .attr("y", y)
-        .attr("dy", dy + "em");
-
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        line.push(word);
-        tspan.text(line.join(" "));
-        if (tspan.node().getComputedTextLength() > width && line.length > 1) {
-          line.pop();
-          tspan.text(line.join(" "));
-          line = [word];
-          tspan = text
-            .append("tspan")
-            .attr("x", 4)
-            .attr("y", y)
-            .attr("dy", ++lineNumber * lineHeight + dy + "em")
-            .text(word);
-        }
-      }
-    });
-  }
-
-  function updateTreemap(data) {
-    const treemap = d3
-      .treemap()
-      .size([width, height])
-      .padding(2)
-      .tile(d3.treemapSquarify.ratio(1))
-      .round(true);
-
-    const root = treemap(data);
-    root.sort((a, b) => b.value - a.value);
-
-    const colorScale = d3
-      .scaleOrdinal()
-      .domain(COLOR_DOMAIN)
-      .range(COLOR_RANGE);
-
-    const nodes = svg
-      .selectAll("g")
-      .data(root.leaves())
-      .join("g")
-      .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
-
-    // Create node groups with hover interaction
-    const nodeGroups = nodes
-      .append("g")
-      .attr("class", "node-group")
-      .style("cursor", "pointer")
-      .on("mouseover", showTooltip)
-      .on("mousemove", moveTooltip)
-      .on("mouseleave", hideTooltip);
-
-    // Add rectangles to node groups
-    nodeGroups
-      .append("rect")
-      .attr("class", "node")
-      .attr("width", (d) => Math.max(0, d.x1 - d.x0))
-      .attr("height", (d) => Math.max(0, d.y1 - d.y0))
-      .attr("fill", (d) => colorScale(d.id))
-      .attr("data-background-lightness", (d) =>
-        getLightness(colorScale(d.id)) < 0.5 ? "dark" : "light"
-      );
-
-    const textGroups = nodeGroups.append("g").attr("class", (d) => {
-      const width = d.x1 - d.x0;
-      const height = d.y1 - d.y0;
-      return `text-group${
-        width < MINIMUM_SIZE_FOR_DETAILS || height < MINIMUM_SIZE_FOR_DETAILS
-          ? " compact"
-          : ""
-      }`;
-    });
-
-    textGroups.each(function (d) {
-      const width = d.x1 - d.x0;
-      const height = d.y1 - d.y0;
-
-      if (width < MINIMUM_SIZE_FOR_LABEL || height < MINIMUM_SIZE_FOR_LABEL) {
-        return;
-      }
-
-      const group = d3.select(this);
-
-      group
-        .append("text")
-        .attr("class", "node-label")
-        .attr("x", 4)
-        .attr("y", 24)
-        .text(d.id)
-        .call(wrap, d.x1 - d.x0 - 8);
-
-      if (
-        width >= MINIMUM_SIZE_FOR_DETAILS &&
-        height >= MINIMUM_SIZE_FOR_DETAILS
-      ) {
-        group
-          .append("text")
-          .attr("class", "node-value")
-          .attr("x", 4)
-          .attr("y", 48)
-          .text(`${d.value}%`);
-      }
-    });
-  }
-
-  // Load and process data
-  return d3
-    .csv(SHEET_URL)
+  // Load data once
+  d3.csv(SHEET_URL)
     .then((data) => {
-      const root = processData(data);
-      updateTreemap(root);
+      cachedData = processData(data);
+      createInitialTreemap(cachedData, tooltip);
+      isLoading = false;
     })
     .catch((error) => {
-      console.error("Error loading or processing data:", error);
+      console.error("Error loading data:", error);
+      isLoading = false;
     });
 }
 
-// Initialize ResizeObserver
-function initializeResizeHandling() {
-  const container = document.getElementById("treemap");
+// Initial treemap creation
+function createInitialTreemap(data, tooltip) {
+  const width = treemapContainer.clientWidth;
+  const height = treemapContainer.clientHeight;
 
-  // Create ResizeObserver instance
-  const resizeObserver = new ResizeObserver(
-    debounce((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
+  const treemap = d3
+    .treemap()
+    .size([width, height])
+    .padding(4)
+    .tile(d3.treemapSquarify.ratio(1))
+    .round(true);
 
-        // Only redraw if the size change is significant
-        if (isSignificantResize(lastWidth, lastHeight, width, height)) {
-          createTreemap(width, height);
-          pymChild.sendHeight();
-        }
-      }
-    }, RESIZE_DELAY)
-  );
+  const root = treemap(data);
+  root.sort((a, b) => b.value - a.value);
 
-  // Fallback for browsers that don't support ResizeObserver
-  if (!window.ResizeObserver) {
-    const throttledResize = throttle(() => {
-      const width = container.clientWidth;
-      const height = container.clientHeight;
+  const colorScale = d3.scaleOrdinal().domain(COLOR_DOMAIN).range(COLOR_RANGE);
 
-      if (isSignificantResize(lastWidth, lastHeight, width, height)) {
-        createTreemap(width, height);
-        pymChild.sendHeight();
-      }
-    }, 1000 / RESIZE_THROTTLE);
+  // Create nodes
+  const nodes = svg
+    .selectAll("g.node-group")
+    .data(root.leaves())
+    .join("g")
+    .attr("class", "node-group")
+    .attr("transform", (d) => `translate(${d.x0},${d.y0})`);
 
-    window.addEventListener("resize", throttledResize);
-    return () => window.removeEventListener("resize", throttledResize);
-  }
+  // Add rectangles
+  nodes
+    .append("rect")
+    .attr("width", (d) => d.x1 - d.x0)
+    .attr("height", (d) => d.y1 - d.y0)
+    .attr("fill", (d) => colorScale(d.data.id))
+    .attr("fill-opacity", 0.7)
+    .attr("stroke", (d) => colorScale(d.data.id))
+    .attr("stroke-width", 2);
 
-  // Start observing
-  resizeObserver.observe(container, resizeObserverOptions);
+  // Add text groups
+  const textGroups = nodes
+    .append("g")
+    .attr("class", "text-group")
+    .attr("pointer-events", "none")
+    .attr("transform", "translate(0, 12)");
 
-  // Return cleanup function
-  return () => resizeObserver.disconnect();
+  // Add labels
+  textGroups
+    .append("text")
+    .attr("x", 4)
+    .attr("y", 4)
+    .text((d) => d.data.id)
+    .style("font-size", (d) => {
+      const nodeSize = Math.min(d.x1 - d.x0, d.y1 - d.y0);
+      return `${Math.max(8, Math.min(14, nodeSize / 5))}px`;
+    })
+    .style("display", (d) => {
+      const nodeWidth = d.x1 - d.x0;
+      const nodeHeight = d.y1 - d.y0;
+      return nodeWidth > MINIMUM_SIZE_FOR_TEXT &&
+        nodeHeight > MINIMUM_SIZE_FOR_TEXT
+        ? "block"
+        : "none";
+    })
+    .call(wrap, (d) => Math.max(0, d.x1 - d.x0 - 8));
+
+  // Add interactions
+  nodes
+    .on("mouseover", (event, d) => {
+      tooltip
+        .classed("hidden", false)
+        .html(
+          `<div class="tooltip-title">${d.data.id}</div>
+               <div class="tooltip-value">${d.value.toFixed(1)}%</div>`
+        )
+        .style("opacity", 1);
+      updateTooltipPosition(event, tooltip);
+    })
+    .on("mousemove", (event) => updateTooltipPosition(event, tooltip))
+    .on("mouseout", () => {
+      tooltip.classed("hidden", true).style("opacity", 0);
+    });
+
+  pymChild.sendHeight();
 }
 
-// Initialize after the DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Initial creation
-  createTreemap();
+// Helper function for tooltip positioning
+function updateTooltipPosition(event, tooltip) {
+  const tooltipWidth = tooltip.node().offsetWidth;
+  const tooltipHeight = tooltip.node().offsetHeight;
 
-  // Initialize resize handling
-  const cleanup = initializeResizeHandling();
+  let x = event.pageX + 10;
+  let y = event.pageY - tooltipHeight - 10;
 
-  // Clean up on page unload if needed
-  window.addEventListener("unload", cleanup);
-});
+  if (x + tooltipWidth > window.innerWidth) {
+    x = window.innerWidth - tooltipWidth - 10;
+  }
+  if (y < 0) {
+    y = event.pageY + 10;
+  }
+
+  tooltip.style("left", `${x}px`).style("top", `${y}px`);
+}
+
+// Initialize and set up event listeners
+window.addEventListener("resize", debouncedResize());
+initializeTreemap();
