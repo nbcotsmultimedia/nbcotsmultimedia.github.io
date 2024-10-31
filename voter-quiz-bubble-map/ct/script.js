@@ -1,11 +1,12 @@
-// Color scale for sentiments
+// Color scale for sentiments with improved colors and transparency
 const colorScale = d3
   .scaleOrdinal()
   .domain(["positive", "neutral", "negative"])
   .range([
-    "#139A43", // Pigment green for positive
-    "#D3D0CB", // Light gray for neutral
-    "#ED6A5A", // Bittersweet for negative
+    // "#F0A6CA",
+    "#A7E099", // positive
+    "#8E8E93", // neutral
+    "#F8623F", // negative
   ]);
 
 // Add Pym
@@ -38,6 +39,7 @@ function getSentiment(feeling) {
   return "neutral";
 }
 
+// Function to get data from sheet
 async function fetchData() {
   try {
     const response = await fetch(
@@ -81,34 +83,42 @@ async function fetchData() {
   }
 }
 
+// Function to create chart
 function createBubbleChart(data) {
   if (!data) return;
 
-  // Clear previous chart if any
+  // Clear previous chart
   d3.select("#chart-container").selectAll("*").remove();
 
   // Get container dimensions
   const container = document.getElementById("chart-container");
   const width = container.clientWidth;
-  const height = width * (504.7 / 721); // Match the aspect ratio from your example
-  const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // Minimal margins
+  const height = width * 0.75;
+  const margin = { top: 10, right: 20, bottom: 10, left: 20 };
 
-  // Minimum radius for showing labels
-  const MIN_RADIUS_FOR_LABEL = 30;
+  // Adjusted minimum radius for labels
+  const MIN_RADIUS_FOR_LABEL = 35;
 
-  // Create SVG
+  // Create SVG with background
   const svg = d3
     .select("#chart-container")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
     .attr("viewBox", `0 0 ${width} ${height}`)
-    .attr("preserveAspectRatio", "xMidYMid meet");
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("background", "#FFFFFF"); // Clean white background
 
-  // Create pack layout
-  const pack = d3.pack().size([width, height]).padding(2);
+  // Create pack layout with adjusted padding
+  const pack = d3
+    .pack()
+    .size([
+      width - margin.left - margin.right,
+      height - margin.top - margin.bottom,
+    ])
+    .padding(3);
 
-  // Create hierarchy and compute the layout
+  // Create hierarchy
   const root = d3
     .hierarchy(data)
     .sum((d) => d.value)
@@ -116,31 +126,45 @@ function createBubbleChart(data) {
 
   pack(root);
 
-  // Create group for the chart
+  // Create main chart group
   const chartGroup = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Add sentiment group clusters
+  // Add sentiment group clusters with improved styling
   const sentimentGroups = chartGroup
     .selectAll(".sentiment-group")
     .data(root.children)
     .join("g")
     .attr("class", "sentiment-group");
 
-  // Add sentiment labels
-  //   sentimentGroups
-  //     .append("text")
-  //     .attr("class", "sentiment-label")
-  //     .attr("x", (d) => d.x)
-  //     .attr("y", (d) => d.y - d.r - 10)
-  //     .attr("text-anchor", "middle")
-  //     .style("font-size", "16px")
-  //     .style("font-weight", "bold")
-  //     .style("fill", (d) => d3.color(colorScale(d.data.name)).darker())
-  //     .text((d) => d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1));
+  // Add sentiment labels at the top
+  sentimentGroups
+    .append("text")
+    .attr("class", "sentiment-label")
+    .attr("x", (d) => {
+      // Calculate the center x position of all bubbles in the group
+      const xPositions = d.children.map((child) => child.x);
+      const minX = Math.min(...xPositions);
+      const maxX = Math.max(...xPositions);
+      return minX + (maxX - minX) / 2;
+    })
+    .attr("y", (d) => {
+      // Get the top-most circle in this sentiment group
+      const topBubble = d.children.reduce((top, current) =>
+        current.y - current.r < top.y - top.r ? current : top
+      );
+      // Position the label just above the highest bubble
+      return topBubble.y - topBubble.r - 8;
+    })
+    .attr("text-anchor", "middle")
+    .style("font-family", "var(--font-arthouse)")
+    .style("font-size", "18px")
+    .style("font-weight", "600")
+    .style("fill", (d) => d3.color(colorScale(d.data.name)).darker())
+    .text((d) => d.data.name.charAt(0).toUpperCase() + d.data.name.slice(1));
 
-  // Add circles for each feeling
+  // Create nodes with improved transitions
   const nodes = sentimentGroups
     .selectAll(".feeling-node")
     .data((d) => d.children)
@@ -148,65 +172,118 @@ function createBubbleChart(data) {
     .attr("class", "feeling-node")
     .attr("transform", (d) => `translate(${d.x},${d.y})`);
 
-  // Add circles with transition
+  // Format percentage without trailing zeros
+  const formatPercent = (value) => {
+    return Number(value).toString() + "%";
+  };
+
+  // Add circles with enhanced styling and smoother transitions
   nodes
     .append("circle")
     .attr("r", 0)
-    .attr("fill", (d) => colorScale(d.parent.data.name))
-    .attr("opacity", 0.7)
-    .attr("stroke", (d) => d3.color(colorScale(d.parent.data.name)).darker())
-    .attr("stroke-width", 2)
+    .attr("fill", (d) => {
+      const color = d3.color(colorScale(d.parent.data.name));
+      color.opacity = 0.85; // Semi-transparent fills
+      return color;
+    })
+    .attr("stroke", (d) => d3.color(colorScale(d.parent.data.name)).darker(0.2))
+    .attr("stroke-width", 1.5)
+    .style("filter", "drop-shadow(0 1px 2px rgba(0,0,0,0.05))")
     .transition()
-    .duration(1000)
+    .duration(1200)
+    .ease(d3.easeCubicOut)
     .attr("r", (d) => d.r);
 
-  // Add hover effects and tooltip
+  // More subtle hover effects
+  // More subtle hover effects
   nodes
     .selectAll("circle")
     .on("mouseover", function (event, d) {
-      // Highlight circle
       d3.select(this)
         .transition()
-        .duration(200)
-        .attr("opacity", 0.9)
-        .attr("stroke-width", 3);
+        .duration(150)
+        .attr("stroke-width", 2)
+        .style("filter", "drop-shadow(0 2px 3px rgba(0,0,0,0.08))")
+        .attr("fill", (d) => {
+          const color = d3.color(colorScale(d.parent.data.name));
+          color.opacity = 0.95; // Slightly increase opacity on hover
+          return color;
+        });
 
-      // Show tooltip
+      // First set the content
+      d3.select(".tooltip").html(`
+          <div class="tooltip-title">${d.data.name}</div>
+          <div class="tooltip-value">${formatPercent(d.data.value)}</div>
+        `);
+
+      // Then handle the transition separately
+      d3.select(".tooltip").transition().duration(150).style("opacity", 1);
+
+      // Update tooltip position
+      const tooltipWidth = d3.select(".tooltip").node().offsetWidth;
+      const tooltipHeight = d3.select(".tooltip").node().offsetHeight;
+
+      // Position tooltip to avoid edge overflow
+      let tooltipX = event.pageX + 12;
+      let tooltipY = event.pageY - 12;
+
+      // Adjust if too close to right edge
+      if (tooltipX + tooltipWidth > window.innerWidth) {
+        tooltipX = event.pageX - tooltipWidth - 12;
+      }
+
+      // Adjust if too close to bottom edge
+      if (tooltipY + tooltipHeight > window.innerHeight) {
+        tooltipY = event.pageY - tooltipHeight - 12;
+      }
+
       d3.select(".tooltip")
-        .style("opacity", 1)
-        .html(
-          `
-                    <div class="tooltip-title">${d.data.name}</div>
-                    <div class="tooltip-value">${d.data.value}%</div>
-                `
-        )
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 10 + "px");
+        .style("left", `${tooltipX}px`)
+        .style("top", `${tooltipY}px`);
     })
     .on("mousemove", function (event) {
-      // Move tooltip with mouse
+      const tooltipWidth = d3.select(".tooltip").node().offsetWidth;
+      const tooltipHeight = d3.select(".tooltip").node().offsetHeight;
+
+      let tooltipX = event.pageX + 12;
+      let tooltipY = event.pageY - 12;
+
+      if (tooltipX + tooltipWidth > window.innerWidth) {
+        tooltipX = event.pageX - tooltipWidth - 12;
+      }
+      if (tooltipY + tooltipHeight > window.innerHeight) {
+        tooltipY = event.pageY - tooltipHeight - 12;
+      }
+
       d3.select(".tooltip")
-        .style("left", event.pageX + 10 + "px")
-        .style("top", event.pageY - 10 + "px");
+        .style("left", `${tooltipX}px`)
+        .style("top", `${tooltipY}px`);
     })
-    .on("mouseout", function (event, d) {
-      // Reset circle
+    .on("mouseout", function () {
       d3.select(this)
         .transition()
-        .duration(200)
-        .attr("opacity", 0.7)
-        .attr("stroke-width", 2);
+        .duration(150)
+        .attr("stroke-width", 1.5)
+        .style("filter", "drop-shadow(0 1px 2px rgba(0,0,0,0.05))")
+        .attr("fill", (d) => {
+          const color = d3.color(colorScale(d.parent.data.name));
+          color.opacity = 0.85; // Return to original opacity
+          return color;
+        });
 
-      // Hide tooltip
-      d3.select(".tooltip").style("opacity", 0);
+      d3.select(".tooltip").transition().duration(150).style("opacity", 0);
     });
 
-  // Add text for feeling names (only for larger bubbles)
+  // Add labels with improved typography and positioning
   nodes
     .append("text")
-    .attr("dy", "-0.2em")
+    .attr("class", "feeling-label")
+    .attr("dy", "-0.3em")
     .style("text-anchor", "middle")
-    .style("font-size", (d) => `${Math.min(d.r / 3, 16)}px`)
+    .style("font-family", "var(--font-arthouse)")
+    .style("font-weight", "500")
+    .style("fill", "#2C2C2E")
+    .style("font-size", (d) => `${Math.min(d.r / 3, 14)}px`)
     .style("opacity", 0)
     .text((d) => (d.r >= MIN_RADIUS_FOR_LABEL ? d.data.name : ""))
     .transition()
@@ -214,14 +291,20 @@ function createBubbleChart(data) {
     .duration(500)
     .style("opacity", (d) => (d.r >= MIN_RADIUS_FOR_LABEL ? 1 : 0));
 
-  // Add text for percentages (only for larger bubbles)
+  // Add percentage labels with improved styling
   nodes
     .append("text")
+    .attr("class", "percentage-label")
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .style("font-size", (d) => `${Math.min(d.r / 3, 14)}px`)
+    .style("font-family", "var(--font-arthouse)")
+    .style("font-weight", "600")
+    .style("fill", "#2C2C2E")
+    .style("font-size", (d) => `${Math.min(d.r / 3, 16)}px`)
     .style("opacity", 0)
-    .text((d) => (d.r >= MIN_RADIUS_FOR_LABEL ? `${d.data.value}%` : ""))
+    .text((d) =>
+      d.r >= MIN_RADIUS_FOR_LABEL ? formatPercent(d.data.value) : ""
+    )
     .transition()
     .delay(1000)
     .duration(500)
