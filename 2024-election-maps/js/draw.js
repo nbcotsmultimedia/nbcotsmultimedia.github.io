@@ -783,9 +783,6 @@ function aFunction() {
                         const changeRaceName = district => {
                             const districtCopy = { ...district };
                             districtCopy["raceName"] = district["raceName"].replace(district["stateAbbr"], esp ? "Distrito" : "District");
-                            if (esp) {
-                                districtCopy["raceName"] = district["raceName"].replace("District", "Distrito");
-                            }
 
                             return districtCopy;
                         };
