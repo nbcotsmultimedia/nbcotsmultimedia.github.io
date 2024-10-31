@@ -1,5 +1,8 @@
 // script.js
 
+// Pym
+var pymChild = new pym.Child({ polling: 500 });
+
 // Color schemes for different emotional responses
 const FEELING_SCHEMES = {
   Hopeful: {
@@ -163,6 +166,27 @@ const PATTERNS_MAP = {
     Immigration: PATTERNS.issue.immigration,
     Education: PATTERNS.issue.education,
   },
+  motivation: {
+    voting: {
+      "To express my opinion on important issues":
+        PATTERNS.motivation.voting.opinion,
+      "To support a specific candidate or party":
+        PATTERNS.motivation.voting.supportCandidate,
+      "To fulfill my civic duty": PATTERNS.motivation.voting.civicDuty,
+      "To influence change in my community":
+        PATTERNS.motivation.voting.communityChange,
+    },
+    nonVoting: {
+      "I don't think any of the candidates will make a good president":
+        PATTERNS.motivation.nonVoting.dontLikeCandidates,
+      "I'm just not interested in politics":
+        PATTERNS.motivation.nonVoting.notInterested,
+      "I don't feel my vote will make a difference":
+        PATTERNS.motivation.nonVoting.voteWontMatter,
+      "I am unable to vote due to personal circumstances":
+        PATTERNS.motivation.nonVoting.cantVote,
+    },
+  },
 };
 
 // Data generation utilities
@@ -206,9 +230,30 @@ function getRandomChoice(choices) {
 }
 
 function generateEmblemData() {
+  const intention = getRandomChoice(CHOICES.intention);
+  const isVoting = intention === "Yes, I plan on voting";
+
+  // Filter motivations based on voting intention
+  const relevantMotivations = CHOICES.motivation.filter((m) =>
+    isVoting
+      ? [
+          "To express my opinion on important issues",
+          "To support a specific candidate or party",
+          "To fulfill my civic duty",
+          "To influence change in my community",
+        ].includes(m)
+      : [
+          "I don't think any of the candidates will make a good president",
+          "I'm just not interested in politics",
+          "I don't feel my vote will make a difference",
+          "I am unable to vote due to personal circumstances",
+        ].includes(m)
+  );
+
   return {
     issue: getRandomChoice(CHOICES.issue),
-    intention: getRandomChoice(CHOICES.intention),
+    intention: intention,
+    motivation: getRandomChoice(relevantMotivations),
     feeling: getRandomChoice(CHOICES.feeling),
   };
 }
@@ -217,111 +262,117 @@ function createTooltip() {
   return d3.select("body").append("div").attr("class", "tooltip");
 }
 
-// ... (keep all the constants and patterns as they are) ...
-
 function getTooltipPosition(event, tooltip) {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  // Get container boundaries
+  const container = document.querySelector(".visualization-container");
+  const containerRect = container.getBoundingClientRect();
+
+  // Get tooltip dimensions
   const tooltipNode = tooltip.node();
   const tooltipRect = tooltipNode.getBoundingClientRect();
 
+  // Calculate initial position
   let left = event.pageX + 10;
   let top = event.pageY - 10;
 
-  // Check if tooltip would overflow right edge
-  if (left + tooltipRect.width > viewportWidth) {
+  // Adjust for right edge
+  if (left + tooltipRect.width > containerRect.right) {
     left = event.pageX - tooltipRect.width - 10;
   }
 
-  // Check if tooltip would overflow bottom edge
-  if (top + tooltipRect.height > viewportHeight) {
+  // Adjust for left edge
+  if (left < containerRect.left) {
+    left = containerRect.left + 10;
+  }
+
+  // Adjust for bottom edge
+  if (top + tooltipRect.height > containerRect.bottom) {
     top = event.pageY - tooltipRect.height - 10;
   }
+
+  // Adjust for top edge
+  if (top < containerRect.top) {
+    top = containerRect.top + 10;
+  }
+
+  // Convert to relative position if needed
+  left = Math.max(0, Math.min(left, containerRect.width - tooltipRect.width));
+  top = Math.max(0, Math.min(top, containerRect.height - tooltipRect.height));
 
   return { left, top };
 }
 
-function generateEmblems() {
-  const container = d3.select("#emblem-container");
-  container.html("");
-  const tooltip = createTooltip();
-
-  for (let i = 0; i < 3; i++) {
-    const emblemData = generateEmblemData();
-    const emblemDiv = container.append("div").attr("class", "emblem");
-
-    const svg = emblemDiv
-      .append("svg")
-      .attr("viewBox", "0 0 100 100")
-      .attr("width", "100%")
-      .attr("height", "100%");
-
-    const g = svg.append("g").attr("transform", "translate(50,50)");
-
-    const colorScheme = FEELING_SCHEMES[emblemData.feeling];
-    const layers = [
-      { type: "issue", scale: 1, colors: colorScheme.keyIssue },
-      { type: "intention", scale: 0.7, colors: colorScheme.votingIntention },
-    ];
-
-    layers.forEach(({ type, scale, colors }) => {
-      const pattern = PATTERNS_MAP[type][emblemData[type]];
-      if (!pattern) return;
-
-      const group = g
-        .append("g")
-        .attr("transform", `scale(${scale})`)
-        .on("mouseover touchstart", (event) => {
-          event.preventDefault();
-          const { left, top } = getTooltipPosition(event, tooltip);
-          tooltip
-            .style("opacity", 1)
-            .style("transform", "translateY(0)")
-            .html(
-              `
-                            <span class="tooltip-label">${
-                              type.charAt(0).toUpperCase() + type.slice(1)
-                            }</span>
-                            <span class="tooltip-value">${
-                              emblemData[type]
-                            }</span>
-                            <span class="tooltip-feeling">Feeling: ${
-                              emblemData.feeling
-                            }</span>
-                        `
-            )
-            .style("left", `${left}px`)
-            .style("top", `${top}px`);
-        })
-        .on("mouseout touchend", () => {
-          tooltip.style("opacity", 0).style("transform", "translateY(4px)");
-        });
-
-      group
-        .append("path")
-        .attr("d", pattern.bd)
-        .attr("fill", colors[0])
-        .attr("transform", "translate(-50,-50)");
-
-      group
-        .append("path")
-        .attr("d", pattern.be)
-        .attr("fill", colors[1])
-        .attr("transform", "translate(-50,-50)");
-    });
-  }
+// Helper function to remove an item from an array without modifying original
+function removeItem(array, item) {
+  return array.filter((i) => i !== item);
 }
 
-// Generate initial emblems when the page loads
-document.addEventListener("DOMContentLoaded", generateEmblems);
+// Helper function to get random item and remove it from array
+function getRandomAndRemove(array) {
+  const index = Math.floor(Math.random() * array.length);
+  const item = array[index];
+  array.splice(index, 1);
+  return item;
+}
+
+function generateUniqueEmblems(count = 3) {
+  // Create copies of choices arrays so we can modify them
+  let availableIssues = [...CHOICES.issue];
+  let availableIntentions = [...CHOICES.intention];
+  let availableFeelings = [...CHOICES.feeling];
+
+  // Define voting and non-voting motivations
+  const votingMotivations = [
+    "To express my opinion on important issues",
+    "To support a specific candidate or party",
+    "To fulfill my civic duty",
+    "To influence change in my community",
+  ];
+
+  const nonVotingMotivations = [
+    "I don't think any of the candidates will make a good president",
+    "I'm just not interested in politics",
+    "I don't feel my vote will make a difference",
+    "I am unable to vote due to personal circumstances",
+  ];
+
+  // Keep track of used motivations
+  let availableVotingMotivations = [...votingMotivations];
+  let availableNonVotingMotivations = [...nonVotingMotivations];
+
+  const emblems = [];
+
+  for (let i = 0; i < count; i++) {
+    // Get random intention from remaining choices
+    const intention = getRandomAndRemove(availableIntentions);
+    const isVoting = intention === "Yes, I plan on voting";
+
+    // Get motivation based on voting intention
+    const motivation = getRandomAndRemove(
+      isVoting ? availableVotingMotivations : availableNonVotingMotivations
+    );
+
+    // Generate emblem data with unique choices
+    emblems.push({
+      issue: getRandomAndRemove(availableIssues),
+      intention: intention,
+      motivation: motivation,
+      feeling: getRandomAndRemove(availableFeelings),
+    });
+  }
+
+  return emblems;
+}
 
 function generateEmblems() {
   const container = d3.select("#emblem-container");
   container.html("");
   const tooltip = createTooltip();
 
-  for (let i = 0; i < 3; i++) {
-    const emblemData = generateEmblemData();
+  // Generate unique emblems
+  const emblems = generateUniqueEmblems(3);
+
+  emblems.forEach((emblemData) => {
     const emblemDiv = container.append("div").attr("class", "emblem");
 
     const svg = emblemDiv
@@ -336,14 +387,18 @@ function generateEmblems() {
     const layers = [
       { type: "issue", scale: 1, colors: colorScheme.keyIssue },
       { type: "intention", scale: 0.7, colors: colorScheme.votingIntention },
+      { type: "motivation", scale: 0.6, colors: colorScheme.votingMotivation },
     ];
 
-    // Create tooltip content for the entire emblem
     const tooltipContent = `
             <div class="tooltip-content">
                 <div class="tooltip-item">
                     <span class="tooltip-label">voting plan:</span>
                     <span class="tooltip-value">${emblemData.intention}</span>
+                </div>
+                <div class="tooltip-item">
+                    <span class="tooltip-label">motivation:</span>
+                    <span class="tooltip-value">${emblemData.motivation}</span>
                 </div>
                 <div class="tooltip-item">
                     <span class="tooltip-label">key issue:</span>
@@ -357,7 +412,16 @@ function generateEmblems() {
         `;
 
     layers.forEach(({ type, scale, colors }) => {
-      const pattern = PATTERNS_MAP[type][emblemData[type]];
+      let pattern;
+      if (type === "motivation") {
+        const isVoting = emblemData.intention === "Yes, I plan on voting";
+        pattern = isVoting
+          ? PATTERNS_MAP.motivation.voting[emblemData.motivation]
+          : PATTERNS_MAP.motivation.nonVoting[emblemData.motivation];
+      } else {
+        pattern = PATTERNS_MAP[type][emblemData[type]];
+      }
+
       if (!pattern) return;
 
       const group = g
@@ -389,7 +453,22 @@ function generateEmblems() {
         .attr("fill", colors[1])
         .attr("transform", "translate(-50,-50)");
     });
-  }
+  });
+  // After all emblems are rendered
+  setTimeout(() => {
+    pymChild.sendHeight();
+  }, 100); // Small delay to ensure rendering is complete
 }
+
+// Add window resize handler
+window.addEventListener("resize", () => {
+  // Debounce resize events
+  if (window.resizeTimeout) {
+    clearTimeout(window.resizeTimeout);
+  }
+  window.resizeTimeout = setTimeout(() => {
+    pymChild.sendHeight();
+  }, 250);
+});
 
 document.addEventListener("DOMContentLoaded", generateEmblems);

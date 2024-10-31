@@ -46,59 +46,55 @@
   padding: var(--spacing-xl);
   margin: 0 auto;
   max-width: 1200px;
-  width: 100%;
+  /* width: 100%; */
+  /* position: relative; */
+  overflow: hidden; /* Ensure tooltip doesn't create scrollbars */
 }
 
 /* Emblem container with improved spacing */
 .emblem-container {
   display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: var(--spacing-xl);
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
   justify-content: center;
   align-items: center;
-  width: 100%;
+  /* width: 100%; */
+  max-width: 800px; /* Constrain maximum width */
+  padding: 0 var(--spacing-md);
 }
 
 .emblem {
   position: relative;
-  width: clamp(120px, 20vw, 150px);
-  height: clamp(120px, 20vw, 150px);
+  aspect-ratio: 1;
+  width: min(25vw, 180px); /* More fluid width calculation */
+  min-width: 100px; /* Minimum size */
+  height: auto; /* Height determined by aspect ratio */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.tooltip {
-  position: absolute;
-  background: var(--color-white);
-  border: 1px solid var(--color-light);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-  max-width: min(300px, 80vw);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  font-size: var(--fs-sm);
-  line-height: 1.5;
-  z-index: 1000;
+/* Constrain SVG size */
+.emblem svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* Button styles */
 button {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background-color: var(--color-white);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: 0;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
+  background-color: #fafafa;
+  min-height: 44px;
   border: 1px solid var(--color-light);
   border-radius: var(--radius-pill);
-  font-size: var(--fs-base);
-  color: var(--color-secondary);
+  font-size: var(--fs-sm);
+  color: var(--color-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* margin-top: var(--spacing-xl); */
-  min-width: 160px;
 }
 
 button:hover {
@@ -116,7 +112,11 @@ button:hover {
   pointer-events: none;
   opacity: 0;
   transition: all var(--transition-fast, 0.15s ease);
-  max-width: min(300px, 80vw);
+  max-width: min(
+    250px,
+    calc(100% - 40px)
+  ); /* Ensure tooltip isn't wider than container */
+  z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
   font-size: var(--fs-xs, 12px);
@@ -149,38 +149,39 @@ button:hover {
 }
 
 /* Media queries */
-@media (max-width: 768px) {
+/* Media queries with more fluid breakpoints */
+@media (max-width: 900px) {
   .emblem-container {
-    gap: var(--spacing-lg);
+    max-width: 600px;
   }
 
   .emblem {
-    width: clamp(100px, 25vw, 120px);
-    height: clamp(100px, 25vw, 120px);
+    width: min(30vw, 150px);
   }
 }
 
-@media (max-width: 480px) {
-  .visualization-container {
-    padding: var(--spacing-md);
-  }
-
+@media (max-width: 600px) {
   .emblem-container {
     gap: var(--spacing-md);
+    max-width: 400px;
   }
 
   .emblem {
-    width: clamp(80px, 30vw, 100px);
-    height: clamp(80px, 30vw, 100px);
+    width: min(28vw, 120px);
+    min-width: 80px;
   }
+}
 
-  .tooltip {
+@media (max-width: 400px) {
+  .visualization-container {
     padding: var(--spacing-sm);
-    font-size: var(--fs-xs);
   }
 
-  button {
-    padding: var(--spacing-xs) var(--spacing-md);
-    min-width: 140px;
+  .emblem-container {
+    gap: var(--spacing-sm);
+  }
+
+  .emblem {
+    width: min(30vw, 100px);
   }
 }
