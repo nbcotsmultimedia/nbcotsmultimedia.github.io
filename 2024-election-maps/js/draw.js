@@ -813,6 +813,7 @@ function aFunction() {
                                 d.candidates = JSON.parse(d.candidates)
                             }
                             catch (e) {
+                                console.log(d)
                                 console.log(e)
                             }
 
@@ -886,6 +887,8 @@ function aFunction() {
 
                                 }
                             })
+
+                            //console.log(district)
 
                         })
 
