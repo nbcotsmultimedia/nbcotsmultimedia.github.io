@@ -952,7 +952,7 @@ function aFunction() {
 
 
                                 d3.select('#house-county-cands').append('div').html(
-                                    "<div class=" + r.party + "><span id='candTitle'>" + r.first + " " + r.last + "</span></div>" +
+                                    "<div class=" + r.party + "><span id='candTitle'>" + r.first.replace('Jesús Chuy', 'Jesús "Chuy"') + " " + r.last.replace('DEsposito', "D'Esposito") + "</span></div>" +
                                     "<div class='cand-info'><div class='prog-wrapper'><span id='candTitle'>" + (votePercent) + "% " + "</span>"
                                     + "<div class='progress " + r.party + "Party'><div class='progress-bar' role='progressbar' style='width:" + (votePercent) + "%' aria-valuemin='0' aria-valuemax='100'></div></div></div>" +
                                     "<span id='voteCount'>" + r.voteCount.toLocaleString() + "</span></div>"
