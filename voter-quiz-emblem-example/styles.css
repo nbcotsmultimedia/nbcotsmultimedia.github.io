@@ -1,0 +1,187 @@
+/* #region - Root */
+:root {
+  /* Colors */
+  --color-primary: #000;
+  --color-secondary: #666;
+  --color-light: #e5e5e5;
+  --color-white: #fff;
+  --color-hover: #f5f5f5;
+
+  /* Fluid Typography */
+  --fs-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --fs-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --fs-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --fs-lg: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --fs-xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+
+  /* Spacing */
+  --spacing-xs: 0.45rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1.25rem;
+  --spacing-lg: 1.75rem;
+  --spacing-xl: 2.25rem;
+
+  /* Border Radius */
+  --radius-pill: 100px;
+  --radius-md: 12px;
+  --radius-sm: 4px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+
+  /* Tooltip */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --tooltip-bg: rgba(255, 255, 255, 0.98);
+  --tooltip-border: rgba(0, 0, 0, 0.1);
+  --tooltip-shadow: 0px 0px 0px 1px var(--tooltip-border),
+    0px 4px 6px -1px rgba(0, 0, 0, 0.1), 0px 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Main container for the entire component */
+.visualization-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  margin: 0 auto;
+  max-width: 1200px;
+  /* width: 100%; */
+  /* position: relative; */
+  overflow: hidden; /* Ensure tooltip doesn't create scrollbars */
+}
+
+/* Emblem container with improved spacing */
+.emblem-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
+  justify-content: center;
+  align-items: center;
+  /* width: 100%; */
+  max-width: 800px; /* Constrain maximum width */
+  padding: 0 var(--spacing-md);
+}
+
+.emblem {
+  position: relative;
+  aspect-ratio: 1;
+  width: min(25vw, 180px); /* More fluid width calculation */
+  min-width: 100px; /* Minimum size */
+  height: auto; /* Height determined by aspect ratio */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Constrain SVG size */
+.emblem svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin: 0;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
+  background-color: #fafafa;
+  min-height: 44px;
+  border: 1px solid var(--color-light);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+button:hover {
+  border-color: var(--color-secondary);
+  background-color: var(--color-hover);
+  transform: translateY(-1px);
+}
+
+.tooltip {
+  position: absolute;
+  background: var(--tooltip-bg, rgba(255, 255, 255, 0.98));
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-sm, 4px);
+  padding: var(--spacing-md, 12px);
+  pointer-events: none;
+  opacity: 0;
+  transition: all var(--transition-fast, 0.15s ease);
+  max-width: min(
+    250px,
+    calc(100% - 40px)
+  ); /* Ensure tooltip isn't wider than container */
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: var(--fs-xs, 12px);
+  line-height: 1.6;
+  z-index: 1000;
+  transform: translateY(4px);
+}
+
+.tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 8px);
+}
+
+.tooltip-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tooltip-label {
+  color: var(--color-secondary, #666);
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+.tooltip-value {
+  color: var(--color-primary, #000);
+  font-weight: 500;
+}
+
+/* Media queries */
+/* Media queries with more fluid breakpoints */
+@media (max-width: 900px) {
+  .emblem-container {
+    max-width: 600px;
+  }
+
+  .emblem {
+    width: min(30vw, 150px);
+  }
+}
+
+@media (max-width: 600px) {
+  .emblem-container {
+    gap: var(--spacing-md);
+    max-width: 400px;
+  }
+
+  .emblem {
+    width: min(28vw, 120px);
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 400px) {
+  .visualization-container {
+    padding: var(--spacing-sm);
+  }
+
+  .emblem-container {
+    gap: var(--spacing-sm);
+  }
+
+  .emblem {
+    width: min(30vw, 100px);
+  }
+}
