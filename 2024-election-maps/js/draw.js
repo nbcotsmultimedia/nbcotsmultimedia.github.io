@@ -49,7 +49,7 @@ function aFunction() {
             $('#president').html('Presidente');
             $('#senate').html('Senado');
             $('#house').html('Cámara de Representantes');
-            $('.statewide').html('A nivel estatal (<span id="state-letters"></span>)')
+            $('.statewide').html('A nivel estatal (<span class="state-letters"></span>)')
             $('.lead').html('AVENTAJA')
             $('.win').html('GANADOR')
             $('.resetPres').html('REINICIAR')
