@@ -2,24 +2,10 @@ function aFunction() {
 
     function delay() {
 
-        var DOMAINS = {
-            "www.nbcbayarea.com": { market: 'CA' },
-            "www.nbcboston.com": { market: 'MA' },
-            "www.nbcchicago.com": { market: 'IL' },
-            "www.nbcconnecticut.com": { market: 'CT' },
-            "www.nbcdfw.com": { market: 'TX' },
-            "www.nbclosangeles.com": { market: 'CA' },
-            "www.nbcmiami.com": { market: 'FL' },
-            "www.nbcnewyork.com": { market: 'NY' },
-            "www.nbcphiladelphia.com": { market: 'PA' },
-            "www.nbcsandiego.com": { market: 'CA' },
-            "www.nbcwashington.com": { market: 'DC' },
-            "www.necn.com": { market: 'NECN' }
-            // "data.nbcstations.com": { market: 'NY'}
-        }
-
         var stateCodes = {
             'NY': ['09', '34', '36'],
+            'NY2': ['36'],
+            'NJ': ['34'],
             'CT': ['09'],
             'CA': ['06'],
             'MA': ['25', '33'],
@@ -60,6 +46,8 @@ function aFunction() {
 
         var stateTitles = esp ? {
             'NY': 'Nueva York, Nueva Jersey, Connecticut',
+            'NY2': 'Nueva York',
+            'NJ': 'Nueva Jersey',
             'CT': 'Connecticut',
             'CA': 'California',
             'MA': 'Massachusetts y Nuevo Hampshire',
@@ -77,6 +65,8 @@ function aFunction() {
         }
             : {
                 'NY': 'New York, New Jersey, Connecticut',
+                'NY2': 'New York',
+                'NJ': 'New Jersey',
                 'CT': 'Connecticut',
                 'CA': 'California',
                 'MA': 'Massachusetts and New Hampshire',
