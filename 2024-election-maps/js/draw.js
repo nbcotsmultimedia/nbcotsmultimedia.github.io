@@ -424,8 +424,6 @@ function aFunction() {
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
 
-                                        d3.select(".state-letters").html(stateAbbr)
-
                                         // d3.select("#state-precinct-percent-president").html(d.percentIn + "% of precincts reporting")
 
                                         /*if (d.eevp !== "Unavailable") {
@@ -667,8 +665,6 @@ function aFunction() {
 
                         function senateClick(d) {
 
-                            d3.select(".state-letters").html(d.properties.stateAbbr)
-
                             d3.select('#county-cands-senate').selectAll("div").remove()
 
                             d3.selectAll(".county-placeholder").style('display', 'none')
@@ -714,8 +710,6 @@ function aFunction() {
 
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
-
-                                        d3.select(".state-letters").html(stateAbbr)
                                         // d3.select("#state-precinct-percent-senate").html(d.percentIn + "% of precincts reporting")
                                         /*if (d.eevp !== "Unavailable") {
                                             d3.select("#state-precinct-percent-president").html(d.percentIn + "% of expected votes")
