@@ -49,14 +49,13 @@ function aFunction() {
             $('#president').html('Presidente');
             $('#senate').html('Senado');
             $('#house').html('Cámara de Representantes');
-            $('#statewide').html('A nivel estatal (<span id="state-letters"></span>)')
+            $('.statewide').html('A nivel estatal (<span id="state-letters"></span>)')
             $('.lead').html('AVENTAJA')
             $('.win').html('GANADOR')
             $('.resetPres').html('REINICIAR')
             $('.reset').html('REINICIAR')
             $('.resetText').html('Desplace para ampliar imagen')
             $('.county-placeholder-title').html('Selecciona condado o distrito en el mapa')
-            console.log($('#statewide').html())
         }
 
         var stateTitles = esp ? {
@@ -372,7 +371,7 @@ function aFunction() {
 
                         d3.select("#state-title").html(stateTitles[market])
 
-                        d3.select("#state-letters").html(market)
+                        d3.select(".state-letters").html(market)
 
                         function onMapClick(d) {
 
@@ -425,7 +424,7 @@ function aFunction() {
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
 
-                                        d3.select("#state-letters").html(stateAbbr)
+                                        d3.select(".state-letters").html(stateAbbr)
 
                                         // d3.select("#state-precinct-percent-president").html(d.percentIn + "% of precincts reporting")
 
@@ -668,7 +667,7 @@ function aFunction() {
 
                         function senateClick(d) {
 
-                            d3.select("#state-letters-senate").html(d.properties.stateAbbr)
+                            d3.select(".state-letters").html(d.properties.stateAbbr)
 
                             d3.select('#county-cands-senate').selectAll("div").remove()
 
@@ -716,7 +715,7 @@ function aFunction() {
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
 
-                                        d3.select("#state-letters-senate").html(stateAbbr)
+                                        d3.select(".state-letters").html(stateAbbr)
                                         // d3.select("#state-precinct-percent-senate").html(d.percentIn + "% of precincts reporting")
                                         /*if (d.eevp !== "Unavailable") {
                                             d3.select("#state-precinct-percent-president").html(d.percentIn + "% of expected votes")
