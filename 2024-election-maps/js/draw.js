@@ -36,25 +36,6 @@ function aFunction() {
             'UT': ['49']
         }
 
-        var stateTitles = {
-            'NY': 'New York, New Jersey, Connecticut',
-            'CT': 'Connecticut',
-            'CA': 'California',
-            'MA': 'Massachusetts and New Hampshire',
-            'FL': 'Florida',
-            'DC': 'DC, Maryland, Virginia',
-            'IL': 'Illinois',
-            'TX': 'Texas',
-            'PA': 'Pennsylvania, New Jersey, Delaware',
-            'NECN': 'Connecticut, Massachusetts, Maine, New Hampshire, Rhode Island, Vermont',
-            'NM': 'New Mexico',
-            'AZ': 'Arizona',
-            'NV': 'Nevada',
-            'CO': 'Colorado',
-            'UT': 'Utah'
-        }
-
-
         // get market from url 
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -75,7 +56,43 @@ function aFunction() {
             $('.reset').html('REINICIAR')
             $('.resetText').html('Desplace para ampliar imagen')
             $('.county-placeholder-title').html('Selecciona condado o distrito en el mapa')
+            console.log($('#statewide').html())
         }
+
+        var stateTitles = esp ? {
+            'NY': 'Nueva York, Nueva Jersey, Connecticut',
+            'CT': 'Connecticut',
+            'CA': 'California',
+            'MA': 'Massachusetts y Nuevo Hampshire',
+            'FL': 'Florida',
+            'DC': 'Distrito de Columbia, Maryland, Virginia',
+            'IL': 'Illinois',
+            'TX': 'Texas',
+            'PA': 'Pensilvania, Nueva Jersey, Delaware',
+            'NECN': 'Connecticut, Massachusetts, Maine, Nuevo Hampshire, Rhode Island, Vermont',
+            'NM': 'Nuevo México',
+            'AZ': 'Arizona',
+            'NV': 'Nevada',
+            'CO': 'Colorado',
+            'UT': 'Utah'
+        }
+            : {
+                'NY': 'New York, New Jersey, Connecticut',
+                'CT': 'Connecticut',
+                'CA': 'California',
+                'MA': 'Massachusetts and New Hampshire',
+                'FL': 'Florida',
+                'DC': 'DC, Maryland, Virginia',
+                'IL': 'Illinois',
+                'TX': 'Texas',
+                'PA': 'Pennsylvania, New Jersey, Delaware',
+                'NECN': 'Connecticut, Massachusetts, Maine, New Hampshire, Rhode Island, Vermont',
+                'NM': 'New Mexico',
+                'AZ': 'Arizona',
+                'NV': 'Nevada',
+                'CO': 'Colorado',
+                'UT': 'Utah'
+            };
 
         console.log('market:', market)
 
@@ -352,7 +369,6 @@ function aFunction() {
                             .on("mouseover", mouseover)
                             .on("mouseout", mouseout)
                             .on('click', d => onMapClick(d))
-
 
                         d3.select("#state-title").html(stateTitles[market])
 
