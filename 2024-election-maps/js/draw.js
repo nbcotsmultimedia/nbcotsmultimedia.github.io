@@ -298,8 +298,10 @@ function aFunction() {
                             // raceGroup = raceGroup.slice(0,4)
 
                             county.forEach(function (e, j) {
-                                //const fips = e.properties["GEOID"][0] == "0" ? "0" + d.fipsCode.toString() : d.fipsCode.toString();
-                                const fips = d.fipsCode.toString();
+                                let fips = d.fipsCode.toString();
+                                if (e.properties["GEOID"][0] == "0" && fips[0] != "0") {
+                                    fips = "0" + fips
+                                }
 
                                 if (fips == e.properties['GEOID']) {
 
@@ -578,7 +580,11 @@ function aFunction() {
 
                             senateCounty.forEach(function (e, j) {
                                 if (d.level !== 'state') {
-                                    if (d.fipsCode == e.properties['GEOID']) {
+                                    let fips = d.fipsCode.toString();
+                                    if (e.properties["GEOID"][0] == "0" && fips[0] != "0") {
+                                        fips = "0" + fips
+                                    }
+                                    if (fips == e.properties['GEOID']) {
 
                                         e.properties['candidates'] = raceGroup
                                         e.properties['percentIn'] = d.percentIn
