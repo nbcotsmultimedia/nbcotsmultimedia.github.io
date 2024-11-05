@@ -787,10 +787,13 @@ function aFunction() {
                     .then(function (data) {
 
                         const changeRaceName = district => {
-                            const districtCopy = { ...district };
-                            districtCopy["raceName"] = district["raceName"].replace(district["stateAbbr"], esp ? "Distrito" : "District");
-
-                            return districtCopy;
+                            if (esp) {
+                                const districtCopy = { ...district };
+                                districtCopy["raceName"] = district["raceName"].replace("District", "Distrito");
+                                return districtCopy;
+                            } else {
+                                return district;
+                            }
                         };
 
                         data = data.map(d => changeRaceName(d));
