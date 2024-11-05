@@ -412,7 +412,7 @@ function aFunction() {
                             d3.select('#geo' + id).classed("hover", true).on("mouseout", null).raise()
 
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
                         }
 
@@ -701,7 +701,7 @@ function aFunction() {
                             d3.selectAll('.senateRace').classed("hover", false).on("mouseout", mouseout)
                             d3.select('#sen' + id).classed("hover", true).on("mouseout", null).raise()
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
 
                         }
@@ -987,7 +987,7 @@ function aFunction() {
                             d3.selectAll('.district').classed("hover", false).on("mouseout", mouseout)
                             d3.select('#hs' + id).classed("hover", true).on("mouseout", null).raise()
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
                         }
 
@@ -1005,10 +1005,13 @@ function aFunction() {
             .catch(function (error) {
                 // handle error   
             })
-        xtalk.signalIframe()
+        //xtalk.signalIframe()
 
     }
-    setTimeout(delay, 2000)
+    setTimeout(() => {
+        delay();
+        var pymChild = new pym.Child({ polling: 500 });
+    }, 2000)
 }
 
 setInterval(function () {
