@@ -1,6 +1,21 @@
 /* Import Inter font */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap");
 
+.step--minimal {
+  min-height: 40px;
+  background: transparent !important;
+  pointer-events: none;
+  opacity: 0 !important;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.step--minimal.is-active {
+  background: transparent !important;
+  opacity: 0 !important;
+  transform: none;
+}
+
 /* Base styles remain the same */
 #scroll {
   position: relative;

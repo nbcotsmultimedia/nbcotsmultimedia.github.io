@@ -30,10 +30,18 @@ class ScrollamaStory {
     CONFIG.sections.forEach((section, index) => {
       const step = document.createElement("div");
       step.className = "step";
-      step.innerHTML = `
-        <h3>${section.title}</h3>
-        <p>${section.content}</p>
-      `;
+
+      // Only show text if there's content
+      if (section.content) {
+        step.innerHTML = `
+          <p>${section.content}</p>
+        `;
+      } else {
+        // For image-only sections, create a minimal step marker
+        step.classList.add("step--minimal");
+        step.setAttribute("aria-label", section.title);
+      }
+
       this.scrollText.appendChild(step);
     });
   }
@@ -49,7 +57,6 @@ class ScrollamaStory {
         this.updateActiveStep(response);
         this.updateImage(response);
 
-        // Hide scroll indicator after first scroll
         if (this.scrollIndicator && response.index > 0) {
           this.scrollIndicator.style.opacity = "0";
           setTimeout(() => {
@@ -66,15 +73,16 @@ class ScrollamaStory {
     response.element.classList.add("is-active");
   }
 
-  updateImage(response) {
-    this.graphicImg.src = CONFIG.illustrations[response.index];
-  }
-
   preloadImages() {
     CONFIG.illustrations.forEach((src) => {
       const img = new Image();
       img.src = src;
+      img.onerror = () => console.warn(`Failed to load image: ${src}`);
     });
+  }
+
+  updateImage(response) {
+    this.graphicImg.src = CONFIG.illustrations[response.index];
   }
 
   setupEventListeners() {
@@ -87,7 +95,6 @@ class ScrollamaStory {
       }
     });
 
-    // Hide scroll indicator when user starts scrolling
     window.addEventListener(
       "scroll",
       () => {
