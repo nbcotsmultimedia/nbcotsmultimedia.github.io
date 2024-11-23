@@ -1,19 +1,18 @@
 const CONFIG = {
   illustrations: [
-    "images/screen01.jpg",
-    "images/screen02.jpg",
-    "images/screen03.jpg",
-    "images/screen04.jpg",
-    "images/screen05.jpg",
-    "images/screen06.jpg",
-    "images/screen07.jpg",
-    "images/screen08.jpg",
-    "images/screen09.jpg",
-    "images/screen10.jpg",
-    "images/screen11.jpg",
-    "images/screen12.jpg",
-    "images/screen13.jpg",
-    "images/screen14.jpg",
+    "images/screen01.png",
+    "images/screen02.png",
+    "images/screen03.png",
+    "images/screen04.png",
+    "images/screen05.png",
+    "images/screen06.png",
+    "images/screen07.png",
+    "images/screen08.png",
+    "images/screen09.png",
+    "images/screen10.png",
+    "images/screen11.png",
+    "images/screen12.png",
+    "images/screen13.png",
   ],
 
   sections: [
@@ -63,14 +62,9 @@ const CONFIG = {
         "Marine microplastics can travel through the food chain, from fishing vessels to restaurant kitchens.",
     },
     {
-      title: "Water Systems",
-      content:
-        "Even advanced water filtration systems cannot remove all microscopic plastic particles, particularly those smaller than 1 micron, allowing some to persist in drinking water.",
-    },
-    {
       title: "Human Impact",
       content:
-        "Recent scientific studies have detected plastic particles in human blood samples, digestive organs, and other body systems.",
+        "Microplastics have been detected throughout the human body, including in the lungs, blood, digestive tract, brain, and reproductive organs, potentially affecting multiple systems and raising concerns about long-term health impacts.",
     },
     {
       title: "Research",
