@@ -17,24 +17,13 @@
 
     <!-- Responsive iFrame stuff -->
     
-    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
-    <script type="text/javascript">
-         document.addEventListener("DOMContentLoaded", function() {
-            xtalk.responsive = false;
-
-            var timer = setTimeout(resizeme, 2500)
-            function resizeme() {
-              xtalk.signalIframe()
-              xtalk.init()
-            }
-         });
-    </script>
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/pym.v1.min.js"></script>
     </style>
 
   </head>
 
   <body onload="aFunction()">
-    <div id="elex-maps" class="parent" style="width:100%; padding-bottom:30px;">
+    <div id="elex-maps">
       <div class="all-wrapper">
         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
           <li class="nav-item">
@@ -93,7 +82,7 @@
               <div class="geo-wrapper">
                 <div class="state-wrapper">
                   <div class="graphics-title">
-                    <h4 id="statewide">Statewide (<span id="state-letters"></span>)</h4>
+                    <h4 class="statewide">Statewide (<span class="state-letters"></span>)</h4>
                     <div id="state-precinct-percent-president" class="subhead"></div>
                     <hr>
                     <div id="state-cands"></div>
@@ -167,7 +156,7 @@
               <div class="geo-wrapper">
                 <div class="state-wrapper">
                   <div class="graphics-title">
-                    <h4>Statewide (<span id="state-letters-senate"></span>)</h4>
+                    <h4 class="statewide">Statewide (<span class="state-letters"></span>)</h4>
                     <div id="state-precinct-percent-senate" class="subhead"></div>
                     <hr>
                     <div id="state-cands-senate"></div>

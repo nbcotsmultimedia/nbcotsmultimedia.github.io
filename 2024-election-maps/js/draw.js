@@ -2,24 +2,10 @@ function aFunction() {
 
     function delay() {
 
-        var DOMAINS = {
-            "www.nbcbayarea.com": { market: 'CA' },
-            "www.nbcboston.com": { market: 'MA' },
-            "www.nbcchicago.com": { market: 'IL' },
-            "www.nbcconnecticut.com": { market: 'CT' },
-            "www.nbcdfw.com": { market: 'TX' },
-            "www.nbclosangeles.com": { market: 'CA' },
-            "www.nbcmiami.com": { market: 'FL' },
-            "www.nbcnewyork.com": { market: 'NY' },
-            "www.nbcphiladelphia.com": { market: 'PA' },
-            "www.nbcsandiego.com": { market: 'CA' },
-            "www.nbcwashington.com": { market: 'DC' },
-            "www.necn.com": { market: 'NECN' }
-            // "data.nbcstations.com": { market: 'NY'}
-        }
-
         var stateCodes = {
             'NY': ['09', '34', '36'],
+            'NY2': ['36'],
+            'NJ': ['34'],
             'CT': ['09'],
             'CA': ['06'],
             'MA': ['25', '33'],
@@ -36,25 +22,6 @@ function aFunction() {
             'UT': ['49']
         }
 
-        var stateTitles = {
-            'NY': 'New York, New Jersey, Connecticut',
-            'CT': 'Connecticut',
-            'CA': 'California',
-            'MA': 'Massachusetts and New Hampshire',
-            'FL': 'Florida',
-            'DC': 'DC, Maryland, Virginia',
-            'IL': 'Illinois',
-            'TX': 'Texas',
-            'PA': 'Pennsylvania, New Jersey, Delaware',
-            'NECN': 'Connecticut, Massachusetts, Maine, New Hampshire, Rhode Island, Vermont',
-            'NM': 'New Mexico',
-            'AZ': 'Arizona',
-            'NV': 'Nevada',
-            'CO': 'Colorado',
-            'UT': 'Utah'
-        }
-
-
         // get market from url 
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -68,7 +35,7 @@ function aFunction() {
             $('#president').html('Presidente');
             $('#senate').html('Senado');
             $('#house').html('Cámara de Representantes');
-            $('#statewide').html('A nivel estatal (<span id="state-letters"></span>)')
+            $('.statewide').html('A nivel estatal (<span class="state-letters"></span>)')
             $('.lead').html('AVENTAJA')
             $('.win').html('GANADOR')
             $('.resetPres').html('REINICIAR')
@@ -76,6 +43,45 @@ function aFunction() {
             $('.resetText').html('Desplace para ampliar imagen')
             $('.county-placeholder-title').html('Selecciona condado o distrito en el mapa')
         }
+
+        var stateTitles = esp ? {
+            'NY': 'Nueva York, Nueva Jersey, Connecticut',
+            'NY2': 'Nueva York',
+            'NJ': 'Nueva Jersey',
+            'CT': 'Connecticut',
+            'CA': 'California',
+            'MA': 'Massachusetts y Nuevo Hampshire',
+            'FL': 'Florida',
+            'DC': 'Distrito de Columbia, Maryland, Virginia',
+            'IL': 'Illinois',
+            'TX': 'Texas',
+            'PA': 'Pensilvania, Nueva Jersey, Delaware',
+            'NECN': 'Connecticut, Massachusetts, Maine, Nuevo Hampshire, Rhode Island, Vermont',
+            'NM': 'Nuevo México',
+            'AZ': 'Arizona',
+            'NV': 'Nevada',
+            'CO': 'Colorado',
+            'UT': 'Utah'
+        }
+            : {
+                'NY': 'New York, New Jersey, Connecticut',
+                'NY2': 'New York',
+                'NJ': 'New Jersey',
+                'CT': 'Connecticut',
+                'CA': 'California',
+                'MA': 'Massachusetts and New Hampshire',
+                'FL': 'Florida',
+                'DC': 'DC, Maryland, Virginia',
+                'IL': 'Illinois',
+                'TX': 'Texas',
+                'PA': 'Pennsylvania, New Jersey, Delaware',
+                'NECN': 'Connecticut, Massachusetts, Maine, New Hampshire, Rhode Island, Vermont',
+                'NM': 'New Mexico',
+                'AZ': 'Arizona',
+                'NV': 'Nevada',
+                'CO': 'Colorado',
+                'UT': 'Utah'
+            };
 
         console.log('market:', market)
 
@@ -298,8 +304,10 @@ function aFunction() {
                             // raceGroup = raceGroup.slice(0,4)
 
                             county.forEach(function (e, j) {
-                                //const fips = e.properties["GEOID"][0] == "0" ? "0" + d.fipsCode.toString() : d.fipsCode.toString();
-                                const fips = d.fipsCode.toString();
+                                let fips = d.fipsCode.toString();
+                                if (e.properties["GEOID"][0] == "0" && fips[0] != "0") {
+                                    fips = "0" + fips
+                                }
 
                                 if (fips == e.properties['GEOID']) {
 
@@ -351,10 +359,9 @@ function aFunction() {
                             .on("mouseout", mouseout)
                             .on('click', d => onMapClick(d))
 
-
                         d3.select("#state-title").html(stateTitles[market])
 
-                        d3.select("#state-letters").html(market)
+                        d3.selectAll(".state-letters").html(market)
 
                         function onMapClick(d) {
 
@@ -395,7 +402,7 @@ function aFunction() {
                             d3.select('#geo' + id).classed("hover", true).on("mouseout", null).raise()
 
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
                         }
 
@@ -407,7 +414,7 @@ function aFunction() {
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
 
-                                        d3.select("#state-letters").html(stateAbbr)
+                                        d3.selectAll(".state-letters").html(stateAbbr)
 
                                         // d3.select("#state-precinct-percent-president").html(d.percentIn + "% of precincts reporting")
 
@@ -578,7 +585,11 @@ function aFunction() {
 
                             senateCounty.forEach(function (e, j) {
                                 if (d.level !== 'state') {
-                                    if (d.fipsCode == e.properties['GEOID']) {
+                                    let fips = d.fipsCode.toString();
+                                    if (e.properties["GEOID"][0] == "0" && fips[0] != "0") {
+                                        fips = "0" + fips
+                                    }
+                                    if (fips == e.properties['GEOID']) {
 
                                         e.properties['candidates'] = raceGroup
                                         e.properties['percentIn'] = d.percentIn
@@ -646,7 +657,7 @@ function aFunction() {
 
                         function senateClick(d) {
 
-                            d3.select("#state-letters-senate").html(d.properties.stateAbbr)
+                            d3.selectAll(".state-letters").html(d.properties.stateAbbr)
 
                             d3.select('#county-cands-senate').selectAll("div").remove()
 
@@ -680,7 +691,7 @@ function aFunction() {
                             d3.selectAll('.senateRace').classed("hover", false).on("mouseout", mouseout)
                             d3.select('#sen' + id).classed("hover", true).on("mouseout", null).raise()
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
 
                         }
@@ -693,8 +704,8 @@ function aFunction() {
 
                                 if (d.level == 'state') {
                                     if (stateAbbr == d.stateAbbr) {
-
-                                        d3.select("#state-letters-senate").html(stateAbbr)
+                                        
+                                        d3.selectAll(".state-letters").html(stateAbbr)
                                         // d3.select("#state-precinct-percent-senate").html(d.percentIn + "% of precincts reporting")
                                         /*if (d.eevp !== "Unavailable") {
                                             d3.select("#state-precinct-percent-president").html(d.percentIn + "% of expected votes")
@@ -781,10 +792,13 @@ function aFunction() {
                     .then(function (data) {
 
                         const changeRaceName = district => {
-                            const districtCopy = { ...district };
-                            districtCopy["raceName"] = district["raceName"].replace(district["stateAbbr"], esp ? "Distrito" : "District");
-
-                            return districtCopy;
+                            if (esp) {
+                                const districtCopy = { ...district };
+                                districtCopy["raceName"] = district["raceName"].replace("District", "Distrito");
+                                return districtCopy;
+                            } else {
+                                return district;
+                            }
                         };
 
                         data = data.map(d => changeRaceName(d));
@@ -963,7 +977,7 @@ function aFunction() {
                             d3.selectAll('.district').classed("hover", false).on("mouseout", mouseout)
                             d3.select('#hs' + id).classed("hover", true).on("mouseout", null).raise()
 
-                            xtalk.signalIframe()
+                            //xtalk.signalIframe()
 
                         }
 
@@ -981,10 +995,13 @@ function aFunction() {
             .catch(function (error) {
                 // handle error   
             })
-        xtalk.signalIframe()
+        //xtalk.signalIframe()
 
     }
-    setTimeout(delay, 2000)
+    setTimeout(() => {
+        delay();
+        var pymChild = new pym.Child({ polling: 500 });
+    }, 2000)
 }
 
 setInterval(function () {
