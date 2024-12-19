@@ -1,352 +1,395 @@
+/* #region - Variables */
+
+:root {
+  --primary-color: #144aa8;
+  --text-color: #222222;
+  --border-color: #bebebe;
+  --background-light: #f4f5f6;
+  --background-gray: #ececec;
+  --border-gray: #7f7f7f;
+
+  /* Font sizes */
+  --font-size-small: 14px;
+  --font-size-base: 16px;
+  --font-size-medium: 18px;
+  --font-size-large: 22px;
+  --font-size-xl: 24px;
+  --font-size-rank: 70px;
+  --font-size-rank-mobile: 50px;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 15px;
+  --spacing-lg: 20px;
+}
+
+/* #endregion */
+
+/* #region - Base Styles */
+
 body {
-    font-size: 1rem;
-    font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  font-family: "Roboto", sans-serif;
+}
+
+/* #endregion */
+
+/* #region - Container Layouts */
+
+#card-container,
+#controls {
+  max-width: 800px;
 }
 
 #card-container {
-    max-width: 800px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
 }
 
-#controls {
-    max-width: 800px;
-}
+/* #endregion */
 
-/* Drop down menu */
+/* #region - Dropdown Menus */
+
 .column-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
 }
 
 .column {
-    flex: 1;
-    display: inline-block;
-    vertical-align: top;
-    margin-right: 20px;
+  flex: 1;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: var(--spacing-lg);
 }
 
 .column:first-child {
-    margin-right: 20px;
+  margin-right: var(--spacing-lg);
 }
 
+/* Dropdown Labels */
 .column label {
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 16px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #222222;
-    display: block;
-    margin-bottom: 8px;
+  font-weight: 500;
+  font-size: var(--font-size-base);
+  line-height: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  display: block;
+  margin-bottom: var(--spacing-sm);
 }
 
+/* Dropdown Select */
 .column select {
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 16px;
-    color: #222222;
-    border: 0.5px solid #BEBEBE;
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 12px;
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.08));
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  line-height: 16px;
+  color: var(--text-color);
+  border: 0.5px solid var(--border-color);
+  padding: var(--spacing-sm);
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.08));
 }
 
-/* Content */
+/* #endregion */
+
+/* #region - Card Structure */
+
 .card {
-    display: flex;
-    width: 800px;
-    /* height: 450px; */
-    overflow: hidden;
-    margin-bottom: 20px;
+  display: flex;
+  width: 800px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
 }
 
 .card .content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-#card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-/* Image */
+/* Card Image */
 .card img {
-    width: 270px !important;
-    object-fit: cover;
+  width: 270px !important;
+  object-fit: cover;
 }
 
-/* Top Section */
+/* #endregion */
+
+/* #region - Card Top Section */
+
 .card .top-section {
-    display: flex;
-    height: 110px;
-    flex-direction: row;
+  display: flex;
+  height: 110px;
+  flex-direction: row;
 }
 
-/* Ranking number */
+/* Ranking Number */
 .rank {
-    font-size: 70px;
-    font-weight: 300;
-    text-align: right;
-    line-height: 170px;
-    margin-right: 8px;
-    margin-bottom: 10px;
-    width: 90px;
-    height: 110px;
-    background-color: #ECECEC;
-    font-weight: 100;
+  font-size: var(--font-size-rank);
+  font-weight: 100;
+  text-align: right;
+  line-height: 170px;
+  margin-right: var(--spacing-sm);
+  margin-bottom: 10px;
+  width: 90px;
+  height: 110px;
+  background-color: var(--background-gray);
 }
 
-/* Details */
+/* Player Details */
 .details {
-    font-size: 18px;
-    display: flex;
-    flex-direction: column;
-    margin-right: 15px;
-    margin-top: auto;
+  font-size: var(--font-size-medium);
+  display: flex;
+  flex-direction: column;
+  margin-right: var(--spacing-md);
+  margin-top: auto;
 }
 
 .name-first {
-    font-family: 'Helvetica Neue';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 22px;
-    line-height: 27px;
+  font-family: "Helvetica Neue";
+  font-weight: 400;
+  font-size: var(--font-size-large);
+  line-height: 27px;
 }
 
 .name-last {
-    font-family: 'Helvetica Neue';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 24px;
-    line-height: 27px;
-    text-transform: uppercase;
-    padding-top: 0px;
+  font-family: "Helvetica Neue";
+  font-weight: 500;
+  font-size: var(--font-size-xl);
+  line-height: 27px;
+  text-transform: uppercase;
+  padding-top: 0;
 }
 
 .team-position {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    text-transform: uppercase;
+  font-family: "Roboto";
+  font-weight: 400;
+  font-size: var(--font-size-small);
+  line-height: 22px;
+  text-transform: uppercase;
 }
 
-/* Info */
+/* #endregion */
+
+/* #region - Card Info Section */
+
 .card .info {
-    padding: 15px;
+  padding: var(--spacing-md);
 }
 
 .card .info.active {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Apply styles to the fan rating bar */
+/* Fan Rating Bar */
 .card .info .additional-info .fan-rating-bar {
-    height: 8px;
-    background-color: #ECECEC;
-    margin-bottom: 6px;
-    border-radius: 5px;
-    overflow: hidden;
+  height: var(--spacing-sm);
+  background-color: var(--background-gray);
+  margin-bottom: 6px;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
 .card .info .additional-info .fan-rating-bar .progress {
-    height: 100%;
-    width: 0;
-    background-color: rgba(20, 74, 168, .75);
-    border-radius: 5px;
-    transition: width 0.5s ease;
+  height: 100%;
+  width: 0;
+  background-color: rgba(20, 74, 168, 0.75);
+  border-radius: 5px;
+  transition: width 0.5s ease;
 }
 
+/* Player Blurb */
 .blurb {
-    margin-top: 10px;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 22px;
-    flex: 1;
-    /* overflow: hidden; */
+  margin-top: 10px;
+  font-family: "Roboto";
+  font-weight: 400;
+  font-size: var(--font-size-base);
+  line-height: 22px;
+  flex: 1;
 }
 
-/* Link */
+/* Link Styles */
 .link {
-    margin-top: auto;
-    padding-left: 15px;
+  margin-top: auto;
+  padding-left: var(--spacing-md);
 }
 
 .card .info.active .link {
-    display: block;
+  display: block;
 }
 
 a {
-    text-decoration: none;
-    font-weight: 600;
-    color: #144AA8;
-    font-size: 16px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: var(--font-size-base);
 }
 
 a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* Additional Info */
 .additional-info {
-    margin-bottom: 10px;
-    font-family: 'Roboto';
-    font-style: normal;
-    font-size: 16px;
-    line-height: 22px;
+  margin-bottom: 10px;
+  font-family: "Roboto";
+  font-size: var(--font-size-base);
+  line-height: 22px;
 }
+
+/* #endregion */
+
+/* #region - Desktop Specific Styles */
 
 @media only screen and (min-width: 651px) {
-    /* Hide mobile-styled dropdown and buttons on desktop */
-    #sort-dropdown-mobile,
-    #filter-buttons-container {
-        display: none;
-    }
-    
-    /* Hide accordion icon on desktop */
-    .card .info .blurb-section .accordion-icon {
-        display: none;
-    }
+  /* Hide mobile elements on desktop */
+  #sort-dropdown-mobile,
+  #filter-buttons-container {
+    display: none;
+  }
+
+  .card .info .blurb-section .accordion-icon {
+    display: none;
+  }
 }
 
-/* Mobile styles */
+/* #endregion */
+
+/* #region - Mobile Styles */
+
 @media only screen and (max-width: 650px) {
-    /* Hide desktop controls on mobile */
-    #controls {
-        display: none;
-    }
-    
-    /* Hide other columns in mobile view */
-    .column:not(#sort-dropdown):not(#sort-dropdown-mobile) {
-        display: none;
-    }
+  /* Hide desktop elements */
+  #controls {
+    display: none;
+  }
 
-    .blurb .additional-info {
-        font-size: 14px;
-        line-height: 17px;
-    }
+  .column:not(#sort-dropdown):not(#sort-dropdown-mobile) {
+    display: none;
+  }
 
-    /* Display the details in a column on mobile */
-    .card {
-        display: block;
-        width: 100%;
-        height: auto; /* Adjust the height as needed */
-        margin-bottom: 20px;
-    }
+  /* Mobile typography */
+  .blurb .additional-info {
+    font-size: var(--font-size-small);
+    line-height: 17px;
+  }
 
-    .column select {
-        font-size: 18px;
-        line-height: 20px;
-    }
+  /* Mobile card layout */
+  .card {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: var(--spacing-lg);
+  }
 
-    .column label {
-        font-size: 18px;
-    }
+  /* Mobile form elements */
+  .column select {
+    font-size: var(--font-size-medium);
+    line-height: 20px;
+  }
 
-    .card .info .blurb-section .link {
-        display: block; /* Show the link on mobile */
-        margin-top: 10px; /* Add margin for separation */
-    }
+  .column label {
+    font-size: var(--font-size-medium);
+  }
 
-    .blurb-section .blurb {
-        display: block; /* Show the blurb on mobile */
-        margin-top: 10px; /* Add margin for separation */
-    }
+  /* Mobile card sections */
+  .card .info .blurb-section .link {
+    display: block;
+    margin-top: 10px;
+  }
 
-    /* Styles for rank, first name, and last name */
-    .card .top-section {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between; /* Add this line to push first and last name to the sides */
-        margin-bottom: 10px;
-        height: auto !important;
-    }
+  .blurb-section .blurb {
+    display: block;
+    margin-top: 10px;
+  }
 
-    /* Reset styles for content */
-    .card .content {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+  .card .top-section {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    height: auto !important;
+  }
 
-    .rank {
-        font-size: 50px; /* Adjust font size as needed */
-        line-height: 136px; /* Adjust line height as needed */
-        margin-bottom: 4px;
-        width: 66px;
-        height: 86px;
-    }
+  .card .content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-    .card .info {
-        padding: 0px;
-    }
+  .rank {
+    font-size: var(--font-size-rank-mobile);
+    line-height: 136px;
+    margin-bottom: var(--spacing-xs);
+    width: 66px;
+    height: 86px;
+  }
 
-    /* Image styles for mobile */
-    .card img {
-        width: 100% !important;
-        height: auto;
-        object-fit: cover;
-        max-height: 200px; /* Adjust the max-height as needed */
-    }
+  .card .info {
+    padding: 0;
+  }
 
-    /* Add a specific style for the players who need object-position adjustment */
-    .card img[data-object-position] {
-        object-position: center 30% !important;
-    }
+  /* Mobile image styles */
+  .card img {
+    width: 100% !important;
+    height: auto;
+    object-fit: cover;
+    max-height: 200px;
+  }
 
-    /* Hide the fan rating bar on mobile */
-    .card .info .additional-info .fan-rating-bar {
-        display: none;
-    }
+  .card img[data-object-position] {
+    object-position: center 30% !important;
+  }
 
-    /* Add margin to filter buttons container on mobile */
-    #filter-buttons-container {
-        margin-bottom: 20px;
-    }
+  /* Hide elements on mobile */
+  .card .info .additional-info .fan-rating-bar {
+    display: none;
+  }
 
-    /* Style for unselected buttons */
-    button,
-    #filter-buttons-container button {
-        /* Added styles for mobile sort dropdown */
-        background: #F4F5F6;
-        border: 1px solid #7F7F7F;
-        border-radius: 20px; /* Increase border radius */
-        color: #7F7F7F;
-        align-items: center;
-        cursor: pointer;
-        margin-right: 4px;
-        margin-bottom: 8px;
-        padding: 8px 10px;
-        box-sizing: border-box;
-        font-size: 16px;
-        line-height: 18px;
-    }
+  /* Mobile filter buttons */
+  #filter-buttons-container {
+    margin-bottom: var(--spacing-lg);
+  }
 
-    /* Styles for selected buttons */
-    button.selected,
-    #filter-buttons-container button.selected {
-        /* Updated to target the correct ID */
-        background: #144AA8;
-        border: 1px solid #144AA8;
-        color: #FFFFFF;
-    }
+  /* Mobile button styles */
+  button,
+  #filter-buttons-container button {
+    background: var(--background-light);
+    border: 1px solid var(--border-gray);
+    border-radius: 20px;
+    color: var(--border-gray);
+    align-items: center;
+    cursor: pointer;
+    margin-right: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+    padding: var(--spacing-sm) 10px;
+    box-sizing: border-box;
+    font-size: var(--font-size-base);
+    line-height: 18px;
+  }
 
-    /* Make the sort drop-down take full width */
-    #sort-dropdown-mobile {
-        width: 100%;
-        margin-bottom: 10px;
-    }
+  button.selected,
+  #filter-buttons-container button.selected {
+    background: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: #ffffff;
+  }
 
-    .link {
-        margin: 0;
-        padding: 0 !important;
-    }
+  /* Mobile sort dropdown */
+  #sort-dropdown-mobile {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  /* Mobile link adjustments */
+  .link {
+    margin: 0;
+    padding: 0 !important;
+  }
 }
+
+/* #endregion */
