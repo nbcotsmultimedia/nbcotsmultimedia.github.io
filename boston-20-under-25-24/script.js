@@ -1,4 +1,5 @@
 //#region CONFIG
+
 // Add configuration object for app settings
 const CONFIG = {
   DEBOUNCE_DELAY: 150,
@@ -17,13 +18,18 @@ const setLoading = (isLoading) => {
   container.style.opacity = isLoading ? "0.5" : "1";
   // Could add loading spinner here
 };
+
+// Add Pym.js
+var pymChild = new pym.Child({ polling: 500 });
+
 //#endregion
 
 //#region STATE
+
 // Stores application data and DOM element references
 const state = {
   allData: null, // Raw data from CSV
-  sortedAndFilteredData: null, // Current filtered/sorted data
+  sortedAndFilteredData: null,
   cardContainer: document.getElementById("card-container"),
   controls: {
     sort: document.getElementById("sort"),
@@ -35,6 +41,7 @@ const state = {
 //#endregion
 
 //#region UTILITIES
+
 // Prevents a function from being called too frequently
 function debounce(func, wait) {
   let timeout;
@@ -48,6 +55,7 @@ function debounce(func, wait) {
     }, wait);
   };
 }
+
 //#endregion
 
 //#region FILTER GENERATION
@@ -151,9 +159,11 @@ function renderCards(players) {
   state.cardContainer.innerHTML = "";
   state.cardContainer.appendChild(fragment);
 }
+
 //#endregion
 
 //#region DATA HANDLING
+
 // Sorts data with caching for better performance
 const sortData = (() => {
   const cache = new Map();
@@ -206,9 +216,11 @@ const updateDisplay = debounce((sortBy, filterBy) => {
   // Render updated data
   renderCards(state.sortedAndFilteredData);
 }, 150);
+
 //#endregion
 
 //#region EVENT HANDLING
+
 // Sets up all event listeners for the application
 function setupEventListeners() {
   // Desktop sorting
@@ -251,8 +263,11 @@ function setupEventListeners() {
 //#endregion
 
 //#region DATA INITIALIZATION
-// Fetches and sets up initial data
 
+// Initialize Pym
+var pymChild = new pym.Child({ polling: 500 });
+
+// Initialize data
 async function initializeData() {
   try {
     setLoading(true);
@@ -273,10 +288,9 @@ async function initializeData() {
         updateDisplay(CONFIG.SORT_OPTIONS.RANK, "all");
         setupEventListeners();
       },
-      error: (error) => handleError(error, "CSV Parsing"),
     });
   } catch (error) {
-    handleError(error, "Data Fetching");
+    console.error("Error fetching data:", error);
   } finally {
     setLoading(false);
   }
@@ -291,6 +305,8 @@ function validatePlayerData(player) {
 //#endregion
 
 //#region APP INITIALIZATION
+
 // Start the application
-initializeData();
+document.addEventListener("DOMContentLoaded", initializeData);
+
 //#endregion

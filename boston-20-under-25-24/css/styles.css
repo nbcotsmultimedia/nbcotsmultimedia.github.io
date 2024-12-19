@@ -115,7 +115,9 @@ body {
 /* Card Image */
 .card img {
   width: 270px !important;
+  height: 300px !important; /* Set a fixed height */
   object-fit: cover;
+  object-position: center; /* Center the image */
 }
 
 /* #endregion */
@@ -336,9 +338,9 @@ a:hover {
   /* Mobile image styles */
   .card img {
     width: 100% !important;
-    height: auto;
+    height: 200px !important; /* Fixed height instead of max-height */
     object-fit: cover;
-    max-height: 200px;
+    object-position: center 30%;
   }
 
   .card img[data-object-position] {
@@ -389,6 +391,16 @@ a:hover {
   .link {
     margin: 0;
     padding: 0 !important;
+  }
+}
+
+/* Tablet/Large mobile styles */
+@media only screen and (max-width: 650px) and (min-width: 481px) {
+  .card img {
+    width: 100% !important;
+    height: 300px !important; /* Taller height for larger mobile devices */
+    object-fit: cover;
+    object-position: center 30%;
   }
 }
 
