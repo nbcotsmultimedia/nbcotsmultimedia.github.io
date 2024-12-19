@@ -45,6 +45,26 @@ function init() {
 		iconSize:     [18, 18], // size of the icon
 		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
 	});
+	sinclairIcon = L.icon({
+		iconUrl: 'images/sinclair.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	coxIcon = L.icon({
+		iconUrl: 'images/cox.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	sunbeamIcon = L.icon({
+		iconUrl: 'images/sunbeam.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
+	defaultIcon = L.icon({
+		iconUrl: 'images/default.png',
+		iconSize:     [18, 18], // size of the icon
+		iconAnchor:   [0, 0] // point of the icon which will correspond to marker's location
+	});
 
 
 	loadStations();
@@ -204,8 +224,18 @@ function parseStations() {
 			case "Fox":
 				icon = foxIcon;
 				break;
+			case "Sinclair":
+				icon = sinclairIcon;
+				break;
+			case "Sunbeam":
+				icon = sunbeamIcon;
+				break;
+			case "Cox":
+				icon = coxIcon;
+				break;
 			default:
 				//something
+				icon = defaultIcon;
 		}
 
 		//marker = L.marker(new L.LatLng(allStations[j].Latitude, allStations[j].Longitude), {icon:createLabelIcon("textLabelclass",markers[allStations[j].CallLetters])}).addTo(map).addTo(myFeatureGroup);
