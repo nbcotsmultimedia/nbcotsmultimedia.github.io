@@ -1,0 +1,50 @@
+[
+  {
+    "player-img": "images/placeholder.jpg",
+    "rank": 1,
+    "name-first": "Wilyer",
+    "name-last": "Abreu",
+    "rating": "five stars",
+    "team": "dummy-team",
+    "position": "dummy-position",
+    "birth-date": "June 24, 2024",
+    "blurb": "One of the bigger disappointments of Bloom's tenure was the inability to acquire impact prospects via trade, but Abreu might be an exception. Acquired in the 2022 deadline deal that sent catcher Christian Vazquez to Houston, Abreu impressed with a strong arm in the outfield, an advanced understanding of the strike zone, and some absolutely hellacious hacks at the plate, where he does not get cheated.",
+    "link-to-more": "nbcnews.com"
+  },
+  {
+    "player-img": "images/placeholder.jpg",
+    "rank": 2,
+    "name-first": "Roman",
+    "name-last": "Anthony",
+    "rating": "five stars",
+    "team": "dummy-team",
+    "position": "dummy-position",
+    "birth-date": "May 13, 2029",
+    "blurb": "Meet the prospect who may have surpassed Mayer. A 2022 second-rounder out of Stoneman Douglas High School in Florida, Anthony followed up a nondescript pro debut with a monster second season, jumping all the way to Double-A, where he hit .343. Still only 19, Anthony could be on the fast track to the big leagues.",
+    "link-to-more": "nbcnews.com"
+  },
+  {
+    "player-img": "images/placeholder.jpg",
+    "rank": 3,
+    "name-first": "Bryce",
+    "name-last": "Baringer",
+    "rating": "five stars",
+    "team": "dummy-team",
+    "position": "dummy-position",
+    "birth-date": "April 26, 2024",
+    "blurb": "Baringer has been far from perfect in his rookie season, but the Michigan State product has been among the best at his position since mid-October. Between Weeks 6 and 10 he led the NFL in average yards per punt (54.5) and average net yards per punt (46.5).",
+    "link-to-more": "nbcnews.com"
+  },
+  {
+    "player-img": "images/placeholder.jpg",
+    "rank": 4,
+    "name-first": "Christian",
+    "name-last": "Barmore",
+    "rating": "five stars",
+    "team": "dummy-team",
+    "position": "dummy-position",
+    "birth-date": "July 28, 2024",
+    "blurb": "A first-round talent with some questions about how he'd fit in a pro locker room, Barmore arguably has played his best season in Year 3, turning himself into an every-down player. From Week 6 to Week 10, according to Pro Football Focus, he graded out as the No. 15 interior defensive lineman and the No. 8 interior pass-rusher.",
+    "link-to-more": "nbcnews.com"
+  }
+]

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston 20 Under 25 2024</title>
+
+    <!-- Bootstrap core CSS -->
+    <!-- <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- NBC CSS -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet'
+        type='text/css'>
+    <link href="css/nbcotsbase.css" rel="stylesheet">
+
+    <!-- My styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Responsive iFrame stuff -->
+    <!-- <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            xtalk.responsive = false;
+            xtalk.init();
+        });
+    </script> -->
+
+</head>
+
+<body>
+
+    <div id="bos2025" class="parent" style="width:100%; padding-bottom:30px;">
+
+        <!-- Mobile controls -->
+        <div id="mobile-controls-container">
+            <!-- Move the sort dropdown to the top -->
+            <div class="column" id="sort-dropdown-mobile"> <!-- Updated ID to be unique -->
+                <label for="sort-mobile">Sort by</label>
+                <select id="sort-mobile">
+                    <option value="rank">Rank</option>
+                    <option value="birthdate">Birthdate</option>
+                    <option value="name-last">Last Name (A-Z)</option>
+                </select>
+            </div>
+
+            <!-- Add a container for the filter buttons -->
+            <div id="filter-buttons-container">
+                <button class="team-filter selected" data-value="all">All Teams</button>
+                <button class="team-filter" data-value="Boston Bruins">Boston Bruins</button>
+                <button class="team-filter" data-value="Boston Celtics">Boston Celtics</button>
+                <button class="team-filter" data-value="Boston Red Sox">Boston Red Sox</button>
+                <button class="team-filter" data-value="New England Patriots">New England Patriots</button>
+                <button class="team-filter" data-value="New England Revolution">New England Revolution</button>
+            </div>
+        </div>
+
+        <!-- Desktop controls -->
+        <div id="controls" class="column-container">
+            <div class="column">
+                <label for="sort">Sort by</label>
+                <select id="sort">
+                    <option value="rank">Rank</option>
+                    <option value="birthdate">Birthdate</option>
+                    <option value="name-last">Last Name (A-Z)</option>
+                </select>
+            </div>
+
+            <div class="column">
+                <label for="filter">Filter by team</label>
+                <select id="filter">
+                    <option value="all">All teams</option>
+                    <option value="Boston Bruins">Boston Bruins</option>
+                    <option value="Boston Celtics">Boston Celtics</option>
+                    <option value="Boston Red Sox">Boston Red Sox</option>
+                    <option value="New England Patriots">New England Patriots</option>
+                    <option value="New England Revolution">New England Revolution</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="card-container"></div>
+    </div>
+
+    <script type="text/javascript"
+        src="https://media.nbcnewyork.com/assets/editorial/national/common/js/papaparse.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
