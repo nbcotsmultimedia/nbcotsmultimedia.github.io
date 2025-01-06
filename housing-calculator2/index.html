@@ -11,32 +11,41 @@
 <body>
   <div class="calculator-container">
     <h1>Can you afford a home in your area?</h1>
+    <!-- User inputs -->
     <form id="affordabilityForm">
-      <!-- User inputs -->
+
+      <!-- Zip code entry -->
       <div class="form-group">
         <label for="zipCode">Zip code</label>
-        <input type="number" id="zipCode" name="zipCode" class="form-control" required />
+        <input type="text" id="zipCode" name="zipCode" class="form-control" list="zipCodeList" maxlength="5"
+          pattern="\d{5}" required />
+        <datalist id="zipCodeList"></datalist>
       </div>
-      <!-- Income -->
+      <span id="zipValidation" class="validation-message"></span>
+
+      <!-- Income entry -->
       <div class="form-group">
         <label for="income">Annual gross income ($)</label>
         <input type="number" id="income" name="income" class="form-control" min="20000" max="1000000" step="1000"
           required />
         <span class="validation-message" id="incomeValidation"></span>
       </div>
-      <!-- Down payment -->
+
+      <!-- Down payment entry -->
       <div class="form-group">
         <label for="downPayment">Highest down payment you can afford ($)</label>
         <input type="number" id="downPayment" name="downPayment" class="form-control" min="0" max="10000000" step="1000"
           required />
         <span class="validation-message" id="downPaymentValidation"></span>
       </div>
-      <!-- Monthly expenses -->
+
+      <!-- Monthly expenses entry -->
       <div class="form-group">
         <label for="monthlyExpenses">Monthly expenses ($)</label>
         <input type="number" id="monthlyExpenses" name="monthlyExpenses" class="form-control" required />
       </div>
-      <!-- Mortgage term -->
+
+      <!-- Mortgage term selection -->
       <div class="form-group">
         <label for="mortgageTerm">Preferred mortgage term</label>
         <select id="mortgageTerm" name="mortgageTerm" class="form-control" required>
@@ -45,13 +54,16 @@
           <option value="30">30 years</option>
         </select>
       </div>
+
       <!-- Submit button -->
       <div class="form-group">
-        <button type="submit" id="calculateButton" class="btn">
-          Calculate
+        <button type="submit" id="calculateButton" class="btn" disabled>
+          Calculate <span id="loadingText">(Loading data...)</span>
         </button>
       </div>
     </form>
+
+    <!-- Results container -->
     <div id="resultsMessage">
       <!-- Results will populate here -->
     </div>
@@ -65,8 +77,10 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Papa Parse -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-  <!-- Javascript -->
+  <!-- Main script -->
   <script src="js/script.js" type="module" defer></script>
+  <!-- Config script -->
+  <script src="js/config.js" type="module" defer></script>
 </body>
 
 </html>
