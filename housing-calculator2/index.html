@@ -20,12 +20,16 @@
       <!-- Income -->
       <div class="form-group">
         <label for="income">Annual gross income ($)</label>
-        <input type="number" id="income" name="income" class="form-control" required />
+        <input type="number" id="income" name="income" class="form-control" min="20000" max="1000000" step="1000"
+          required />
+        <span class="validation-message" id="incomeValidation"></span>
       </div>
       <!-- Down payment -->
       <div class="form-group">
         <label for="downPayment">Highest down payment you can afford ($)</label>
-        <input type="number" id="downPayment" name="downPayment" class="form-control" required />
+        <input type="number" id="downPayment" name="downPayment" class="form-control" min="0" max="10000000" step="1000"
+          required />
+        <span class="validation-message" id="downPaymentValidation"></span>
       </div>
       <!-- Monthly expenses -->
       <div class="form-group">
