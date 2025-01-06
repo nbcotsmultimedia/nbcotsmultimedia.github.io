@@ -7,6 +7,10 @@ import {
   calculateAffordabilityThresholds,
   calculateHousingAffordability,
 } from "./calculations.js";
+import {
+  performGeospatialAnalysis,
+  displayGeospatialResults,
+} from "./spatial.js";
 import { getFormData, displayAffordabilityResults } from "./utils.js";
 
 export const setupEventListeners = (housingData) => {
@@ -68,6 +72,7 @@ const setupFormEvents = (housingData) => {
         formData.monthlyExpenses
       );
 
+      // Calculate main affordability results
       const results = calculateHousingAffordability(
         housingData,
         formData.zipCode,
@@ -78,7 +83,20 @@ const setupFormEvents = (housingData) => {
         thresholds
       );
 
+      // Display main results
       displayAffordabilityResults(results);
+
+      // Perform and display geospatial analysis
+      const geospatialResults = performGeospatialAnalysis(
+        housingData,
+        formData.zipCode,
+        results.interestRate,
+        formData.downPayment,
+        formData.mortgageTerm,
+        thresholds
+      );
+
+      displayGeospatialResults(geospatialResults);
     } catch (error) {
       ErrorHandler.handle(error);
     }

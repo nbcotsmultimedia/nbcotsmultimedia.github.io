@@ -1,7 +1,8 @@
 // spatial.js
 
-// Import config.js
+// Imports
 import CONFIG from "./config.js";
+import { calculateMonthlyMortgagePayment } from "./calculations.js";
 
 // Calculate the H3 index of the centroid of a given area
 export const calculateCentroidIndex = (bufferZone, resolution) => {
@@ -130,4 +131,161 @@ export const identifyAffordableOrStretchedHexagons = (
   });
 
   return affordableOrStretchedHexagons;
+};
+
+// Add new main analysis function
+export const performGeospatialAnalysis = (
+  housingData,
+  zipCode,
+  interestRate,
+  downPayment,
+  mortgageTerm,
+  thresholds
+) => {
+  // Find spatial data for target zip
+  const selectedZipCodeData = housingData.find((data) => data.zip === zipCode);
+  if (
+    !selectedZipCodeData ||
+    !isValidCoordinates(
+      selectedZipCodeData.Latitude,
+      selectedZipCodeData.Longitude
+    )
+  ) {
+    console.error(
+      "Valid latitude or longitude not found for ZIP code:",
+      zipCode
+    );
+    return null;
+  }
+
+  const targetLat = parseFloat(selectedZipCodeData.Latitude);
+  const targetLng = parseFloat(selectedZipCodeData.Longitude);
+
+  // Generate buffer zone and hexagons
+  const bufferZone = generateBufferZone(
+    selectedZipCodeData,
+    CONFIG.spatial.buffer.radius
+  );
+  const h3Hexagons = generateH3Hexagons(
+    [bufferZone],
+    CONFIG.spatial.h3.defaultResolution
+  );
+  const zipToHexMap = mapZipCodesToHexagons(housingData, h3Hexagons);
+
+  // Analyze data for each hexagon
+  const hexagonAggregatedData = {};
+
+  h3Hexagons.flat().forEach((hexagon) => {
+    const hexZipCodes = Object.keys(zipToHexMap).filter(
+      (zip) => zipToHexMap[zip] === hexagon
+    );
+
+    let totalMedianPrice = 0;
+    let count = 0;
+    const centroid = h3.cellToLatLng(hexagon);
+    const distanceToTargetZip = calculateDistance(
+      targetLat,
+      targetLng,
+      centroid[0],
+      centroid[1]
+    );
+
+    hexZipCodes.forEach((zip) => {
+      const zipData = housingData.find((data) => data.zip === zip);
+      if (zipData?.median_sale_price) {
+        totalMedianPrice += parseFloat(zipData.median_sale_price);
+        count++;
+      }
+    });
+
+    if (count > 0) {
+      const averageMedianPrice = totalMedianPrice / count;
+      const loanAmount = averageMedianPrice - downPayment;
+      const monthlyMortgagePayment = calculateMonthlyMortgagePayment(
+        loanAmount,
+        interestRate,
+        mortgageTerm
+      );
+
+      // Determine affordability classification
+      let affordability;
+      if (monthlyMortgagePayment <= thresholds.affordable) {
+        affordability = "Affordable";
+      } else if (monthlyMortgagePayment <= thresholds.stretch) {
+        affordability = "Stretch";
+      } else if (monthlyMortgagePayment <= thresholds.aggressive) {
+        affordability = "Aggressive";
+      } else {
+        affordability = "Out of reach";
+      }
+
+      hexagonAggregatedData[hexagon] = {
+        averageMedianPrice,
+        zipCodes: hexZipCodes,
+        monthlyMortgagePayment,
+        distanceToTargetZip,
+        affordability,
+        centroid,
+      };
+    }
+  });
+
+  return {
+    targetLocation: { lat: targetLat, lng: targetLng },
+    hexagonData: hexagonAggregatedData,
+  };
+};
+
+// Add new display function
+export const displayGeospatialResults = (analysisResults) => {
+  if (!analysisResults) return;
+
+  const { hexagonData } = analysisResults;
+  let hexResultsHtml = "<h3>Nearby Areas Analysis</h3>";
+
+  // Group hexagons by affordability
+  const groupedHexagons = {
+    Affordable: [],
+    Stretch: [],
+    Aggressive: [],
+    "Out of reach": [],
+  };
+
+  Object.entries(hexagonData).forEach(([hexagon, data]) => {
+    groupedHexagons[data.affordability].push({
+      hexagon,
+      ...data,
+    });
+  });
+
+  // Display results by affordability category
+  Object.entries(groupedHexagons).forEach(([category, hexagons]) => {
+    if (hexagons.length > 0) {
+      hexResultsHtml += `
+        <div class="affordability-category">
+          <h4>${category} Areas (${hexagons.length} found)</h4>
+          ${hexagons
+            .sort((a, b) => a.distanceToTargetZip - b.distanceToTargetZip)
+            .map(
+              (data) => `
+              <div class="hexagon-result ${data.affordability
+                .toLowerCase()
+                .replace(" ", "-")}">
+                <p>Average Home Price: $${data.averageMedianPrice.toLocaleString()}</p>
+                <p>Monthly Payment: $${data.monthlyMortgagePayment.toFixed(
+                  0
+                )}</p>
+                <p>Distance: ${data.distanceToTargetZip.toFixed(1)} miles</p>
+                <p>ZIP Codes: ${data.zipCodes.join(", ")}</p>
+              </div>
+            `
+            )
+            .join("")}
+        </div>
+      `;
+    }
+  });
+
+  // Add the results to the page
+  document.getElementById("resultsMessage").innerHTML += hexResultsHtml;
 };
