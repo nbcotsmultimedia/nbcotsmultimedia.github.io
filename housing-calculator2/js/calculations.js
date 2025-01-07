@@ -4,7 +4,7 @@
 import CONFIG from "./config.js";
 import { CacheManager } from "./cache.js";
 
-// Calculate the monthly mortgage payment
+// Calculate the monthly mortgage payment using standard mortgage rate formula
 export const calculateMonthlyMortgagePayment = (
   principal,
   annualInterestRate,
@@ -22,7 +22,7 @@ export const calculateMonthlyMortgagePayment = (
   );
 };
 
-// Calculate affordability thresholds
+// Set affordability thresholds based on income
 export const calculateAffordabilityThresholds = (
   monthlyGrossIncome,
   monthlyExpenses
@@ -67,7 +67,7 @@ export const calculateHousingAffordability = (
   mortgageTerm,
   thresholds
 ) => {
-  // Check cache first
+  // Check cache first for existing results
   const cacheKey = `${zipCode}-${annualIncome}-${downPayment}-${monthlyExpenses}-${mortgageTerm}`;
   const cachedResult = CacheManager.getZipResult(cacheKey);
 
@@ -84,12 +84,15 @@ export const calculateHousingAffordability = (
   console.log("housingData:", housingData);
   console.log("Type:", typeof housingData);
 
+  // Find zip code data
   const zipCodeData = housingData.find((data) => data.zip === zipCode);
   if (!zipCodeData) return null;
 
+  // Calculate median home price
   const medianHomePrice = parseFloat(zipCodeData.median_sale_price);
   if (isNaN(medianHomePrice)) return null;
 
+  // Determine monthly payments and DTI ratio
   const monthlyGrossIncome = annualIncome / 12;
   const interestRate = getInterestRate(zipCodeData, mortgageTerm);
   const loanAmount = medianHomePrice - downPayment;
@@ -103,6 +106,8 @@ export const calculateHousingAffordability = (
     totalMonthlyDebt,
     monthlyGrossIncome
   );
+
+  // Categorize affordability
   const affordabilityCategory = determineAffordabilityCategory(
     monthlyMortgagePayment,
     thresholds

@@ -1,3 +1,5 @@
+// config.js
+
 const CONFIG = {
   // Data source
   dataSource: {
@@ -12,11 +14,11 @@ const CONFIG = {
   // Spatial analysis settings
   spatial: {
     h3: {
-      defaultResolution: 6,
-      ringCount: 3, // k value for h3.gridDisk
+      defaultResolution: 9,
+      ringCount: 2, // k value for h3.gridDisk
     },
     buffer: {
-      radius: 5,
+      radius: 15,
       units: "miles",
     },
   },

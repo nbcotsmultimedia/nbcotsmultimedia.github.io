@@ -1,6 +1,6 @@
 // script.js
 
-// Imports
+// Import necessary modules
 import CONFIG from "./config.js";
 import {
   generateBufferZone,
@@ -26,6 +26,7 @@ import { setupEventListeners } from "./events.js";
 import { LoadingManager } from "./loading.js";
 import { CacheManager } from "./cache.js";
 
+// Create empty housingData variable
 let housingData;
 
 // Fetch and parse data from Google Sheet
@@ -54,7 +55,7 @@ async function loadDataFromGoogleSheet() {
   }
 }
 
-// Initialize the application
+// Initialize the application when the DOM loads
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     CacheManager.cleanup(); // Clean old cache entries
