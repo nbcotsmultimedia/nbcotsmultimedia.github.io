@@ -1,34 +1,26 @@
-/* styles.css */
-
 body {
   margin: 0;
   padding: 0;
   background: #1a1a1a;
   color: white;
-  font-size: 1rem;
-  /* 16 px */
   font-family: "Roboto", sans-serif;
 }
 
-.scroll-container {
+#scrolly {
   position: relative;
-  height: 250vh;
-  min-height: 800px;
 }
 
-.sticky-container {
+.scroll__graphic {
   position: sticky;
   top: 0;
   height: 100vh;
-  min-height: 800px;
-  width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  overflow: hidden;
+  justify-content: center;
+  transform: translate3d(0, 0, 0);
 }
 
-.image-container {
+.scroll__graphic .chart {
   position: relative;
   width: 799px;
   height: 800px;
@@ -45,44 +37,55 @@ body {
   object-fit: contain;
 }
 
-.historic-image.visible {
+.historic-image.is-active {
   opacity: 1;
 }
 
-.historic-image:first-child {
-  opacity: 1;
+.scroll__text {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.step {
+  margin: 80vh 0;
+  height: 100vh;
+  position: relative;
+}
+
+.step:last-child {
+  margin-bottom: 0;
 }
 
 .text-overlay {
   position: absolute;
-  top: 500px;
+  top: 50vh;
   left: 40px;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-  z-index: 2;
+  transform: translateY(-50%);
   background-color: rgba(0, 0, 0, 0.7);
   padding: 20px;
   border-radius: 4px;
+  max-width: 400px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease-in-out;
 }
 
-.text-overlay.visible {
+.step.is-active .text-overlay {
   opacity: 1;
 }
 
 .text-overlay h2 {
   margin: 0 0 10px 0;
-  font-family: "Arthouse Owned Mono Rounded";
+  /* font-family: "Arthouse Owned Mono Rounded", monospace; */
   font-weight: 600;
   font-size: 1.15rem;
   color: white;
-  display: flex;
-  align-items: center;
 }
 
 .text-overlay p {
   margin: 0;
   font-size: 1rem;
-  /* 16px */
   letter-spacing: 0.05em;
   margin-top: 10px;
   text-transform: uppercase;
@@ -92,4 +95,8 @@ body {
 .number {
   font-weight: bold;
   color: azure;
+}
+
+.bottom-spacer {
+  height: 100vh;
 }
