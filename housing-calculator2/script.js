@@ -1,3 +1,5 @@
+// script.js
+
 // #region - Notes
 //TODO - Add drop-down validator for user input zip code
 //NOTE - Will have to somehow combine data with geocode in processing
