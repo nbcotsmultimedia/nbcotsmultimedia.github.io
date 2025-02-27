@@ -1,0 +1,350 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fafafa;
+}
+
+/* Container styles */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Map header with the fixed visualization */
+.map-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  text-align: center;
+}
+
+/* Title styling */
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* Description text */
+.description {
+  text-align: center;
+  color: #4a4a4a;
+  margin-bottom: 1rem;
+}
+
+/* Map container */
+.map-container {
+  position: relative;
+  margin: 0 auto;
+  max-width: 800px;
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+/* SVG map styling */
+.map-svg {
+  width: 100%;
+  height: auto;
+  max-width: 800px;
+}
+
+/* Tooltip styling */
+.tooltip {
+  position: absolute;
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e0e0e0;
+  font-size: 0.875rem;
+  display: none;
+  pointer-events: none;
+  z-index: 100;
+  max-width: 250px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease-out;
+  transform-origin: top left;
+}
+
+.tooltip-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tooltip-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tooltip-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.tooltip-value {
+  font-weight: normal;
+  color: #333;
+}
+
+.tooltip-category {
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.tooltip-category.low {
+  background-color: #ffeeaa;
+  color: #806600;
+}
+
+.tooltip-category.very.low {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tooltip-category.moderate {
+  background-color: #ffccbc;
+  color: #c63f17;
+}
+
+.tooltip-category.high {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+
+/* Sections container */
+.sections {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 1rem;
+  padding-bottom: 16rem;
+}
+
+/* Individual section styling */
+.section {
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 16rem;
+}
+
+/* Section-specific styling */
+.intro-section {
+  background-color: #f5f5f5;
+}
+
+.percentage-section {
+  background-color: #e6f0ff;
+}
+
+.index-section {
+  background-color: #fff0f0;
+}
+
+/* Section headings */
+.section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Section paragraphs */
+.section p {
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 840px) {
+  .map-header {
+    padding: 0.75rem;
+  }
+
+  .map-svg {
+    height: auto;
+    width: 100%;
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  .description {
+    font-size: 0.875rem;
+  }
+
+  .section {
+    padding: 0.75rem;
+    margin-bottom: 12rem;
+  }
+}
+
+/* Add these styles to your existing styles.css file */
+
+/* Enhanced tooltip styling */
+.tooltip {
+  position: absolute;
+  background-color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e0e0e0;
+  font-size: 0.875rem;
+  display: none;
+  pointer-events: none;
+  z-index: 100;
+  max-width: 250px;
+  font-family: Arial, sans-serif;
+  transition: transform 0.1s ease-out;
+  transform-origin: top left;
+}
+
+.tooltip-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.tooltip-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tooltip-label {
+  font-weight: 600;
+  color: #555;
+}
+
+.tooltip-value {
+  font-weight: normal;
+  color: #333;
+}
+
+/* New styles for outlier indicators in tooltip */
+.tooltip-outlier {
+  background-color: #f8f8f8;
+  border-left: 3px solid;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.tooltip-outlier.high {
+  border-left-color: #d32f2f;
+  color: #d32f2f;
+}
+
+.tooltip-outlier.low {
+  border-left-color: #1976d2;
+  color: #1976d2;
+}
+
+/* Vulnerability category indicators */
+.tooltip-category {
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.tooltip-category.low {
+  background-color: #ffeeaa;
+  color: #806600;
+}
+
+.tooltip-category.very.low {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.tooltip-category.moderate {
+  background-color: #ffccbc;
+  color: #c63f17;
+}
+
+.tooltip-category.high {
+  background-color: #ffcdd2;
+  color: #b71c1c;
+}
+
+/* Style for pattern overlays */
+.pattern-overlay {
+  pointer-events: none;
+}
+
+/* Enhanced legend styles */
+.legend text {
+  font-family: Arial, sans-serif;
+}
+
+/* Additional elements description in sections */
+.section .data-elements {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.data-elements ul {
+  list-style-type: none;
+  padding-left: 0.5rem;
+}
+
+.data-elements li {
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.data-elements .element-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 0.5rem;
+}
+
+/* Style adjustments for the pattern legend */
+.pattern-legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.pattern-legend-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: 0.5rem;
+}
