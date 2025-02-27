@@ -2,28 +2,58 @@
 
 const visualization = {
   // Create color scale for the current step
-  createColorScale: function (stepIndex, statistics, mapData) {
+  createColorScale: function (stepIndex, statistics) {
     const step = config.steps[stepIndex];
-    const stats = statistics;
 
-    if (step.id === "federal_workers") {
-      // Custom breaks for federal workers
-      const customBreaks = [1000, 2500, 5000, 7500, 10000];
+    // Get scale configuration from config or fallback to statistics
+    let breaks, colors;
 
-      return d3
-        .scaleThreshold()
-        .domain(customBreaks)
-        .range(config.colors.federal);
+    if (config.scales && config.scales[step.id]) {
+      // Use predefined scales from config
+      breaks = config.scales[step.id].breaks;
+      colors = config.colors[config.scales[step.id].colorSet];
     } else {
-      // Create sequential scale for vulnerability index (unchanged)
-      return d3
-        .scaleThreshold()
-        .domain(stats.breaks)
-        .range(config.colors.vulnerability);
+      // Fallback to statistics-based breaks
+      breaks = statistics.breaks;
+      colors = config.colors[step.colorSet || "vulnerability"];
+    }
+
+    return d3.scaleThreshold().domain(breaks).range(colors);
+  },
+
+  // Get fill color for a feature based on step type and data
+  getFillColor: function (feature, step, colorScale) {
+    if (step.id === "vulnerability_category") {
+      const category = feature.properties.category;
+
+      // Check for missing data
+      if (!category || category === "No Data" || category === "Unknown") {
+        return "#cccccc"; // Default gray for no data
+      }
+
+      // Clean up category name and get color
+      const cleanCategory = category.trim();
+      const color = config.colors.vulnerabilityCategory[cleanCategory];
+
+      return color || "#cccccc"; // Return color or fallback to gray
+    } else {
+      // Handle numeric values
+      const value = feature.properties[step.dataField];
+
+      // Check for missing or invalid data
+      if (
+        value === undefined ||
+        value === null ||
+        isNaN(value) ||
+        value === "N/A"
+      ) {
+        return "#cccccc"; // Gray fill color for counties with no data
+      }
+
+      return colorScale(value);
     }
   },
 
-  // Render the main map visualization
   // Render the main map visualization
   renderMap: function (
     svg,
@@ -50,44 +80,10 @@ const visualization = {
 
     const path = d3.geoPath().projection(projection);
 
-    // Get current step and statistics
+    // Get current step and create color scale
     const step = config.steps[stepIndex];
-    const stats = statistics;
-
-    // Create color scale
-    let colorScale;
-
-    if (step.id === "federal_workers") {
-      // Custom breaks for federal workers
-      const customBreaks = [1000, 2500, 5000, 7500, 10000];
-
-      colorScale = d3
-        .scaleThreshold()
-        .domain(customBreaks)
-        .range(config.colors.federal);
-    } else if (step.id === "vulnerability_index") {
-      // Custom breaks for vulnerability index
-      const customBreaks = [5, 15, 30, 50, 70];
-
-      colorScale = d3
-        .scaleThreshold()
-        .domain(customBreaks)
-        .range(config.colors.vulnerability);
-    } else {
-      // Create sequential scale for other steps (fallback)
-      colorScale = d3
-        .scaleThreshold()
-        .domain(stats.breaks)
-        .range(config.colors.vulnerability);
-    }
-
-    // Debug color scale calculations
-    this.debugColorScale(stepIndex, stats, mapData);
-
-    // Get thresholds for patterns and highlights
-    const outlierInfo = stats.outliers;
-    const topThreshold = stats.percentiles.top;
-    const bottomThreshold = stats.percentiles.bottom;
+    const colorScale = this.createColorScale(stepIndex, statistics);
+    const outlierInfo = statistics.outliers;
 
     // Draw counties
     svgElement
@@ -96,44 +92,7 @@ const visualization = {
       .join("path")
       .attr("class", "county")
       .attr("d", path)
-      .attr("fill", (d) => {
-        // If we're on the vulnerability category step
-        if (step.id === "vulnerability_category") {
-          const category = d.properties.category;
-
-          // More permissive check - only consider truly missing data as "No Data"
-          if (!category || category === "No Data" || category === "Unknown") {
-            return "#cccccc"; // Default gray for no data
-          }
-
-          // Clean up category name for lookup to handle any formatting inconsistencies
-          const cleanCategory = category.trim();
-
-          // Look up color, with fallback
-          const color = config.colors.vulnerabilityCategory[cleanCategory];
-          if (!color) {
-            console.warn(`No color defined for category: "${cleanCategory}"`);
-            return "#cccccc"; // Fallback to gray
-          }
-
-          return color;
-        } else {
-          // Your existing code for numeric values
-          const value = d.properties[step.dataField];
-
-          // Make sure we're explicitly checking for null, undefined, NaN, and "N/A" string
-          if (
-            value === undefined ||
-            value === null ||
-            isNaN(value) ||
-            value === "N/A"
-          ) {
-            return "#cccccc"; // Gray fill color for counties with no data
-          }
-
-          return colorScale(value);
-        }
-      })
+      .attr("fill", (d) => this.getFillColor(d, step, colorScale))
       .attr("stroke", config.colors.regularStroke)
       .attr("stroke-width", 0.5)
       .on("mouseover", function (event, d) {
@@ -144,18 +103,20 @@ const visualization = {
       });
 
     // Create legend
-    this.createLegend(svgElement, dimensions, step, stats, colorScale);
+    this.createLegend(svgElement, dimensions, stepIndex, statistics);
 
     console.log("Map rendering complete");
   },
 
   // Create legend for the current visualization
-  createLegend: function (svgElement, dimensions, step, stats) {
+  createLegend: function (svgElement, dimensions, stepIndex, statistics) {
     // Legend dimensions and position
     const legendWidth = 220;
     const legendHeight = 20;
     const legendX = dimensions.width - legendWidth - 20;
     const legendY = dimensions.height - 70;
+
+    const step = config.steps[stepIndex];
 
     // Create legend container
     const legend = svgElement
@@ -172,43 +133,63 @@ const visualization = {
       .style("font-weight", "bold")
       .text(step.title);
 
-    if (step.id === "federal_workers") {
-      this.createFederalWorkersLegend(legend, legendWidth, legendHeight, stats);
-    } else if (step.id === "vulnerability_category") {
-      this.createVulnerabilityCategoryLegend(legend, legendWidth, legendHeight);
-    } else if (step.id === "vulnerability_index") {
-      // Use custom breaks for vulnerability index
-      const customBreaks = [5, 15, 30, 50, 70];
-      this.createCustomVulnerabilityLegend(
+    // Select appropriate legend type based on step id
+    if (step.id === "vulnerability_category") {
+      this.createCategoryLegend(legend, legendWidth, legendHeight);
+    } else {
+      // Get scale configuration
+      let breaks,
+        colors,
+        maxValue,
+        showEndLabel = false;
+
+      if (config.scales && config.scales[step.id]) {
+        // Use configuration from config file
+        const scaleConfig = config.scales[step.id];
+        breaks = scaleConfig.breaks;
+        colors = config.colors[scaleConfig.colorSet];
+        maxValue = scaleConfig.maxValue || Math.max(...breaks) * 1.2;
+        showEndLabel = scaleConfig.showEndLabel || false;
+      } else {
+        // Fallback to statistics
+        breaks = statistics.breaks;
+        colors = config.colors[step.colorSet || "vulnerability"];
+        maxValue = statistics.max;
+      }
+
+      this.createBreaksLegend(
         legend,
         legendWidth,
         legendHeight,
-        customBreaks
+        breaks,
+        colors,
+        maxValue,
+        showEndLabel
       );
-    } else {
-      // Regular vulnerability index legend (numeric)
-      this.createVulnerabilityLegend(legend, legendWidth, legendHeight, stats);
     }
+
+    // This code has been replaced by the conditional logic above
   },
 
-  // Create legend specifically for federal workers visualization
-  createFederalWorkersLegend: function (
+  // Generic function to create a breaks-based legend (used for both vulnerability and federal workers)
+  createBreaksLegend: function (
     legend,
     legendWidth,
     legendHeight,
-    stats
+    breaks,
+    colors,
+    maxValue,
+    showEndLabel = false
   ) {
-    // Custom breaks for federal workers
-    const customBreaks = [1000, 2500, 5000, 7500, 10000];
-    // Add min value at the beginning for drawing purposes
-    const allBreaks = [0].concat(customBreaks);
-    // Add max value at the end for drawing purposes
-    const maxValue = 15000; // Using a higher value for visualization
+    // Add min value at the beginning if not present
+    if (breaks[0] !== 0) {
+      breaks = [0].concat(breaks);
+    }
 
     // Create blocks for each color range
-    for (let i = 0; i < config.colors.federal.length; i++) {
-      const startValue = allBreaks[i];
-      const endValue = i === allBreaks.length - 1 ? maxValue : allBreaks[i + 1];
+    for (let i = 0; i < colors.length; i++) {
+      const startValue = breaks[i];
+      const endValue = i === breaks.length - 1 ? maxValue : breaks[i + 1];
       const segmentWidth = (legendWidth / maxValue) * (endValue - startValue);
       const segmentX = (legendWidth / maxValue) * startValue;
 
@@ -218,12 +199,12 @@ const visualization = {
         .attr("y", 0)
         .attr("width", segmentWidth)
         .attr("height", legendHeight)
-        .style("fill", config.colors.federal[i]);
+        .style("fill", colors[i]);
     }
 
     // Add tick marks and labels for all break points
-    for (let i = 0; i < allBreaks.length; i++) {
-      const value = allBreaks[i];
+    for (let i = 0; i < breaks.length; i++) {
+      const value = breaks[i];
       const position = (value / maxValue) * legendWidth;
 
       // Add tick mark
@@ -236,151 +217,31 @@ const visualization = {
         .attr("stroke", "#000")
         .attr("stroke-width", 1);
 
-      // Add label for all breaks (since these are meaningful round numbers)
+      // Add label (use toLocaleString for formatting if it's federal_workers, which has larger numbers)
+      const isNumberLarge = value >= 1000;
       legend
         .append("text")
         .attr("x", position)
         .attr("y", legendHeight + 15)
         .attr("text-anchor", "middle")
         .style("font-size", "9px")
-        .text(value === 0 ? "0" : value.toLocaleString());
+        .text(isNumberLarge ? value.toLocaleString() : value.toString());
     }
 
-    // Add one more tick mark for the "10,000+" label
-    const position =
-      (customBreaks[customBreaks.length - 1] / maxValue) * legendWidth;
-
-    legend
-      .append("text")
-      .attr("x", legendWidth)
-      .attr("y", legendHeight + 15)
-      .attr("text-anchor", "end")
-      .style("font-size", "9px")
-      .text("10,000+");
-  },
-
-  // Create legend specifically for vulnerability visualization
-  createVulnerabilityLegend: function (
-    legend,
-    legendWidth,
-    legendHeight,
-    stats
-  ) {
-    // Create sequential color scale for vulnerability index
-    for (let i = 0; i < stats.breaks.length; i++) {
-      const startValue = i === 0 ? 0 : stats.breaks[i - 1];
-      const endValue = stats.breaks[i];
-      const segmentWidth = (legendWidth / stats.max) * (endValue - startValue);
-      const segmentX = (legendWidth / stats.max) * startValue;
-
-      legend
-        .append("rect")
-        .attr("x", segmentX)
-        .attr("y", 0)
-        .attr("width", segmentWidth)
-        .attr("height", legendHeight)
-        .style(
-          "fill",
-          config.colors.vulnerability[i % config.colors.vulnerability.length]
-        );
-    }
-
-    // Add tick marks and labels
-    for (let i = 0; i < stats.breaks.length; i++) {
-      const value = stats.breaks[i];
-      const position = (value / stats.max) * legendWidth;
-
-      // Add tick mark
-      legend
-        .append("line")
-        .attr("x1", position)
-        .attr("x2", position)
-        .attr("y1", legendHeight)
-        .attr("y2", legendHeight + 5)
-        .attr("stroke", "#000")
-        .attr("stroke-width", 1);
-
-      // Only add labels for some thresholds to avoid overcrowding
-      if (i % 2 === 0 || i === stats.breaks.length - 1) {
-        legend
-          .append("text")
-          .attr("x", position)
-          .attr("y", legendHeight + 15)
-          .attr("text-anchor", "middle")
-          .style("font-size", "9px")
-          .text(Math.round(value));
-      }
-    }
-  },
-
-  createCustomVulnerabilityLegend: function (
-    legend,
-    legendWidth,
-    legendHeight,
-    customBreaks
-  ) {
-    // Add 0 at the beginning for better visualization
-    const allBreaks = [0].concat(customBreaks);
-    // Use the max break as the max value
-    const maxValue = customBreaks[customBreaks.length - 1] * 1.2; // Add 20% for visual spacing
-
-    // Create blocks for each color range
-    for (let i = 0; i < config.colors.vulnerability.length; i++) {
-      const startValue = allBreaks[i];
-      const endValue = i === allBreaks.length - 1 ? maxValue : allBreaks[i + 1];
-      const segmentWidth = (legendWidth / maxValue) * (endValue - startValue);
-      const segmentX = (legendWidth / maxValue) * startValue;
-
-      legend
-        .append("rect")
-        .attr("x", segmentX)
-        .attr("y", 0)
-        .attr("width", segmentWidth)
-        .attr("height", legendHeight)
-        .style("fill", config.colors.vulnerability[i]);
-    }
-
-    // Add tick marks and labels for all break points
-    for (let i = 0; i < allBreaks.length; i++) {
-      const value = allBreaks[i];
-      const position = (value / maxValue) * legendWidth;
-
-      // Add tick mark
-      legend
-        .append("line")
-        .attr("x1", position)
-        .attr("x2", position)
-        .attr("y1", legendHeight)
-        .attr("y2", legendHeight + 5)
-        .attr("stroke", "#000")
-        .attr("stroke-width", 1);
-
-      // Add label
+    // Add end label if requested (e.g., "10,000+")
+    if (showEndLabel) {
       legend
         .append("text")
-        .attr("x", position)
+        .attr("x", legendWidth)
         .attr("y", legendHeight + 15)
-        .attr("text-anchor", "middle")
+        .attr("text-anchor", "end")
         .style("font-size", "9px")
-        .text(value.toString());
+        .text(breaks[breaks.length - 1].toLocaleString() + "+");
     }
-
-    // Add "70+" label at the end
-    legend
-      .append("text")
-      .attr("x", legendWidth)
-      .attr("y", legendHeight + 15)
-      .attr("text-anchor", "end")
-      .style("font-size", "9px")
-      .text("70+");
   },
 
   // Create legend specifically for vulnerability categories
-  createVulnerabilityCategoryLegend: function (
-    legend,
-    legendWidth,
-    legendHeight
-  ) {
+  createCategoryLegend: function (legend, legendWidth, legendHeight) {
     // Category information
     const categories = ["Very low", "Low", "Moderate", "High"];
 
@@ -413,7 +274,7 @@ const visualization = {
         .text(category);
     });
 
-    // Add "No Data" category if needed
+    // Add "No Data" category
     const noDataX = startX + categories.length * (segmentWidth + spacing);
 
     legend
@@ -433,118 +294,6 @@ const visualization = {
       .attr("text-anchor", "middle")
       .style("font-size", "10px")
       .text("No Data");
-  },
-
-  // Add this function to your visualization object
-  debugColorScale: function (stepIndex, statistics, mapData) {
-    const step = config.steps[stepIndex];
-    const stats = statistics;
-
-    console.log("======= COLOR SCALE DEBUG INFO =======");
-    console.log(`Step: ${step.id}`);
-    console.log(`Data field: ${step.dataField}`);
-
-    // Log data statistics
-    console.log("\nData Statistics:");
-    console.log(`Min: ${stats.min}`);
-    console.log(`Max: ${stats.max}`);
-    console.log(`Median: ${stats.median}`);
-    console.log(`Mean: ${stats.mean}`);
-
-    if (step.id === "federal_workers") {
-      console.log("\nFederal Workers Color Scale:");
-      console.log(`Number of colors in array: ${config.colors.federal.length}`);
-      console.log(`Colors: ${JSON.stringify(config.colors.federal)}`);
-
-      // Custom breaks for federal workers
-      const customBreaks = [1000, 2500, 5000, 7500, 10000];
-
-      console.log("\nUsing Custom Break Points:");
-      customBreaks.forEach((breakPoint, i) => {
-        console.log(`Break ${i + 1}: ${breakPoint.toFixed(0)}`);
-      });
-
-      console.log("\nColor Mapping:");
-      console.log(`Values < ${customBreaks[0]}: ${config.colors.federal[0]}`);
-
-      for (let i = 0; i < customBreaks.length - 1; i++) {
-        console.log(
-          `Values >= ${customBreaks[i]} and < ${customBreaks[i + 1]}: ${
-            config.colors.federal[i + 1]
-          }`
-        );
-      }
-
-      console.log(
-        `Values >= ${customBreaks[customBreaks.length - 1]}: ${
-          config.colors.federal[config.colors.federal.length - 1]
-        }`
-      );
-
-      // Only attempt data distribution calculation if mapData is provided
-      if (mapData && mapData.length > 0) {
-        // Calculate data distribution across buckets
-        const bucketCounts = Array(config.colors.federal.length).fill(0);
-        const sampleData = this.getSampleData(mapData, step.dataField);
-
-        sampleData.forEach((value) => {
-          if (value < customBreaks[0]) {
-            bucketCounts[0]++;
-          } else if (value >= customBreaks[customBreaks.length - 1]) {
-            bucketCounts[bucketCounts.length - 1]++;
-          } else {
-            for (let i = 0; i < customBreaks.length - 1; i++) {
-              if (value >= customBreaks[i] && value < customBreaks[i + 1]) {
-                bucketCounts[i + 1]++;
-                break;
-              }
-            }
-          }
-        });
-
-        console.log("\nData Distribution:");
-        const totalCount = sampleData.length;
-        bucketCounts.forEach((count, i) => {
-          const percentage = ((count / totalCount) * 100).toFixed(2);
-          console.log(
-            `Color ${i + 1} (${
-              config.colors.federal[i]
-            }): ${count} values (${percentage}%)`
-          );
-        });
-      } else {
-        console.log(
-          "\nData Distribution: Cannot calculate (mapData not available)"
-        );
-      }
-    } else {
-      // Vulnerability index debugging code (unchanged)
-      console.log("\nVulnerability Index Color Scale:");
-      console.log(`Number of colors: ${config.colors.vulnerability.length}`);
-      console.log(`Colors: ${JSON.stringify(config.colors.vulnerability)}`);
-      console.log(`Breaks: ${JSON.stringify(stats.breaks)}`);
-
-      console.log("\nColor Mapping:");
-      console.log(
-        `Values < ${stats.breaks[0]}: ${config.colors.vulnerability[0]}`
-      );
-
-      for (let i = 0; i < stats.breaks.length - 1; i++) {
-        console.log(
-          `Values >= ${stats.breaks[i]} and < ${stats.breaks[i + 1]}: ${
-            config.colors.vulnerability[i + 1]
-          }`
-        );
-      }
-
-      console.log(
-        `Values >= ${stats.breaks[stats.breaks.length - 1]}: ${
-          config.colors.vulnerability[config.colors.vulnerability.length - 1]
-        }`
-      );
-    }
-
-    console.log("======= END DEBUG INFO =======");
   },
 
   // Helper function to get sample data for analysis

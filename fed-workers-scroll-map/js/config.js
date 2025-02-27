@@ -8,14 +8,14 @@ const config = {
       title: "Federal workers per 100,000 across U.S. counties",
       dataField: "fed_workers_per_100k",
       colorScheme: "blues",
-      colorScaleType: "diverging", // centered around median
+      colorSet: "federal",
     },
     {
       id: "vulnerability_index",
       title: "Vulnerability index across U.S. counties",
       dataField: "vulnerabilityIndex",
       colorScheme: "reds",
-      colorScaleType: "sequential",
+      colorSet: "vulnerability",
     },
     // New step for vulnerability categories (categorical)
     {
@@ -24,6 +24,21 @@ const config = {
       dataField: "category",
     },
   ],
+
+  // Color scale configurations
+  scales: {
+    federal_workers: {
+      breaks: [1000, 2500, 5000, 7500, 10000],
+      colorSet: "federal",
+      maxValue: 15000,
+      showEndLabel: true,
+    },
+    vulnerability_index: {
+      breaks: [5, 10, 15, 30, 65],
+      colorSet: "vulnerability",
+      maxValue: 72,
+    },
+  },
 
   // Visual configuration
   // Colors for color scale
