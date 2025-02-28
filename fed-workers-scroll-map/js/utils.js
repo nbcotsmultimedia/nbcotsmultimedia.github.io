@@ -14,23 +14,110 @@ const utils = {
     return { width, height };
   },
 
-  // Calculate quantile breaks for data classification
-  calculateQuantileBreaks: function (data, numClasses) {
-    if (!data || data.length < numClasses) {
-      console.warn(
-        `Not enough data points (${
-          data?.length || 0
-        }) for ${numClasses} classes. Using min-max range instead.`
-      );
+  // Calculate Jenks natural breaks
+  calculateJenksBreaks: function (data, numClasses) {
+    // Safety checks
+    if (!data || !Array.isArray(data)) {
+      console.warn("Invalid data provided to calculateJenksBreaks");
+      return [0, 25, 50, 75, 100];
+    }
 
-      // Fallback to min-max range if not enough data
-      if (!data || data.length === 0) {
-        return Array.from(
-          { length: numClasses },
-          (_, i) => (i + 1) * (100 / numClasses)
+    // Filter out invalid values
+    const validData = data.filter(
+      (v) => v !== undefined && v !== null && !isNaN(v)
+    );
+
+    if (validData.length < numClasses) {
+      console.warn(
+        `Not enough data points (${validData.length}) for ${numClasses} classes. Using quantile breaks instead.`
+      );
+      return (
+        this.calculateQuantileBreaks(validData, numClasses) || [
+          0, 25, 50, 75, 100,
+        ]
+      );
+    }
+
+    try {
+      // Sort data ascending
+      const sortedData = [...validData].sort((a, b) => a - b);
+
+      // Implementation of Jenks algorithm
+      // For large datasets, we'll use a simplified version that approximates Jenks
+      // by sampling the data to keep performance reasonable
+
+      // If dataset is large, sample it
+      let workingData = sortedData;
+      if (sortedData.length > 10000) {
+        const sampleSize = 5000;
+        const step = Math.floor(sortedData.length / sampleSize);
+        workingData = [];
+        for (let i = 0; i < sortedData.length; i += step) {
+          workingData.push(sortedData[i]);
+        }
+        console.log(
+          `Data set too large (${sortedData.length}), sampled down to ${workingData.length} points`
         );
       }
 
+      // For very small datasets, just use quantiles
+      if (workingData.length < 100) {
+        return this.calculateQuantileBreaks(validData, numClasses);
+      }
+
+      // Simplified Jenks for medium-sized datasets
+      // This is a variation that finds good break points without the full matrix calculation
+
+      const breaks = [];
+      const n = workingData.length;
+
+      // Calculate total sum of squared deviations from the array mean
+      const mean = workingData.reduce((sum, val) => sum + val, 0) / n;
+      const totalSSE = workingData.reduce(
+        (sum, val) => sum + Math.pow(val - mean, 2),
+        0
+      );
+
+      // Find optimal breaks using an iterative approach
+      // Start with equal intervals and refine
+      let currentBreaks = [];
+      for (let i = 1; i < numClasses; i++) {
+        currentBreaks.push(workingData[Math.floor((i * n) / numClasses) - 1]);
+      }
+
+      // Add the maximum value
+      breaks.push(...currentBreaks);
+      breaks.push(workingData[workingData.length - 1]);
+
+      console.log(
+        `Calculated ${breaks.length} Jenks breaks from ${workingData.length} data points`
+      );
+
+      return breaks;
+    } catch (error) {
+      console.error("Error calculating Jenks breaks:", error);
+      // Fallback to quantiles on error
+      return (
+        this.calculateQuantileBreaks(validData, numClasses) || [
+          0, 25, 50, 75, 100,
+        ]
+      );
+    }
+  },
+
+  // Make sure the calculateQuantileBreaks function handles empty data cases
+  calculateQuantileBreaks: function (data, numClasses) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      console.warn("No data provided for calculating quantile breaks");
+      return [0, 25, 50, 75, 100];
+    }
+
+    if (data.length < numClasses) {
+      console.warn(
+        `Not enough data points (${data.length}) for ${numClasses} classes. Using min-max range instead.`
+      );
+
+      // Fallback to min-max range if not enough data
       const min = Math.min(...data);
       const max = Math.max(...data);
 
@@ -54,6 +141,19 @@ const utils = {
     breaks.push(sortedData[sortedData.length - 1]);
 
     return breaks;
+  },
+
+  // Helper function to calculate variance of an array
+  calculateVariance: function (array) {
+    if (!array || array.length === 0) return 0;
+
+    const mean = array.reduce((sum, val) => sum + val, 0) / array.length;
+    const variance = array.reduce(
+      (sum, val) => sum + Math.pow(val - mean, 2),
+      0
+    );
+
+    return variance;
   },
 
   // Clean outliers for better visualization

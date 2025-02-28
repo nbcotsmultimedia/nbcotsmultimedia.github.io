@@ -3,6 +3,16 @@
 const config = {
   // Step configuration
   steps: [
+    // Step 1: Federal workers per 100k, by state
+    {
+      id: "state_federal_workers",
+      title: "Federal Workers per 100,000 by State",
+      dataField: "state_fed_workers_per_100k",
+      colorScheme: "blues",
+      colorSet: "federal",
+      isStateLevel: true, // Add this flag to indicate state-level visualization
+    },
+    // Step 2: Federal workers per 100k, by county
     {
       id: "federal_workers",
       title: "Federal workers per 100,000 across U.S. counties",
@@ -10,6 +20,7 @@ const config = {
       colorScheme: "blues",
       colorSet: "federal",
     },
+    // Step 3: Vulnerability score by county
     {
       id: "vulnerability_index",
       title: "Vulnerability index across U.S. counties",
@@ -18,63 +29,109 @@ const config = {
       colorSet: "vulnerability",
     },
     // New step for vulnerability categories (categorical)
-    {
-      id: "vulnerability_category",
-      title: "Vulnerability Categories",
-      dataField: "category",
-    },
+    // {
+    //   id: "vulnerability_category",
+    //   title: "Vulnerability Categories",
+    //   dataField: "category",
+    // },
   ],
 
   // Color scale configurations
   scales: {
     federal_workers: {
-      breaks: [1000, 2500, 5000, 7500, 10000],
+      // breaks: [1000, 2500, 5000, 7500, 10000],
+      useJenks: true,
       colorSet: "federal",
       maxValue: 15000,
       showEndLabel: true,
     },
     vulnerability_index: {
-      breaks: [5, 10, 15, 30, 65],
+      // breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      useJenks: true,
       colorSet: "vulnerability",
-      maxValue: 72,
+      maxValue: 65.0, // Maximum vulnerability score from analysis
     },
   },
 
-  // Visual configuration
   // Colors for color scale
   colors: {
     regularStroke: "#ffffff", // County outlines
     federal: [
-      "#ffffcc", // Light yellow
-      "#addfb7", // Light green
-      "#4ebac2", // Teal
-      "#328ebb", // Blue green
-      "#2961aa", // Med navy
-      "#253494", // Dark navy
+      // "#ffffcc", // Light yellow
+      // "#addfb7", // Light green
+      // "#4ebac2", // Teal
+      // "#328ebb", // Blue green
+      // "#2961aa", // Med navy
+      // "#253494", // Dark navy
+      "#f7fbff", // Lightest blue (almost white)
+      "#deebf7", // Very light blue
+      "#c6dbef", // Light blue
+      "#9ecae1", // Medium light blue
+      "#6baed6", // Medium blue
+      "#3182bd", // Medium dark blue
+      "#08519c", // Dark blue
     ],
     vulnerability: [
-      "#fee5d975", // Lightest pink/salmon
-      "#fcbba175", // Light salmon
-      "#fc927275", // Medium salmon
+      "#fff5f0", // Lightest pink (almost white)
+      "#fee0d2", // Very light salmon
+      "#fcbba1", // Light salmon
+      "#fc9272", // Medium salmon
       "#fb6a4a", // Salmon/light red
       "#de2d26", // Medium red
       "#a50f15", // Dark red
     ],
-    // Vulnerability categories
+    // Updated vulnerability categories to match natural breaks
     vulnerabilityCategory: {
-      "Very Low": "gray", // Lightest red from your existing palette
-      Low: "blue",
-      Moderate: "green",
-      High: "purple", // Darkest red from your existing palette
-      // "No Data": "#cccccc", // Assuming this is your default gray, adjust as needed
+      "Very Low": "#fff5f0", // Lightest pink
+      Low: "#fee0d2", // Light pink
+      "Moderate-Low": "#fcbba1", // Light salmon
+      "Moderate-High": "#fc9272", // Medium salmon
+      High: "#fb6a4a", // Salmon/light red
+      "Very High": "#a50f15", // Dark red
     },
   },
 
-  // Data classification configuration
+  // Classification configuration - change to use Jenks natural breaks
   classification: {
-    numBreaks: 5, // Number of breaks for color classes
+    method: "jenks", // Changed from implicit 'quantile' to explicit 'jenks'
+    numBreaks: 6, // Number of breaks for color classes
     outlierMultiplier: 3, // For IQR-based outlier detection
     percentileThreshold: 0.05, // For top/bottom percentile identification
+  },
+
+  // Add category names configuration to config.js
+  categoryNames: {
+    federal_workers: [
+      "Very Low",
+      "Low",
+      "Moderate",
+      "High",
+      "Very High",
+      "Extremely High",
+    ],
+    vulnerability_index: [
+      "Very Low",
+      "Low",
+      "Moderate-Low",
+      "Moderate-High",
+      "High",
+      "Very High",
+    ],
+    vulnerability_category: [
+      "Very Low",
+      "Low",
+      "Moderate",
+      "High",
+      "Very High",
+    ],
+  },
+
+  // Add descriptions for each map type
+  descriptions: {
+    federal_workers: "Federal workers per 100,000 population",
+    vulnerability_index:
+      "Based on federal employment, unemployment rate, and median income",
+    vulnerability_category: "Vulnerability categories by county",
   },
 
   // URL and data sources

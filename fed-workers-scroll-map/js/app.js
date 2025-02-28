@@ -49,13 +49,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    console.log("Rendering step:", state.currentStep);
+
     // Get statistics for the current step
     const stepStatistics = dataManager.getStatisticsForStep(state.currentStep);
+
+    // Determine which data to use
+    const mapDataToUse =
+      state.currentStep === 0 ? dataManager.stateData : dataManager.mapData;
 
     // Render map
     visualization.renderMap(
       elements.svg,
-      dataManager.mapData,
+      mapDataToUse,
       state.dimensions,
       state.currentStep,
       stepStatistics,
@@ -77,15 +83,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // Calculate scroll position relative to container
     const scrollPosition = (windowHeight / 2 - containerTop) / containerHeight;
 
-    // Determine current step based on scroll position
-    let newStep = 0; // Default to first step
+    console.log("Scroll position:", scrollPosition); // Debug log to see actual values
 
-    if (scrollPosition >= 0.5) {
-      newStep = 1; // Second step (vulnerability index)
+    // Determine current step based on scroll position
+    let newStep = 0; // Default to first step (state level)
+
+    // Adjust these thresholds - using more distinct boundaries
+    if (scrollPosition >= 0.25 && scrollPosition < 0.6) {
+      newStep = 1; // Second step (county level fed workers)
+    } else if (scrollPosition >= 0.6) {
+      newStep = 2; // Third step (vulnerability index)
     }
+
+    // Debug log
+    console.log("Current position:", scrollPosition, "New step:", newStep);
 
     // Update only if step changed
     if (newStep !== state.currentStep) {
+      console.log("Changing from step", state.currentStep, "to step", newStep);
       state.currentStep = newStep;
       uiManager.updateDescription(state.currentStep);
       renderCurrentStep();

@@ -348,3 +348,8 @@ body {
   height: 15px;
   margin-right: 0.5rem;
 }
+
+/* Add this to your CSS to ensure enough scroll height */
+#map-container {
+  min-height: 300vh; /* 3x the viewport height to ensure enough scroll space */
+}
