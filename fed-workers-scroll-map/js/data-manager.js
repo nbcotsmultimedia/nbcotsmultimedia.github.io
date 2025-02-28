@@ -27,7 +27,9 @@ const dataManager = {
         this.fetchCountiesData(),
         this.fetchStatesData(),
         this.fetchVulnerabilityData(),
-      ]);
+      ]).catch((error) => {
+        throw new Error(`Failed to load data in parallel: ${error.message}`);
+      });
 
       // Store raw data
       this.rawData.counties = counties;
@@ -40,7 +42,123 @@ const dataManager = {
       return this.mapData;
     } catch (error) {
       console.error("Error loading data:", error);
-      throw error;
+      throw new Error(`Failed to load map data: ${error.message}`);
+    }
+  },
+
+  // Fetch county boundaries from GeoJSON
+  fetchCountiesData: async function () {
+    console.log("Fetching US counties data...");
+    try {
+      const response = await fetch(config.urls.countiesGeoJSON);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! Status: ${response.status} - ${response.statusText}`
+        );
+      }
+
+      const usCounties = await response.json();
+
+      // Validate the data structure
+      if (!usCounties || !usCounties.objects || !usCounties.objects.counties) {
+        throw new Error("Invalid counties GeoJSON format");
+      }
+
+      // Extract features from topojson
+      const counties = topojson.feature(
+        usCounties,
+        usCounties.objects.counties
+      ).features;
+
+      console.log(`Extracted ${counties.length} county features`);
+      return counties;
+    } catch (error) {
+      console.error(`Failed to fetch county data: ${error.message}`);
+      throw error; // Re-throw to be handled by the caller
+    }
+  },
+
+  // Fetch state boundaries
+  fetchStatesData: async function () {
+    console.log("Fetching US states data...");
+    try {
+      const response = await fetch(config.urls.statesGeoJSON);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! Status: ${response.status} - ${response.statusText}`
+        );
+      }
+
+      const usStates = await response.json();
+
+      // Validate the data structure
+      if (!usStates || !usStates.objects || !usStates.objects.states) {
+        throw new Error("Invalid states GeoJSON format");
+      }
+
+      // Extract features from topojson
+      const states = topojson.feature(
+        usStates,
+        usStates.objects.states
+      ).features;
+
+      console.log(`Extracted ${states.length} state features`);
+      return states;
+    } catch (error) {
+      console.error(`Failed to fetch states data: ${error.message}`);
+      throw error; // Re-throw to be handled by the caller
+    }
+  },
+
+  // Fetch vulnerability data from CSV
+  fetchVulnerabilityData: async function () {
+    console.log("Fetching vulnerability data...");
+    try {
+      const response = await fetch(config.urls.dataSheet);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! Status: ${response.status} - ${response.statusText}`
+        );
+      }
+
+      const csvText = await response.text();
+
+      // Validate CSV data
+      if (!csvText || csvText.trim().length === 0) {
+        throw new Error("Empty or invalid CSV data received");
+      }
+
+      // Parse CSV
+      const parseResult = Papa.parse(csvText, {
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+      });
+
+      // Check for parse errors
+      if (parseResult.errors && parseResult.errors.length > 0) {
+        console.warn("CSV parsing had some errors:", parseResult.errors);
+      }
+
+      const parsedData = parseResult.data;
+
+      // Validate parsed data
+      if (
+        !parsedData ||
+        !Array.isArray(parsedData) ||
+        parsedData.length === 0
+      ) {
+        throw new Error("Failed to parse vulnerability data from CSV");
+      }
+
+      console.log(`Parsed ${parsedData.length} vulnerability data records`);
+      return parsedData;
+    } catch (error) {
+      console.error(`Failed to fetch vulnerability data: ${error.message}`);
+      throw error; // Re-throw to be handled by the caller
     }
   },
 
@@ -106,6 +224,17 @@ const dataManager = {
 
       stateGroups[stateName].push(props);
     });
+
+    // Special case for DC (since it's a single "county")
+    const dcCounty = this.mapData.find(
+      (county) =>
+        county.properties.stateName === "District of Columbia" ||
+        county.properties.name === "District of Columbia"
+    );
+
+    if (dcCounty && !stateGroups["District of Columbia"]) {
+      stateGroups["District of Columbia"] = [dcCounty.properties];
+    }
 
     // Calculate aggregates for each state
     const stateData = {};
@@ -261,6 +390,32 @@ const dataManager = {
     console.log(
       `Processed ${this.mapData.length} counties and ${this.stateData.length} states`
     );
+
+    // Add this to the end of the processData function in data-manager.js
+
+    // Identify vulnerable counties
+    this.vulnerableCountyIds = this.identifyVulnerableCounties();
+
+    // Find narrative examples
+    this.narrativeExamples = this.findNarrativeExamples();
+
+    // Update the config with actual county IDs for narrative examples
+    if (this.narrativeExamples.remoteVulnerable.length > 0) {
+      const stepIndex = config.steps.findIndex(
+        (s) => s.id === "narrative_example_1"
+      );
+      if (stepIndex >= 0) {
+        config.steps[stepIndex].highlightCounties =
+          this.narrativeExamples.remoteVulnerable;
+      }
+    }
+
+    console.log("Vulnerability analysis complete:", {
+      vulnerableCounties: this.vulnerableCountyIds.length,
+      remoteExamples: this.narrativeExamples.remoteVulnerable,
+      resilientExamples: this.narrativeExamples.resilient,
+      disproportionateExamples: this.narrativeExamples.disproportionate,
+    });
   },
 
   // Create lookup for vulnerability data by county name
@@ -453,51 +608,15 @@ const dataManager = {
   },
 
   // calculateVulnerabilityIndex function
+  // Calculate vulnerability index for counties
   calculateVulnerabilityIndex: function (counties) {
-    console.log("Debugging county data properties...");
-
     // Check if counties array exists and has elements
     if (!counties || counties.length === 0) {
       console.error("No counties data available");
       return counties;
     }
 
-    // Sample the first few counties to check properties
-    const sampleSize = Math.min(5, counties.length);
-    const samples = counties.slice(0, sampleSize);
-
-    // Log all property names from the first county
-    console.log(
-      "Available properties in county data:",
-      Object.keys(samples[0].properties).sort()
-    );
-
-    // Check for the specific properties we need
-    samples.forEach((county, index) => {
-      const props = county.properties;
-      console.log(
-        `Sample County ${index + 1}: ${props.name}, ${
-          props.stateName || "Unknown"
-        }`
-      );
-      console.log({
-        // Check all possible property names for federal worker data
-        pct_federal: props.pct_federal,
-        federal_pct: props.federal_pct,
-        pctFederal: props.pctFederal,
-        fedPct: props.fedPct,
-
-        // Check unemployment properties
-        unemployment_rate: props.unemployment_rate,
-        unemploymentRate: props.unemploymentRate,
-
-        // Check income properties
-        median_income: props.median_income,
-        medianIncome: props.medianIncome,
-      });
-    });
-
-    // Step 1: Define safe property accessor with multiple fallback properties
+    // Define safe property accessor with multiple fallback properties
     const getPropertySafe = (county, propNames, alternateNames = []) => {
       // Try the primary property names
       for (const name of propNames) {
@@ -522,27 +641,7 @@ const dataManager = {
       return null;
     };
 
-    // Add logging for the first few counties to check data availability
-    if (counties.length > 0) {
-      console.log(
-        "Sample county properties:",
-        Object.keys(counties[0].properties)
-      );
-      for (let i = 0; i < Math.min(3, counties.length); i++) {
-        const county = counties[i];
-        const props = county.properties;
-        console.log(
-          `County ${i}: ${props.name}, ${props.stateName || "Unknown"}`
-        );
-        console.log({
-          pct_federal: props.pct_federal,
-          unemployment_rate: props.unemployment_rate,
-          median_income: props.median_income,
-        });
-      }
-    }
-
-    // Step 2: Filter counties with valid data for all factors
+    // Filter counties with valid data for all factors
     const validCounties = counties.filter((county) => {
       // Try multiple property name variations for each metric
       const pctFederal = getPropertySafe(
@@ -563,29 +662,11 @@ const dataManager = {
         ["medianIncome", "median_household_income", "income"]
       );
 
-      // Log counties with missing data for debugging
-      if (
-        pctFederal === null ||
-        unemploymentRate === null ||
-        medianIncome === null
-      ) {
-        // Don't log for counties with no data at all (to reduce console spam)
-        if (county.properties.category !== "No Data") {
-          console.log(
-            `Missing data for ${county.properties.name}, ${
-              county.properties.stateName || "Unknown"
-            }:`,
-            {
-              pctFederal,
-              unemploymentRate,
-              medianIncome,
-            }
-          );
-        }
-        return false;
-      }
-
-      return true;
+      return (
+        pctFederal !== null &&
+        unemploymentRate !== null &&
+        medianIncome !== null
+      );
     });
 
     console.log(
@@ -599,7 +680,7 @@ const dataManager = {
       return counties;
     }
 
-    // Step 3: Calculate min/max values for normalization
+    // Calculate min/max values for normalization
     const minMax = {
       pct_federal: {
         min: Math.min(
@@ -647,9 +728,7 @@ const dataManager = {
       },
     };
 
-    console.log("Min/Max values for normalization:", minMax);
-
-    // Step 4: Normalize values to 0-1 scale (utility functions)
+    // Normalize values to 0-1 scale (utility functions)
     const normalize = (value, min, max) => {
       if (max === min) return 0.5;
       return (value - min) / (max - min);
@@ -659,7 +738,7 @@ const dataManager = {
       return 1 - normalize(value, min, max);
     };
 
-    // Step 5: Apply the new vulnerability calculation to each county
+    // Apply the vulnerability calculation to each county
     let calculatedCount = 0;
 
     counties.forEach((county) => {
@@ -740,26 +819,9 @@ const dataManager = {
       calculatedCount++;
     });
 
-    console.log("Vulnerability index calculation complete");
     console.log(
-      "Counties with calculated vulnerability index:",
-      calculatedCount
+      `Vulnerability index calculated for ${calculatedCount} counties`
     );
-
-    // Log sample results
-    console.log(
-      "Sample county vulnerability data:",
-      counties.slice(0, 3).map((c) => ({
-        name: c.properties.name,
-        state: c.properties.stateName,
-        pctFederal: getPropertySafe(c, ["pct_federal"], ["fedDependency"]),
-        unemploymentRate: c.properties.unemployment_rate,
-        medianIncome: c.properties.median_income,
-        vulnIndex: c.properties.vulnerabilityIndex,
-        category: c.properties.category,
-      }))
-    );
-
     return counties;
   },
 
@@ -772,6 +834,103 @@ const dataManager = {
     if (index < 26.2) return "Moderate";
     if (index < 30.1) return "High";
     return "Very High";
+  },
+
+  // Add this to dataManager in data-manager.js
+
+  // Identify counties that are vulnerable to federal job cuts
+  identifyVulnerableCounties: function () {
+    if (!this.mapData) return [];
+
+    console.log("Identifying vulnerable counties...");
+
+    // Use the threshold values from config
+    const fedThreshold = config.vulnerability.highFederalThreshold || 5000;
+    const vulnThreshold = config.vulnerability.highVulnerabilityThreshold || 40;
+
+    // Filter counties that meet both criteria
+    const vulnerableCounties = this.mapData.filter((county) => {
+      const fedWorkers = county.properties.fed_workers_per_100k || 0;
+      const vulnerabilityScore = county.properties.vulnerabilityIndex || 0;
+
+      return fedWorkers >= fedThreshold && vulnerabilityScore >= vulnThreshold;
+    });
+
+    console.log(`Found ${vulnerableCounties.length} vulnerable counties`);
+
+    // Add a flag to these counties' properties
+    vulnerableCounties.forEach((county) => {
+      county.properties.isVulnerable = true;
+    });
+
+    // Return county ids for easy lookup
+    return vulnerableCounties.map((county) => county.id);
+  },
+
+  // Find interesting narrative examples based on your criteria
+  findNarrativeExamples: function () {
+    if (!this.mapData) return {};
+
+    // 1. Remote county with high vulnerability
+    const remoteVulnerableCounties = this.mapData.filter((county) => {
+      // Define "remote" as not in the east coast states
+      const eastCoastStates = [
+        "MD",
+        "VA",
+        "DE",
+        "NJ",
+        "NY",
+        "CT",
+        "RI",
+        "MA",
+        "NH",
+        "ME",
+        "NC",
+        "SC",
+        "GA",
+        "FL",
+      ];
+      const stateAbbr = utils.fips.getStateAbbr(county.id.substring(0, 2));
+      const isRemote = !eastCoastStates.includes(stateAbbr);
+
+      // High vulnerability criteria
+      const vulnerabilityScore = county.properties.vulnerabilityIndex || 0;
+      const isHighlyVulnerable =
+        vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold;
+
+      return isRemote && isHighlyVulnerable;
+    });
+
+    // 2. Resilient county (high federal employment but low vulnerability)
+    const resilientCounties = this.mapData.filter((county) => {
+      const fedWorkers = county.properties.fed_workers_per_100k || 0;
+      const vulnerabilityScore = county.properties.vulnerabilityIndex || 0;
+
+      return (
+        fedWorkers >= config.vulnerability.highFederalThreshold &&
+        vulnerabilityScore < 30
+      ); // Low vulnerability threshold
+    });
+
+    // 3. Disproportionately vulnerable county
+    const disproportionateCounties = this.mapData.filter((county) => {
+      const fedWorkers = county.properties.fed_workers_per_100k || 0;
+      const vulnerabilityScore = county.properties.vulnerabilityIndex || 0;
+
+      // Moderate federal employment but high vulnerability
+      return (
+        fedWorkers >= 2000 &&
+        fedWorkers < 5000 &&
+        vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold
+      );
+    });
+
+    // Return a selection of examples (first 3 of each type)
+    return {
+      remoteVulnerable: remoteVulnerableCounties.slice(0, 3).map((c) => c.id),
+      resilient: resilientCounties.slice(0, 3).map((c) => c.id),
+      disproportionate: disproportionateCounties.slice(0, 3).map((c) => c.id),
+    };
   },
 
   // Helper function to normalize values to a 0-100 scale

@@ -353,3 +353,42 @@ body {
 #map-container {
   min-height: 300vh; /* 3x the viewport height to ensure enough scroll space */
 }
+
+/* Add these styles to your CSS file */
+
+/* Tooltip styles for vulnerability information */
+.tooltip-vulnerable {
+  background-color: #a50f15;
+  color: white;
+  padding: 4px 8px;
+  font-weight: bold;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+
+/* Narrative example highlight styles */
+.county.narrative-highlight {
+  stroke: #ff4500;
+  stroke-width: 2px;
+  stroke-dasharray: none;
+}
+
+/* Description styles for better readability */
+#description p {
+  margin-top: 8px;
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+/* Style for callout labels */
+.county-label {
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.county-label-bg {
+  fill: white;
+  fill-opacity: 0.8;
+  rx: 3px;
+  ry: 3px;
+}

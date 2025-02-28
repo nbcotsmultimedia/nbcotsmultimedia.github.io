@@ -49,8 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    console.log("Rendering step:", state.currentStep);
-
     // Get statistics for the current step
     const stepStatistics = dataManager.getStatisticsForStep(state.currentStep);
 
@@ -83,20 +81,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // Calculate scroll position relative to container
     const scrollPosition = (windowHeight / 2 - containerTop) / containerHeight;
 
-    console.log("Scroll position:", scrollPosition); // Debug log to see actual values
+    // Get the total number of steps
+    const totalSteps = config.steps.length;
+
+    // Calculate the scroll position thresholds for each step
+    // Each step gets an equal portion of the scroll range
+    const stepSize = 1 / totalSteps;
 
     // Determine current step based on scroll position
-    let newStep = 0; // Default to first step (state level)
+    let newStep = 0; // Default to first step
 
-    // Adjust these thresholds - using more distinct boundaries
-    if (scrollPosition >= 0.25 && scrollPosition < 0.6) {
-      newStep = 1; // Second step (county level fed workers)
-    } else if (scrollPosition >= 0.6) {
-      newStep = 2; // Third step (vulnerability index)
+    for (let i = 1; i < totalSteps; i++) {
+      if (scrollPosition >= i * stepSize) {
+        newStep = i;
+      }
     }
-
-    // Debug log
-    console.log("Current position:", scrollPosition, "New step:", newStep);
 
     // Update only if step changed
     if (newStep !== state.currentStep) {

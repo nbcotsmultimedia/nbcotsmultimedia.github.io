@@ -28,16 +28,29 @@ const config = {
       colorScheme: "reds",
       colorSet: "vulnerability",
     },
-    // New step for vulnerability categories (categorical)
-    // {
-    //   id: "vulnerability_category",
-    //   title: "Vulnerability Categories",
-    //   dataField: "category",
-    // },
+    // Add new step for vulnerable counties
+    {
+      id: "vulnerable_counties",
+      title: "Counties Most Vulnerable to Federal Job Cuts",
+      dataField: "fed_workers_per_100k",
+      highlightVulnerable: true,
+    },
+    // Add steps for narrative examples
+    {
+      id: "narrative_example_1",
+      title: "Remote Areas with Surprising Vulnerability",
+      highlightCounties: ["County1FIPS", "County2FIPS"],
+    },
   ],
 
   // Color scale configurations
   scales: {
+    state_federal_workers: {
+      useJenks: true,
+      colorSet: "federal",
+      maxValue: 15000,
+      showEndLabel: true,
+    },
     federal_workers: {
       // breaks: [1000, 2500, 5000, 7500, 10000],
       useJenks: true,
@@ -51,18 +64,45 @@ const config = {
       colorSet: "vulnerability",
       maxValue: 65.0, // Maximum vulnerability score from analysis
     },
+    // Scale for vulnerable counties map
+    vulnerable_counties: {
+      useJenks: true,
+      colorSet: "federal", // Use the same blue color scheme as the federal workers map
+      maxValue: 15000,
+      showEndLabel: true,
+    },
+    // Scale for narrative example 1 (remote vulnerability)
+    narrative_example_1: {
+      useJenks: true,
+      colorSet: "federal",
+      maxValue: 15000,
+      showEndLabel: true,
+      // Optional custom breaks if you want to force specific break points
+      // breaks: [1000, 2500, 5000, 7500, 10000]
+    },
+    // Scale for narrative example 2 (resilient counties)
+    narrative_example_2: {
+      useJenks: true,
+      colorSet: "federal",
+      maxValue: 15000,
+      showEndLabel: true,
+    },
+
+    // Scale for narrative example 3 (disproportionate vulnerability)
+    narrative_example_3: {
+      useJenks: true,
+      colorSet: "federal",
+      maxValue: 15000,
+      showEndLabel: true,
+    },
   },
 
   // Colors for color scale
   colors: {
     regularStroke: "#ffffff", // County outlines
+
+    // Color palettes for different data types
     federal: [
-      // "#ffffcc", // Light yellow
-      // "#addfb7", // Light green
-      // "#4ebac2", // Teal
-      // "#328ebb", // Blue green
-      // "#2961aa", // Med navy
-      // "#253494", // Dark navy
       "#f7fbff", // Lightest blue (almost white)
       "#deebf7", // Very light blue
       "#c6dbef", // Light blue
@@ -71,6 +111,7 @@ const config = {
       "#3182bd", // Medium dark blue
       "#08519c", // Dark blue
     ],
+
     vulnerability: [
       "#fff5f0", // Lightest pink (almost white)
       "#fee0d2", // Very light salmon
@@ -80,7 +121,8 @@ const config = {
       "#de2d26", // Medium red
       "#a50f15", // Dark red
     ],
-    // Updated vulnerability categories to match natural breaks
+
+    // Category-specific colors using the vulnerability palette
     vulnerabilityCategory: {
       "Very Low": "#fff5f0", // Lightest pink
       Low: "#fee0d2", // Light pink
@@ -89,6 +131,15 @@ const config = {
       High: "#fb6a4a", // Salmon/light red
       "Very High": "#a50f15", // Dark red
     },
+
+    // Narrative highlight colors
+    narrative: [
+      "#fee5d9", // Lightest
+      "#fcae91",
+      "#fb6a4a",
+      "#de2d26",
+      "#a50f15", // Darkest
+    ],
   },
 
   // Classification configuration - change to use Jenks natural breaks
@@ -201,5 +252,10 @@ const config = {
     69: "Northern Mariana Islands",
     72: "Puerto Rico",
     78: "Virgin Islands",
+  },
+
+  vulnerability: {
+    highFederalThreshold: 2500, // Fed workers per 100k
+    highVulnerabilityThreshold: 20, // Vulnerability score
   },
 };

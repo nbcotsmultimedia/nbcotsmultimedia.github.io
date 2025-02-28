@@ -17,7 +17,7 @@ const utils = {
   // Calculate Jenks natural breaks
   calculateJenksBreaks: function (data, numClasses) {
     // Safety checks
-    if (!data || !Array.isArray(data)) {
+    if (!data || !Array.isArray(data) || data.length === 0) {
       console.warn("Invalid data provided to calculateJenksBreaks");
       return [0, 25, 50, 75, 100];
     }
@@ -27,82 +27,100 @@ const utils = {
       (v) => v !== undefined && v !== null && !isNaN(v)
     );
 
+    if (validData.length === 0) {
+      console.warn("No valid data points for Jenks breaks calculation");
+      return [0, 25, 50, 75, 100];
+    }
+
+    // If we don't have enough data points for the requested number of classes,
+    // fall back to quantile breaks
     if (validData.length < numClasses) {
       console.warn(
         `Not enough data points (${validData.length}) for ${numClasses} classes. Using quantile breaks instead.`
       );
-      return (
-        this.calculateQuantileBreaks(validData, numClasses) || [
-          0, 25, 50, 75, 100,
-        ]
-      );
+      return this.calculateQuantileBreaks(validData, numClasses);
     }
 
     try {
-      // Sort data ascending
+      // Sort data ascending (create a copy to avoid modifying original data)
       const sortedData = [...validData].sort((a, b) => a - b);
 
-      // Implementation of Jenks algorithm
-      // For large datasets, we'll use a simplified version that approximates Jenks
-      // by sampling the data to keep performance reasonable
-
-      // If dataset is large, sample it
-      let workingData = sortedData;
-      if (sortedData.length > 10000) {
-        const sampleSize = 5000;
-        const step = Math.floor(sortedData.length / sampleSize);
-        workingData = [];
-        for (let i = 0; i < sortedData.length; i += step) {
-          workingData.push(sortedData[i]);
-        }
-        console.log(
-          `Data set too large (${sortedData.length}), sampled down to ${workingData.length} points`
-        );
-      }
-
-      // For very small datasets, just use quantiles
-      if (workingData.length < 100) {
+      // For very small datasets, use quantiles
+      if (sortedData.length < 100) {
         return this.calculateQuantileBreaks(validData, numClasses);
       }
 
-      // Simplified Jenks for medium-sized datasets
-      // This is a variation that finds good break points without the full matrix calculation
+      // Sample the data if it's too large
+      let workingData = sortedData;
+      const maxSampleSize = 5000;
 
-      const breaks = [];
-      const n = workingData.length;
-
-      // Calculate total sum of squared deviations from the array mean
-      const mean = workingData.reduce((sum, val) => sum + val, 0) / n;
-      const totalSSE = workingData.reduce(
-        (sum, val) => sum + Math.pow(val - mean, 2),
-        0
-      );
-
-      // Find optimal breaks using an iterative approach
-      // Start with equal intervals and refine
-      let currentBreaks = [];
-      for (let i = 1; i < numClasses; i++) {
-        currentBreaks.push(workingData[Math.floor((i * n) / numClasses) - 1]);
+      if (sortedData.length > maxSampleSize) {
+        // Use stratified sampling for better representation
+        workingData = this.stratifiedSample(sortedData, maxSampleSize);
+        console.log(
+          `Large dataset (${sortedData.length} points) sampled to ${workingData.length} points for Jenks calculation`
+        );
       }
 
-      // Add the maximum value
-      breaks.push(...currentBreaks);
-      breaks.push(workingData[workingData.length - 1]);
+      // Use simplified Fisher-Jenks algorithm for medium to large datasets
+      const breaks = this.fisherJenks(workingData, numClasses);
 
-      console.log(
-        `Calculated ${breaks.length} Jenks breaks from ${workingData.length} data points`
-      );
+      // Ensure we always include the maximum value
+      if (breaks[breaks.length - 1] < sortedData[sortedData.length - 1]) {
+        breaks[breaks.length - 1] = sortedData[sortedData.length - 1];
+      }
 
       return breaks;
     } catch (error) {
       console.error("Error calculating Jenks breaks:", error);
       // Fallback to quantiles on error
-      return (
-        this.calculateQuantileBreaks(validData, numClasses) || [
-          0, 25, 50, 75, 100,
-        ]
-      );
+      return this.calculateQuantileBreaks(validData, numClasses);
     }
+  },
+
+  // Helper function for stratified sampling
+  stratifiedSample: function (sortedData, sampleSize) {
+    const result = [];
+    const n = sortedData.length;
+
+    // Ensure we include min and max values
+    result.push(sortedData[0]);
+
+    // Add stratified samples
+    const step = (n - 2) / (sampleSize - 2);
+    for (let i = 1; i < sampleSize - 1; i++) {
+      const index = Math.min(Math.floor(i * step), n - 2);
+      result.push(sortedData[index]);
+    }
+
+    // Add the maximum value
+    result.push(sortedData[n - 1]);
+
+    return result;
+  },
+
+  // Simplified Fisher-Jenks algorithm
+  fisherJenks: function (data, numClasses) {
+    const n = data.length;
+
+    // Special case: if numClasses >= n, each value gets its own class
+    if (numClasses >= n) {
+      return [...data];
+    }
+
+    // Calculate breaks using simplified approach
+    const breaks = [];
+    const step = n / numClasses;
+
+    for (let i = 1; i < numClasses; i++) {
+      const index = Math.floor(i * step);
+      breaks.push(data[index]);
+    }
+
+    // Add the maximum value
+    breaks.push(data[n - 1]);
+
+    return breaks;
   },
 
   // Make sure the calculateQuantileBreaks function handles empty data cases
@@ -256,6 +274,71 @@ const utils = {
     // Get state name from FIPS code
     getStateName: function (fipsCode) {
       return config.stateFips[fipsCode] || "Unknown";
+    },
+
+    // Get state abbreviation from FIPS code
+    getStateAbbr: function (fipsCode) {
+      // Map of state FIPS codes to abbreviations
+      const stateAbbrMap = {
+        "01": "AL",
+        "02": "AK",
+        "04": "AZ",
+        "05": "AR",
+        "06": "CA",
+        "08": "CO",
+        "09": "CT",
+        10: "DE",
+        11: "DC",
+        12: "FL",
+        13: "GA",
+        15: "HI",
+        16: "ID",
+        17: "IL",
+        18: "IN",
+        19: "IA",
+        20: "KS",
+        21: "KY",
+        22: "LA",
+        23: "ME",
+        24: "MD",
+        25: "MA",
+        26: "MI",
+        27: "MN",
+        28: "MS",
+        29: "MO",
+        30: "MT",
+        31: "NE",
+        32: "NV",
+        33: "NH",
+        34: "NJ",
+        35: "NM",
+        36: "NY",
+        37: "NC",
+        38: "ND",
+        39: "OH",
+        40: "OK",
+        41: "OR",
+        42: "PA",
+        44: "RI",
+        45: "SC",
+        46: "SD",
+        47: "TN",
+        48: "TX",
+        49: "UT",
+        50: "VT",
+        51: "VA",
+        53: "WA",
+        54: "WV",
+        55: "WI",
+        56: "WY",
+        60: "AS",
+        66: "GU",
+        69: "MP",
+        72: "PR",
+        78: "VI",
+      };
+
+      return stateAbbrMap[fipsCode] || "Unknown";
     },
   },
 

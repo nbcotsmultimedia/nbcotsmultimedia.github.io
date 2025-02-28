@@ -54,6 +54,7 @@ const visualization = {
   },
 
   // Render the main map visualization
+  // This is the fixed renderMap function with corrected variable scope
   renderMap: function (
     svg,
     mapData,
@@ -63,17 +64,6 @@ const visualization = {
     onHover,
     onLeave
   ) {
-    console.log("Rendering map for step:", stepIndex);
-
-    // Add this debugging to check statistics
-    console.log("Step statistics:", statistics);
-    if (statistics) {
-      console.log("Breaks available:", {
-        breaks: statistics.breaks,
-        quantileBreaks: statistics.quantileBreaks,
-      });
-    }
-
     // Clear SVG
     const svgElement = d3.select(svg);
     svgElement.selectAll("*").remove();
@@ -83,7 +73,27 @@ const visualization = {
     const isStateLevel = step.isStateLevel === true;
 
     // Determine which data to use based on step
-    const features = isStateLevel ? dataManager.stateData : mapData;
+    let features = isStateLevel ? dataManager.stateData : mapData;
+
+    // If at state level, we'll exclude DC from normal rendering and add it separately
+    let dcData = null;
+    if (isStateLevel) {
+      // Find and remove DC from the features to prevent default rendering
+      dcData = features.find(
+        (state) => state.properties.name === "District of Columbia"
+      );
+
+      // Filter out DC from the features array
+      if (dcData) {
+        features = features.filter(
+          (state) => state.properties.name !== "District of Columbia"
+        );
+        console.log(
+          "Extracted DC data for custom rendering:",
+          dcData.properties
+        );
+      }
+    }
 
     // Set up projection and path generator
     const projection = d3
@@ -100,7 +110,7 @@ const visualization = {
     const outlierInfo = statistics.outliers;
 
     // Draw states or counties
-    svgElement
+    const countyPaths = svgElement
       .selectAll(isStateLevel ? "path.state" : "path.county")
       .data(features)
       .join("path")
@@ -115,6 +125,97 @@ const visualization = {
       .on("mouseout", function () {
         onLeave();
       });
+
+    // Apply vulnerable counties highlighting if needed (AFTER drawing the counties)
+    if (step.highlightVulnerable && !isStateLevel) {
+      // Create a special color scheme for vulnerable counties
+      const vulnerableColor = "#de2d26"; // Red for vulnerable counties
+      const baseColor = "#cfe8ff"; // Light blue for non-vulnerable counties
+
+      // Compute how many counties meet the vulnerability criteria
+      const vulnerableCriteria = (d) => {
+        const fedWorkers = d.properties.fed_workers_per_100k || 0;
+        const vulnerabilityScore = d.properties.vulnerabilityIndex || 0;
+        return (
+          fedWorkers >= config.vulnerability.highFederalThreshold &&
+          vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold
+        );
+      };
+
+      const vulnerableCounties = features.filter(vulnerableCriteria);
+      console.log(
+        `Found ${vulnerableCounties.length} vulnerable counties meeting criteria`
+      );
+
+      // First draw all counties with base color and reduced opacity
+      countyPaths
+        .attr("fill", baseColor)
+        .attr("opacity", 0.15) // Very faded for non-vulnerable
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.25);
+
+      // Then highlight vulnerable counties
+      countyPaths
+        .filter(vulnerableCriteria)
+        .attr("fill", vulnerableColor)
+        .attr("opacity", 0.9) // Nearly opaque for vulnerable counties
+        .attr("stroke", "#000")
+        .attr("stroke-width", 1.5)
+        .attr("stroke-opacity", 1);
+
+      // Use our special vulnerable counties legend
+      this.createVulnerableLegend(svgElement, dimensions, step);
+
+      // Skip the regular legend creation by returning early
+      return;
+    }
+
+    // If highlighting specific counties for narrative examples
+    if (
+      step.highlightCounties &&
+      step.highlightCounties.length > 0 &&
+      !isStateLevel
+    ) {
+      // First fade all counties slightly
+      countyPaths.attr("opacity", 0.5);
+
+      // Then highlight specific counties
+      countyPaths
+        .filter((d) => step.highlightCounties.includes(d.id))
+        .attr("opacity", 1)
+        .attr("stroke", "#ff0000") // Red outline
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "none");
+
+      // Add labels for highlighted counties
+      step.highlightCounties.forEach((countyId) => {
+        const county = features.find((f) => f.id === countyId);
+        if (county) {
+          const centroid = path.centroid(county);
+
+          // Add label background
+          svgElement
+            .append("rect")
+            .attr("x", centroid[0] - 40)
+            .attr("y", centroid[1] - 30)
+            .attr("width", 80)
+            .attr("height", 20)
+            .attr("fill", "white")
+            .attr("opacity", 0.8)
+            .attr("rx", 3);
+
+          // Add county name
+          svgElement
+            .append("text")
+            .attr("x", centroid[0])
+            .attr("y", centroid[1] - 15)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("font-weight", "bold")
+            .text(county.properties.name);
+        }
+      });
+    }
 
     // If showing counties, also add state boundaries for context
     if (!isStateLevel) {
@@ -131,10 +232,170 @@ const visualization = {
         .attr("pointer-events", "none"); // Prevent state outlines from interfering with hover events
     }
 
+    // If state level and we have DC data, add custom DC representation
+    else if (dcData) {
+      // Get the bounding box of the entire map to help position DC
+      const bounds = path.bounds({
+        type: "FeatureCollection",
+        features: features,
+      });
+
+      // Find the easternmost states to determine where the Atlantic coast is
+      const eastCoastStates = [
+        "Maine",
+        "New Hampshire",
+        "Massachusetts",
+        "Rhode Island",
+        "Connecticut",
+        "New York",
+        "New Jersey",
+        "Delaware",
+        "Maryland",
+        "Virginia",
+        "North Carolina",
+        "South Carolina",
+        "Georgia",
+        "Florida",
+      ];
+
+      let eastmostX = -Infinity;
+      let midY = 0;
+      let stateCount = 0;
+
+      // Find the average vertical position and rightmost edge of east coast states
+      eastCoastStates.forEach((stateName) => {
+        const state = features.find((s) => s.properties.name === stateName);
+        if (state) {
+          const stateBounds = path.bounds(state);
+          // Track the rightmost (eastmost) point
+          eastmostX = Math.max(eastmostX, stateBounds[1][0]);
+          // Track the vertical midpoint for averaging
+          midY += (stateBounds[0][1] + stateBounds[1][1]) / 2;
+          stateCount++;
+        }
+      });
+
+      // Calculate a good Y position (middle of east coast states)
+      midY = stateCount > 0 ? midY / stateCount : dimensions.height / 2;
+
+      // Position DC square params
+      let dcX, dcY, squareSize;
+
+      // Calculate how much space we have to work with
+      const mapWidth = dimensions.width;
+      const rightMargin = mapWidth - eastmostX;
+
+      // If config has DC square settings, use them
+      if (config.dcSquare && config.dcSquare.relativePosition) {
+        // Position based on percentage of map dimensions
+        dcX = dimensions.width * config.dcSquare.relativePosition.x;
+        dcY = dimensions.height * config.dcSquare.relativePosition.y;
+
+        // Size based on map width
+        squareSize = dimensions.width * (config.dcSquare.sizeRatio || 0.02);
+      } else {
+        // Position DC square 30% of the way between the coast and the edge
+        const rightEdgeMargin = mapWidth - eastmostX;
+        dcX = eastmostX + rightEdgeMargin * 0.3; // 30% of available space
+
+        // Make sure we're not too close to the edge
+        const safetyMargin = 40; // Ensure at least 40px from the right edge
+        if (dcX + safetyMargin > mapWidth) {
+          // If too close to edge, reposition
+          dcX = mapWidth - safetyMargin;
+        }
+
+        // Try to align with Maryland/Virginia vertically
+        const mdData = features.find(
+          (state) => state.properties.name === "Maryland"
+        );
+        const vaData = features.find(
+          (state) => state.properties.name === "Virginia"
+        );
+
+        if (mdData) {
+          const mdCentroid = path.centroid(mdData);
+          dcY = mdCentroid[1];
+        } else if (vaData) {
+          const vaCentroid = path.centroid(vaData);
+          dcY = vaCentroid[1];
+        } else {
+          // Fallback to the middle of the east coast
+          dcY = midY;
+        }
+
+        // Size should be noticeable but not too large
+        squareSize = Math.max(12, dimensions.width / 45);
+      }
+
+      // Define a group for DC element and label
+      const dcGroup = svgElement.append("g").attr("class", "dc-representation");
+
+      // Draw the DC square
+      dcGroup
+        .append("rect")
+        .attr("class", "dc-square state")
+        .attr("x", dcX)
+        .attr("y", dcY - squareSize / 2) // Center vertically
+        .attr("width", squareSize)
+        .attr("height", squareSize)
+        .attr("fill", this.getFillColor(dcData, step, colorScale))
+        .attr("stroke", "#000") // Darker stroke to make it more visible
+        .attr("stroke-width", 1)
+        .on("mouseover", function (event) {
+          onHover(event, dcData, step, outlierInfo);
+        })
+        .on("mouseout", function () {
+          onLeave();
+        });
+
+      // Add a label for DC
+      dcGroup
+        .append("text")
+        .attr("x", dcX + squareSize / 2)
+        .attr("y", dcY + squareSize / 2 + 12) // Position below the square
+        .attr("text-anchor", "middle")
+        .attr("font-size", "9px")
+        .attr("font-weight", "bold")
+        .text("DC");
+
+      // Optional connecting line to Maryland
+      const mdData = features.find(
+        (state) => state.properties.name === "Maryland"
+      );
+      if (mdData) {
+        const mdCentroid = path.centroid(mdData);
+        // Only draw line if we're not too far from Maryland
+        const distance = Math.sqrt(
+          Math.pow(dcX - mdCentroid[0], 2) + Math.pow(dcY - mdCentroid[1], 2)
+        );
+
+        // Only add connection line if not too far
+        if (distance < dimensions.width / 4) {
+          dcGroup
+            .append("line")
+            .attr("x1", dcX)
+            .attr("y1", dcY)
+            .attr("x2", mdCentroid[0])
+            .attr("y2", mdCentroid[1])
+            .attr("stroke", "#666")
+            .attr("stroke-width", 0.5)
+            .attr("stroke-dasharray", "2,2")
+            .attr("pointer-events", "none");
+        }
+      }
+
+      console.log(
+        "Added custom DC square at",
+        dcX,
+        dcY,
+        "with map width",
+        mapWidth
+      );
+    }
+
     // Create legend
     this.createLegend(svgElement, dimensions, stepIndex, statistics);
-
-    console.log("Map rendering complete");
   },
 
   // Update createLegend function to use category-style legend for all maps
@@ -204,6 +465,96 @@ const visualization = {
     );
   },
 
+  // Create a special binary legend for vulnerable counties
+  createVulnerableLegend: function (svgElement, dimensions, step) {
+    // Legend dimensions and position
+    const legendWidth = 260;
+    const legendHeight = 20;
+    const legendX = dimensions.width - legendWidth - 20;
+    const legendY = dimensions.height - 70;
+
+    // Create legend container
+    const legend = svgElement
+      .append("g")
+      .attr("class", "legend")
+      .attr("transform", `translate(${legendX}, ${legendY})`);
+
+    // Create background panel
+    legend
+      .append("rect")
+      .attr("x", -10)
+      .attr("y", -20)
+      .attr("width", legendWidth + 20)
+      .attr("height", legendHeight + 45)
+      .attr("fill", "rgba(255, 255, 255, 0.85)")
+      .attr("rx", 4)
+      .attr("ry", 4);
+
+    // Add legend title
+    legend
+      .append("text")
+      .attr("x", 0)
+      .attr("y", -5)
+      .style("font-size", "12px")
+      .style("font-weight", "bold")
+      .text("Federal Job Cut Vulnerability");
+
+    // Create two category blocks: Vulnerable and Not Vulnerable
+    // Not Vulnerable category
+    legend
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", legendWidth / 2 - 5)
+      .attr("height", legendHeight)
+      .style("fill", "#cfe8ff") // Light blue for non-vulnerable
+      .style("stroke", "#555")
+      .style("stroke-width", 0.5);
+
+    // Vulnerable category
+    legend
+      .append("rect")
+      .attr("x", legendWidth / 2 + 5)
+      .attr("y", 0)
+      .attr("width", legendWidth / 2 - 5)
+      .attr("height", legendHeight)
+      .style("fill", "#de2d26") // Red for vulnerable
+      .style("stroke", "#555")
+      .style("stroke-width", 0.5);
+
+    // Add category labels
+    legend
+      .append("text")
+      .attr("x", legendWidth / 4)
+      .attr("y", legendHeight - 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", "9px")
+      .style("font-weight", "bold")
+      .style("fill", "#000")
+      .text("Low Vulnerability");
+
+    legend
+      .append("text")
+      .attr("x", (legendWidth * 3) / 4)
+      .attr("y", legendHeight - 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", "9px")
+      .style("font-weight", "bold")
+      .style("fill", "#fff") // White text for better contrast on red
+      .text("High Vulnerability");
+
+    // Add explanation text
+    legend
+      .append("text")
+      .attr("x", legendWidth / 2)
+      .attr("y", legendHeight + 15)
+      .attr("text-anchor", "middle")
+      .style("font-size", "8px")
+      .text(
+        `Federal workers ≥ ${config.vulnerability.highFederalThreshold} per 100k and high economic vulnerability`
+      );
+  },
+
   // Helper function to generate default category names based on number of breaks
   getDefaultCategoryNames: function (numCategories) {
     if (numCategories === 6) {
@@ -235,7 +586,6 @@ const visualization = {
     }
   },
 
-  // Update the createBreaksLegend function in visualization.js for a clearer legend
   createBreaksLegend: function (
     legend,
     legendWidth,
@@ -245,13 +595,12 @@ const visualization = {
     maxValue,
     showEndLabel = false
   ) {
-    // Safety check: If breaks is undefined or empty, create default breaks
+    // Safety checks for input parameters
     if (!breaks || !Array.isArray(breaks) || breaks.length === 0) {
       console.warn("No breaks provided for legend, using default values");
       breaks = [0, 25, 50, 75, 100];
     }
 
-    // Safety check: If colors is undefined or empty, create default colors
     if (!colors || !Array.isArray(colors) || colors.length === 0) {
       console.warn("No colors provided for legend, using default values");
       colors = [
@@ -264,7 +613,6 @@ const visualization = {
       ];
     }
 
-    // Safety check: If maxValue is undefined, use the maximum break value or default
     if (maxValue === undefined || maxValue === null || isNaN(maxValue)) {
       maxValue = Math.max(...breaks) * 1.1 || 100;
       console.warn(`No maxValue provided for legend, using ${maxValue}`);
@@ -273,7 +621,7 @@ const visualization = {
     // Create a copy of breaks to avoid modifying the original
     let legendBreaks = [...breaks].sort((a, b) => a - b);
 
-    // Make sure we have at least one break point
+    // Ensure we have at least one break point
     if (legendBreaks.length === 0) {
       legendBreaks = [0, 50, 100];
     }
@@ -282,10 +630,6 @@ const visualization = {
     if (legendBreaks[0] > 0) {
       legendBreaks = [0, ...legendBreaks];
     }
-
-    console.log("Legend breaks:", legendBreaks);
-    console.log("Legend colors:", colors);
-    console.log("Legend maxValue:", maxValue);
 
     // Create background for better visibility
     legend
@@ -524,7 +868,6 @@ const visualization = {
   // Also replace the createColorScale function
   createColorScale: function (stepIndex, statistics) {
     const step = config.steps[stepIndex];
-    console.log(`Creating color scale for step: ${step.id}`, statistics);
 
     // Safety check for statistics
     if (!statistics) {
@@ -550,19 +893,19 @@ const visualization = {
           statistics.breaks.length > 0
         ) {
           breaks = statistics.breaks;
-          console.log(`Using Jenks breaks for ${step.id}:`, breaks);
+          // console.log(`Using Jenks breaks for ${step.id}:`, breaks);
         } else if (scaleConfig.breaks && scaleConfig.breaks.length > 0) {
           breaks = scaleConfig.breaks;
-          console.log(`Using fixed breaks for ${step.id}:`, breaks);
+          // console.log(`Using fixed breaks for ${step.id}:`, breaks);
         } else if (statistics.breaks && statistics.breaks.length > 0) {
           breaks = statistics.breaks;
-          console.log(`Using statistics breaks for ${step.id}:`, breaks);
+          // console.log(`Using statistics breaks for ${step.id}:`, breaks);
         } else if (
           statistics.quantileBreaks &&
           statistics.quantileBreaks.length > 0
         ) {
           breaks = statistics.quantileBreaks;
-          console.log(`Using quantile breaks for ${step.id}:`, breaks);
+          // console.log(`Using quantile breaks for ${step.id}:`, breaks);
         } else {
           breaks = [0, 25, 50, 75, 100];
           console.warn(
@@ -629,13 +972,6 @@ const visualization = {
           "#3182bd",
         ];
       }
-
-      // Log details for debugging
-      console.log(`Final color scale for ${step.id}:`, {
-        breaks: breaks,
-        colors: colors,
-        length: { breaks: breaks.length, colors: colors.length },
-      });
 
       // Create the color scale
       return d3.scaleThreshold().domain(breaks).range(colors);

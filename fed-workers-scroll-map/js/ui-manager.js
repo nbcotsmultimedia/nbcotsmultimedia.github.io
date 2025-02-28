@@ -36,13 +36,58 @@ const uiManager = {
 
   // Update description text based on current step
   updateDescription: function (stepIndex) {
-    if (this.elements.description) {
-      this.elements.description.textContent = config.steps[stepIndex].title;
+    if (!this.elements.description) return;
+
+    const step = config.steps[stepIndex];
+    let descriptionHTML = `<h3>${step.title}</h3>`;
+
+    // Add custom description content based on step
+    if (step.id === "vulnerable_counties") {
+      descriptionHTML += `
+      <p>These counties have both high federal employment (>5,000 per 100k workers) 
+      and high economic vulnerability, making them especially susceptible to 
+      ripple effects from federal job cuts.</p>
+      <p>Vulnerability is calculated based on federal employment dependency, 
+      unemployment rates, and median income.</p>
+    `;
+    } else if (step.description) {
+      // Use description from config if available
+      descriptionHTML += `<p>${step.description}</p>`;
+    } // Add these cases to the updateDescription function in ui-manager.js
+    else if (step.id === "narrative_example_1") {
+      descriptionHTML += `
+    <p>Although they're far from Washington DC, these counties rely heavily on federal employment and 
+    show high vulnerability to potential job cuts.</p>
+    
+    <p>Areas with federal land management, military bases, or research facilities often create 
+    pockets of high federal dependency in unexpected regions.</p>
+  `;
+    } else if (step.id === "narrative_example_2") {
+      descriptionHTML += `
+    <p>These counties demonstrate economic resilience despite high federal employment.</p>
+    
+    <p>Despite having many federal workers, factors like diversified local economies, 
+    higher median incomes, and lower unemployment rates help protect these communities 
+    from the full impact of potential cuts.</p>
+  `;
+    } else if (step.id === "narrative_example_3") {
+      descriptionHTML += `
+    <p>These counties show disproportionate vulnerability compared to their federal employment levels.</p>
+    
+    <p>Even modest reductions in federal jobs could create significant ripple effects in these
+    communities due to existing economic challenges like high unemployment rates and
+    lower median incomes.</p>
+  `;
     }
+
+    // Update the DOM element
+    this.elements.description.innerHTML = descriptionHTML;
   },
 
   // Handle county hover - show tooltip
   handleCountyHover: function (event, feature, step, outlierInfo) {
+    if (!event || !feature) return;
+
     // Visual highlight
     d3.select(event.currentTarget)
       .attr("stroke-width", step.isStateLevel ? 2 : 1.5)
@@ -50,9 +95,7 @@ const uiManager = {
 
     // Show tooltip with feature data
     const isStateLevel = step.isStateLevel === true;
-    const name = isStateLevel
-      ? feature.properties.name
-      : feature.properties.name;
+    const name = feature.properties.name;
     const stateName = isStateLevel
       ? ""
       : feature.properties.stateName || "Unknown";
@@ -65,10 +108,10 @@ const uiManager = {
         ? feature.properties.state_fed_workers_per_100k
         : feature.properties.fed_workers_per_100k;
 
-      // Add outlier status if applicable
-      if (fedWorkersValue > outlierInfo.upperBound) {
+      // Add outlier status if applicable and outlierInfo exists
+      if (outlierInfo && fedWorkersValue > outlierInfo.upperBound) {
         outlierStatus = `<div class="tooltip-outlier high">Significant outlier (high)</div>`;
-      } else if (fedWorkersValue < outlierInfo.lowerBound) {
+      } else if (outlierInfo && fedWorkersValue < outlierInfo.lowerBound) {
         outlierStatus = `<div class="tooltip-outlier low">Significant outlier (low)</div>`;
       }
 
@@ -95,9 +138,60 @@ const uiManager = {
         </div>
       </div>
     `;
-    } else {
-      // Existing code for vulnerability index...
-      // ...
+    } else if (
+      step.id === "vulnerability_index" ||
+      step.id === "vulnerable_counties"
+    ) {
+      const vulnerabilityScore = feature.properties.vulnerabilityIndex;
+      const fedWorkers = feature.properties.fed_workers_per_100k;
+
+      // Check if this is a vulnerable county
+      let vulnerableStatus = "";
+      if (
+        feature.properties.isVulnerable ||
+        (fedWorkers >= config.vulnerability.highFederalThreshold &&
+          vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold)
+      ) {
+        vulnerableStatus = `
+        <div class="tooltip-vulnerable">
+          High vulnerability to federal job cuts
+        </div>
+      `;
+      }
+
+      dataToDisplay = `
+      ${vulnerableStatus}
+      <div class="tooltip-data">
+        <div class="tooltip-row">
+          <span class="tooltip-label">Vulnerability Score:</span>
+          <span class="tooltip-value">${
+            vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
+          }</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Federal Workers per 100k:</span>
+          <span class="tooltip-value">${
+            fedWorkers ? fedWorkers.toFixed(1) : "N/A"
+          }</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Unemployment Rate:</span>
+          <span class="tooltip-value">${
+            feature.properties.unemployment_rate
+              ? feature.properties.unemployment_rate.toFixed(1) + "%"
+              : "N/A"
+          }</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Median Income:</span>
+          <span class="tooltip-value">${
+            feature.properties.median_income
+              ? "$" + feature.properties.median_income.toLocaleString()
+              : "N/A"
+          }</span>
+        </div>
+      </div>
+    `;
     }
 
     // Position tooltip
@@ -107,23 +201,48 @@ const uiManager = {
 
     // Make sure tooltip stays in viewport
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     const tooltipWidth = 250; // Approximate tooltip width
+    const tooltipHeight = 150; // Approximate tooltip height
 
     // If tooltip would go off right edge, position it to the left of the cursor
     if (tooltipX + tooltipWidth > viewportWidth - 20) {
       tooltipX = event.pageX - tooltipWidth - tooltipOffset;
     }
 
-    // Set tooltip content and position
-    this.elements.tooltip.style.display = "block";
-    this.elements.tooltip.style.left = `${tooltipX}px`;
-    this.elements.tooltip.style.top = `${tooltipY}px`;
-    this.elements.tooltip.innerHTML = `
-    <div class="tooltip-header">
-      <strong>${name}${isStateLevel ? "" : `, ${stateName}`}</strong>
-    </div>
-    ${dataToDisplay}
-  `;
+    // If tooltip would go off bottom edge, position it above the cursor
+    if (tooltipY + tooltipHeight > viewportHeight - 20) {
+      tooltipY = event.pageY - tooltipHeight - tooltipOffset;
+    }
+
+    // Set tooltip content and position if tooltip element exists
+    if (this.elements.tooltip) {
+      this.elements.tooltip.style.display = "block";
+      this.elements.tooltip.style.left = `${tooltipX}px`;
+      this.elements.tooltip.style.top = `${tooltipY}px`;
+      this.elements.tooltip.innerHTML = `
+        <div class="tooltip-header">
+          <strong>${name}${isStateLevel ? "" : `, ${stateName}`}</strong>
+        </div>
+        ${dataToDisplay}
+      `;
+    }
+  },
+
+  // Handle county leave - hide tooltip
+  handleCountyLeave: function (event) {
+    // Get the current target from the event
+    if (event && event.currentTarget) {
+      // Return to normal styling
+      d3.select(event.currentTarget)
+        .attr("stroke-width", 0.5)
+        .attr("stroke", "#fff");
+    }
+
+    // Hide tooltip if it exists
+    if (this.elements.tooltip) {
+      this.elements.tooltip.style.display = "none";
+    }
   },
 
   // Handle county leave - hide tooltip
