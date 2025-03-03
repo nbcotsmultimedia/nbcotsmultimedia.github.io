@@ -35,6 +35,10 @@ const uiManager = {
   },
 
   // Update description text based on current step
+  // Update the updateDescription function in ui-manager.js to remove the narrative example cases
+  // and add a special description for the vulnerability index step
+
+  // This is the function we need to modify:
   updateDescription: function (stepIndex) {
     if (!this.elements.description) return;
 
@@ -44,41 +48,26 @@ const uiManager = {
     // Add custom description content based on step
     if (step.id === "vulnerable_counties") {
       descriptionHTML += `
-      <p>These counties have both high federal employment (>5,000 per 100k workers) 
-      and high economic vulnerability, making them especially susceptible to 
-      ripple effects from federal job cuts.</p>
-      <p>Vulnerability is calculated based on federal employment dependency, 
-      unemployment rates, and median income.</p>
-    `;
+    <p>Highlighted counties (in red) have both high federal employment (>${config.vulnerability.highFederalThreshold} per 100k workers) 
+    and high economic vulnerability scores (>${config.vulnerability.highVulnerabilityThreshold}), making them especially susceptible to 
+    ripple effects from federal job cuts.</p>
+    <p>Vulnerability is calculated based on federal employment dependency, 
+    unemployment rates, and median income levels relative to national averages.</p>
+  `;
+    } else if (step.id === "vulnerability_index") {
+      descriptionHTML += `
+    <p>Counties with high vulnerability scores (≥ ${config.vulnerability.highVulnerabilityThreshold}) 
+    are highlighted in red. These areas may face greater economic challenges 
+    from potential federal job reductions.</p>
+    <p>Vulnerability is calculated based on federal employment dependency, 
+    unemployment rates, and median income levels relative to national averages.</p>
+  `;
     } else if (step.description) {
       // Use description from config if available
       descriptionHTML += `<p>${step.description}</p>`;
-    } // Add these cases to the updateDescription function in ui-manager.js
-    else if (step.id === "narrative_example_1") {
-      descriptionHTML += `
-    <p>Although they're far from Washington DC, these counties rely heavily on federal employment and 
-    show high vulnerability to potential job cuts.</p>
-    
-    <p>Areas with federal land management, military bases, or research facilities often create 
-    pockets of high federal dependency in unexpected regions.</p>
-  `;
-    } else if (step.id === "narrative_example_2") {
-      descriptionHTML += `
-    <p>These counties demonstrate economic resilience despite high federal employment.</p>
-    
-    <p>Despite having many federal workers, factors like diversified local economies, 
-    higher median incomes, and lower unemployment rates help protect these communities 
-    from the full impact of potential cuts.</p>
-  `;
-    } else if (step.id === "narrative_example_3") {
-      descriptionHTML += `
-    <p>These counties show disproportionate vulnerability compared to their federal employment levels.</p>
-    
-    <p>Even modest reductions in federal jobs could create significant ripple effects in these
-    communities due to existing economic challenges like high unemployment rates and
-    lower median incomes.</p>
-  `;
     }
+    // We're removing the narrative examples cases
+    // Removed the case for step.id === "narrative_example_1" and others
 
     // Update the DOM element
     this.elements.description.innerHTML = descriptionHTML;

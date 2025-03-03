@@ -162,52 +162,6 @@ const dataManager = {
     }
   },
 
-  // Fetch county boundaries from GeoJSON
-  fetchCountiesData: async function () {
-    console.log("Fetching US counties data...");
-    const response = await fetch(config.urls.countiesGeoJSON);
-    const usCounties = await response.json();
-
-    // Extract features from topojson
-    const counties = topojson.feature(
-      usCounties,
-      usCounties.objects.counties
-    ).features;
-
-    console.log(`Extracted ${counties.length} county features`);
-    return counties;
-  },
-
-  // Fetch state boundaries
-  fetchStatesData: async function () {
-    console.log("Fetching US states data...");
-    const response = await fetch(config.urls.statesGeoJSON);
-    const usStates = await response.json();
-
-    // Extract features from topojson
-    const states = topojson.feature(usStates, usStates.objects.states).features;
-
-    console.log(`Extracted ${states.length} state features`);
-    return states;
-  },
-
-  // Fetch vulnerability data from CSV
-  fetchVulnerabilityData: async function () {
-    console.log("Fetching vulnerability data...");
-    const response = await fetch(config.urls.dataSheet);
-    const csvText = await response.text();
-
-    // Parse CSV
-    const parsedData = Papa.parse(csvText, {
-      header: true,
-      dynamicTyping: true,
-      skipEmptyLines: true,
-    }).data;
-
-    console.log(`Parsed ${parsedData.length} vulnerability data records`);
-    return parsedData;
-  },
-
   // Calculate state-level aggregation of federal worker data
   calculateStateAggregates: function () {
     console.log("Calculating state-level aggregates...");
@@ -328,7 +282,7 @@ const dataManager = {
     return this.stateData;
   },
 
-  // Process and merge data
+  // From the processData function, modify this part:
   processData: function () {
     console.log("Processing and merging data...");
 
@@ -391,31 +345,25 @@ const dataManager = {
       `Processed ${this.mapData.length} counties and ${this.stateData.length} states`
     );
 
-    // Add this to the end of the processData function in data-manager.js
-
     // Identify vulnerable counties
     this.vulnerableCountyIds = this.identifyVulnerableCounties();
 
-    // Find narrative examples
-    this.narrativeExamples = this.findNarrativeExamples();
-
-    // Update the config with actual county IDs for narrative examples
-    if (this.narrativeExamples.remoteVulnerable.length > 0) {
-      const stepIndex = config.steps.findIndex(
-        (s) => s.id === "narrative_example_1"
-      );
-      if (stepIndex >= 0) {
-        config.steps[stepIndex].highlightCounties =
-          this.narrativeExamples.remoteVulnerable;
-      }
-    }
+    // We're removing the narrative examples code
+    // The findNarrativeExamples method is also no longer needed
 
     console.log("Vulnerability analysis complete:", {
       vulnerableCounties: this.vulnerableCountyIds.length,
-      remoteExamples: this.narrativeExamples.remoteVulnerable,
-      resilientExamples: this.narrativeExamples.resilient,
-      disproportionateExamples: this.narrativeExamples.disproportionate,
     });
+  },
+
+  // Remove the findNarrativeExamples method or keep it but don't use it
+  findNarrativeExamples: function () {
+    // This method will no longer be called since we removed the step
+    return {
+      remoteVulnerable: [],
+      resilient: [],
+      disproportionate: [],
+    };
   },
 
   // Create lookup for vulnerability data by county name
@@ -608,7 +556,6 @@ const dataManager = {
   },
 
   // calculateVulnerabilityIndex function
-  // Calculate vulnerability index for counties
   calculateVulnerabilityIndex: function (counties) {
     // Check if counties array exists and has elements
     if (!counties || counties.length === 0) {
@@ -835,8 +782,6 @@ const dataManager = {
     if (index < 30.1) return "High";
     return "Very High";
   },
-
-  // Add this to dataManager in data-manager.js
 
   // Identify counties that are vulnerable to federal job cuts
   identifyVulnerableCounties: function () {

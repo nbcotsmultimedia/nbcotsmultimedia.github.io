@@ -35,12 +35,6 @@ const config = {
       dataField: "fed_workers_per_100k",
       highlightVulnerable: true,
     },
-    // Add steps for narrative examples
-    {
-      id: "narrative_example_1",
-      title: "Remote Areas with Surprising Vulnerability",
-      highlightCounties: ["County1FIPS", "County2FIPS"],
-    },
   ],
 
   // Color scale configurations
