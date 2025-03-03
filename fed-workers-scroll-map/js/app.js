@@ -1,5 +1,12 @@
 // app.js - Main application code
 
+import config from "./config.js";
+import DataManager from "./utils/data-manager.js";
+import * as utils from "./utils/index.js";
+import * as uiManager from "./ui-manager.js";
+// Import the specific functions from visualization.js
+import { renderMap } from "./visualization.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   // Application state
   const state = {
@@ -14,11 +21,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Set initial dimensions
   state.dimensions = utils.setDimensions(elements.svg);
 
+  // Create data manager instance
+  const dataManager = new DataManager(utils);
+
+  // Make dataManager globally available for visualization.js functions
+  window.dataManager = dataManager;
+
   // Main initialization function
   async function initialize() {
     try {
-      // Load data
-      await dataManager.loadAllData();
+      // Show loading message
+      uiManager.showLoading("Loading map data...");
+
+      // Load and process data
+      const processedData = await dataManager.initialize();
 
       // Hide loading message
       uiManager.hideLoading();
@@ -35,38 +51,89 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error initializing application:", error);
 
       // Show error message
-      elements.loadingMessage.textContent =
-        "Error loading map data. Please try refreshing the page.";
-      elements.loadingMessage.style.backgroundColor =
-        "rgba(255, 200, 200, 0.9)";
+      uiManager.showError(
+        "Error loading map data. Please try refreshing the page."
+      );
     }
   }
 
   // Render the current step
   function renderCurrentStep() {
-    if (!state.mapInitialized || !dataManager.mapData) {
-      console.warn("Cannot render map: not initialized or no data");
+    if (!state.mapInitialized) {
+      console.warn("Cannot render map: not initialized");
       return;
     }
 
     // Get statistics for the current step
-    const stepStatistics = dataManager.getStatisticsForStep(state.currentStep);
+    let stepStatistics = dataManager.getStatisticsForStep(state.currentStep);
 
-    // Determine which data to use
-    const mapDataToUse =
-      state.currentStep === 0 ? dataManager.stateData : dataManager.mapData;
+    // Ensure stepStatistics has all required properties
+    if (!stepStatistics) {
+      console.warn("No statistics returned for step", state.currentStep);
+      stepStatistics = {
+        min: 0,
+        max: 100,
+        mean: 50,
+        median: 50,
+        breaks: [20, 40, 60, 80, 100],
+        quantileBreaks: [20, 40, 60, 80, 100],
+        outliers: {
+          upperBound: 100,
+          lowerBound: 0,
+        },
+      };
+    }
 
-    // Render map
-    visualization.renderMap(
-      elements.svg,
-      mapDataToUse,
-      state.dimensions,
-      state.currentStep,
-      stepStatistics,
-      (event, county, step, outlierInfo) =>
-        uiManager.handleCountyHover(event, county, step, outlierInfo),
-      () => uiManager.handleCountyLeave()
-    );
+    // Determine which data to use based on step configuration
+    const currentStepConfig = config.steps[state.currentStep];
+    let mapDataToUse = currentStepConfig.isStateLevel
+      ? dataManager.stateData
+      : dataManager.mapData;
+
+    console.log("Rendering step:", state.currentStep, "with data:", {
+      stepConfig: currentStepConfig,
+      hasMapData: !!mapDataToUse,
+      mapDataLength: mapDataToUse ? mapDataToUse.length : 0,
+      stateDataLength: dataManager.stateData ? dataManager.stateData.length : 0,
+      dimensions: state.dimensions,
+    });
+
+    try {
+      // Ensure mapDataToUse is valid
+      if (!mapDataToUse || !Array.isArray(mapDataToUse)) {
+        console.warn("Invalid map data for rendering", mapDataToUse);
+        // Create empty array as fallback
+        mapDataToUse = [];
+      }
+
+      // Ensure we have all required parameters before rendering
+      if (!elements.svg || !state.dimensions || !currentStepConfig) {
+        console.warn("Missing required parameters for rendering map");
+        return;
+      }
+
+      // Render map using the imported renderMap function directly
+      renderMap({
+        svg: elements.svg,
+        data: mapDataToUse,
+        dimensions: state.dimensions,
+        stepConfig: currentStepConfig,
+        statistics: stepStatistics,
+        onHover: (event, feature) =>
+          uiManager.handleFeatureHover(
+            event,
+            feature,
+            currentStepConfig,
+            stepStatistics
+          ),
+        onLeave: () => uiManager.handleFeatureLeave(),
+      });
+    } catch (error) {
+      console.error("Error rendering map:", error);
+      uiManager.showError(
+        "Error rendering visualization. Please try refreshing the page."
+      );
+    }
   }
 
   // Handle scroll events to change step

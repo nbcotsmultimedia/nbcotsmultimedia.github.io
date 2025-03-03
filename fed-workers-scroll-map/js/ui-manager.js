@@ -1,110 +1,141 @@
 // ui-manager.js - Manages UI elements and interactions
+import config from "./config.js";
+import * as utils from "./utils/index.js";
 
-const uiManager = {
-  // DOM elements
-  elements: {
-    mapContainer: null,
-    description: null,
-    svg: null,
-    tooltip: null,
-    loadingMessage: null,
-  },
+// DOM elements
+let elements = {
+  mapContainer: null,
+  description: null,
+  svg: null,
+  tooltip: null,
+  loadingMessage: null,
+};
 
-  // Initialize the UI elements
-  initialize: function () {
-    // Get DOM elements
-    this.elements.mapContainer = document.getElementById("map-container");
-    this.elements.description = document.getElementById("description");
-    this.elements.svg = document.getElementById("map-svg");
+/**
+ * Initialize the UI elements
+ * @returns {Object} DOM elements
+ */
+export function initialize() {
+  // Get DOM elements
+  elements.mapContainer = document.getElementById("map-container");
+  elements.description = document.getElementById("description");
+  elements.svg = document.getElementById("map-svg");
 
-    // Create UI elements
-    this.elements.tooltip = utils.dom.createTooltip();
-    this.elements.loadingMessage = utils.dom.createLoadingMessage();
+  // Create UI elements
+  elements.tooltip = utils.dom.createTooltip();
+  elements.loadingMessage = utils.dom.createLoadingMessage();
 
-    // Add loading message to DOM
-    this.elements.svg.parentNode.appendChild(this.elements.loadingMessage);
+  // Add loading message to DOM
+  elements.svg.parentNode.appendChild(elements.loadingMessage);
 
-    return this.elements;
-  },
+  return elements;
+}
 
-  // Hide loading message
-  hideLoading: function () {
-    if (this.elements.loadingMessage) {
-      this.elements.loadingMessage.remove();
-    }
-  },
+/**
+ * Show loading message
+ * @param {string} message - Loading message to display
+ */
+export function showLoading(message) {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.textContent = message || "Loading...";
+    elements.loadingMessage.style.display = "block";
+  }
+}
 
-  // Update description text based on current step
-  // Update the updateDescription function in ui-manager.js to remove the narrative example cases
-  // and add a special description for the vulnerability index step
+/**
+ * Hide loading message
+ */
+export function hideLoading() {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.remove();
+  }
+}
 
-  // This is the function we need to modify:
-  updateDescription: function (stepIndex) {
-    if (!this.elements.description) return;
+/**
+ * Show error message
+ * @param {string} message - Error message to display
+ */
+export function showError(message) {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.textContent = message;
+    elements.loadingMessage.style.backgroundColor = "rgba(255, 200, 200, 0.9)";
+  }
+}
 
-    const step = config.steps[stepIndex];
-    let descriptionHTML = `<h3>${step.title}</h3>`;
+/**
+ * Update description text based on current step
+ * @param {number} stepIndex - Current step index
+ */
+export function updateDescription(stepIndex) {
+  if (!elements.description) return;
 
-    // Add custom description content based on step
-    if (step.id === "vulnerable_counties") {
-      descriptionHTML += `
+  const step = config.steps[stepIndex];
+  let descriptionHTML = `<h3>${step.title}</h3>`;
+
+  // Add custom description content based on step
+  if (step.id === "vulnerable_counties") {
+    descriptionHTML += `
     <p>Highlighted counties (in red) have both high federal employment (>${config.vulnerability.highFederalThreshold} per 100k workers) 
     and high economic vulnerability scores (>${config.vulnerability.highVulnerabilityThreshold}), making them especially susceptible to 
     ripple effects from federal job cuts.</p>
     <p>Vulnerability is calculated based on federal employment dependency, 
     unemployment rates, and median income levels relative to national averages.</p>
   `;
-    } else if (step.id === "vulnerability_index") {
-      descriptionHTML += `
+  } else if (step.id === "vulnerability_index") {
+    descriptionHTML += `
     <p>Counties with high vulnerability scores (≥ ${config.vulnerability.highVulnerabilityThreshold}) 
     are highlighted in red. These areas may face greater economic challenges 
     from potential federal job reductions.</p>
     <p>Vulnerability is calculated based on federal employment dependency, 
     unemployment rates, and median income levels relative to national averages.</p>
   `;
-    } else if (step.description) {
-      // Use description from config if available
-      descriptionHTML += `<p>${step.description}</p>`;
+  } else if (step.description) {
+    // Use description from config if available
+    descriptionHTML += `<p>${step.description}</p>`;
+  }
+
+  // Update the DOM element
+  elements.description.innerHTML = descriptionHTML;
+}
+
+/**
+ * Handle feature hover - show tooltip
+ * @param {Event} event - Mouse event
+ * @param {Object} feature - Map feature data
+ * @param {Object} step - Current step configuration
+ * @param {Object} outlierInfo - Outlier statistics
+ */
+export function handleFeatureHover(event, feature, step, outlierInfo) {
+  if (!event || !feature) return;
+
+  // Visual highlight
+  d3.select(event.currentTarget)
+    .attr("stroke-width", step.isStateLevel ? 2 : 1.5)
+    .attr("stroke", "#000");
+
+  // Show tooltip with feature data
+  const isStateLevel = step.isStateLevel === true;
+  const name = feature.properties.name;
+  const stateName = isStateLevel
+    ? ""
+    : feature.properties.stateName || "Unknown";
+
+  let dataToDisplay = "";
+  let outlierStatus = "";
+
+  if (step.id === "state_federal_workers" || step.id === "federal_workers") {
+    const fedWorkersValue = isStateLevel
+      ? feature.properties.state_fed_workers_per_100k
+      : feature.properties.fed_workers_per_100k;
+
+    // Add outlier status if applicable and outlierInfo exists
+    if (outlierInfo && fedWorkersValue > outlierInfo.upperBound) {
+      outlierStatus = `<div class="tooltip-outlier high">Significant outlier (high)</div>`;
+    } else if (outlierInfo && fedWorkersValue < outlierInfo.lowerBound) {
+      outlierStatus = `<div class="tooltip-outlier low">Significant outlier (low)</div>`;
     }
-    // We're removing the narrative examples cases
-    // Removed the case for step.id === "narrative_example_1" and others
 
-    // Update the DOM element
-    this.elements.description.innerHTML = descriptionHTML;
-  },
-
-  // Handle county hover - show tooltip
-  handleCountyHover: function (event, feature, step, outlierInfo) {
-    if (!event || !feature) return;
-
-    // Visual highlight
-    d3.select(event.currentTarget)
-      .attr("stroke-width", step.isStateLevel ? 2 : 1.5)
-      .attr("stroke", "#000");
-
-    // Show tooltip with feature data
-    const isStateLevel = step.isStateLevel === true;
-    const name = feature.properties.name;
-    const stateName = isStateLevel
-      ? ""
-      : feature.properties.stateName || "Unknown";
-
-    let dataToDisplay = "";
-    let outlierStatus = "";
-
-    if (step.id === "state_federal_workers" || step.id === "federal_workers") {
-      const fedWorkersValue = isStateLevel
-        ? feature.properties.state_fed_workers_per_100k
-        : feature.properties.fed_workers_per_100k;
-
-      // Add outlier status if applicable and outlierInfo exists
-      if (outlierInfo && fedWorkersValue > outlierInfo.upperBound) {
-        outlierStatus = `<div class="tooltip-outlier high">Significant outlier (high)</div>`;
-      } else if (outlierInfo && fedWorkersValue < outlierInfo.lowerBound) {
-        outlierStatus = `<div class="tooltip-outlier low">Significant outlier (low)</div>`;
-      }
-
-      dataToDisplay = `
+    dataToDisplay = `
       ${outlierStatus}
       <div class="tooltip-data">
         <div class="tooltip-row">
@@ -127,28 +158,28 @@ const uiManager = {
         </div>
       </div>
     `;
-    } else if (
-      step.id === "vulnerability_index" ||
-      step.id === "vulnerable_counties"
-    ) {
-      const vulnerabilityScore = feature.properties.vulnerabilityIndex;
-      const fedWorkers = feature.properties.fed_workers_per_100k;
+  } else if (
+    step.id === "vulnerability_index" ||
+    step.id === "vulnerable_counties"
+  ) {
+    const vulnerabilityScore = feature.properties.vulnerabilityIndex;
+    const fedWorkers = feature.properties.fed_workers_per_100k;
 
-      // Check if this is a vulnerable county
-      let vulnerableStatus = "";
-      if (
-        feature.properties.isVulnerable ||
-        (fedWorkers >= config.vulnerability.highFederalThreshold &&
-          vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold)
-      ) {
-        vulnerableStatus = `
+    // Check if this is a vulnerable county
+    let vulnerableStatus = "";
+    if (
+      feature.properties.isVulnerable ||
+      (fedWorkers >= config.vulnerability.highFederalThreshold &&
+        vulnerabilityScore >= config.vulnerability.highVulnerabilityThreshold)
+    ) {
+      vulnerableStatus = `
         <div class="tooltip-vulnerable">
           High vulnerability to federal job cuts
         </div>
       `;
-      }
+    }
 
-      dataToDisplay = `
+    dataToDisplay = `
       ${vulnerableStatus}
       <div class="tooltip-data">
         <div class="tooltip-row">
@@ -181,67 +212,56 @@ const uiManager = {
         </div>
       </div>
     `;
-    }
+  }
 
-    // Position tooltip
-    const tooltipOffset = 5;
-    let tooltipX = event.pageX + tooltipOffset;
-    let tooltipY = event.pageY + tooltipOffset;
+  // Position tooltip
+  const tooltipOffset = 5;
+  let tooltipX = event.pageX + tooltipOffset;
+  let tooltipY = event.pageY + tooltipOffset;
 
-    // Make sure tooltip stays in viewport
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const tooltipWidth = 250; // Approximate tooltip width
-    const tooltipHeight = 150; // Approximate tooltip height
+  // Make sure tooltip stays in viewport
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const tooltipWidth = 250; // Approximate tooltip width
+  const tooltipHeight = 150; // Approximate tooltip height
 
-    // If tooltip would go off right edge, position it to the left of the cursor
-    if (tooltipX + tooltipWidth > viewportWidth - 20) {
-      tooltipX = event.pageX - tooltipWidth - tooltipOffset;
-    }
+  // If tooltip would go off right edge, position it to the left of the cursor
+  if (tooltipX + tooltipWidth > viewportWidth - 20) {
+    tooltipX = event.pageX - tooltipWidth - tooltipOffset;
+  }
 
-    // If tooltip would go off bottom edge, position it above the cursor
-    if (tooltipY + tooltipHeight > viewportHeight - 20) {
-      tooltipY = event.pageY - tooltipHeight - tooltipOffset;
-    }
+  // If tooltip would go off bottom edge, position it above the cursor
+  if (tooltipY + tooltipHeight > viewportHeight - 20) {
+    tooltipY = event.pageY - tooltipHeight - tooltipOffset;
+  }
 
-    // Set tooltip content and position if tooltip element exists
-    if (this.elements.tooltip) {
-      this.elements.tooltip.style.display = "block";
-      this.elements.tooltip.style.left = `${tooltipX}px`;
-      this.elements.tooltip.style.top = `${tooltipY}px`;
-      this.elements.tooltip.innerHTML = `
-        <div class="tooltip-header">
-          <strong>${name}${isStateLevel ? "" : `, ${stateName}`}</strong>
-        </div>
-        ${dataToDisplay}
-      `;
-    }
-  },
+  // Set tooltip content and position if tooltip element exists
+  if (elements.tooltip) {
+    elements.tooltip.style.display = "block";
+    elements.tooltip.style.left = `${tooltipX}px`;
+    elements.tooltip.style.top = `${tooltipY}px`;
+    elements.tooltip.innerHTML = `
+      <div class="tooltip-header">
+        <strong>${name}${isStateLevel ? "" : `, ${stateName}`}</strong>
+      </div>
+      ${dataToDisplay}
+    `;
+  }
+}
 
-  // Handle county leave - hide tooltip
-  handleCountyLeave: function (event) {
-    // Get the current target from the event
-    if (event && event.currentTarget) {
-      // Return to normal styling
-      d3.select(event.currentTarget)
-        .attr("stroke-width", 0.5)
-        .attr("stroke", "#fff");
-    }
-
-    // Hide tooltip if it exists
-    if (this.elements.tooltip) {
-      this.elements.tooltip.style.display = "none";
-    }
-  },
-
-  // Handle county leave - hide tooltip
-  handleCountyLeave: function (county, outlierInfo) {
-    // Return to normal styling with some exceptions
+/**
+ * Handle feature leave - hide tooltip
+ */
+export function handleFeatureLeave() {
+  // Return to normal styling
+  if (event && event.currentTarget) {
     d3.select(event.currentTarget)
       .attr("stroke-width", 0.5)
       .attr("stroke", "#fff");
+  }
 
-    // Hide tooltip
-    this.elements.tooltip.style.display = "none";
-  },
-};
+  // Hide tooltip
+  if (elements.tooltip) {
+    elements.tooltip.style.display = "none";
+  }
+}

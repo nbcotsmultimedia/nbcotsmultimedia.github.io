@@ -1,6 +1,15 @@
 // config.js - Configuration settings for the county map visualization
 
 const config = {
+  // Urls for data sources
+  urls: {
+    countiesGeoJSON:
+      "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json",
+    statesGeoJSON: "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
+    dataSheet:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=0&single=true&output=csv",
+  },
+
   // Step configuration
   steps: [
     // Step 1: Federal workers per 100k, by state
@@ -42,7 +51,8 @@ const config = {
     state_federal_workers: {
       useJenks: true,
       colorSet: "federal",
-      maxValue: 15000,
+      breaks: [2400, 3000, 3600, 4200, 5000, 10000], // Use values that match your data range
+      maxValue: 11000,
       showEndLabel: true,
     },
     federal_workers: {
@@ -179,15 +189,6 @@ const config = {
     vulnerability_category: "Vulnerability categories by county",
   },
 
-  // URL and data sources
-  urls: {
-    countiesGeoJSON:
-      "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json",
-    statesGeoJSON: "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
-    dataSheet:
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=0&single=true&output=csv",
-  },
-
   // FIPS code mapping
   stateFips: {
     "01": "Alabama",
@@ -248,8 +249,11 @@ const config = {
     78: "Virgin Islands",
   },
 
+  // Vulnerability thresholds
   vulnerability: {
     highFederalThreshold: 2500, // Fed workers per 100k
     highVulnerabilityThreshold: 20, // Vulnerability score
   },
 };
+
+export default config;
