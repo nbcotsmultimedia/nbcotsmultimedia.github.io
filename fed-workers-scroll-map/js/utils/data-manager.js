@@ -17,11 +17,13 @@ class DataManager {
       counties: null,
       states: null,
       vulnerability: null,
+      vulnerableCounties: null,
     };
 
     // Processed data
     this.mapData = null;
     this.stateData = null;
+    this.spotlightData = null; // Added for spotlight counties
     this.statistics = null;
     this.vulnerableCountyIds = null;
   }
@@ -43,15 +45,20 @@ class DataManager {
       // Step 3: Store processed data
       this.mapData = processedData.mapData;
       this.stateData = processedData.stateData;
+      this.spotlightData = processedData.spotlightData;
       this.statistics = processedData.statistics;
       this.vulnerableCountyIds = processedData.vulnerableCountyIds;
 
       console.log("DataManager initialization complete");
 
+      // Make dataManager globally available for visualization.js
+      window.dataManager = this;
+
       // Return processed map data for immediate use
       return {
         counties: this.mapData,
         states: this.stateData,
+        spotlights: this.spotlightData,
         statistics: this.statistics,
       };
     } catch (error) {
@@ -102,6 +109,9 @@ class DataManager {
           bottom: 0,
         },
       };
+    } else if (step.id === "vulnerable_counties") {
+      // For spotlight counties, use vulnerability statistics
+      stats = this.statistics && this.statistics.vulnerability;
     } else {
       // Default to vulnerability statistics
       stats = this.statistics && this.statistics.vulnerability;
@@ -151,6 +161,26 @@ class DataManager {
     return this.mapData.filter((county) =>
       this.vulnerableCountyIds.includes(county.id)
     );
+  }
+
+  /**
+   * Get counties for a specific spotlight category
+   * @param {string} spotlightId - ID of the spotlight category
+   * @returns {Array} - Array of county features in this spotlight
+   */
+  getSpotlightCounties(spotlightId) {
+    if (!this.mapData || !this.spotlightData) return [];
+
+    const spotlight = this.spotlightData.find((s) => s.id === spotlightId);
+    if (!spotlight) return [];
+
+    // Get array of FIPS codes for this spotlight
+    const fipsCodes = Array.isArray(spotlight.countyFips)
+      ? spotlight.countyFips
+      : [spotlight.countyFips];
+
+    // Return counties with matching FIPS codes
+    return this.mapData.filter((county) => fipsCodes.includes(county.id));
   }
 }
 

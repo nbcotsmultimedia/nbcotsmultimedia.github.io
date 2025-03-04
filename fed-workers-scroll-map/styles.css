@@ -392,3 +392,135 @@ body {
   rx: 3px;
   ry: 3px;
 }
+
+/* Add these styles to your styles.css file */
+
+/* Spotlight Panel */
+.spotlight-panel {
+  position: absolute;
+  right: 20px;
+  top: 100px;
+  width: 300px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 5px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-height: 60vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.spotlight-panel h4 {
+  margin-top: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 18px;
+}
+
+.spotlight-section {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.spotlight-section:hover {
+  background-color: #f5f5f5;
+}
+
+.spotlight-section.active {
+  background-color: #f0f0f0;
+  border-left: 4px solid #de2d26;
+  padding-left: 12px;
+}
+
+.spotlight-section h5 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.spotlight-section p {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.spotlight-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.spotlight-section li {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* Facility Markers */
+.facility-markers circle {
+  cursor: pointer;
+  transition: r 0.2s ease, stroke-width 0.2s ease;
+}
+
+.facility-markers circle:hover {
+  stroke-width: 2px;
+}
+
+/* Tooltip */
+.tooltip {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 1500;
+  max-width: 300px;
+}
+
+.tooltip-header {
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.tooltip-data {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tooltip-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tooltip-label {
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.tooltip-value {
+  text-align: right;
+}
+
+.tooltip-spotlight {
+  background-color: #de2d26;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+/* Transition Text */
+#transition-text {
+  text-align: center;
+  font-style: italic;
+  margin: 20px 0;
+  padding: 0 40px;
+}

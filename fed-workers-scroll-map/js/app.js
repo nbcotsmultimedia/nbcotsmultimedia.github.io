@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Render the current step
+  // Update your renderCurrentStep function in app.js to make sure it passes facilities data
+
   function renderCurrentStep() {
     if (!state.mapInitialized) {
       console.warn("Cannot render map: not initialized");
@@ -96,6 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
       mapDataLength: mapDataToUse ? mapDataToUse.length : 0,
       stateDataLength: dataManager.stateData ? dataManager.stateData.length : 0,
       dimensions: state.dimensions,
+      // Add this line to log facilities data
+      facilitiesDataLength: dataManager.facilitiesData
+        ? dataManager.facilitiesData.length
+        : 0,
     });
 
     try {
@@ -127,6 +133,8 @@ document.addEventListener("DOMContentLoaded", () => {
             stepStatistics
           ),
         onLeave: () => uiManager.handleFeatureLeave(),
+        // Add facilitiesData parameter
+        facilitiesData: dataManager.facilitiesData,
       });
     } catch (error) {
       console.error("Error rendering map:", error);

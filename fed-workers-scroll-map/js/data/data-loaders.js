@@ -121,6 +121,182 @@ export async function fetchVulnerabilityData() {
 }
 
 /**
+ * Fetch federal facilities data from CSV and filter to only include US locations
+ * @returns {Promise<Array>} Array of federal facilities data records
+ */
+export async function fetchFacilitiesData() {
+  console.log("Fetching federal facilities data...");
+  try {
+    const response = await fetch(config.urls.federalFacilities);
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error! Status: ${response.status} - ${response.statusText}`
+      );
+    }
+
+    const csvText = await response.text();
+
+    // Validate CSV data
+    if (!csvText || csvText.trim().length === 0) {
+      throw new Error("Empty or invalid CSV data received");
+    }
+
+    // Parse CSV
+    const parseResult = Papa.parse(csvText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    });
+
+    // Check for parse errors
+    if (parseResult.errors && parseResult.errors.length > 0) {
+      console.warn(
+        "Facilities CSV parsing had some errors:",
+        parseResult.errors
+      );
+    }
+
+    const parsedData = parseResult.data;
+
+    // Validate parsed data
+    if (!parsedData || !Array.isArray(parsedData) || parsedData.length === 0) {
+      throw new Error("Failed to parse federal facilities data from CSV");
+    }
+
+    console.log("Raw facilities data count:", parsedData.length);
+
+    // Process facilities data to add coordinates
+    const processedFacilities = parsedData
+      .map((facility) => {
+        // Check all possible column names for coordinates
+        const latitudeOptions = [
+          facility.Latitude,
+          facility.latitude,
+          facility.LATITUDE,
+          facility.lat,
+          facility.LAT,
+        ];
+
+        const longitudeOptions = [
+          facility.Longitude,
+          facility.longitude,
+          facility.LONGITUDE,
+          facility.lon,
+          facility.lng,
+          facility.LON,
+          facility.LNG,
+        ];
+
+        // Find first non-null value
+        const latitude = latitudeOptions.find(
+          (val) => val !== undefined && val !== null
+        );
+        const longitude = longitudeOptions.find(
+          (val) => val !== undefined && val !== null
+        );
+
+        // Rest of your processing code...
+
+        return {
+          name: name,
+          type: type,
+          // Rest of the properties...
+        };
+      })
+      .filter((facility) => {
+        // Your filtering code for valid coordinates and US locations
+        // ...
+      });
+
+    console.log(
+      `Processed ${processedFacilities.length} federal facilities (after filtering for US locations)`
+    );
+
+    // ============= ADD SAMPLING CODE HERE =============
+    // Take a smaller representative sample (e.g., every 50th facility)
+    const samplingRate = 50; // Adjust this number to control how many facilities are displayed
+    const sampledFacilities = processedFacilities.filter(
+      (_, index) => index % samplingRate === 0
+    );
+    console.log(
+      `Sampling ${sampledFacilities.length} facilities from ${processedFacilities.length} total (1/${samplingRate})`
+    );
+
+    if (sampledFacilities.length === 0) {
+      console.log("No facilities found after sampling. Check sampling rate.");
+    } else {
+      console.log(
+        "Sample processed facility after sampling:",
+        sampledFacilities[0]
+      );
+    }
+
+    // Return the sampled facilities instead of all of them
+    return sampledFacilities;
+    // ============= END SAMPLING CODE =============
+
+    // Original return statement (comment this out)
+    // return processedFacilities;
+  } catch (error) {
+    console.error(`Failed to fetch federal facilities data: ${error.message}`);
+    return []; // Return empty array if facilities data fails to load
+  }
+}
+
+/**
+ * Fetch vulnerable counties spotlight data from CSV
+ * @returns {Promise<Array>} Array of vulnerable counties data records
+ */
+export async function fetchVulnerableCountiesData() {
+  console.log("Fetching vulnerable counties data...");
+  try {
+    const response = await fetch(config.urls.vulnerableCounties);
+
+    if (!response.ok) {
+      throw new Error(
+        `HTTP error! Status: ${response.status} - ${response.statusText}`
+      );
+    }
+
+    const csvText = await response.text();
+
+    // Validate CSV data
+    if (!csvText || csvText.trim().length === 0) {
+      throw new Error("Empty or invalid CSV data received");
+    }
+
+    // Parse CSV
+    const parseResult = Papa.parse(csvText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    });
+
+    // Check for parse errors
+    if (parseResult.errors && parseResult.errors.length > 0) {
+      console.warn(
+        "Vulnerable counties CSV parsing had some errors:",
+        parseResult.errors
+      );
+    }
+
+    const parsedData = parseResult.data;
+
+    // Validate parsed data
+    if (!parsedData || !Array.isArray(parsedData) || parsedData.length === 0) {
+      throw new Error("Failed to parse vulnerable counties data from CSV");
+    }
+
+    console.log(`Parsed ${parsedData.length} vulnerable counties records`);
+    return parsedData;
+  } catch (error) {
+    console.error(`Failed to fetch vulnerable counties data: ${error.message}`);
+    throw error; // Re-throw to be handled by the caller
+  }
+}
+
+/**
  * Load all data sources in parallel
  * @returns {Promise<Object>} Object containing all loaded data
  */
@@ -129,19 +305,30 @@ export async function loadAllData() {
     console.log("Starting to fetch map data...");
 
     // Load data in parallel for efficiency
-    const [counties, states, vulnerabilityData] = await Promise.all([
-      fetchCountiesData(),
-      fetchStatesData(),
-      fetchVulnerabilityData(),
-    ]).catch((error) => {
-      throw new Error(`Failed to load data in parallel: ${error.message}`);
-    });
+    const [counties, states, vulnerabilityData, vulnerableCountiesData] =
+      await Promise.all([
+        fetchCountiesData(),
+        fetchStatesData(),
+        fetchVulnerabilityData(),
+        fetchVulnerableCountiesData().catch((error) => {
+          console.warn(
+            "Failed to load vulnerable counties data, continuing without it:",
+            error
+          );
+          return []; // Return empty array if vulnerable counties data fails to load
+        }),
+        // Remove the facilitiesData fetch here
+      ]).catch((error) => {
+        throw new Error(`Failed to load data in parallel: ${error.message}`);
+      });
 
     // Return raw data for further processing
     return {
       counties,
       states,
       vulnerability: vulnerabilityData,
+      vulnerableCounties: vulnerableCountiesData,
+      // Remove the facilities: facilitiesData property
     };
   } catch (error) {
     console.error("Error loading data:", error);

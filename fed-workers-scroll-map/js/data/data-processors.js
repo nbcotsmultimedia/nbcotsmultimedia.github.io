@@ -91,15 +91,28 @@ export function processData(rawData, utils, config) {
     config.vulnerability
   );
 
+  // Process facilities data (if available)
+  const facilitiesData = processFacilitiesData(rawData.facilities);
+
+  // Process spotlight data for vulnerable counties step
+  const spotlightData = processSpotlightData(
+    config.steps,
+    rawData.vulnerableCounties
+  );
+
   console.log("Data processing complete:", {
     counties: mapData.length,
     states: stateData.length,
+    facilities: facilitiesData ? facilitiesData.length : 0,
+    spotlights: spotlightData ? spotlightData.length : 0,
     vulnerableCounties: vulnerableCountyIds.length,
   });
 
   return {
     mapData,
     stateData,
+    facilitiesData,
+    spotlightData,
     statistics,
     vulnerableCountyIds,
   };
@@ -311,6 +324,83 @@ export function findCountyData(countyName, stateName, vulnerabilityByCounty) {
  * @param {Object} config - Configuration object
  * @returns {Object} Calculated statistics
  */
+export function calculateDataStatistics(counties, utils, config) {
+  // Extract values
+  const fedWorkersValues = counties
+    .map((d) => d.properties.fed_workers_per_100k)
+    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v > 0);
+
+  const vulnerabilityValues = counties
+    .map((d) => d.properties.vulnerabilityIndex)
+    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v >= 0);
+
+  // Calculate basic statistics
+  return {
+    federal_workers: {
+      // Basic statistics
+      ...utils.calculateStatistics(fedWorkersValues),
+
+      // Data classification - now using Jenks natural breaks
+      breaks: utils.calculateJenksBreaks(
+        fedWorkersValues,
+        config.classification.numBreaks
+      ),
+
+      // Also include quantile breaks for reference
+      quantileBreaks: utils.calculateQuantileBreaks(
+        fedWorkersValues,
+        config.classification.numBreaks
+      ),
+
+      // Cleaned data (without extreme outliers)
+      cleaned: utils.cleanOutliers(
+        fedWorkersValues,
+        config.classification.outlierMultiplier
+      ),
+
+      // Outlier information
+      outliers: utils.identifyOutliers(fedWorkersValues),
+
+      // Percentile thresholds
+      percentiles: utils.calculatePercentileThresholds(
+        fedWorkersValues,
+        config.classification.percentileThreshold
+      ),
+    },
+    vulnerability: {
+      // Basic statistics
+      ...utils.calculateStatistics(vulnerabilityValues),
+
+      // Data classification - now using Jenks natural breaks
+      breaks: utils.calculateJenksBreaks(
+        vulnerabilityValues,
+        config.classification.numBreaks
+      ),
+
+      // Also include quantile breaks for reference
+      quantileBreaks: utils.calculateQuantileBreaks(
+        vulnerabilityValues,
+        config.classification.numBreaks
+      ),
+
+      // Cleaned data (without extreme outliers)
+      cleaned: utils.cleanOutliers(
+        vulnerabilityValues,
+        config.classification.outlierMultiplier
+      ),
+
+      // Outlier information
+      outliers: utils.identifyOutliers(vulnerabilityValues),
+
+      // Percentile thresholds
+      percentiles: utils.calculatePercentileThresholds(
+        vulnerabilityValues,
+        config.classification.percentileThreshold
+      ),
+    },
+  };
+}
+
 /**
  * Calculate state-level aggregation of federal worker data
  * @param {Array} counties - Array of processed county data
@@ -440,84 +530,13 @@ export function calculateStateAggregates(
   return stateDataWithGeo;
 }
 
-export function calculateDataStatistics(counties, utils, config) {
-  // Extract values
-  const fedWorkersValues = counties
-    .map((d) => d.properties.fed_workers_per_100k)
-    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v > 0);
-
-  const vulnerabilityValues = counties
-    .map((d) => d.properties.vulnerabilityIndex)
-    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v >= 0);
-
-  // Calculate basic statistics
-  return {
-    federal_workers: {
-      // Basic statistics
-      ...utils.calculateStatistics(fedWorkersValues),
-
-      // Data classification - now using Jenks natural breaks
-      breaks: utils.calculateJenksBreaks(
-        fedWorkersValues,
-        config.classification.numBreaks
-      ),
-
-      // Also include quantile breaks for reference
-      quantileBreaks: utils.calculateQuantileBreaks(
-        fedWorkersValues,
-        config.classification.numBreaks
-      ),
-
-      // Cleaned data (without extreme outliers)
-      cleaned: utils.cleanOutliers(
-        fedWorkersValues,
-        config.classification.outlierMultiplier
-      ),
-
-      // Outlier information
-      outliers: utils.identifyOutliers(fedWorkersValues),
-
-      // Percentile thresholds
-      percentiles: utils.calculatePercentileThresholds(
-        fedWorkersValues,
-        config.classification.percentileThreshold
-      ),
-    },
-    vulnerability: {
-      // Basic statistics
-      ...utils.calculateStatistics(vulnerabilityValues),
-
-      // Data classification - now using Jenks natural breaks
-      breaks: utils.calculateJenksBreaks(
-        vulnerabilityValues,
-        config.classification.numBreaks
-      ),
-
-      // Also include quantile breaks for reference
-      quantileBreaks: utils.calculateQuantileBreaks(
-        vulnerabilityValues,
-        config.classification.numBreaks
-      ),
-
-      // Cleaned data (without extreme outliers)
-      cleaned: utils.cleanOutliers(
-        vulnerabilityValues,
-        config.classification.outlierMultiplier
-      ),
-
-      // Outlier information
-      outliers: utils.identifyOutliers(vulnerabilityValues),
-
-      // Percentile thresholds
-      percentiles: utils.calculatePercentileThresholds(
-        vulnerabilityValues,
-        config.classification.percentileThreshold
-      ),
-    },
-  };
-}
-
-// Add this new function in data-processors.js
+/**
+ * Calculate state-level statistics
+ * @param {Array} stateData - Array of state objects
+ * @param {Object} utils - Utility functions
+ * @param {Object} config - Configuration object
+ * @returns {Object} State statistics object
+ */
 export function calculateStateStatistics(stateData, utils, config) {
   const stateFederalWorkersValues = stateData
     .map((state) => state.properties.pct_federal)
@@ -550,4 +569,157 @@ export function calculateStateStatistics(stateData, utils, config) {
       config.classification.percentileThreshold
     ),
   };
+}
+
+/**
+ * Process federal facilities data
+ * @param {Array} facilitiesData - Raw facilities data from CSV
+ * @returns {Array} - Processed facilities data
+ */
+function processFacilitiesData(facilitiesData) {
+  if (
+    !facilitiesData ||
+    !Array.isArray(facilitiesData) ||
+    facilitiesData.length === 0
+  ) {
+    console.warn("No facilities data available");
+    return [];
+  }
+
+  // Filter out entries with invalid coordinates
+  const validFacilities = facilitiesData.filter((facility) => {
+    return (
+      facility.latitude &&
+      facility.longitude &&
+      !isNaN(facility.latitude) &&
+      !isNaN(facility.longitude)
+    );
+  });
+
+  console.log(`Processed ${validFacilities.length} valid federal facilities`);
+  return validFacilities;
+}
+
+/**
+ * Process spotlight data for vulnerable counties visualization
+ * @param {Array} steps - Configuration steps
+ * @param {Array} vulnerableCountiesData - Raw vulnerable counties data
+ * @returns {Array} - Processed spotlight data
+ */
+// In data-processors.js, update the processSpotlightData function:
+function processSpotlightData(steps, vulnerableCountiesData) {
+  console.log("Processing spotlight data...");
+
+  // Find the vulnerable_counties step
+  const vulnerableStep = steps.find(
+    (step) => step.id === "vulnerable_counties"
+  );
+  if (!vulnerableStep || !vulnerableStep.spotlights) {
+    console.warn("No spotlight configuration found");
+    return [];
+  }
+
+  // If no vulnerable counties data provided, just return the configuration
+  if (
+    !vulnerableCountiesData ||
+    !Array.isArray(vulnerableCountiesData) ||
+    vulnerableCountiesData.length === 0
+  ) {
+    console.warn(
+      "No vulnerable counties data available, using config defaults"
+    );
+    return vulnerableStep.spotlights;
+  }
+
+  console.log(
+    "Vulnerable counties data sample:",
+    vulnerableCountiesData.slice(0, 2)
+  );
+
+  // Check what fields we have in the data
+  if (vulnerableCountiesData.length > 0) {
+    console.log(
+      "Vulnerable counties fields:",
+      Object.keys(vulnerableCountiesData[0])
+    );
+  }
+
+  // Get a map of county/state to FIPS code
+  const countyFipsMap = {};
+
+  // Create spotlight categories based on your CSV structure
+  const spotlightCategories = {
+    triple_threat: [],
+    extreme_dependency: [],
+    tribal_rural: [],
+  };
+
+  // Process the counties and sort them into spotlight categories
+  vulnerableCountiesData.forEach((county) => {
+    // Determine which category this county belongs to
+    // This depends on the structure of your CSV
+    const spotlight = county.spotlight || "";
+    const category = county.category || "";
+
+    if (spotlight.toLowerCase().includes("triple threat")) {
+      spotlightCategories.triple_threat.push(county);
+    } else if (spotlight.toLowerCase().includes("extreme")) {
+      spotlightCategories.extreme_dependency.push(county);
+    } else if (
+      spotlight.toLowerCase().includes("tribal") ||
+      spotlight.toLowerCase().includes("rural")
+    ) {
+      spotlightCategories.tribal_rural.push(county);
+    }
+  });
+
+  console.log("Spotlight categories count:", {
+    triple_threat: spotlightCategories.triple_threat.length,
+    extreme_dependency: spotlightCategories.extreme_dependency.length,
+    tribal_rural: spotlightCategories.tribal_rural.length,
+  });
+
+  // Enhance the spotlights with our data
+  const enhancedSpotlights = vulnerableStep.spotlights.map((spotlight) => {
+    // Get the corresponding category of counties
+    let categoryCounties = [];
+
+    if (spotlight.id === "triple_threat") {
+      categoryCounties = spotlightCategories.triple_threat;
+    } else if (spotlight.id === "extreme_dependency") {
+      categoryCounties = spotlightCategories.extreme_dependency;
+    } else if (spotlight.id === "tribal_rural") {
+      categoryCounties = spotlightCategories.tribal_rural;
+    }
+
+    // If we have data, enhance the spotlight
+    if (categoryCounties.length > 0) {
+      // For single-county spotlights, we can use the first county as an example
+      const exampleCounty = categoryCounties[0];
+
+      // Create stats from our data
+      const stats = [
+        `${exampleCounty.pct_federal.toFixed(1)}% of jobs are federal`,
+        `Unemployment rate: ${exampleCounty.unemployment_rate.toFixed(1)}%`,
+        `Median income: $${exampleCounty.median_income.toLocaleString()}`,
+      ];
+
+      // Merge the config with our data
+      return {
+        ...spotlight,
+        countyData: categoryCounties, // Store all the counties in this category
+        // Only override description and stats if not already provided in config
+        description:
+          spotlight.description ||
+          `${categoryCounties.length} counties identified in this category`,
+        stats: spotlight.stats || stats,
+      };
+    }
+
+    // If no matching data, return the original config
+    return spotlight;
+  });
+
+  console.log("Enhanced spotlights:", enhancedSpotlights);
+  return enhancedSpotlights;
 }

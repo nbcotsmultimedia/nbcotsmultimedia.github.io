@@ -67,6 +67,20 @@ export function renderMap({
   const outlierInfo =
     statistics && statistics.outliers ? statistics.outliers : null;
 
+  // For spotlight mode, we need to handle the visualization differently
+  if (step.spotlightMode) {
+    renderSpotlightMode(
+      svgElement,
+      features,
+      path,
+      step,
+      dimensions,
+      onHover,
+      onLeave
+    );
+    return;
+  }
+
   // Draw states or counties
   const countyPaths = svgElement
     .selectAll(isStateLevel ? "path.state" : "path.county")
@@ -129,7 +143,229 @@ export function renderMap({
   createLegend(svgElement, dimensions, step.id, statistics);
 }
 
-// Get fill color for a feature based on step type and data
+/**
+ * Render the map in spotlight mode for the vulnerable counties step
+ * @param {d3.Selection} svgElement - D3 selection of the SVG element
+ * @param {Array} features - Array of GeoJSON features
+ * @param {d3.GeoPath} path - D3 GeoPath generator
+ * @param {Object} step - Step configuration
+ * @param {Object} dimensions - Map dimensions
+ * @param {Function} onHover - Hover event handler
+ * @param {Function} onLeave - Leave event handler
+ */
+function renderSpotlightMode(
+  svgElement,
+  features,
+  path,
+  step,
+  dimensions,
+  onHover,
+  onLeave
+) {
+  console.log("Rendering in spotlight mode with spotlights:", step.spotlights);
+
+  // Create a base map with faded counties
+  const baseMap = svgElement
+    .append("g")
+    .attr("class", "base-counties")
+    .selectAll("path")
+    .data(features)
+    .join("path")
+    .attr("d", path)
+    .attr("fill", config.colors.spotlight.default)
+    .attr("stroke", config.colors.regularStroke)
+    .attr("stroke-width", 0.3)
+    .style("opacity", 0.5);
+
+  // Add state boundaries for context
+  _addStateBoundaries(svgElement, path);
+
+  // Make sure we have spotlights
+  if (!step.spotlights || step.spotlights.length === 0) {
+    console.warn("No spotlights defined in step config");
+    return;
+  }
+
+  // Process spotlight categories
+  for (const spotlight of step.spotlights) {
+    console.log(`Processing spotlight: ${spotlight.id}`);
+
+    // Get counties for this spotlight
+    let spotlightCounties = [];
+
+    // First try to use countyData from the enhanced spotlight (if available)
+    if (spotlight.countyData && spotlight.countyData.length > 0) {
+      console.log(
+        `Using countyData for ${spotlight.id} with ${spotlight.countyData.length} counties`
+      );
+
+      // Map county names to features
+      spotlightCounties = features.filter((feature) => {
+        const countyName = feature.properties.name;
+        const stateName = feature.properties.stateName;
+
+        // Look for a matching county in the countyData
+        return spotlight.countyData.some((countyData) => {
+          return (
+            countyData.county === countyName && countyData.state === stateName
+          );
+        });
+      });
+    }
+    // If no countyData, fall back to FIPS codes from config
+    else if (spotlight.countyFips) {
+      console.log(`Using FIPS codes for ${spotlight.id}`);
+
+      const fipsCodes = Array.isArray(spotlight.countyFips)
+        ? spotlight.countyFips
+        : [spotlight.countyFips];
+
+      spotlightCounties = features.filter((feature) =>
+        fipsCodes.includes(feature.id)
+      );
+    }
+
+    console.log(
+      `Found ${spotlightCounties.length} counties for spotlight ${spotlight.id}`
+    );
+
+    // Get color for this spotlight category
+    let color = config.colors.spotlight.highlight; // Default
+
+    if (spotlight.id === "triple_threat") {
+      color = config.colors.spotlight.tripleThreat;
+    } else if (spotlight.id === "extreme_dependency") {
+      color = config.colors.spotlight.extremeDependency;
+    } else if (spotlight.id === "tribal_rural") {
+      color = config.colors.spotlight.tribalRural;
+    }
+
+    // Highlight counties for this spotlight
+    if (spotlightCounties.length > 0) {
+      svgElement
+        .append("g")
+        .attr("class", `spotlight-group-${spotlight.id}`)
+        .selectAll("path")
+        .data(spotlightCounties)
+        .join("path")
+        .attr("d", path)
+        .attr("fill", color)
+        .attr("stroke", config.colors.highlightStroke)
+        .attr("stroke-width", 1)
+        .style("opacity", 0.8)
+        .each(function (d) {
+          // Add spotlight properties to the feature for tooltips
+          d.properties.isSpotlighted = true;
+          d.properties.spotlightCategory = spotlight.id;
+          d.properties.spotlightTitle = spotlight.title;
+        })
+        .on("mouseover", function (event, d) {
+          // Highlight this county
+          d3.select(this).attr("stroke-width", 2).style("opacity", 1);
+
+          // Call the hover handler
+          onHover(event, d, step, null);
+        })
+        .on("mouseout", function () {
+          // Reset styling
+          d3.select(this).attr("stroke-width", 1).style("opacity", 0.8);
+
+          // Call the leave handler
+          onLeave();
+        })
+        .on("click", function (event, d) {
+          // Activate the spotlight panel for this category
+          if (window.uiManager && window.uiManager.activateSpotlight) {
+            window.uiManager.activateSpotlight(spotlight.id);
+          }
+        });
+    }
+  }
+
+  // Create a legend for the spotlight map
+  createSpotlightLegend(svgElement, dimensions, step);
+}
+
+/**
+ * Create a legend for the spotlight view
+ * @param {d3.Selection} svgElement - D3 selection of the SVG element
+ * @param {Object} dimensions - Map dimensions
+ * @param {Object} step - Step configuration
+ */
+function createSpotlightLegend(svgElement, dimensions, step) {
+  // Legend dimensions and position
+  const legendWidth = 260;
+  const legendHeight = 100;
+  const legendX = dimensions.width - legendWidth - 20;
+  const legendY = dimensions.height - 150;
+
+  // Create legend container
+  const legend = svgElement
+    .append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${legendX}, ${legendY})`);
+
+  // Create background panel
+  legend
+    .append("rect")
+    .attr("x", -10)
+    .attr("y", -20)
+    .attr("width", legendWidth + 20)
+    .attr("height", legendHeight + 30)
+    .attr("fill", "rgba(255, 255, 255, 0.85)")
+    .attr("rx", 4)
+    .attr("ry", 4);
+
+  // Add legend title
+  legend
+    .append("text")
+    .attr("x", 0)
+    .attr("y", -5)
+    .style("font-size", "12px")
+    .style("font-weight", "bold")
+    .text("Vulnerability Categories");
+
+  // Add legend items
+  const legendItems = [
+    {
+      label: "Triple Threat Areas",
+      color: config.colors.spotlight.tripleThreat,
+      y: 20,
+    },
+    {
+      label: "Extreme Federal Dependency",
+      color: config.colors.spotlight.extremeDependency,
+      y: 45,
+    },
+    {
+      label: "Tribal and Rural Areas",
+      color: config.colors.spotlight.tribalRural,
+      y: 70,
+    },
+  ];
+
+  legendItems.forEach((item) => {
+    // Add color swatch
+    legend
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", item.y - 10)
+      .attr("width", 15)
+      .attr("height", 15)
+      .attr("fill", item.color)
+      .attr("stroke", "#000")
+      .attr("stroke-width", 0.5);
+
+    // Add label
+    legend
+      .append("text")
+      .attr("x", 25)
+      .attr("y", item.y)
+      .style("font-size", "11px")
+      .text(item.label);
+  });
+}
+
 // Get fill color for a feature based on step type and data
 export function getFillColor(feature, step, colorScale) {
   const isStateLevel = step.isStateLevel === true;
@@ -152,11 +388,6 @@ export function getFillColor(feature, step, colorScale) {
     // Handle numeric values
     let value = feature.properties[fieldName];
 
-    // Log the value for debugging
-    console.log(
-      `Color value for ${feature.properties.name}: ${value} (field: ${fieldName})`
-    );
-
     // Check for missing or invalid data
     if (
       value === undefined ||
@@ -171,7 +402,6 @@ export function getFillColor(feature, step, colorScale) {
     if (isStateLevel && step.id === "state_federal_workers") {
       // Convert from per 100,000 to percentage (divide by 1000)
       value = value / 1000;
-      console.log(`Adjusted value for ${feature.properties.name}: ${value}`);
     }
 
     return colorScale(value);
@@ -564,6 +794,7 @@ function createCategoryStyleLegend(
       labelText = `${breaks[i - 1].toFixed(1)} - ${breaks[i].toFixed(1)}`;
     }
 
+    // Add value range below
     // Add value range below
     legend
       .append("text")

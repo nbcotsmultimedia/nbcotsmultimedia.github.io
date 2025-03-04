@@ -8,6 +8,8 @@ const config = {
     statesGeoJSON: "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
     dataSheet:
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=0&single=true&output=csv",
+    vulnerableCounties:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=451832244&single=true&output=csv",
   },
 
   // Step configuration
@@ -16,6 +18,10 @@ const config = {
     {
       id: "state_federal_workers",
       title: "Federal Workers per 100,000 by State",
+      description:
+        "While D.C. leads with over 10% federal employment, states like Alaska, Maryland and Hawaii show surprising concentrations far from the capital.",
+      transitionText:
+        "Let's look closer to see how these patterns emerge at the county level.",
       dataField: "state_fed_workers_per_100k",
       colorScheme: "blues",
       colorSet: "federal",
@@ -24,7 +30,11 @@ const config = {
     // Step 2: Federal workers per 100k, by county
     {
       id: "federal_workers",
-      title: "Federal workers per 100,000 across U.S. counties",
+      title: "Federal Workers per 100,000 across U.S. counties",
+      description:
+        "Federal employment isn't evenly distributed even within states.",
+      transitionText:
+        "What makes some communities more dependent on federal jobs than others?",
       dataField: "fed_workers_per_100k",
       colorScheme: "blues",
       colorSet: "federal",
@@ -32,17 +42,66 @@ const config = {
     // Step 3: Vulnerability score by county
     {
       id: "vulnerability_index",
-      title: "Vulnerability index across U.S. counties",
+      title: "Vulnerability Index across U.S. counties",
+      description:
+        "Vulnerability to federal cuts isn't just about how many federal workers live there. Some areas with moderate federal employment face higher vulnerability due to economic factors.",
+      transitionText: "Now let's focus on the most vulnerable counties.",
       dataField: "vulnerabilityIndex",
       colorScheme: "reds",
       colorSet: "vulnerability",
     },
-    // Add new step for vulnerable counties
+    // Step 4: Spotlight on vulnerable communities
     {
       id: "vulnerable_counties",
-      title: "Counties Most Vulnerable to Federal Job Cuts",
-      dataField: "fed_workers_per_100k",
-      highlightVulnerable: true,
+      title: "Communities Most Vulnerable to Federal Job Cuts",
+      description:
+        "These representative communities illustrate different vulnerability patterns across the country.",
+      dataField: "vulnerabilityIndex",
+      colorScheme: "reds",
+      colorSet: "vulnerability",
+      spotlightMode: true,
+      spotlights: [
+        {
+          id: "triple_threat",
+          countyFips: "21237", // Wolfe County, Kentucky
+          title: "Triple threat",
+          description:
+            "For communities like Wolfe County, federal job cuts would remove some of the only stable, well-paying employment opportunities in an area already struggling with high unemployment and low incomes.",
+          stats: [
+            "14.8% of jobs are federal",
+            "Unemployment already at 27% (over 5x the national average)",
+            "Median income of just $24,349 (less than 10% of the national average)",
+          ],
+        },
+        {
+          id: "extreme_dependency",
+          countyFips: "15005", // Kalawao County, Hawaii
+          title: "Extreme dependency",
+          description:
+            "While Kalawao County currently enjoys full employment, its extreme dependence on federal jobs means cuts could transform it from one of the most stable employment markets to one of the most vulnerable almost overnight.",
+          stats: [
+            "38.7% of all jobs are federal (11x the national average)",
+            "Currently has low unemployment (0%)",
+            "A 20% reduction in federal workforce would directly eliminate nearly 8% of all jobs",
+          ],
+        },
+        {
+          id: "tribal_rural",
+          // Array of county FIPS for tribal areas
+          countyFips: [
+            "46121",
+            "46135",
+            "04017",
+            "35045",
+            "02270",
+            "30031",
+            "38085",
+          ],
+          title: "Tribal communities and rural areas",
+          description:
+            "In tribal areas and rural communities, federal employment often represents one of the few sources of stable, career-path jobs. Cuts would disproportionately impact areas already facing limited economic opportunities.",
+        },
+      ],
     },
   ],
 
@@ -68,31 +127,27 @@ const config = {
       colorSet: "vulnerability",
       maxValue: 65.0, // Maximum vulnerability score from analysis
     },
-    // Scale for vulnerable counties map
     vulnerable_counties: {
       useJenks: true,
-      colorSet: "federal", // Use the same blue color scheme as the federal workers map
-      maxValue: 15000,
+      colorSet: "vulnerability", // Use vulnerability color scheme for the spotlight
+      maxValue: 65.0,
       showEndLabel: true,
     },
-    // Scale for narrative example 1 (remote vulnerability)
+    // Scale for narrative example 1 (triple threat)
     narrative_example_1: {
       useJenks: true,
       colorSet: "federal",
       maxValue: 15000,
       showEndLabel: true,
-      // Optional custom breaks if you want to force specific break points
-      // breaks: [1000, 2500, 5000, 7500, 10000]
     },
-    // Scale for narrative example 2 (resilient counties)
+    // Scale for narrative example 2 (extreme dependency)
     narrative_example_2: {
       useJenks: true,
       colorSet: "federal",
       maxValue: 15000,
       showEndLabel: true,
     },
-
-    // Scale for narrative example 3 (disproportionate vulnerability)
+    // Scale for narrative example 3 (tribal and rural areas)
     narrative_example_3: {
       useJenks: true,
       colorSet: "federal",
@@ -104,6 +159,7 @@ const config = {
   // Colors for color scale
   colors: {
     regularStroke: "#ffffff", // County outlines
+    highlightStroke: "#000000", // Highlighted county outlines
 
     // Color palettes for different data types
     federal: [
@@ -136,14 +192,14 @@ const config = {
       "Very High": "#a50f15", // Dark red
     },
 
-    // Narrative highlight colors
-    narrative: [
-      "#fee5d9", // Lightest
-      "#fcae91",
-      "#fb6a4a",
-      "#de2d26",
-      "#a50f15", // Darkest
-    ],
+    // Spotlight highlight colors
+    spotlight: {
+      default: "rgba(200, 200, 200, 0.3)", // Faded background for non-spotlighted counties
+      highlight: "#de2d26", // Highlighting for spotlighted counties
+      tripleThreat: "#a50f15",
+      extremeDependency: "#de2d26",
+      tribalRural: "#fb6a4a",
+    },
   },
 
   // Classification configuration - change to use Jenks natural breaks
