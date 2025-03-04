@@ -300,35 +300,31 @@ export async function fetchVulnerableCountiesData() {
  * Load all data sources in parallel
  * @returns {Promise<Object>} Object containing all loaded data
  */
+// In data-loaders.js
 export async function loadAllData() {
   try {
     console.log("Starting to fetch map data...");
 
-    // Load data in parallel for efficiency
-    const [counties, states, vulnerabilityData, vulnerableCountiesData] =
-      await Promise.all([
-        fetchCountiesData(),
-        fetchStatesData(),
-        fetchVulnerabilityData(),
-        fetchVulnerableCountiesData().catch((error) => {
-          console.warn(
-            "Failed to load vulnerable counties data, continuing without it:",
-            error
-          );
-          return []; // Return empty array if vulnerable counties data fails to load
-        }),
-        // Remove the facilitiesData fetch here
-      ]).catch((error) => {
-        throw new Error(`Failed to load data in parallel: ${error.message}`);
-      });
+    // Load essential data first for faster initial render
+    const [counties, states] = await Promise.all([
+      fetchCountiesData(),
+      fetchStatesData(),
+    ]);
 
-    // Return raw data for further processing
+    // Then load supplementary data
+    const [vulnerabilityData, vulnerableCountiesData] = await Promise.all([
+      fetchVulnerabilityData(),
+      fetchVulnerableCountiesData().catch((error) => {
+        console.warn("Failed to load vulnerable counties data:", error);
+        return [];
+      }),
+    ]);
+
     return {
       counties,
       states,
       vulnerability: vulnerabilityData,
       vulnerableCounties: vulnerableCountiesData,
-      // Remove the facilities: facilitiesData property
     };
   } catch (error) {
     console.error("Error loading data:", error);

@@ -39,13 +39,14 @@ body {
   font-weight: bold;
   text-align: center;
   margin-bottom: 0.5rem;
+  display: none;
 }
 
 /* Description text */
 .description {
-  text-align: center;
-  color: #4a4a4a;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 /* Map container */
@@ -159,10 +160,12 @@ body {
 
 .percentage-section {
   background-color: #e6f0ff;
+  display: none;
 }
 
 .index-section {
   background-color: #fff0f0;
+  display: none;
 }
 
 /* Section headings */
@@ -175,6 +178,7 @@ body {
 /* Section paragraphs */
 .section p {
   line-height: 1.5;
+  display: none;
 }
 
 /* Responsive adjustments */

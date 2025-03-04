@@ -18,8 +18,8 @@ const config = {
     {
       id: "state_federal_workers",
       title: "Federal Workers per 100,000 by State",
-      description:
-        "While D.C. leads with over 10% federal employment, states like Alaska, Maryland and Hawaii show surprising concentrations far from the capital.",
+      // description:
+      //   "While D.C. leads with over 10% federal employment, states like Alaska, Maryland and Hawaii show surprising concentrations far from the capital.",
       transitionText:
         "Let's look closer to see how these patterns emerge at the county level.",
       dataField: "state_fed_workers_per_100k",
@@ -31,8 +31,8 @@ const config = {
     {
       id: "federal_workers",
       title: "Federal Workers per 100,000 across U.S. counties",
-      description:
-        "Federal employment isn't evenly distributed even within states.",
+      // description:
+      //   "Federal employment isn't evenly distributed even within states.",
       transitionText:
         "What makes some communities more dependent on federal jobs than others?",
       dataField: "fed_workers_per_100k",
@@ -43,23 +43,26 @@ const config = {
     {
       id: "vulnerability_index",
       title: "Vulnerability Index across U.S. counties",
-      description:
-        "Vulnerability to federal cuts isn't just about how many federal workers live there. Some areas with moderate federal employment face higher vulnerability due to economic factors.",
+      // description:
+      //   "Vulnerability to federal cuts isn't just about how many federal workers live there. Some areas with moderate federal employment face higher vulnerability due to economic factors.",
       transitionText: "Now let's focus on the most vulnerable counties.",
       dataField: "vulnerabilityIndex",
       colorScheme: "reds",
       colorSet: "vulnerability",
     },
-    // Step 4: Spotlight on vulnerable communities
+    // Step 4: Triple Threat Spotlight
     {
-      id: "vulnerable_counties",
-      title: "Communities Most Vulnerable to Federal Job Cuts",
-      description:
-        "These representative communities illustrate different vulnerability patterns across the country.",
+      id: "triple_threat_spotlight",
+      title: 'Spotlight 1: "Triple Threat" Areas',
+      // description:
+      //   "For communities like Wolfe County, federal job cuts would remove some of the only stable, well-paying employment opportunities in an area already struggling with high unemployment and low incomes.",
+      transitionText:
+        "Next, let's look at communities with extreme dependency on federal employment.",
       dataField: "vulnerabilityIndex",
       colorScheme: "reds",
       colorSet: "vulnerability",
       spotlightMode: true,
+      // Only include the triple_threat spotlight
       spotlights: [
         {
           id: "triple_threat",
@@ -72,7 +75,27 @@ const config = {
             "Unemployment already at 27% (over 5x the national average)",
             "Median income of just $24,349 (less than 10% of the national average)",
           ],
+          highlightOpacity: 1.0, // Main county fully opaque
+          otherOpacity: 0.6, // Other counties at 60% opacity
         },
+      ],
+      // Additional properties specific to this spotlight category
+      spotlightCategory: "triple_threat",
+    },
+    // Step 5: Extreme Dependency Spotlight
+    {
+      id: "extreme_dependency_spotlight",
+      title: 'Spotlight 2: "Extreme Dependency" Communities',
+      // description:
+      //   "While Kalawao County currently enjoys full employment, its extreme dependence on federal jobs means cuts could transform it from one of the most stable employment markets to one of the most vulnerable almost overnight.",
+      transitionText:
+        "Finally, let's examine the impact on tribal communities and rural areas.",
+      dataField: "vulnerabilityIndex",
+      colorScheme: "reds",
+      colorSet: "vulnerability",
+      spotlightMode: true,
+      // Only include the extreme_dependency spotlight
+      spotlights: [
         {
           id: "extreme_dependency",
           countyFips: "15005", // Kalawao County, Hawaii
@@ -84,24 +107,45 @@ const config = {
             "Currently has low unemployment (0%)",
             "A 20% reduction in federal workforce would directly eliminate nearly 8% of all jobs",
           ],
+          highlightOpacity: 1.0, // Main county fully opaque
+          otherOpacity: 0.6, // Other counties at 60% opacity
         },
+      ],
+      // Additional properties specific to this spotlight category
+      spotlightCategory: "extreme_dependency",
+    },
+    // Step 6: Tribal Communities Spotlight
+    {
+      id: "tribal_rural_spotlight",
+      title: "Spotlight 3: Tribal Communities and Rural Areas",
+      // description:
+      //   "In tribal areas and rural communities, federal employment often represents one of the few sources of stable, career-path jobs. Cuts would disproportionately impact areas already facing limited economic opportunities.",
+      dataField: "vulnerabilityIndex",
+      colorScheme: "reds",
+      colorSet: "vulnerability",
+      spotlightMode: true,
+      // Only include the tribal_rural spotlight
+      spotlights: [
         {
           id: "tribal_rural",
           // Array of county FIPS for tribal areas
           countyFips: [
-            "46121",
-            "46135",
-            "04017",
-            "35045",
-            "02270",
-            "30031",
-            "38085",
+            "46121", // South Dakota
+            "46135", // South Dakota
+            "04017", // Arizona
+            "35045", // New Mexico
+            "02270", // Alaska
+            "30031", // Montana
+            "38085", // North Dakota
           ],
           title: "Tribal communities and rural areas",
           description:
             "In tribal areas and rural communities, federal employment often represents one of the few sources of stable, career-path jobs. Cuts would disproportionately impact areas already facing limited economic opportunities.",
+          highlightOpacity: 0.8, // All tribal areas at 80% opacity
         },
       ],
+      // Additional properties specific to this spotlight category
+      spotlightCategory: "tribal_rural",
     },
   ],
 

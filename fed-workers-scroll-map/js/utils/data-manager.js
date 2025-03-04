@@ -1,12 +1,15 @@
-// data-manager.js - Main data management module
+// In data-manager.js - modify to use existing import structure
 
 import config from "../config.js";
-import { loadAllData } from "../data/data-loaders.js";
+import {
+  loadAllData,
+  fetchCountiesData,
+  fetchStatesData,
+  fetchVulnerabilityData,
+  fetchVulnerableCountiesData,
+} from "../data/data-loaders.js";
 import { processData } from "../data/data-processors.js";
 
-/**
- * DataManager - Centralizes data operations for the application
- */
 class DataManager {
   constructor(utils) {
     // Store utility functions
@@ -23,38 +26,137 @@ class DataManager {
     // Processed data
     this.mapData = null;
     this.stateData = null;
-    this.spotlightData = null; // Added for spotlight counties
+    this.spotlightData = null;
     this.statistics = null;
     this.vulnerableCountyIds = null;
+
+    // Add cache for improved performance
+    this.cache = {
+      statistics: {},
+      renderedData: {},
+    };
   }
 
   /**
-   * Load and process all data
-   * @returns {Promise<Object>} - Processed data ready for visualization
+   * Load and process base map data only
+   * @returns {Promise<Object>} - Basic processed data ready for initial render
    */
-  async initialize() {
+  async initializeBaseMap() {
     try {
-      console.log("Initializing DataManager...");
+      console.log("Initializing base map data...");
 
-      // Step 1: Load all raw data
-      this.rawData = await loadAllData();
+      // Step 1: Load only counties and states data
+      const [counties, states] = await Promise.all([
+        fetchCountiesData(),
+        fetchStatesData(),
+      ]);
 
-      // Step 2: Process and analyze data
-      const processedData = processData(this.rawData, this.utils, config);
+      this.rawData.counties = counties;
+      this.rawData.states = states;
+
+      // Step 2: Do minimal processing for initial render
+      const minimalProcessedData = {
+        mapData: this.rawData.counties.map((county) => {
+          // Get state name from FIPS code
+          const countyFips = county.id;
+          const stateFipsCode = this.utils.fips.getStateFips(countyFips);
+          const stateName = this.utils.fips.getStateName(stateFipsCode);
+
+          // Return with basic properties
+          return {
+            ...county,
+            properties: {
+              ...county.properties,
+              stateName: stateName,
+            },
+          };
+        }),
+        stateData: this.rawData.states,
+      };
 
       // Step 3: Store processed data
+      this.mapData = minimalProcessedData.mapData;
+      this.stateData = minimalProcessedData.stateData;
+
+      // Make dataManager globally available for visualization.js
+      window.dataManager = this;
+
+      console.log("Base map initialization complete");
+
+      // Return processed map data for immediate use
+      return {
+        counties: this.mapData,
+        states: this.stateData,
+      };
+    } catch (error) {
+      console.error("Error initializing base map:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Load and process detailed data for all visualization features
+   * @returns {Promise<Object>} - Complete processed data
+   */
+  async loadDetailData() {
+    try {
+      console.log("Loading detailed data...");
+
+      // Load the remaining data
+      const [vulnerabilityData, vulnerableCountiesData] = await Promise.all([
+        fetchVulnerabilityData(),
+        fetchVulnerableCountiesData().catch((error) => {
+          console.warn("Failed to load vulnerable counties data:", error);
+          return [];
+        }),
+      ]);
+
+      // Update raw data
+      this.rawData.vulnerability = vulnerabilityData;
+      this.rawData.vulnerableCounties = vulnerableCountiesData;
+
+      // Now process the full dataset
+      const processedData = processData(this.rawData, this.utils, config);
+
+      // Update with fully processed data
       this.mapData = processedData.mapData;
       this.stateData = processedData.stateData;
       this.spotlightData = processedData.spotlightData;
       this.statistics = processedData.statistics;
       this.vulnerableCountyIds = processedData.vulnerableCountyIds;
 
-      console.log("DataManager initialization complete");
+      console.log("Detailed data loading complete");
 
-      // Make dataManager globally available for visualization.js
-      window.dataManager = this;
+      // Signal that data has been updated
+      window.dispatchEvent(new CustomEvent("dataUpdate"));
 
-      // Return processed map data for immediate use
+      return {
+        counties: this.mapData,
+        states: this.stateData,
+        spotlights: this.spotlightData,
+        statistics: this.statistics,
+      };
+    } catch (error) {
+      console.error("Error loading detailed data:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Legacy initialize method - kept for compatibility
+   * Uses the new two-phase loading approach internally
+   */
+  async initialize() {
+    try {
+      console.log("Initializing DataManager (legacy method)...");
+
+      // First initialize base map
+      await this.initializeBaseMap();
+
+      // Then load detailed data
+      const detailData = await this.loadDetailData();
+
+      // Return combined data
       return {
         counties: this.mapData,
         states: this.stateData,
@@ -67,12 +169,14 @@ class DataManager {
     }
   }
 
-  /**
-   * Get statistics for the specified step
-   * @param {number} stepIndex - Index of the current visualization step
-   * @returns {Object} - Statistics for the given step
-   */
+  // Keep the rest of your methods the same
   getStatisticsForStep(stepIndex) {
+    // Check cache first for improved performance
+    if (this.cache.statistics[stepIndex]) {
+      return this.cache.statistics[stepIndex];
+    }
+
+    // Original implementation follows
     // Safety check for valid step index
     if (
       stepIndex === undefined ||
@@ -123,6 +227,8 @@ class DataManager {
       return this._getDefaultStatistics();
     }
 
+    // Cache result before returning
+    this.cache.statistics[stepIndex] = stats;
     return stats;
   }
 

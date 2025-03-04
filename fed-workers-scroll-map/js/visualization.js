@@ -14,15 +14,19 @@ export function renderMap({
   onHover,
   onLeave,
 }) {
-  console.log("Rendering map with data:", {
-    dataLength: data ? data.length : 0,
-    dimensionsValid: dimensions != null,
-    stepConfig: stepConfig ? stepConfig.id : null,
-    statisticsValid: statistics != null,
+  // Clear the SVG element first
+  const svgElement = d3.select(svg);
+
+  // Store references to elements that need event listener cleanup
+  const oldElements = svgElement.selectAll("path.county, path.state").nodes();
+
+  // Remove event listeners before removing elements
+  oldElements.forEach((el) => {
+    el.removeEventListener("mouseover", null);
+    el.removeEventListener("mouseout", null);
   });
 
-  // Clear the SVG element
-  const svgElement = d3.select(svg);
+  // Now clear everything
   svgElement.selectAll("*").remove();
 
   // Get the current visualization step
@@ -143,16 +147,8 @@ export function renderMap({
   createLegend(svgElement, dimensions, step.id, statistics);
 }
 
-/**
- * Render the map in spotlight mode for the vulnerable counties step
- * @param {d3.Selection} svgElement - D3 selection of the SVG element
- * @param {Array} features - Array of GeoJSON features
- * @param {d3.GeoPath} path - D3 GeoPath generator
- * @param {Object} step - Step configuration
- * @param {Object} dimensions - Map dimensions
- * @param {Function} onHover - Hover event handler
- * @param {Function} onLeave - Leave event handler
- */
+// Render the map in spotlight mode for the vulnerable counties step
+// Fix for Extreme Dependency counties detection
 function renderSpotlightMode(
   svgElement,
   features,
@@ -162,208 +158,621 @@ function renderSpotlightMode(
   onHover,
   onLeave
 ) {
-  console.log("Rendering in spotlight mode with spotlights:", step.spotlights);
+  console.log("Rendering spotlight mode for category:", step.spotlightCategory);
 
-  // Create a base map with faded counties
-  const baseMap = svgElement
+  // Get the appropriate vulnerability colors based on the vulnerabilityIndex values
+  const colorScale = createColorScale(
+    "vulnerability_index",
+    window.dataManager.getStatisticsForStep(2)
+  );
+
+  // Clear the SVG first to avoid overlapping elements
+  svgElement.selectAll(".spotlight-element").remove();
+
+  // Create a group for the base map
+  const baseMapGroup = svgElement
     .append("g")
-    .attr("class", "base-counties")
+    .attr("class", "base-counties spotlight-element")
+    .style("opacity", 0); // Start with 0 opacity for transition
+
+  // First create all the base counties (non-highlighted)
+  baseMapGroup
     .selectAll("path")
     .data(features)
     .join("path")
     .attr("d", path)
-    .attr("fill", config.colors.spotlight.default)
+    .attr("fill", (d) => {
+      // Use vulnerability index value to determine appropriate color
+      return d.properties.vulnerabilityIndex
+        ? colorScale(d.properties.vulnerabilityIndex)
+        : config.colors.spotlight.default;
+    })
     .attr("stroke", config.colors.regularStroke)
     .attr("stroke-width", 0.3)
-    .style("opacity", 0.5);
+    .style("opacity", 0.15); // Reduced opacity for non-spotlight counties
+
+  // Then apply the transition
+  baseMapGroup.transition().duration(800).style("opacity", 1); // Fade in
 
   // Add state boundaries for context
   _addStateBoundaries(svgElement, path);
 
-  // Make sure we have spotlights
-  if (!step.spotlights || step.spotlights.length === 0) {
-    console.warn("No spotlights defined in step config");
+  // Create a group for annotations
+  const annotationGroup = svgElement
+    .append("g")
+    .attr("class", "spotlight-annotations spotlight-element");
+
+  // Determine the spotlight category based on the step
+  const spotlightCategory = step.spotlightCategory;
+  if (!spotlightCategory) {
+    console.warn("No spotlight category defined in step config");
     return;
   }
 
-  // Process spotlight categories
-  for (const spotlight of step.spotlights) {
-    console.log(`Processing spotlight: ${spotlight.id}`);
+  // Set color and title based on category
+  let categoryColor, categoryTitle, categoryDescription;
 
-    // Get counties for this spotlight
-    let spotlightCounties = [];
+  if (spotlightCategory === "triple_threat") {
+    categoryColor = config.colors.spotlight.tripleThreat || "#a50f15";
+    categoryTitle = "Triple Threat Areas";
+    categoryDescription =
+      "Communities facing high unemployment, low income, and federal dependency";
+  } else if (spotlightCategory === "extreme_dependency") {
+    categoryColor = config.colors.spotlight.extremeDependency || "#de2d26";
+    categoryTitle = "Extreme Federal Dependency";
+    categoryDescription =
+      "Communities with exceptionally high federal employment";
+  } else if (spotlightCategory === "tribal_rural") {
+    categoryColor = config.colors.spotlight.tribalRural || "#fb6a4a";
+    categoryTitle = "Tribal & Rural Communities";
+    categoryDescription =
+      "Areas with limited economic opportunities outside federal employment";
+  } else {
+    categoryColor = config.colors.spotlight.highlight || "#de2d26";
+    categoryTitle = "Featured Counties";
+    categoryDescription = "Counties highlighted for analysis";
+  }
 
-    // First try to use countyData from the enhanced spotlight (if available)
-    if (spotlight.countyData && spotlight.countyData.length > 0) {
+  // Add an info box to explain the spotlight category
+  const infoBox = svgElement
+    .append("g")
+    .attr("class", "spotlight-info-box spotlight-element")
+    .attr("transform", `translate(30, 40)`)
+    .style("opacity", 0); // Start with 0 opacity for transition
+
+  // Create the info box content
+  infoBox
+    .append("rect")
+    .attr("width", 260)
+    .attr("height", 45)
+    .attr("fill", "rgba(255, 255, 255, 0.95)")
+    .attr("stroke", categoryColor)
+    .attr("stroke-width", 2)
+    .attr("rx", 5)
+    .attr("ry", 5);
+
+  infoBox
+    .append("text")
+    .attr("x", 10)
+    .attr("y", 20)
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .attr("fill", categoryColor)
+    .text(categoryTitle);
+
+  infoBox
+    .append("text")
+    .attr("x", 10)
+    .attr("y", 36)
+    .attr("font-size", "11px")
+    .attr("fill", "#555")
+    .text(categoryDescription);
+
+  // Then apply the transition
+  infoBox.transition().duration(600).delay(300).style("opacity", 1); // Fade in
+
+  // Get counties based on the spotlight category
+  let categoryCounties = [];
+
+  // Manually define the FIPS codes for each category based on the config
+  const spotlightFipsCodes = {
+    triple_threat: ["21237"], // Wolfe County, Kentucky
+    extreme_dependency: ["15005", "51091", "35006", "32009"], // Kalawao County, Hawaii and others
+    tribal_rural: [
+      "46121",
+      "46135",
+      "04017",
+      "35045",
+      "02270",
+      "30031",
+      "38085",
+    ],
+  };
+
+  // Get the FIPS codes for the current category
+  const fipsCodes = spotlightFipsCodes[spotlightCategory] || [];
+
+  // If we have FIPS codes, use them to find counties
+  if (fipsCodes.length > 0) {
+    categoryCounties = features.filter((county) =>
+      fipsCodes.includes(county.id)
+    );
+    console.log(
+      `Found ${categoryCounties.length} counties using hardcoded FIPS codes for spotlight: ${spotlightCategory}`
+    );
+    console.log("FIPS codes used:", fipsCodes);
+    // Log information about each found county
+    categoryCounties.forEach((county) => {
       console.log(
-        `Using countyData for ${spotlight.id} with ${spotlight.countyData.length} counties`
+        `Found county: ${county.properties.name}, ${county.properties.stateName}, FIPS: ${county.id}`
       );
+    });
+  }
 
-      // Map county names to features
-      spotlightCounties = features.filter((feature) => {
-        const countyName = feature.properties.name;
-        const stateName = feature.properties.stateName;
+  // Try to get counties from spotlight configuration as fallback
+  if (
+    categoryCounties.length === 0 &&
+    step.spotlights &&
+    step.spotlights.length > 0
+  ) {
+    const spotlight = step.spotlights[0];
 
-        // Look for a matching county in the countyData
-        return spotlight.countyData.some((countyData) => {
-          return (
-            countyData.county === countyName && countyData.state === stateName
-          );
-        });
-      });
-    }
-    // If no countyData, fall back to FIPS codes from config
-    else if (spotlight.countyFips) {
-      console.log(`Using FIPS codes for ${spotlight.id}`);
-
-      const fipsCodes = Array.isArray(spotlight.countyFips)
+    if (spotlight.countyFips) {
+      const configFipsCodes = Array.isArray(spotlight.countyFips)
         ? spotlight.countyFips
         : [spotlight.countyFips];
 
-      spotlightCounties = features.filter((feature) =>
-        fipsCodes.includes(feature.id)
+      categoryCounties = features.filter((county) =>
+        configFipsCodes.includes(county.id)
       );
-    }
-
-    console.log(
-      `Found ${spotlightCounties.length} counties for spotlight ${spotlight.id}`
-    );
-
-    // Get color for this spotlight category
-    let color = config.colors.spotlight.highlight; // Default
-
-    if (spotlight.id === "triple_threat") {
-      color = config.colors.spotlight.tripleThreat;
-    } else if (spotlight.id === "extreme_dependency") {
-      color = config.colors.spotlight.extremeDependency;
-    } else if (spotlight.id === "tribal_rural") {
-      color = config.colors.spotlight.tribalRural;
-    }
-
-    // Highlight counties for this spotlight
-    if (spotlightCounties.length > 0) {
-      svgElement
-        .append("g")
-        .attr("class", `spotlight-group-${spotlight.id}`)
-        .selectAll("path")
-        .data(spotlightCounties)
-        .join("path")
-        .attr("d", path)
-        .attr("fill", color)
-        .attr("stroke", config.colors.highlightStroke)
-        .attr("stroke-width", 1)
-        .style("opacity", 0.8)
-        .each(function (d) {
-          // Add spotlight properties to the feature for tooltips
-          d.properties.isSpotlighted = true;
-          d.properties.spotlightCategory = spotlight.id;
-          d.properties.spotlightTitle = spotlight.title;
-        })
-        .on("mouseover", function (event, d) {
-          // Highlight this county
-          d3.select(this).attr("stroke-width", 2).style("opacity", 1);
-
-          // Call the hover handler
-          onHover(event, d, step, null);
-        })
-        .on("mouseout", function () {
-          // Reset styling
-          d3.select(this).attr("stroke-width", 1).style("opacity", 0.8);
-
-          // Call the leave handler
-          onLeave();
-        })
-        .on("click", function (event, d) {
-          // Activate the spotlight panel for this category
-          if (window.uiManager && window.uiManager.activateSpotlight) {
-            window.uiManager.activateSpotlight(spotlight.id);
-          }
-        });
+      console.log(
+        `Found ${categoryCounties.length} counties using config FIPS codes for spotlight: ${spotlightCategory}`
+      );
+      console.log("Config FIPS codes:", configFipsCodes);
     }
   }
 
-  // Create a legend for the spotlight map
-  createSpotlightLegend(svgElement, dimensions, step);
+  // If we still don't have counties, use metric-based criteria as last resort
+  if (categoryCounties.length === 0) {
+    if (spotlightCategory === "triple_threat") {
+      // For triple_threat: High unemployment + low income + federal dependency
+      categoryCounties = features.filter((county) => {
+        const props = county.properties;
+        return (
+          (props.unemployment_rate > 15 ||
+            props.unemployment_vulnerability > 75) &&
+          (props.median_income < 30000 || props.income_vulnerability > 75) &&
+          props.fed_workers_per_100k > 2500
+        );
+      });
+    } else if (spotlightCategory === "extreme_dependency") {
+      // For extreme_dependency: Very high percentage of federal workers
+      categoryCounties = features.filter((county) => {
+        const props = county.properties;
+        return props.fed_workers_per_100k > 8000 || props.pct_federal > 8;
+      });
+    } else if (spotlightCategory === "tribal_rural") {
+      // For tribal_rural: Known tribal areas or high vulnerability + rural
+      categoryCounties = features.filter((county) => {
+        const props = county.properties;
+        return (
+          props.vulnerabilityIndex > 25 && props.fed_workers_per_100k > 3000
+        );
+      });
+    }
+
+    console.log(
+      `Found ${categoryCounties.length} counties using metric-based criteria for spotlight: ${spotlightCategory}`
+    );
+  }
+
+  console.log(
+    `Total: Found ${categoryCounties.length} counties matching spotlight category: ${spotlightCategory}`
+  );
+
+  // Create a highlighted counties group
+  const highlightGroup = svgElement
+    .append("g")
+    .attr("class", `spotlight-category-${spotlightCategory} spotlight-element`)
+    .style("opacity", 0); // Start with 0 opacity for transition
+
+  if (categoryCounties.length > 0) {
+    // Render the highlighted counties
+    const highlightPaths = highlightGroup
+      .selectAll("path")
+      .data(categoryCounties)
+      .join("path")
+      .attr("d", path)
+      .attr("fill", categoryColor)
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.8)
+      .style("opacity", 0.85);
+
+    // Apply the transition
+    highlightGroup.transition().duration(800).delay(400).style("opacity", 1); // Fade in
+
+    // Add properties and event handlers for highlighted counties
+    highlightPaths.nodes().forEach((node, i) => {
+      const dataItem = categoryCounties[i];
+
+      // Add spotlight properties to the feature for tooltips
+      dataItem.properties.isSpotlighted = true;
+      dataItem.properties.spotlightCategory = spotlightCategory;
+      dataItem.properties.spotlightTitle = categoryTitle;
+
+      d3.select(node)
+        .on("mouseover", function (event) {
+          // Highlight this county
+          d3.select(this)
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1.5)
+            .style("opacity", 1);
+
+          onHover(event, dataItem, step, null);
+        })
+        .on("mouseout", function () {
+          // Reset styling
+          d3.select(this)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.8)
+            .style("opacity", 0.85);
+
+          onLeave();
+        });
+    });
+
+    // For tribal communities, add state labels
+    if (spotlightCategory === "tribal_rural" && categoryCounties.length > 0) {
+      // Group counties by state
+      const stateGroups = {};
+      categoryCounties.forEach((county) => {
+        const state = county.properties.stateName;
+        if (!stateGroups[state]) {
+          stateGroups[state] = [];
+        }
+        stateGroups[state].push(county);
+      });
+
+      // Add labels for each state group
+      const labelsGroup = annotationGroup
+        .append("g")
+        .attr("class", "state-labels")
+        .style("opacity", 0); // Start hidden
+
+      Object.entries(stateGroups).forEach(([state, counties]) => {
+        // Find average centroid for counties in this state
+        let sumX = 0,
+          sumY = 0;
+        counties.forEach((county) => {
+          const centroid = path.centroid(county);
+          if (centroid && !isNaN(centroid[0]) && !isNaN(centroid[1])) {
+            sumX += centroid[0];
+            sumY += centroid[1];
+          }
+        });
+
+        const avgX = sumX / counties.length;
+        const avgY = sumY / counties.length;
+
+        if (!isNaN(avgX) && !isNaN(avgY)) {
+          // Add label background
+          labelsGroup
+            .append("rect")
+            .attr("x", avgX - 25)
+            .attr("y", avgY - 20)
+            .attr("width", state.length * 6 + 10)
+            .attr("height", 20)
+            .attr("fill", "rgba(255,255,255,0.9)")
+            .attr("stroke", categoryColor)
+            .attr("stroke-width", 1)
+            .attr("rx", 4)
+            .attr("ry", 4);
+
+          // Add state name
+          labelsGroup
+            .append("text")
+            .attr("x", avgX)
+            .attr("y", avgY - 6)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "11px")
+            .attr("font-weight", "bold")
+            .attr("fill", "#000")
+            .text(state);
+        }
+      });
+
+      // Apply the transition
+      labelsGroup.transition().duration(600).delay(800).style("opacity", 1); // Fade in
+    }
+    // For single focus categories, highlight a main example
+    else if (
+      (spotlightCategory === "triple_threat" ||
+        spotlightCategory === "extreme_dependency") &&
+      categoryCounties.length > 0
+    ) {
+      // For these categories, select the main example county
+      let mainCounty;
+
+      if (spotlightCategory === "triple_threat") {
+        // Use Wolfe County, Kentucky if available (FIPS 21237), otherwise use the first one
+        mainCounty =
+          categoryCounties.find((county) => county.id === "21237") ||
+          categoryCounties[0];
+      } else if (spotlightCategory === "extreme_dependency") {
+        // Use Kalawao County, Hawaii if available (FIPS 15005), otherwise use the first one
+        mainCounty =
+          categoryCounties.find((county) => county.id === "15005") ||
+          categoryCounties[0];
+      }
+
+      // If we have a main example, highlight it
+      if (mainCounty) {
+        // Add a pulsing highlight
+        const pulseHighlight = svgElement
+          .append("path")
+          .datum(mainCounty)
+          .attr("class", "county-pulse spotlight-element")
+          .attr("d", path)
+          .attr("fill", "none")
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 3)
+          .style("opacity", 0);
+
+        // Create pulsing animation
+        pulseHighlight
+          .transition()
+          .duration(1000)
+          .style("opacity", 0.8)
+          .transition()
+          .duration(1000)
+          .style("opacity", 0)
+          .on("end", function repeat() {
+            d3.select(this)
+              .transition()
+              .duration(1000)
+              .style("opacity", 0.8)
+              .transition()
+              .duration(1000)
+              .style("opacity", 0)
+              .on("end", repeat);
+          });
+
+        // Add a label for the main example
+        const centroid = path.centroid(mainCounty);
+        if (centroid && !isNaN(centroid[0]) && !isNaN(centroid[1])) {
+          const labelGroup = annotationGroup
+            .append("g")
+            .attr("class", "county-label-group")
+            .style("opacity", 0); // Start hidden
+
+          // Add circle marker
+          labelGroup
+            .append("circle")
+            .attr("cx", centroid[0])
+            .attr("cy", centroid[1])
+            .attr("r", 4)
+            .attr("fill", "#fff")
+            .attr("stroke", "#000")
+            .attr("stroke-width", 1);
+
+          // Background for county name
+          const nameWidth = mainCounty.properties.name.length * 6.5 + 4;
+          labelGroup
+            .append("rect")
+            .attr("x", centroid[0] + 6 - 2)
+            .attr("y", centroid[1] - 12)
+            .attr("width", nameWidth)
+            .attr("height", 18)
+            .attr("fill", "white")
+            .attr("rx", 3)
+            .attr("ry", 3)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 0.5);
+
+          // County name
+          labelGroup
+            .append("text")
+            .attr("x", centroid[0] + 6)
+            .attr("y", centroid[1] + 1)
+            .attr("font-size", "11px")
+            .attr("font-weight", "bold")
+            .attr("fill", "#000")
+            .text(mainCounty.properties.name);
+
+          // Show key metric - use appropriate format for each category
+          let metricText;
+          if (spotlightCategory === "triple_threat") {
+            const unemploymentRate = mainCounty.properties.unemployment_rate;
+            metricText = unemploymentRate
+              ? `${unemploymentRate.toFixed(1)}% unemployment`
+              : "High unemployment";
+          } else {
+            const fedWorkers = mainCounty.properties.fed_workers_per_100k;
+            metricText = fedWorkers
+              ? `${(fedWorkers / 1000).toFixed(1)}% federal jobs`
+              : "High federal employment";
+          }
+
+          // Background for metric
+          const metricWidth = metricText.length * 5.5 + 4;
+          labelGroup
+            .append("rect")
+            .attr("x", centroid[0] + 6 - 2)
+            .attr("y", centroid[1] + 5)
+            .attr("width", metricWidth)
+            .attr("height", 16)
+            .attr("fill", categoryColor)
+            .attr("rx", 3)
+            .attr("ry", 3);
+
+          // Metric text
+          labelGroup
+            .append("text")
+            .attr("x", centroid[0] + 6)
+            .attr("y", centroid[1] + 16)
+            .attr("font-size", "9px")
+            .attr("font-weight", "bold")
+            .attr("fill", "white")
+            .text(metricText);
+
+          // Fade in the label
+          labelGroup.transition().duration(600).delay(1000).style("opacity", 1);
+        }
+      }
+    }
+  } else {
+    // If no counties found, show a message
+    const noDataMessage = svgElement
+      .append("g")
+      .attr("class", "no-data-message spotlight-element")
+      .attr(
+        "transform",
+        `translate(${dimensions.width / 2}, ${dimensions.height / 2})`
+      )
+      .style("opacity", 0);
+
+    noDataMessage
+      .append("rect")
+      .attr("x", -150)
+      .attr("y", -30)
+      .attr("width", 300)
+      .attr("height", 60)
+      .attr("fill", "rgba(255, 255, 255, 0.9)")
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .attr("stroke", "#999")
+      .attr("stroke-width", 1);
+
+    noDataMessage
+      .append("text")
+      .attr("x", 0)
+      .attr("y", -5)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "14px")
+      .attr("font-weight", "bold")
+      .text(`No ${categoryTitle} counties found`);
+
+    noDataMessage
+      .append("text")
+      .attr("x", 0)
+      .attr("y", 15)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .text("Please check your data and configuration");
+
+    noDataMessage.transition().duration(600).delay(500).style("opacity", 1);
+  }
+
+  // Create a simplified legend for this visualization
+  createSimplifiedSpotlightLegend(
+    svgElement,
+    dimensions,
+    step,
+    categoryTitle,
+    categoryColor
+  );
 }
 
 /**
- * Create a legend for the spotlight view
- * @param {d3.Selection} svgElement - D3 selection of the SVG element
- * @param {Object} dimensions - Map dimensions
- * @param {Object} step - Step configuration
+ * Create a simplified legend focused only on the specific spotlight category
  */
-function createSpotlightLegend(svgElement, dimensions, step) {
+function createSimplifiedSpotlightLegend(
+  svgElement,
+  dimensions,
+  step,
+  categoryTitle,
+  categoryColor
+) {
   // Legend dimensions and position
-  const legendWidth = 260;
-  const legendHeight = 100;
+  const legendWidth = 220;
+  const legendHeight = 70;
   const legendX = dimensions.width - legendWidth - 20;
-  const legendY = dimensions.height - 150;
+  const legendY = dimensions.height - 90;
 
   // Create legend container
   const legend = svgElement
     .append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${legendX}, ${legendY})`);
+    .attr("class", "legend spotlight-legend spotlight-element")
+    .attr("transform", `translate(${legendX}, ${legendY})`)
+    .style("opacity", 0);
 
-  // Create background panel
+  // Background panel
   legend
     .append("rect")
     .attr("x", -10)
     .attr("y", -20)
     .attr("width", legendWidth + 20)
     .attr("height", legendHeight + 30)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("rx", 4)
-    .attr("ry", 4);
+    .attr("fill", "rgba(255, 255, 255, 0.92)")
+    .attr("rx", 6)
+    .attr("ry", 6)
+    .attr("stroke", "#999")
+    .attr("stroke-width", 0.5)
+    .attr("filter", "drop-shadow(0px 1px 2px rgba(0,0,0,0.1))");
 
-  // Add legend title
+  // Add title
   legend
     .append("text")
     .attr("x", 0)
     .attr("y", -5)
-    .style("font-size", "12px")
+    .style("font-size", "13px")
     .style("font-weight", "bold")
-    .text("Vulnerability Categories");
+    .text("Spotlight Focus");
 
-  // Add legend items
-  const legendItems = [
-    {
-      label: "Triple Threat Areas",
-      color: config.colors.spotlight.tripleThreat,
-      y: 20,
-    },
-    {
-      label: "Extreme Federal Dependency",
-      color: config.colors.spotlight.extremeDependency,
-      y: 45,
-    },
-    {
-      label: "Tribal and Rural Areas",
-      color: config.colors.spotlight.tribalRural,
-      y: 70,
-    },
-  ];
+  // Add category title
+  legend
+    .append("text")
+    .attr("x", 0)
+    .attr("y", 15)
+    .style("font-size", "12px")
+    .style("fill", categoryColor)
+    .style("font-weight", "bold")
+    .text(categoryTitle);
 
-  legendItems.forEach((item) => {
-    // Add color swatch
-    legend
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", item.y - 10)
-      .attr("width", 15)
-      .attr("height", 15)
-      .attr("fill", item.color)
-      .attr("stroke", "#000")
-      .attr("stroke-width", 0.5);
+  // Add color sample
+  legend
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 25)
+    .attr("width", 15)
+    .attr("height", 15)
+    .attr("fill", categoryColor)
+    .attr("stroke", "#000")
+    .attr("stroke-width", 0.5);
 
-    // Add label
-    legend
-      .append("text")
-      .attr("x", 25)
-      .attr("y", item.y)
-      .style("font-size", "11px")
-      .text(item.label);
-  });
+  // Add description based on category
+  let description = "";
+  if (step.spotlightCategory === "triple_threat") {
+    description =
+      "Counties with high unemployment, low income, and federal dependency";
+  } else if (step.spotlightCategory === "extreme_dependency") {
+    description = "Counties with extremely high federal employment";
+  } else if (step.spotlightCategory === "tribal_rural") {
+    description =
+      "Tribal territories and rural areas with limited non-federal opportunities";
+  }
+
+  legend
+    .append("text")
+    .attr("x", 25)
+    .attr("y", 35)
+    .attr("width", legendWidth - 25)
+    .style("font-size", "10px")
+    .style("fill", "#333")
+    .text(description);
+
+  // Add data source note
+  legend
+    .append("text")
+    .attr("x", legendWidth / 2)
+    .attr("y", legendHeight)
+    .attr("text-anchor", "middle")
+    .style("font-size", "8px")
+    .style("fill", "#777")
+    .text("Data: Federal employment, Census, and economic data");
+
+  // Fade in the legend
+  legend.transition().duration(800).delay(800).style("opacity", 1);
 }
 
 // Get fill color for a feature based on step type and data
