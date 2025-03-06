@@ -7,7 +7,7 @@
     <title>U.S. Counties Scrollytelling Map</title>
 
     <!-- Style sheets -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 
     <!-- External Libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -16,41 +16,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
     <!-- Application JavaScript -->
-    <script src="js/app.js" type="module"></script>
-
+    <script src="js/main.js" type="module"></script>
 </head>
 
 <body>
     <div id="map-container" class="container">
         <div class="map-header">
             <h2 class="title">U.S. Counties Data Visualization</h2>
-            <p id="description" class="description">Scroll down to explore U.S. county-level data</p>
+            <p id="description" class="description">Use the buttons to navigate between map layers</p>
 
             <div class="map-container">
                 <svg id="map-svg" class="map-svg" width="800" height="500"></svg>
             </div>
         </div>
 
-        <div class="sections">
-            <div class="section intro-section" style="display: none;">
+        <!-- <div class="sections">
+            <div class="section intro-section">
                 <h3>Introduction</h3>
-                <!-- <p>This interactive map shows data for all U.S. counties. Scroll down to see different data layers. The
-                    first layer shows percentage values, and the second shows an index.</p> -->
+                <p>This interactive map shows data for all U.S. counties. Scroll down to see different data layers.</p>
             </div>
 
             <div class="section percentage-section">
                 <h3>Federal Dependency</h3>
-                <!-- <p>This layer displays federal dependency for each county, with values ranging from 0% to 30%. Counties
-                    in darker blue indicate higher dependency on federal employment and funding.</p> -->
+                <p>This layer displays federal dependency for each county, with values ranging from 0% to 30%. Counties
+                    in darker blue indicate higher dependency on federal employment and funding.</p>
             </div>
 
             <div class="section index-section">
                 <h3>Vulnerability Index</h3>
-                <!-- <p>This layer shows the vulnerability index for each county. Counties in darker red have higher
+                <p>This layer shows the vulnerability index for each county. Counties in darker red have higher
                     vulnerability scores based on combined factors of federal dependency, unemployment, and income
-                    measures.</p> -->
+                    measures.</p>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 

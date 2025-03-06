@@ -91,9 +91,6 @@ export function processData(rawData, utils, config) {
     config.vulnerability
   );
 
-  // Process facilities data (if available)
-  const facilitiesData = processFacilitiesData(rawData.facilities);
-
   // Process spotlight data for vulnerable counties step
   const spotlightData = processSpotlightData(
     config.steps,
@@ -103,7 +100,6 @@ export function processData(rawData, utils, config) {
   console.log("Data processing complete:", {
     counties: mapData.length,
     states: stateData.length,
-    facilities: facilitiesData ? facilitiesData.length : 0,
     spotlights: spotlightData ? spotlightData.length : 0,
     vulnerableCounties: vulnerableCountyIds.length,
   });
@@ -111,7 +107,6 @@ export function processData(rawData, utils, config) {
   return {
     mapData,
     stateData,
-    facilitiesData,
     spotlightData,
     statistics,
     vulnerableCountyIds,
@@ -325,7 +320,7 @@ export function findCountyData(countyName, stateName, vulnerabilityByCounty) {
  * @returns {Object} Calculated statistics
  */
 export function calculateDataStatistics(counties, utils, config) {
-  // Extract values
+  // Extract existing values for federal workers and vulnerability
   const fedWorkersValues = counties
     .map((d) => d.properties.fed_workers_per_100k)
     .filter((v) => v !== undefined && v !== null && !isNaN(v) && v > 0);
@@ -333,6 +328,15 @@ export function calculateDataStatistics(counties, utils, config) {
   const vulnerabilityValues = counties
     .map((d) => d.properties.vulnerabilityIndex)
     .filter((v) => v !== undefined && v !== null && !isNaN(v) && v >= 0);
+
+  // Add unemployment and income values
+  const unemploymentValues = counties
+    .map((d) => d.properties.unemployment_rate)
+    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v > 0);
+
+  const incomeValues = counties
+    .map((d) => d.properties.median_income)
+    .filter((v) => v !== undefined && v !== null && !isNaN(v) && v > 0);
 
   // Calculate basic statistics
   return {
@@ -346,27 +350,75 @@ export function calculateDataStatistics(counties, utils, config) {
         config.classification.numBreaks
       ),
 
+      // ... rest of existing code ...
+    },
+
+    // Add statistics for unemployment_rate
+    unemployment_rate: {
+      // Basic statistics
+      ...utils.calculateStatistics(unemploymentValues),
+
+      // Data classification - now using Jenks natural breaks
+      breaks: utils.calculateJenksBreaks(
+        unemploymentValues,
+        config.classification.numBreaks
+      ),
+
       // Also include quantile breaks for reference
       quantileBreaks: utils.calculateQuantileBreaks(
-        fedWorkersValues,
+        unemploymentValues,
         config.classification.numBreaks
       ),
 
       // Cleaned data (without extreme outliers)
       cleaned: utils.cleanOutliers(
-        fedWorkersValues,
+        unemploymentValues,
         config.classification.outlierMultiplier
       ),
 
       // Outlier information
-      outliers: utils.identifyOutliers(fedWorkersValues),
+      outliers: utils.identifyOutliers(unemploymentValues),
 
       // Percentile thresholds
       percentiles: utils.calculatePercentileThresholds(
-        fedWorkersValues,
+        unemploymentValues,
         config.classification.percentileThreshold
       ),
     },
+
+    // Add statistics for median_income
+    median_income: {
+      // Basic statistics
+      ...utils.calculateStatistics(incomeValues),
+
+      // Data classification - now using Jenks natural breaks
+      breaks: utils.calculateJenksBreaks(
+        incomeValues,
+        config.classification.numBreaks
+      ),
+
+      // Also include quantile breaks for reference
+      quantileBreaks: utils.calculateQuantileBreaks(
+        incomeValues,
+        config.classification.numBreaks
+      ),
+
+      // Cleaned data (without extreme outliers)
+      cleaned: utils.cleanOutliers(
+        incomeValues,
+        config.classification.outlierMultiplier
+      ),
+
+      // Outlier information
+      outliers: utils.identifyOutliers(incomeValues),
+
+      // Percentile thresholds
+      percentiles: utils.calculatePercentileThresholds(
+        incomeValues,
+        config.classification.percentileThreshold
+      ),
+    },
+
     vulnerability: {
       // Basic statistics
       ...utils.calculateStatistics(vulnerabilityValues),
@@ -569,35 +621,6 @@ export function calculateStateStatistics(stateData, utils, config) {
       config.classification.percentileThreshold
     ),
   };
-}
-
-/**
- * Process federal facilities data
- * @param {Array} facilitiesData - Raw facilities data from CSV
- * @returns {Array} - Processed facilities data
- */
-function processFacilitiesData(facilitiesData) {
-  if (
-    !facilitiesData ||
-    !Array.isArray(facilitiesData) ||
-    facilitiesData.length === 0
-  ) {
-    console.warn("No facilities data available");
-    return [];
-  }
-
-  // Filter out entries with invalid coordinates
-  const validFacilities = facilitiesData.filter((facility) => {
-    return (
-      facility.latitude &&
-      facility.longitude &&
-      !isNaN(facility.latitude) &&
-      !isNaN(facility.longitude)
-    );
-  });
-
-  console.log(`Processed ${validFacilities.length} valid federal facilities`);
-  return validFacilities;
 }
 
 /**

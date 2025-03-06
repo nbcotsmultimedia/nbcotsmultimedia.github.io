@@ -170,32 +170,50 @@ class DataManager {
   }
 
   // Keep the rest of your methods the same
-  getStatisticsForStep(stepIndex) {
+  getStatisticsForStep(stepIndexOrId) {
     // Check cache first for improved performance
-    if (this.cache.statistics[stepIndex]) {
-      return this.cache.statistics[stepIndex];
+    if (this.cache.statistics[stepIndexOrId]) {
+      return this.cache.statistics[stepIndexOrId];
     }
 
-    // Original implementation follows
-    // Safety check for valid step index
-    if (
-      stepIndex === undefined ||
-      stepIndex === null ||
-      !config.steps[stepIndex]
-    ) {
+    // Handle both numeric indices and string IDs
+    let stepIndex = stepIndexOrId;
+    let stepId = null;
+
+    // If we were passed a string ID, find its index
+    if (typeof stepIndexOrId === "string") {
+      stepId = stepIndexOrId;
+      stepIndex = config.steps.findIndex((step) => step.id === stepId);
+
+      if (stepIndex === -1) {
+        console.warn(`Invalid step ID: ${stepId}`);
+        return this._getDefaultStatistics();
+      }
+    }
+
+    // Get the step object
+    const step = config.steps[stepIndex];
+    if (!step) {
       console.warn(`Invalid step index: ${stepIndex}`);
       return this._getDefaultStatistics();
     }
 
-    const step = config.steps[stepIndex];
+    stepId = step.id; // Ensure we have the step ID
+
     let stats = null;
 
     // Return appropriate statistics based on step ID
-    if (step.id === "state_federal_workers") {
+    if (stepId === "state_federal_workers") {
       stats = this.statistics && this.statistics.state_federal_workers;
-    } else if (step.id === "federal_workers") {
+    } else if (stepId === "federal_workers") {
       stats = this.statistics && this.statistics.federal_workers;
-    } else if (step.id === "vulnerability_category") {
+    } else if (stepId === "unemployment_rate") {
+      // Add unemployment statistics
+      stats = this.statistics && this.statistics.unemployment_rate;
+    } else if (stepId === "median_income") {
+      // Add median income statistics
+      stats = this.statistics && this.statistics.median_income;
+    } else if (stepId === "vulnerability_category") {
       // For categorical data, use custom statistics
       return {
         min: 0,
@@ -213,7 +231,10 @@ class DataManager {
           bottom: 0,
         },
       };
-    } else if (step.id === "vulnerable_counties") {
+    } else if (
+      stepId === "vulnerable_counties" ||
+      stepId === "trivariate_vulnerability"
+    ) {
       // For spotlight counties, use vulnerability statistics
       stats = this.statistics && this.statistics.vulnerability;
     } else {
@@ -223,12 +244,12 @@ class DataManager {
 
     // If no valid statistics found, return default
     if (!stats) {
-      console.warn(`No statistics found for step ${stepIndex} (${step.id})`);
+      console.warn(`No statistics found for step ${stepIndex} (${stepId})`);
       return this._getDefaultStatistics();
     }
 
     // Cache result before returning
-    this.cache.statistics[stepIndex] = stats;
+    this.cache.statistics[stepIndexOrId] = stats;
     return stats;
   }
 

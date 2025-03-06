@@ -13,6 +13,7 @@ export function renderMap({
   statistics,
   onHover,
   onLeave,
+  prevStepConfig = null, // Add previous step for transition explanations
 }) {
   // Clear the SVG element first
   const svgElement = d3.select(svg);
@@ -33,6 +34,22 @@ export function renderMap({
   const step = stepConfig;
   const isStateLevel = step.isStateLevel === true;
 
+  // Show transition explanation if appropriate (when moving between steps)
+  if (
+    prevStepConfig &&
+    ((prevStepConfig.id === "federal_workers" &&
+      step.id === "unemployment_rate") ||
+      (prevStepConfig.id === "unemployment_rate" &&
+        step.id === "median_income") ||
+      (prevStepConfig.id === "median_income" &&
+        step.id === "trivariate_vulnerability") ||
+      (prevStepConfig.id === "trivariate_vulnerability" &&
+        step.id === "vulnerability_index"))
+  ) {
+    // createTransitionExplanation(svgElement, dimensions, prevStepConfig, step);
+    return; // Return early to only show the transition explanation
+  }
+
   // Determine which data to use based on step
   let features = data;
 
@@ -49,27 +66,43 @@ export function renderMap({
       features = features.filter(
         (state) => state.properties.name !== "District of Columbia"
       );
-      console.log("Extracted DC data for custom rendering:", dcData.properties);
     }
   }
 
   // Set up map projection and create a path generator to draw
   const projection = d3
     .geoAlbersUsa()
-    .fitSize([dimensions.width, dimensions.height], {
-      type: "FeatureCollection",
-      features: features,
-    });
+    .scale(dimensions.width * 1.3)
+    .translate([dimensions.width * 0.49, dimensions.height * 0.5]);
 
   // Draw either states or counties
   const path = d3.geoPath().projection(projection);
 
   // Create color scale
-  const colorScale = createColorScale(step.id, statistics);
+  // const colorScale = createColorScale(step.id, statistics);
+  // When calling getStatisticsForStep, use the step ID string
+  const colorScale = createColorScale(
+    step.id,
+    window.dataManager.getStatisticsForStep(step.id)
+  );
 
   // Safely access outliers property
   const outlierInfo =
     statistics && statistics.outliers ? statistics.outliers : null;
+
+  // For trivariate visualization
+  if (step.isTrivariate) {
+    renderTrivariateMap(
+      svgElement,
+      features,
+      path,
+      step,
+      dimensions,
+      onHover,
+      onLeave
+    );
+    return;
+  }
 
   // For spotlight mode, we need to handle the visualization differently
   if (step.spotlightMode) {
@@ -143,8 +176,475 @@ export function renderMap({
     );
   }
 
+  // Add step-specific annotations or elements
+  if (step.id === "unemployment_rate") {
+    // Add unemployment explanatory elements
+  } else if (step.id === "median_income") {
+    // Add median income explanatory elements
+  }
+
   // Call the appropriate legend creation function
   createLegend(svgElement, dimensions, step.id, statistics);
+}
+
+// Update the trivariate map renderer to include more detailed annotations
+function renderTrivariateMap(
+  svgElement,
+  features,
+  path,
+  step,
+  dimensions,
+  onHover,
+  onLeave
+) {
+  // Add state boundaries first for context
+  _addStateBoundaries(svgElement, path);
+
+  // Draw the map with improved color scheme
+  svgElement
+    .selectAll("path.county")
+    .data(features)
+    .join("path")
+    .attr("class", "county")
+    .attr("d", path)
+    .attr("fill", (d) => {
+      // Get component scores - normalize to 0-1 range
+      const fedScore = normalize(
+        d.properties.fed_workers_per_100k || 0,
+        0,
+        10000
+      );
+      const unempScore = normalize(d.properties.unemployment_rate || 0, 0, 20);
+      const incomeScore = inverseNormalize(
+        d.properties.median_income || 40000,
+        0,
+        150000
+      );
+
+      // Calculate combined vulnerability score (0-100)
+      const combinedScore =
+        fedScore * 0.5 + unempScore * 0.3 + incomeScore * 0.2;
+
+      // Use a color scale that goes from light yellow to dark purple
+      // More distinct coloring to make vulnerability clearer
+      return d3.interpolateYlOrRd(combinedScore); // Using D3's built-in color scale
+    })
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", function (event, d) {
+      // Enhanced tooltip showing all components and overall score
+      const fedScore =
+        normalize(d.properties.fed_workers_per_100k || 0, 0, 10000) * 50;
+      const unempScore =
+        normalize(d.properties.unemployment_rate || 0, 0, 20) * 30;
+      const incomeScore =
+        inverseNormalize(d.properties.median_income || 40000, 0, 150000) * 20;
+      const totalScore = fedScore + unempScore + incomeScore;
+
+      // Custom tooltip
+      const tooltip = d3
+        .select("#map-tooltip")
+        .style("opacity", 1)
+        .style("left", event.pageX + 10 + "px")
+        .style("top", event.pageY - 28 + "px");
+
+      tooltip.html(`
+        <strong>${d.properties.name}, ${d.properties.stateName}</strong><br>
+        <div class="score-breakdown">
+          <div class="score-item">
+            <div class="score-label">Federal workers:</div>
+            <div class="score-value">${(
+              d.properties.fed_workers_per_100k || 0
+            ).toLocaleString()} per 100k</div>
+            <div class="score-bar" style="width: ${fedScore}px; background-color: #d62728;"></div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Unemployment:</div>
+            <div class="score-value">${(
+              d.properties.unemployment_rate || 0
+            ).toFixed(1)}%</div>
+            <div class="score-bar" style="width: ${unempScore}px; background-color: #2ca02c;"></div>
+          </div>
+          <div class="score-item">
+            <div class="score-label">Median income:</div>
+            <div class="score-value">$${(
+              d.properties.median_income || 0
+            ).toLocaleString()}</div>
+            <div class="score-bar" style="width: ${incomeScore}px; background-color: #1f77b4;"></div>
+          </div>
+          <div class="score-total">
+            <div class="score-label">Vulnerability:</div>
+            <div class="score-value">${totalScore.toFixed(1)}/100</div>
+          </div>
+        </div>
+      `);
+
+      d3.select(this).attr("stroke", "#000").attr("stroke-width", 1.5);
+    })
+    .on("mouseout", function () {
+      d3.select("#map-tooltip").style("opacity", 0);
+
+      d3.select(this).attr("stroke", "#fff").attr("stroke-width", 0.5);
+    });
+
+  // Identify and highlight example high-vulnerability counties
+  const topVulnerableFIPS = ["21237", "15005", "46121"]; // Example FIPS codes
+  const highVulnerableCounties = features.filter((f) =>
+    topVulnerableFIPS.includes(f.id)
+  );
+
+  // Add markers for example counties
+  svgElement
+    .selectAll(".example-marker")
+    .data(highVulnerableCounties)
+    .join("circle")
+    .attr("class", "example-marker")
+    .attr("cx", (d) => path.centroid(d)[0])
+    .attr("cy", (d) => path.centroid(d)[1])
+    .attr("r", 6)
+    .attr("fill", "white")
+    .attr("stroke", "black")
+    .attr("stroke-width", 1.5)
+    .attr("opacity", 0)
+    .transition()
+    .delay(1000)
+    .duration(500)
+    .attr("opacity", 1);
+
+  // Add labels for example counties
+  svgElement
+    .selectAll(".example-label")
+    .data(highVulnerableCounties)
+    .join("text")
+    .attr("class", "example-label")
+    .attr("x", (d) => path.centroid(d)[0] + 10)
+    .attr("y", (d) => path.centroid(d)[1])
+    .attr("font-size", "10px")
+    .attr("font-weight", "bold")
+    .text((d) => `${d.properties.name}`)
+    .attr("opacity", 0)
+    .transition()
+    .delay(1200)
+    .duration(500)
+    .attr("opacity", 1);
+
+  // Create an improved, larger legend
+  createImprovedTrivariateLegend(svgElement, dimensions);
+}
+
+function createImprovedTrivariateLegend(svgElement, dimensions) {
+  const legendX = dimensions.width - 280;
+  const legendY = dimensions.height - 250;
+
+  const legend = svgElement
+    .append("g")
+    .attr("class", "trivariate-legend")
+    .attr("transform", `translate(${legendX}, ${legendY})`)
+    .style("opacity", 0);
+
+  // Add background
+  legend
+    .append("rect")
+    .attr("x", -10)
+    .attr("y", -10)
+    .attr("width", 260)
+    .attr("height", 220)
+    .attr("fill", "rgba(255, 255, 255, 0.9)")
+    .attr("rx", 5)
+    .attr("ry", 5)
+    .attr("stroke", "#999")
+    .attr("stroke-width", 0.5);
+
+  // Add title
+  legend
+    .append("text")
+    .attr("x", 120)
+    .attr("y", 15)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "14px")
+    .attr("font-weight", "bold")
+    .text("Vulnerability Scale");
+
+  // Create color gradient bar
+  const gradientWidth = 220;
+  const gradientHeight = 30;
+  const gradientX = 20;
+  const gradientY = 40;
+
+  // Add gradient background
+  legend
+    .append("defs")
+    .append("linearGradient")
+    .attr("id", "vulnerability-gradient")
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "100%")
+    .attr("y2", "0%")
+    .selectAll("stop")
+    .data([
+      { offset: "0%", color: "#ffffcc" },
+      { offset: "25%", color: "#ffeda0" },
+      { offset: "50%", color: "#feb24c" },
+      { offset: "75%", color: "#fc4e2a" },
+      { offset: "100%", color: "#800026" },
+    ])
+    .join("stop")
+    .attr("offset", (d) => d.offset)
+    .attr("stop-color", (d) => d.color);
+
+  // Draw gradient bar
+  legend
+    .append("rect")
+    .attr("x", gradientX)
+    .attr("y", gradientY)
+    .attr("width", gradientWidth)
+    .attr("height", gradientHeight)
+    .attr("fill", "url(#vulnerability-gradient)")
+    .attr("stroke", "#333")
+    .attr("stroke-width", 1);
+
+  // Add labels
+  legend
+    .append("text")
+    .attr("x", gradientX)
+    .attr("y", gradientY + gradientHeight + 15)
+    .attr("text-anchor", "start")
+    .attr("font-size", "12px")
+    .text("Low Vulnerability");
+
+  legend
+    .append("text")
+    .attr("x", gradientX + gradientWidth)
+    .attr("y", gradientY + gradientHeight + 15)
+    .attr("text-anchor", "end")
+    .attr("font-size", "12px")
+    .text("High Vulnerability");
+
+  // Add component explanations
+  const componentY = gradientY + gradientHeight + 40;
+
+  // Federal employment component
+  legend
+    .append("rect")
+    .attr("x", gradientX)
+    .attr("y", componentY)
+    .attr("width", 15)
+    .attr("height", 15)
+    .attr("fill", "#d62728");
+
+  legend
+    .append("text")
+    .attr("x", gradientX + 25)
+    .attr("y", componentY + 12)
+    .attr("font-size", "12px")
+    .text("Federal Employment (50%)");
+
+  // Unemployment component
+  legend
+    .append("rect")
+    .attr("x", gradientX)
+    .attr("y", componentY + 25)
+    .attr("width", 15)
+    .attr("height", 15)
+    .attr("fill", "#2ca02c");
+
+  legend
+    .append("text")
+    .attr("x", gradientX + 25)
+    .attr("y", componentY + 37)
+    .attr("font-size", "12px")
+    .text("Unemployment Rate (30%)");
+
+  // Income component
+  legend
+    .append("rect")
+    .attr("x", gradientX)
+    .attr("y", componentY + 50)
+    .attr("width", 15)
+    .attr("height", 15)
+    .attr("fill", "#1f77b4");
+
+  legend
+    .append("text")
+    .attr("x", gradientX + 25)
+    .attr("y", componentY + 62)
+    .attr("font-size", "12px")
+    .text("Median Income (20%)");
+
+  // Add explanation text
+  legend
+    .append("text")
+    .attr("x", gradientX + gradientWidth / 2)
+    .attr("y", componentY + 90)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "10px")
+    .attr("font-style", "italic")
+    .text("Areas with high federal employment, high unemployment,");
+
+  legend
+    .append("text")
+    .attr("x", gradientX + gradientWidth / 2)
+    .attr("y", componentY + 105)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "10px")
+    .attr("font-style", "italic")
+    .text("and low income show the highest vulnerability");
+
+  // Fade in the legend
+  legend.transition().duration(800).style("opacity", 1);
+}
+
+// Helper function to calculate a combined vulnerability score
+function calculateCombinedScore(feature) {
+  const fedScore =
+    normalize(feature.properties.fed_workers_per_100k || 0, 0, 10000) * 50;
+  const unempScore =
+    normalize(feature.properties.unemployment_rate || 0, 0, 20) * 30;
+  const incomeScore =
+    inverseNormalize(feature.properties.median_income || 40000, 0, 150000) * 20;
+
+  return fedScore + unempScore + incomeScore; // 0-100 score
+}
+
+// Create a special trivariate map legend to explain the color scheme
+function createTrivariateMapLegend(svgElement, dimensions) {
+  const legendX = dimensions.width - 220;
+  const legendY = dimensions.height - 180;
+
+  const legend = svgElement
+    .append("g")
+    .attr("class", "trivariate-legend")
+    .attr("transform", `translate(${legendX}, ${legendY})`)
+    .style("opacity", 0);
+
+  // Add background
+  legend
+    .append("rect")
+    .attr("x", -10)
+    .attr("y", -10)
+    .attr("width", 200)
+    .attr("height", 170)
+    .attr("fill", "rgba(255, 255, 255, 0.9)")
+    .attr("rx", 5)
+    .attr("ry", 5);
+
+  // Add title
+  legend
+    .append("text")
+    .attr("x", 90)
+    .attr("y", 10)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "12px")
+    .attr("font-weight", "bold")
+    .text("Federal Job Cut Vulnerability");
+
+  // Create a 3×3 grid showing color combinations
+  const cellSize = 40;
+  const startX = 20;
+  const startY = 30;
+
+  // Draw the legend grid
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      // Calculate normalized scores
+      const fedScore = j / 2; // 0, 0.5, 1
+      const unempScore = (2 - i) / 2; // 1, 0.5, 0
+      const incomeScore = i / 2; // 0, 0.5, 1 (inverted)
+
+      // Use the same color formula as the map
+      const intensity = Math.pow(fedScore * unempScore * incomeScore, 1 / 3);
+      const r = Math.floor(255 - intensity * 160);
+      const g = Math.floor(255 - intensity * 200);
+      const b = Math.floor(200 - intensity * 80);
+
+      legend
+        .append("rect")
+        .attr("x", startX + j * cellSize)
+        .attr("y", startY + i * cellSize)
+        .attr("width", cellSize - 2)
+        .attr("height", cellSize - 2)
+        .attr("fill", `rgb(${r}, ${g}, ${b})`)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 0.5);
+    }
+  }
+
+  // Add axis labels
+  legend
+    .append("text")
+    .attr("x", 10)
+    .attr("y", startY + cellSize * 1.5)
+    .attr("text-anchor", "end")
+    .attr("alignment-baseline", "middle")
+    .attr("font-size", "10px")
+    .attr("font-weight", "bold")
+    .text("Income");
+
+  legend
+    .append("text")
+    .attr("x", startX + cellSize * 1.5)
+    .attr("y", startY + cellSize * 3 + 15)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "10px")
+    .attr("font-weight", "bold")
+    .text("Federal Employment");
+
+  // Add high/low indicators
+  legend
+    .append("text")
+    .attr("x", 10)
+    .attr("y", startY)
+    .attr("text-anchor", "end")
+    .attr("font-size", "9px")
+    .text("Low");
+
+  legend
+    .append("text")
+    .attr("x", 10)
+    .attr("y", startY + cellSize * 3)
+    .attr("text-anchor", "end")
+    .attr("font-size", "9px")
+    .text("High");
+
+  legend
+    .append("text")
+    .attr("x", startX)
+    .attr("y", startY + cellSize * 3 + 15)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "9px")
+    .text("Low");
+
+  legend
+    .append("text")
+    .attr("x", startX + cellSize * 3)
+    .attr("y", startY + cellSize * 3 + 15)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "9px")
+    .text("High");
+
+  // Add explanation text
+  legend
+    .append("text")
+    .attr("x", 90)
+    .attr("y", startY + cellSize * 3 + 35)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "9px")
+    .text("Darkest areas = highest vulnerability");
+
+  // Fade in the legend
+  legend.transition().duration(800).style("opacity", 1);
+}
+
+// Helper function to normalize values between 0 and 1
+function normalize(value, min, max) {
+  if (!value || isNaN(value)) return 0;
+  return Math.max(0, Math.min(1, (value - min) / (max - min)));
+}
+
+// Helper function to inverse normalize (where lower values = higher result)
+function inverseNormalize(value, min, max) {
+  if (!value || isNaN(value)) return 1;
+  return 1 - Math.max(0, Math.min(1, (value - min) / (max - min)));
 }
 
 // Render the map in spotlight mode for the vulnerable counties step
@@ -776,23 +1276,13 @@ function createSimplifiedSpotlightLegend(
 }
 
 // Get fill color for a feature based on step type and data
+// First, in getFillColor function in visualization.js
 export function getFillColor(feature, step, colorScale) {
   const isStateLevel = step.isStateLevel === true;
   const fieldName = step.dataField;
 
   if (step.id === "vulnerability_category") {
-    const category = feature.properties.category;
-
-    // Check for missing data
-    if (!category || category === "No Data" || category === "Unknown") {
-      return "#cccccc"; // Default gray for no data
-    }
-
-    // Clean up category name and get color
-    const cleanCategory = category.trim();
-    const color = config.colors.vulnerabilityCategory[cleanCategory];
-
-    return color || "#cccccc"; // Return color or fallback to gray
+    // Existing category code...
   } else {
     // Handle numeric values
     let value = feature.properties[fieldName];
@@ -807,10 +1297,32 @@ export function getFillColor(feature, step, colorScale) {
       return "#cccccc"; // Gray fill color for counties/states with no data
     }
 
-    // Convert state-level data to the right scale for the color mapping
-    if (isStateLevel && step.id === "state_federal_workers") {
-      // Convert from per 100,000 to percentage (divide by 1000)
-      value = value / 1000;
+    // Debug to see the range of values
+    if (step.id === "median_income" && Math.random() < 0.001) {
+      console.log(`Sample median income value: ${value}`);
+    }
+
+    // If we need to invert the scale (for median income where lower is worse)
+    // In getFillColor function, update the inversion logic
+    if (step.invertScale) {
+      // Get statistics for correct min/max values
+      const statistics = window.dataManager.getStatisticsForStep(step.id);
+
+      if (statistics) {
+        const min = statistics.min || 0;
+        const max = statistics.max || 150000;
+
+        // Calculate how far from max this value is - the further, the more vulnerable
+        // This effectively inverts the scale
+        const normalizedValue = 1 - (value - min) / (max - min);
+
+        // Clamp to 0-1 range to prevent errors
+        const clampedValue = Math.max(0, Math.min(1, normalizedValue));
+
+        // Rather than using the colorScale directly, use D3's built-in scale
+        // This gives us more control over the exact colors
+        return d3.interpolateGreens(clampedValue);
+      }
     }
 
     return colorScale(value);
@@ -1136,9 +1648,27 @@ function createCategoryStyleLegend(
     return;
   }
 
-  if (!colors || colors.length < breaks.length) {
-    console.warn("Insufficient colors for category legend");
-    return;
+  // If we don't have enough colors, generate them using D3
+  if (!colors || colors.length < breaks.length + 1) {
+    console.warn("Insufficient colors for category legend - generating colors");
+
+    // Generate colors based on the step
+    if (title.includes("Income")) {
+      // Green color scheme for income
+      colors = Array.from({ length: breaks.length + 1 }, (_, i) =>
+        d3.interpolateGreens(i / breaks.length)
+      );
+    } else if (title.includes("Unemployment")) {
+      // Red color scheme for unemployment
+      colors = Array.from({ length: breaks.length + 1 }, (_, i) =>
+        d3.interpolateReds(i / breaks.length)
+      );
+    } else {
+      // Blue scheme for other metrics
+      colors = Array.from({ length: breaks.length + 1 }, (_, i) =>
+        d3.interpolateBlues(i / breaks.length)
+      );
+    }
   }
 
   // Create background panel
@@ -1397,16 +1927,16 @@ function _addCustomDCRepresentation(
   onHover,
   onLeave
 ) {
-  console.log("Starting DC representation with features:", features.length);
-  console.log("DC Data:", dcData);
-  console.log("Dimensions:", dimensions);
+  // console.log("Starting DC representation with features:", features.length);
+  // console.log("DC Data:", dcData);
+  // console.log("Dimensions:", dimensions);
 
   // Force reliable default positions regardless of calculations
-  const dcX = dimensions.width * 0.8; // 80% from left
-  const dcY = dimensions.height * 0.4; // 40% from top
+  const dcX = dimensions.width * 0.89; // 92% from left
+  const dcY = dimensions.height * 0.45; // 45% from top
   const squareSize = Math.max(15, dimensions.width / 40);
 
-  console.log("Using fixed DC position:", { dcX, dcY, squareSize });
+  // console.log("Using fixed DC position:", { dcX, dcY, squareSize });
 
   // Define a group for DC element and label
   const dcGroup = svgElement.append("g").attr("class", "dc-representation");
@@ -1439,11 +1969,11 @@ function _addCustomDCRepresentation(
     .attr("font-weight", "bold")
     .text("DC");
 
-  console.log(
-    "Added custom DC square at",
-    dcX,
-    dcY,
-    "with map width",
-    dimensions.width
-  );
+  // console.log(
+  //   "Added custom DC square at",
+  //   dcX,
+  //   dcY,
+  //   "with map width",
+  //   dimensions.width
+  // );
 }

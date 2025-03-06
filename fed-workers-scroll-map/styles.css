@@ -1,530 +1,164 @@
-/* Reset */
-* {
+/* Add styles for blended layers */
+.component {
+  pointer-events: all;
+  transition: stroke 0.2s ease;
+}
+
+/* CSS for blend modes - helps with color mixing */
+svg g {
+  isolation: isolate;
+}
+
+/* Tooltip enhancements for layered view */
+.tooltip-row .tooltip-label.component-label {
+  font-weight: bold;
+  padding-left: 15px;
+  position: relative;
+}
+
+.tooltip-row .tooltip-label.component-label::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  left: 0;
+  top: 2px;
+} /* Base styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #fafafa;
 }
 
-/* Container styles */
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
-}
-
-/* Map header with the fixed visualization */
-.map-header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: white;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  text-align: center;
-}
-
-/* Title styling */
-.title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 0.5rem;
-  display: none;
-}
-
-/* Description text */
-.description {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 /* Map container */
 .map-container {
   position: relative;
-  margin: 0 auto;
-  max-width: 800px;
-  background-color: #f8f9fa;
-  padding: 10px;
+  width: 100%;
+  margin: 20px 0;
 }
 
-/* SVG map styling */
 .map-svg {
+  display: block;
   width: 100%;
-  height: auto;
   max-width: 800px;
-}
-
-/* Tooltip styling */
-.tooltip {
-  position: absolute;
-  background-color: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
   border: 1px solid #e0e0e0;
-  font-size: 0.875rem;
-  display: none;
-  pointer-events: none;
-  z-index: 100;
-  max-width: 250px;
-  font-family: Arial, sans-serif;
-  transition: transform 0.1s ease-out;
-  transform-origin: top left;
+  background-color: #f9f9f9;
 }
 
-.tooltip-header {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+/* Header styles */
+.map-header {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.tooltip-data {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tooltip-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.tooltip-value {
-  font-weight: normal;
+.title {
+  margin-bottom: 10px;
   color: #333;
 }
 
-.tooltip-category {
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-category.low {
-  background-color: #ffeeaa;
-  color: #806600;
-}
-
-.tooltip-category.very.low {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.tooltip-category.moderate {
-  background-color: #ffccbc;
-  color: #c63f17;
-}
-
-.tooltip-category.high {
-  background-color: #ffcdd2;
-  color: #b71c1c;
-}
-
-/* Sections container */
-.sections {
-  width: 100%;
-  max-width: 800px;
-  margin-top: 1rem;
-  padding-bottom: 16rem;
-}
-
-/* Individual section styling */
-.section {
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 16rem;
-}
-
-/* Section-specific styling */
-.intro-section {
-  background-color: #f5f5f5;
-}
-
-.percentage-section {
-  background-color: #e6f0ff;
-  display: none;
-}
-
-.index-section {
-  background-color: #fff0f0;
-  display: none;
-}
-
-/* Section headings */
-.section h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-/* Section paragraphs */
-.section p {
-  line-height: 1.5;
-  display: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 840px) {
-  .map-header {
-    padding: 0.75rem;
-  }
-
-  .map-svg {
-    height: auto;
-    width: 100%;
-  }
-
-  .title {
-    font-size: 1.125rem;
-  }
-
-  .description {
-    font-size: 0.875rem;
-  }
-
-  .section {
-    padding: 0.75rem;
-    margin-bottom: 12rem;
-  }
-}
-
-/* Add these styles to your existing styles.css file */
-
-/* Enhanced tooltip styling */
-.tooltip {
-  position: absolute;
-  background-color: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid #e0e0e0;
-  font-size: 0.875rem;
-  display: none;
-  pointer-events: none;
-  z-index: 100;
-  max-width: 250px;
-  font-family: Arial, sans-serif;
-  transition: transform 0.1s ease-out;
-  transform-origin: top left;
-}
-
-.tooltip-header {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.tooltip-data {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tooltip-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.tooltip-value {
-  font-weight: normal;
-  color: #333;
-}
-
-/* New styles for outlier indicators in tooltip */
-.tooltip-outlier {
-  background-color: #f8f8f8;
-  border-left: 3px solid;
-  padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-outlier.high {
-  border-left-color: #d32f2f;
-  color: #d32f2f;
-}
-
-.tooltip-outlier.low {
-  border-left-color: #1976d2;
-  color: #1976d2;
-}
-
-/* Vulnerability category indicators */
-.tooltip-category {
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-category.low {
-  background-color: #ffeeaa;
-  color: #806600;
-}
-
-.tooltip-category.very.low {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.tooltip-category.moderate {
-  background-color: #ffccbc;
-  color: #c63f17;
-}
-
-.tooltip-category.high {
-  background-color: #ffcdd2;
-  color: #b71c1c;
-}
-
-/* Style for pattern overlays */
-.pattern-overlay {
-  pointer-events: none;
-}
-
-/* Enhanced legend styles */
-.legend text {
-  font-family: Arial, sans-serif;
-}
-
-/* Additional elements description in sections */
-.section .data-elements {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-.data-elements ul {
-  list-style-type: none;
-  padding-left: 0.5rem;
-}
-
-.data-elements li {
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-}
-
-.data-elements .element-icon {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 0.5rem;
-}
-
-/* Style adjustments for the pattern legend */
-.pattern-legend-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.25rem;
-}
-
-.pattern-legend-icon {
-  width: 15px;
-  height: 15px;
-  margin-right: 0.5rem;
-}
-
-/* Add this to your CSS to ensure enough scroll height */
-#map-container {
-  min-height: 300vh; /* 3x the viewport height to ensure enough scroll space */
-}
-
-/* Add these styles to your CSS file */
-
-/* Tooltip styles for vulnerability information */
-.tooltip-vulnerable {
-  background-color: #a50f15;
-  color: white;
-  padding: 4px 8px;
-  font-weight: bold;
-  border-radius: 3px;
-  margin-bottom: 8px;
-}
-
-/* Narrative example highlight styles */
-.county.narrative-highlight {
-  stroke: #ff4500;
-  stroke-width: 2px;
-  stroke-dasharray: none;
-}
-
-/* Description styles for better readability */
-#description p {
-  margin-top: 8px;
-  line-height: 1.4;
-  font-size: 14px;
-}
-
-/* Style for callout labels */
-.county-label {
-  font-weight: bold;
-  pointer-events: none;
-}
-
-.county-label-bg {
-  fill: white;
-  fill-opacity: 0.8;
-  rx: 3px;
-  ry: 3px;
-}
-
-/* Add these styles to your styles.css file */
-
-/* Spotlight Panel */
-.spotlight-panel {
-  position: absolute;
-  right: 20px;
-  top: 100px;
-  width: 300px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 5px;
-  padding: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  max-height: 60vh;
-  overflow-y: auto;
-  z-index: 1000;
-}
-
-.spotlight-panel h4 {
-  margin-top: 0;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-  font-size: 18px;
-}
-
-.spotlight-section {
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.spotlight-section:hover {
-  background-color: #f5f5f5;
-}
-
-.spotlight-section.active {
-  background-color: #f0f0f0;
-  border-left: 4px solid #de2d26;
-  padding-left: 12px;
-}
-
-.spotlight-section h5 {
-  margin-top: 0;
-  margin-bottom: 8px;
+.description {
+  color: #666;
   font-size: 16px;
+  margin: 0 auto 30px auto;
+  max-width: 600px;
+  line-height: 1.5;
 }
 
-.spotlight-section p {
-  margin-bottom: 8px;
+.description p {
+  margin-top: 8px;
+}
+
+/* Sections styling */
+.sections {
+  padding: 40px 0; /* Reduced since we're using buttons not scroll */
+}
+
+.section {
+  min-height: 200px;
+  padding: 40px 20px;
+  border-top: 1px solid #eee;
+}
+
+/* Navigation button styles */
+.navigation-buttons {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.navigation-buttons button {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 15px;
+  margin: 0 5px;
   font-size: 14px;
-  line-height: 1.4;
-}
-
-.spotlight-section ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.spotlight-section li {
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-
-/* Facility Markers */
-.facility-markers circle {
   cursor: pointer;
-  transition: r 0.2s ease, stroke-width 0.2s ease;
+  transition: background-color 0.2s;
 }
 
-.facility-markers circle:hover {
-  stroke-width: 2px;
+.navigation-buttons button:hover {
+  background-color: #e8e8e8;
 }
 
-/* Tooltip */
+.navigation-buttons select {
+  padding: 7px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.section h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+/* Tooltip styles */
 .tooltip {
   position: absolute;
-  background: rgba(255, 255, 255, 0.95);
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ddd;
   border-radius: 4px;
   padding: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   pointer-events: none;
-  z-index: 1500;
-  max-width: 300px;
+  font-size: 14px;
+  max-width: 250px;
+  min-width: 200px;
 }
 
 .tooltip-header {
-  font-weight: bold;
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;
   margin-bottom: 5px;
-}
-
-.tooltip-data {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  font-size: 14px;
 }
 
 .tooltip-row {
   display: flex;
   justify-content: space-between;
+  margin: 4px 0;
+  font-size: 12px;
 }
 
 .tooltip-label {
-  font-weight: 600;
-  margin-right: 10px;
+  color: #666;
+  font-weight: normal;
 }
 
 .tooltip-value {
-  text-align: right;
-}
-
-.tooltip-spotlight {
-  background-color: #de2d26;
-  color: white;
-  padding: 3px 6px;
-  border-radius: 3px;
-  margin-bottom: 5px;
   font-weight: bold;
-  font-size: 11px;
-}
-
-/* Transition Text */
-#transition-text {
-  text-align: center;
-  font-style: italic;
-  margin: 20px 0;
-  padding: 0 40px;
+  margin-left: 10px;
+  color: #333;
 }
