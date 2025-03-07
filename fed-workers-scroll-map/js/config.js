@@ -16,8 +16,8 @@ const config = {
     {
       id: "state_federal_workers",
       title: "Federal Workers per 100,000 by State",
-      description:
-        "Some states rely more heavily on federal employment than others. Washington D.C., Alaska, Maryland, and Hawaii show the highest concentration of federal workers.",
+      // description:
+      //   "Some states rely more heavily on federal employment than others. Washington D.C., Alaska, Maryland, and Hawaii show the highest concentration of federal workers.",
       dataField: "state_fed_workers_per_100k",
       colorSet: "blues",
       isStateLevel: true,
@@ -27,68 +27,18 @@ const config = {
     {
       id: "federal_workers",
       title: "Federal Workers per 100,000 by County",
-      description:
-        "Zooming in reveals significant variation even within states, with some counties showing much higher federal employment than their neighbors.",
+      // description:
+      //   "Zooming in reveals significant variation even within states, with some counties showing much higher federal employment than their neighbors.",
       dataField: "fed_workers_per_100k",
       colorSet: "blues",
       breaks: [1000, 2500, 5000, 7500, 10000],
-    },
-    // Component 1: Federal Employment (50% of index)
-    {
-      id: "federal_workers_component",
-      title: "Federal Employment (50% of Vulnerability Index)",
-      description:
-        "Higher concentration of federal employment is the primary factor in vulnerability to federal job cuts.",
-      dataField: "fed_workers_per_100k",
-      colorSet: "magenta",
-      isComponent: true,
-      componentWeight: 0.5,
-      showLayeredComponents: true,
-      breaks: [1000, 2500, 5000, 7500, 10000],
-    },
-    // Component 2: Unemployment (30% of index)
-    {
-      id: "unemployment_component",
-      title: "Unemployment Rate (30% of Vulnerability Index)",
-      description:
-        "Areas with higher unemployment rates have fewer alternative job options if federal cuts occur.",
-      dataField: "unemployment_rate",
-      colorSet: "cyan",
-      isComponent: true,
-      componentWeight: 0.3,
-      showLayeredComponents: true,
-      breaks: [3, 6, 9, 12, 15],
-    },
-    // Component 3: Income (20% of index)
-    {
-      id: "income_component",
-      title: "Median Income (20% of Vulnerability Index)",
-      description:
-        "Lower median household income indicates less economic resilience to withstand job losses.",
-      dataField: "median_income",
-      colorSet: "yellow",
-      invertScale: true,
-      isComponent: true,
-      componentWeight: 0.2,
-      showLayeredComponents: true,
-      breaks: [30000, 45000, 60000, 75000, 90000],
-    },
-    // Vulnerability score - combined view
-    {
-      id: "vulnerability_preview",
-      title: "Combined Vulnerability Factors",
-      description:
-        "This preview shows how the three factors combine, with darker areas representing higher vulnerability.",
-      isComponentPreview: true,
-      showLayeredComponents: true,
-      showComponents: true,
     },
     // Final vulnerability score by county
     {
       id: "vulnerability_index",
       title: "Vulnerability Index to Federal Job Cuts",
-      description:
-        "The final vulnerability index shows areas most at risk from federal workforce reductions, based on federal employment (50%), unemployment (30%), and income (20%).",
+      // description:
+      //   "The final vulnerability index shows areas most at risk from federal workforce reductions, based on federal employment (50%), unemployment (30%), and income (20%).",
       dataField: "vulnerabilityIndex",
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],

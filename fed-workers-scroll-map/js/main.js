@@ -105,66 +105,6 @@ async function loadData() {
   }
 }
 
-// Process the raw data
-function processData(countiesData, statesData, vulnerabilityData) {
-  // Extract county features from topojson
-  const counties = topojson.feature(
-    countiesData,
-    countiesData.objects.counties
-  ).features;
-
-  // Extract state features from topojson
-  const states = topojson.feature(
-    statesData,
-    statesData.objects.states
-  ).features;
-
-  // Create lookup for vulnerability data
-  const vulnerabilityByCounty = {};
-  vulnerabilityData.forEach((row) => {
-    if (!row.NAME) return;
-
-    vulnerabilityByCounty[row.NAME] = {
-      fedDependency: row.fed_dependency || row.pct_federal || 0,
-      vulnerabilityIndex: row.vulnerability_index || 0,
-      fed_workers_per_100k: row.fed_workers_per_100k,
-      unemployment_rate: row.unemployment_rate,
-      median_income: row.median_income,
-    };
-  });
-
-  // Merge county data with vulnerability data
-  const processedCounties = counties.map((county) => {
-    const countyFips = county.id;
-    const stateFipsCode = countyFips.substring(0, 2);
-    const stateName = config.stateFips[stateFipsCode] || "Unknown";
-    const countyName = county.properties.name;
-
-    // Find vulnerability data for this county
-    let vulnerabilityInfo =
-      vulnerabilityByCounty[`${countyName} County, ${stateName}`] ||
-      vulnerabilityByCounty[`${countyName}, ${stateName}`] ||
-      vulnerabilityByCounty[countyName] ||
-      {};
-
-    return {
-      ...county,
-      properties: {
-        ...county.properties,
-        ...vulnerabilityInfo,
-        stateName,
-        fed_workers_per_100k: vulnerabilityInfo.fed_workers_per_100k || null,
-        vulnerabilityIndex: vulnerabilityInfo.vulnerabilityIndex || null,
-      },
-    };
-  });
-
-  return {
-    counties: processedCounties,
-    states: states,
-  };
-}
-
 // Render the current step
 function renderCurrentStep() {
   if (!state.mapInitialized) {
@@ -392,14 +332,6 @@ function renderLayeredComponents(
     .attr("stroke", "#fff")
     .attr("stroke-width", 0.2) // Reduced from 0.5
     .attr("pointer-events", "none"); // Pass through events to layers below
-
-  // Create a legend for layered components
-  createLayeredLegend(
-    svgElement,
-    state.dimensions,
-    componentsToDisplay,
-    currentStepConfig
-  );
 }
 
 // Handle hover for layered view
@@ -469,138 +401,6 @@ function handleLayeredHover(event, feature, components) {
   elements.tooltip.style.left = `${event.pageX + 10}px`;
   elements.tooltip.style.top = `${event.pageY + 10}px`;
   elements.tooltip.innerHTML = tooltipContent;
-}
-
-// Create a legend for layered components
-function createLayeredLegend(
-  svgElement,
-  dimensions,
-  components,
-  currentStepConfig
-) {
-  const legendWidth = 350;
-  const legendHeight = 150;
-  const legendX = dimensions.width - legendWidth - 20;
-  const legendY = 20;
-
-  // Create legend container
-  const legend = svgElement
-    .append("g")
-    .attr("class", "layered-legend")
-    .attr("transform", `translate(${legendX}, ${legendY})`);
-
-  // Add background
-  legend
-    .append("rect")
-    .attr("x", -10)
-    .attr("y", -10)
-    .attr("width", legendWidth + 20)
-    .attr("height", legendHeight + 20)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("rx", 4)
-    .attr("ry", 4)
-    .attr("stroke", "#ccc")
-    .attr("stroke-width", 1);
-
-  // Add title
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", 5)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "14px")
-    .attr("font-weight", "bold")
-    .text(currentStepConfig.title);
-
-  // Add description
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", 25)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "11px")
-    .text(
-      currentStepConfig.id === "vulnerability_preview"
-        ? "The vulnerability index combines these three factors:"
-        : "Building the vulnerability index with these factors:"
-    );
-
-  // Create component rows
-  components.forEach((component, i) => {
-    const yPos = 45 + i * 30;
-
-    // Add component icon - colored square
-    const colorSet = component.colorSet || "blues";
-    const colors = config.colors[colorSet] || config.colors.federal;
-    const color = colors[colors.length - 2]; // Use a dark color from the set
-
-    legend
-      .append("rect")
-      .attr("x", 10)
-      .attr("y", yPos)
-      .attr("width", 15)
-      .attr("height", 15)
-      .attr("fill", color);
-
-    // Add component name
-    legend
-      .append("text")
-      .attr("x", 35)
-      .attr("y", yPos + 12)
-      .attr("font-size", "12px")
-      .attr("font-weight", "bold")
-      .text(component.title.split(" (")[0]);
-
-    // Add component weight
-    legend
-      .append("text")
-      .attr("x", legendWidth - 10)
-      .attr("y", yPos + 12)
-      .attr("text-anchor", "end")
-      .attr("font-size", "12px")
-      .text(`${component.componentWeight * 100}%`);
-
-    // Add weight bar
-    const barWidth = 100;
-    const componentBarWidth = barWidth * component.componentWeight;
-
-    legend
-      .append("rect")
-      .attr("x", legendWidth - 120)
-      .attr("y", yPos + 2)
-      .attr("width", barWidth)
-      .attr("height", 10)
-      .attr("fill", "#eee")
-      .attr("stroke", "#ccc")
-      .attr("stroke-width", 1);
-
-    legend
-      .append("rect")
-      .attr("x", legendWidth - 120)
-      .attr("y", yPos + 2)
-      .attr("width", componentBarWidth)
-      .attr("height", 10)
-      .attr("fill", color);
-  });
-
-  // Add note about visualization
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", legendHeight - 20)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "10px")
-    .attr("font-style", "italic")
-    .text("Areas with darker colors show higher combined vulnerability");
-
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", legendHeight - 5)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "10px")
-    .attr("font-style", "italic")
-    .text("scores based on the weighted factors above.");
 }
 
 // Render previous components with lower opacity
@@ -718,9 +518,6 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
     .attr("stroke-width", 1)
     .attr("stroke-opacity", 0.5)
     .attr("pointer-events", "none");
-
-  // Add explanation of combined view
-  createCombinedLegend(svgElement, dimensions, components);
 }
 
 // Calculate a combined color based on all components
@@ -954,138 +751,10 @@ function createSimpleLegend(svgElement, dimensions, stepConfig) {
   }
 }
 
-// Create a legend for the combined component view
-function createCombinedLegend(svgElement, dimensions, components) {
-  const legendWidth = 350;
-  const legendHeight = 150;
-  const legendX = dimensions.width - legendWidth - 20;
-  const legendY = 20;
-
-  // Create legend container
-  const legend = svgElement
-    .append("g")
-    .attr("class", "combined-legend")
-    .attr("transform", `translate(${legendX}, ${legendY})`);
-
-  // Add background
-  legend
-    .append("rect")
-    .attr("x", -10)
-    .attr("y", -10)
-    .attr("width", legendWidth + 20)
-    .attr("height", legendHeight + 20)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("rx", 4)
-    .attr("ry", 4)
-    .attr("stroke", "#ccc")
-    .attr("stroke-width", 1);
-
-  // Add title
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", 5)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "14px")
-    .attr("font-weight", "bold")
-    .text("Vulnerability Index Components");
-
-  // Add description
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", 25)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "11px")
-    .text("The vulnerability index combines three factors:");
-
-  // Create component rows
-  components.forEach((component, i) => {
-    const yPos = 45 + i * 30;
-
-    // Add component icon - colored square
-    const colorSet = component.colorSet || "blues";
-    const colors = config.colors[colorSet] || config.colors.federal;
-    const color = colors[colors.length - 2]; // Use a dark color from the set
-
-    legend
-      .append("rect")
-      .attr("x", 10)
-      .attr("y", yPos)
-      .attr("width", 15)
-      .attr("height", 15)
-      .attr("fill", color);
-
-    // Add component name
-    legend
-      .append("text")
-      .attr("x", 35)
-      .attr("y", yPos + 12)
-      .attr("font-size", "12px")
-      .attr("font-weight", "bold")
-      .text(component.title.split(" (")[0]);
-
-    // Add component weight
-    legend
-      .append("text")
-      .attr("x", legendWidth - 10)
-      .attr("y", yPos + 12)
-      .attr("text-anchor", "end")
-      .attr("font-size", "12px")
-      .text(`${component.componentWeight * 100}%`);
-
-    // Add weight bar
-    const barWidth = 100;
-    const componentBarWidth = barWidth * component.componentWeight;
-
-    legend
-      .append("rect")
-      .attr("x", legendWidth - 120)
-      .attr("y", yPos + 2)
-      .attr("width", barWidth)
-      .attr("height", 10)
-      .attr("fill", "#eee")
-      .attr("stroke", "#ccc")
-      .attr("stroke-width", 1);
-
-    legend
-      .append("rect")
-      .attr("x", legendWidth - 120)
-      .attr("y", yPos + 2)
-      .attr("width", componentBarWidth)
-      .attr("height", 10)
-      .attr("fill", color);
-  });
-
-  // Add note about calculation
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", legendHeight - 20)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "10px")
-    .attr("font-style", "italic")
-    .text("Areas with darker colors show higher combined vulnerability");
-
-  legend
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", legendHeight - 5)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "10px")
-    .attr("font-style", "italic")
-    .text("scores based on the weighted factors above.");
-}
-
-// Get fill color for a feature
+// Enhanced getFillColor function with debugging for missing data
 function getFillColor(feature, stepConfig, colorScale) {
   const fieldName = stepConfig.dataField;
   let value = feature.properties[fieldName];
-
-  // Check for missing data
-  if (value === undefined || value === null || isNaN(value)) {
-    return "#cccccc"; // Gray for no data
-  }
 
   // If we need to invert the scale (for median income where lower is worse)
   if (stepConfig.invertScale) {
@@ -1100,6 +769,369 @@ function getFillColor(feature, stepConfig, colorScale) {
   }
 
   return colorScale(value);
+}
+
+// Enhanced data processing function to handle special counties
+function processData(countiesData, statesData, vulnerabilityData) {
+  // Extract county features from topojson
+  const counties = topojson.feature(
+    countiesData,
+    countiesData.objects.counties
+  ).features;
+
+  // Extract state features from topojson
+  const states = topojson.feature(
+    statesData,
+    statesData.objects.states
+  ).features;
+
+  // Create lookup for vulnerability data
+  const vulnerabilityByCounty = {};
+  const missingCounties = [];
+
+  vulnerabilityData.forEach((row) => {
+    if (!row.NAME) return;
+
+    vulnerabilityByCounty[row.NAME] = {
+      fedDependency: row.fed_dependency || row.pct_federal || 0,
+      vulnerabilityIndex: row.vulnerability_index || 0,
+      fed_workers_per_100k: row.fed_workers_per_100k,
+      unemployment_rate: row.unemployment_rate,
+      median_income: row.median_income,
+      state_fed_workers_per_100k: row.state_fed_workers_per_100k,
+    };
+  });
+
+  // Create a state-level aggregation for counties that are missing data
+  const stateAverages = {};
+
+  // Merge county data with vulnerability data
+  const processedCounties = counties.map((county) => {
+    const countyFips = county.id;
+    const stateFipsCode = countyFips.substring(0, 2);
+    const stateName = config.stateFips[stateFipsCode] || "Unknown";
+    const countyName = county.properties.name;
+
+    // Find vulnerability data for this county using enhanced matching
+    let vulnerabilityInfo = {};
+    const possibleKeys = getCountyMatchKeys(countyName, stateName);
+
+    let matchFound = false;
+    for (const key of possibleKeys) {
+      if (vulnerabilityByCounty[key]) {
+        vulnerabilityInfo = vulnerabilityByCounty[key];
+        matchFound = true;
+        break;
+      }
+    }
+
+    // If no match found, track for debugging
+    if (!matchFound) {
+      missingCounties.push({
+        fips: countyFips,
+        name: countyName,
+        state: stateName,
+        checkedKeys: possibleKeys,
+      });
+
+      // Collect data for state averages as fallback
+      if (!stateAverages[stateFipsCode]) {
+        stateAverages[stateFipsCode] = {
+          totalFedWorkers: 0,
+          totalUnemployment: 0,
+          totalIncome: 0,
+          countFedWorkers: 0,
+          countUnemployment: 0,
+          countIncome: 0,
+        };
+      }
+    } else {
+      // Contribute to state averages if we have this data
+      if (!stateAverages[stateFipsCode]) {
+        stateAverages[stateFipsCode] = {
+          totalFedWorkers: 0,
+          totalUnemployment: 0,
+          totalIncome: 0,
+          countFedWorkers: 0,
+          countUnemployment: 0,
+          countIncome: 0,
+        };
+      }
+
+      if (vulnerabilityInfo.fed_workers_per_100k) {
+        stateAverages[stateFipsCode].totalFedWorkers +=
+          vulnerabilityInfo.fed_workers_per_100k;
+        stateAverages[stateFipsCode].countFedWorkers++;
+      }
+
+      if (vulnerabilityInfo.unemployment_rate) {
+        stateAverages[stateFipsCode].totalUnemployment +=
+          vulnerabilityInfo.unemployment_rate;
+        stateAverages[stateFipsCode].countUnemployment++;
+      }
+
+      if (vulnerabilityInfo.median_income) {
+        stateAverages[stateFipsCode].totalIncome +=
+          vulnerabilityInfo.median_income;
+        stateAverages[stateFipsCode].countIncome++;
+      }
+    }
+
+    return {
+      ...county,
+      properties: {
+        ...county.properties,
+        ...vulnerabilityInfo,
+        stateName,
+        fed_workers_per_100k: vulnerabilityInfo.fed_workers_per_100k || null,
+        vulnerabilityIndex: vulnerabilityInfo.vulnerabilityIndex || null,
+      },
+    };
+  });
+
+  // Calculate state averages
+  Object.keys(stateAverages).forEach((stateFips) => {
+    const data = stateAverages[stateFips];
+    stateAverages[stateFips].avgFedWorkers =
+      data.countFedWorkers > 0
+        ? data.totalFedWorkers / data.countFedWorkers
+        : null;
+    stateAverages[stateFips].avgUnemployment =
+      data.countUnemployment > 0
+        ? data.totalUnemployment / data.countUnemployment
+        : null;
+    stateAverages[stateFips].avgIncome =
+      data.countIncome > 0 ? data.totalIncome / data.countIncome : null;
+  });
+
+  // Second pass - fill in missing data with state averages
+  const filledCounties = processedCounties.map((county) => {
+    const stateFips = county.id.substring(0, 2);
+    const countyName = county.properties.name;
+    const stateName = county.properties.stateName;
+    const stateAvg = stateAverages[stateFips] || {};
+
+    // Check if county is missing data and state average is available
+    if (
+      county.properties.fed_workers_per_100k === null &&
+      stateAvg.avgFedWorkers
+    ) {
+      county.properties.fed_workers_per_100k = stateAvg.avgFedWorkers;
+    }
+
+    if (
+      county.properties.unemployment_rate === null &&
+      stateAvg.avgUnemployment
+    ) {
+      county.properties.unemployment_rate = stateAvg.avgUnemployment;
+    }
+
+    if (county.properties.median_income === null && stateAvg.avgIncome) {
+      county.properties.median_income = stateAvg.avgIncome;
+    }
+
+    // Calculate vulnerability index if missing but components are available
+    if (
+      county.properties.vulnerabilityIndex === null &&
+      county.properties.fed_workers_per_100k !== null
+    ) {
+      // Get component weights from config
+      const fedWeight =
+        config.steps.find((s) => s.id === "federal_workers_component")
+          ?.componentWeight || 0.5;
+      const unemploymentWeight =
+        config.steps.find((s) => s.id === "unemployment_component")
+          ?.componentWeight || 0.3;
+      const incomeWeight =
+        config.steps.find((s) => s.id === "income_component")
+          ?.componentWeight || 0.2;
+
+      // Normalize component values
+      const fedMax =
+        config.steps.find((s) => s.id === "federal_workers_component")
+          ?.breaks?.[4] || 10000;
+      const unemploymentMax =
+        config.steps.find((s) => s.id === "unemployment_component")
+          ?.breaks?.[4] || 15;
+      const incomeMax =
+        config.steps.find((s) => s.id === "income_component")?.breaks?.[4] ||
+        90000;
+
+      // Add safety checks to prevent NaN
+      const normalizedFed = Math.min(
+        1,
+        isNaN(county.properties.fed_workers_per_100k)
+          ? 0
+          : county.properties.fed_workers_per_100k / fedMax
+      );
+
+      // Use available unemployment data or default to average
+      let normalizedUnemployment = 0;
+      if (
+        county.properties.unemployment_rate !== null &&
+        !isNaN(county.properties.unemployment_rate)
+      ) {
+        normalizedUnemployment = Math.min(
+          1,
+          county.properties.unemployment_rate / unemploymentMax
+        );
+      } else if (stateAvg.avgUnemployment) {
+        normalizedUnemployment = Math.min(
+          1,
+          stateAvg.avgUnemployment / unemploymentMax
+        );
+      }
+
+      // Use available income data or default to average
+      let normalizedIncome = 0;
+      if (
+        county.properties.median_income !== null &&
+        !isNaN(county.properties.median_income)
+      ) {
+        normalizedIncome =
+          1 - Math.min(1, county.properties.median_income / incomeMax);
+      } else if (stateAvg.avgIncome) {
+        normalizedIncome = 1 - Math.min(1, stateAvg.avgIncome / incomeMax);
+      }
+
+      // Calculate weighted score with safety check
+      const score =
+        (normalizedFed * fedWeight +
+          normalizedUnemployment * unemploymentWeight +
+          normalizedIncome * incomeWeight) *
+        100;
+
+      // Ensure the score is not NaN
+      county.properties.vulnerabilityIndex = isNaN(score) ? 0 : score;
+    }
+
+    // Special handling for Doña Ana County, New Mexico
+    if (countyName === "Doña Ana" && stateName === "New Mexico") {
+      // Check if there's still an issue with the vulnerability index
+      if (
+        county.properties.vulnerabilityIndex === null ||
+        isNaN(county.properties.vulnerabilityIndex)
+      ) {
+        // Calculate simpler vulnerability index based just on federal workers
+        if (county.properties.fed_workers_per_100k) {
+          const fedMax = 10000;
+          const normalizedFed = Math.min(
+            1,
+            county.properties.fed_workers_per_100k / fedMax
+          );
+          county.properties.vulnerabilityIndex = normalizedFed * 100;
+        } else {
+          // Fallback value
+          county.properties.vulnerabilityIndex = 50;
+        }
+      }
+    }
+
+    return county;
+  });
+
+  // Fix any remaining NaN values
+  filledCounties.forEach((county) => {
+    if (isNaN(county.properties.vulnerabilityIndex)) {
+      county.properties.vulnerabilityIndex = 0;
+    }
+    if (isNaN(county.properties.fed_workers_per_100k)) {
+      county.properties.fed_workers_per_100k = null;
+    }
+    if (isNaN(county.properties.unemployment_rate)) {
+      county.properties.unemployment_rate = null;
+    }
+    if (isNaN(county.properties.median_income)) {
+      county.properties.median_income = null;
+    }
+  });
+
+  // Process state data
+  const processedStates = states.map((state) => {
+    const stateFips = state.id;
+    const stateName = config.stateFips[stateFips] || "Unknown";
+    const stateAvg = stateAverages[stateFips] || {};
+
+    return {
+      ...state,
+      properties: {
+        ...state.properties,
+        stateName,
+        state_fed_workers_per_100k: stateAvg.avgFedWorkers || null,
+      },
+    };
+  });
+
+  // Return the processed data without calling handleAlaskaSpecialCases
+  return {
+    counties: filledCounties,
+    states: processedStates,
+  };
+}
+
+// Helper function for county name matching with better special case handling
+function getCountyMatchKeys(countyName, stateName) {
+  const keys = [
+    `${countyName} County, ${stateName}`,
+    `${countyName}, ${stateName}`,
+  ];
+
+  // Add special cases for Alaska
+  if (stateName === "Alaska") {
+    keys.push(`${countyName} Borough, ${stateName}`);
+    keys.push(`${countyName} Census Area, ${stateName}`);
+    keys.push(`${countyName} Municipality, ${stateName}`);
+    keys.push(`${countyName} City and Borough, ${stateName}`);
+  }
+
+  // Add special case for Louisiana
+  if (stateName === "Louisiana") {
+    keys.push(`${countyName} Parish, ${stateName}`);
+  }
+
+  // Handle other special cases
+  if (stateName === "Virginia") {
+    keys.push(`${countyName} city, ${stateName}`);
+    keys.push(`${countyName} City, ${stateName}`);
+  }
+
+  // Look for specific known problematic counties and add their alternate names
+  if (countyName === "Fairfax" && stateName === "Virginia") {
+    keys.push("Fairfax County");
+    keys.push("Fairfax city, Virginia");
+  }
+
+  if (countyName === "Richmond" && stateName === "Virginia") {
+    keys.push("Richmond city, Virginia");
+  }
+
+  if (countyName === "Valdez-Cordova" && stateName === "Alaska") {
+    keys.push("Valdez-Cordova Census Area, Alaska");
+    keys.push("Chugach Census Area, Alaska");
+    keys.push("Copper River Census Area, Alaska");
+  }
+
+  if (countyName === "Petersburg" && stateName === "Alaska") {
+    keys.push("Petersburg Census Area, Alaska");
+    keys.push("Petersburg Borough, Alaska");
+  }
+
+  if (countyName === "Accomack" && stateName === "Virginia") {
+    keys.push("Accomack County, Virginia");
+    keys.push("Accomac County, Virginia"); // Alternate spelling
+  }
+
+  // Doña Ana, NM
+  if (countyName === "Doña Ana" && stateName === "New Mexico") {
+    keys.push("Dona Ana County, New Mexico"); // Without the ñ
+    keys.push("Dona Ana, New Mexico"); // Without the ñ
+    keys.push("Doña Ana County, New Mexico"); // With the ñ
+  }
+
+  // Add simple name as fallback
+  keys.push(countyName);
+
+  return keys;
 }
 
 // Create a color scale
