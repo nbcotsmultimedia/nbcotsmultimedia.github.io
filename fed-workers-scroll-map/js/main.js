@@ -567,8 +567,7 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
     .attr("pointer-events", "none");
 }
 
-// New function to render spotlight views
-// Simplified function to render spotlight views
+// Render spotlight views
 function renderSpotlightView(svgElement, features, path, stepConfig) {
   // Create color scale for vulnerability index (base layer)
   const colorScale = createColorScale({
@@ -622,9 +621,6 @@ function renderSpotlightView(svgElement, features, path, stepConfig) {
     .attr("stroke-width", 0.5)
     .attr("stroke-opacity", 0.5)
     .attr("pointer-events", "none");
-
-  // Add cluster stats (just basic information)
-  addClusterStats(svgElement, state.dimensions, stepConfig);
 
   // Add the standard vulnerability legend
   createSimpleLegend(svgElement, state.dimensions, stepConfig);
@@ -752,7 +748,7 @@ function handleCombinedHover(event, feature, components) {
   elements.tooltip.innerHTML = tooltipContent;
 }
 
-// New function to handle hover events for spotlight views
+// Handle hover events for spotlight views
 function handleSpotlightHover(event, feature, stepConfig) {
   // Highlight the hovered feature
   d3.select(event.currentTarget)
@@ -760,7 +756,7 @@ function handleSpotlightHover(event, feature, stepConfig) {
     .attr("stroke", "#000")
     .attr("stroke-opacity", 1);
 
-  // Get data for tooltip
+  // Get basic data for tooltip
   const name = feature.properties.name;
   const stateName = feature.properties.stateName || "Unknown";
   const isInCluster = feature.properties[stepConfig.spotlightField];
@@ -770,54 +766,19 @@ function handleSpotlightHover(event, feature, stepConfig) {
   const vulnerabilityScore = feature.properties.vulnerabilityIndex;
   const clusterScore = feature.properties[stepConfig.scoreField];
 
-  // Additional data points based on cluster type
-  let additionalData = "";
+  // Get federal worker data
+  const fedWorkers = feature.properties.fed_workers_per_100k;
+  const totalWorkers = feature.properties.total_workers;
+  const pctFederal = feature.properties.pct_federal;
 
-  if (stepConfig.clusterType === "rural") {
-    const fedWorkers = feature.properties.fed_workers_per_100k;
-    additionalData = `
-      <div class="tooltip-row">
-        <span class="tooltip-label">Federal Workers:</span>
-        <span class="tooltip-value">${
-          fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
-        }</span>
-      </div>
-    `;
-  } else if (stepConfig.clusterType === "reservation") {
-    // Add Native American population percentage if available
-    const nativePercent = feature.properties.native_american_pct;
-    additionalData = `
-      <div class="tooltip-row">
-        <span class="tooltip-label">Federal Workers:</span>
-        <span class="tooltip-value">${
-          feature.properties.fed_workers_per_100k
-            ? feature.properties.fed_workers_per_100k.toLocaleString() +
-              " per 100k"
-            : "N/A"
-        }</span>
-      </div>
-    `;
-  } else if (stepConfig.clusterType === "distressed") {
-    // Add unemployment and median income
-    const unemployment = feature.properties.unemployment_rate;
-    const income = feature.properties.median_income;
-    additionalData = `
-      <div class="tooltip-row">
-        <span class="tooltip-label">Unemployment:</span>
-        <span class="tooltip-value">${
-          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-        }</span>
-      </div>
-      <div class="tooltip-row">
-        <span class="tooltip-label">Median Income:</span>
-        <span class="tooltip-value">${
-          income ? "$" + income.toLocaleString() : "N/A"
-        }</span>
-      </div>
-    `;
-  }
+  // Get new facility data if available
+  const facilityCount = feature.properties.facility_count;
+  const topAgencies = feature.properties.top_federal_agencies;
+  const facilityTypes = feature.properties.federal_facility_types;
+  const topInstallations = feature.properties.top_federal_installations;
+  const facilitySummary = feature.properties.federal_facilities_summary;
 
-  // Build tooltip content
+  // Build tooltip content with a responsive layout
   let tooltipContent = `
     <div class="tooltip-header">
       <strong>${name}, ${stateName}</strong>
@@ -830,96 +791,204 @@ function handleSpotlightHover(event, feature, stepConfig) {
       }
       ${isSalient ? '<div class="salient-badge">Key Example</div>' : ""}
     </div>
-    <div class="tooltip-data">
-      <div class="tooltip-row">
-        <span class="tooltip-label">Vulnerability Score:</span>
-        <span class="tooltip-value">${
-          vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
-        }</span>
-      </div>
-      ${
-        isInCluster && clusterScore
-          ? `
-      <div class="tooltip-row">
-        <span class="tooltip-label">${
-          stepConfig.clusterType === "rural"
-            ? "Rural Federal"
-            : stepConfig.clusterType === "reservation"
-            ? "Reservation"
-            : "Distress"
-        } Score:</span>
-        <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
-      </div>`
-          : ""
+    <div class="tooltip-data">`;
+
+  // Add core vulnerability metrics
+  tooltipContent += `
+      <div class="tooltip-section">
+        <h4 style="margin: 0 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Vulnerability Metrics</h4>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Vulnerability Score:</span>
+          <span class="tooltip-value">${
+            vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
+          }</span>
+        </div>`;
+
+  if (isInCluster && clusterScore) {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">${
+            stepConfig.clusterType === "rural"
+              ? "Rural Federal"
+              : stepConfig.clusterType === "reservation"
+              ? "Reservation"
+              : "Distress"
+          } Score:</span>
+          <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
+        </div>`;
+  }
+
+  // Add federal employment information
+  tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Federal Workers:</span>
+          <span class="tooltip-value">${
+            fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
+          }</span>
+        </div>`;
+
+  // Add percent federal if available
+  if (pctFederal !== undefined && pctFederal !== null) {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">% Federal Employment:</span>
+          <span class="tooltip-value">${(pctFederal * 100).toFixed(1)}%</span>
+        </div>`;
+  }
+
+  // Cluster-specific metrics
+  if (stepConfig.clusterType === "rural") {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Area Type:</span>
+          <span class="tooltip-value">Rural/Non-Metro</span>
+        </div>`;
+  } else if (stepConfig.clusterType === "reservation") {
+    const nativePercent = feature.properties.native_american_pct;
+    if (nativePercent !== undefined && nativePercent !== null) {
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Native Population:</span>
+          <span class="tooltip-value">${nativePercent.toFixed(1)}%</span>
+        </div>`;
+    }
+  } else if (stepConfig.clusterType === "distressed") {
+    // Add unemployment and median income
+    const unemployment = feature.properties.unemployment_rate;
+    const income = feature.properties.median_income;
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Unemployment:</span>
+          <span class="tooltip-value">${
+            unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+          }</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Median Income:</span>
+          <span class="tooltip-value">${
+            income ? "$" + income.toLocaleString() : "N/A"
+          }</span>
+        </div>`;
+  }
+
+  tooltipContent += `
+      </div>`;
+
+  // Only add facility section if there's actual facility data available
+  if (
+    isInCluster &&
+    (facilityCount || topAgencies || facilityTypes || topInstallations)
+  ) {
+    tooltipContent += `
+      <div class="tooltip-section">
+        <h4 style="margin: 8px 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Federal Facilities</h4>`;
+
+    // Add facility count if available
+    if (facilityCount !== undefined && facilityCount !== null) {
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Facility Count:</span>
+          <span class="tooltip-value">${facilityCount}</span>
+        </div>`;
+    }
+
+    // Add top agencies if available (truncate if too long)
+    if (topAgencies) {
+      let displayAgencies = topAgencies;
+      if (displayAgencies.length > 60) {
+        displayAgencies = displayAgencies.substring(0, 57) + "...";
       }
-      ${additionalData}
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Top Agencies:</span>
+          <span class="tooltip-value">${displayAgencies}</span>
+        </div>`;
+    }
+
+    // Add top installations if available (truncate if too long)
+    if (topInstallations) {
+      let displayInstallations = topInstallations;
+      if (displayInstallations.length > 60) {
+        displayInstallations = displayInstallations.substring(0, 57) + "...";
+      }
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Key Facilities:</span>
+          <span class="tooltip-value">${displayInstallations}</span>
+        </div>`;
+    }
+
+    // Add facility types if available (truncate if too long)
+    if (facilityTypes) {
+      let displayTypes = facilityTypes;
+      if (displayTypes.length > 60) {
+        displayTypes = displayTypes.substring(0, 57) + "...";
+      }
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Facility Types:</span>
+          <span class="tooltip-value">${displayTypes}</span>
+        </div>`;
+    }
+
+    tooltipContent += `
+      </div>`;
+  }
+
+  // Close the tooltip-data div
+  tooltipContent += `
     </div>
+    
+    <style>
+      .tooltip-section {
+        margin-bottom: 5px;
+      }
+      .tooltip-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .tooltip-label {
+        font-weight: 500;
+        margin-right: 10px;
+      }
+      .cluster-badge, .salient-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: bold;
+        margin-left: 5px;
+      }
+      .cluster-badge {
+        background-color: ${
+          stepConfig.clusterType === "rural"
+            ? "#41ab5d"
+            : stepConfig.clusterType === "reservation"
+            ? "#0fb7d4"
+            : "#c13ec7"
+        };
+        color: white;
+      }
+      .salient-badge {
+        background-color: #ffd000;
+        color: black;
+      }
+      .tooltip-header {
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+    </style>
   `;
 
-  // Show tooltip
+  // Show tooltip with appropriate sizing
   elements.tooltip.style.display = "block";
   elements.tooltip.style.left = `${event.pageX + 10}px`;
   elements.tooltip.style.top = `${event.pageY + 10}px`;
+  elements.tooltip.style.maxWidth = "300px";
   elements.tooltip.innerHTML = tooltipContent;
-}
-
-// Add simple cluster statistics box
-function addClusterStats(svgElement, dimensions, stepConfig) {
-  const statsWidth = 180;
-  const statsHeight = 80;
-  const statsX = 20;
-  const statsY = 20;
-
-  // Create stats container
-  const stats = svgElement
-    .append("g")
-    .attr("class", "cluster-stats")
-    .attr("transform", `translate(${statsX}, ${statsY})`);
-
-  // Add background
-  stats
-    .append("rect")
-    .attr("width", statsWidth)
-    .attr("height", statsHeight)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("stroke", "#ccc")
-    .attr("rx", 5)
-    .attr("ry", 5);
-
-  // Add title
-  stats
-    .append("text")
-    .attr("x", 10)
-    .attr("y", 20)
-    .attr("font-weight", "bold")
-    .attr("font-size", "12px")
-    .text(
-      `${
-        stepConfig.clusterType === "rural"
-          ? "Rural Federal"
-          : stepConfig.clusterType === "reservation"
-          ? "Native American"
-          : "Economically Distressed"
-      } Cluster`
-    );
-
-  // Add county count
-  stats
-    .append("text")
-    .attr("x", 10)
-    .attr("y", 40)
-    .attr("font-size", "11px")
-    .text(`Counties: ${stepConfig.countiesCount.toLocaleString()}`);
-
-  // Add federal workers count
-  stats
-    .append("text")
-    .attr("x", 10)
-    .attr("y", 60)
-    .attr("font-size", "11px")
-    .text(
-      `Federal Workers: ${stepConfig.federalWorkersCount.toLocaleString()}`
-    );
 }
 
 // Add component weight indicator
@@ -1090,6 +1159,7 @@ function processData(
   });
 
   // Create lookups for the cluster data
+  // Create lookups for the cluster data
   const ruralFedByCounty = {};
   ruralFedData.forEach((row) => {
     if (!row.NAME) return;
@@ -1098,6 +1168,15 @@ function processData(
       rural_fed_score: row.rural_fed_score || 0,
       rural_fed_salient_example:
         row.salient_example === true || row.salient_example === "True",
+      // Add the new federal facility fields
+      facility_count: row.facility_count,
+      top_federal_agencies: row.top_federal_agencies,
+      federal_facility_types: row.federal_facility_types,
+      top_federal_installations: row.top_federal_installations,
+      federal_facilities_summary: row.federal_facilities_summary,
+      // Include additional data fields
+      pct_federal: row.pct_federal,
+      total_workers: row.total_workers,
     };
   });
 
@@ -1109,6 +1188,16 @@ function processData(
       reservation_score: row.reservation_score || 0,
       reservation_salient_example:
         row.salient_example === true || row.salient_example === "True",
+      // Add the new federal facility fields
+      facility_count: row.facility_count,
+      top_federal_agencies: row.top_federal_agencies,
+      federal_facility_types: row.federal_facility_types,
+      top_federal_installations: row.top_federal_installations,
+      federal_facilities_summary: row.federal_facilities_summary,
+      // Include additional data fields
+      pct_federal: row.pct_federal,
+      total_workers: row.total_workers,
+      native_american_pct: row.native_american_pct,
     };
   });
 
@@ -1120,6 +1209,15 @@ function processData(
       distress_score: row.distress_score || 0,
       distress_salient_example:
         row.salient_example === true || row.salient_example === "True",
+      // Add the new federal facility fields
+      facility_count: row.facility_count,
+      top_federal_agencies: row.top_federal_agencies,
+      federal_facility_types: row.federal_facility_types,
+      top_federal_installations: row.top_federal_installations,
+      federal_facilities_summary: row.federal_facilities_summary,
+      // Include additional data fields
+      pct_federal: row.pct_federal,
+      total_workers: row.total_workers,
     };
   });
 
