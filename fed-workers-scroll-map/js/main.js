@@ -95,8 +95,44 @@ async function loadData() {
       skipEmptyLines: true,
     }).data;
 
+    // Load additional data for the vulnerability clusters
+    const ruralFedResponse = await fetch(config.urls.ruralFederalDependentData);
+    const ruralFedText = await ruralFedResponse.text();
+    const ruralFedData = Papa.parse(ruralFedText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
+    const reservationResponse = await fetch(
+      config.urls.nativeAmericanReservationData
+    );
+    const reservationText = await reservationResponse.text();
+    const reservationData = Papa.parse(reservationText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
+    const distressedResponse = await fetch(
+      config.urls.economicallyDistressedData
+    );
+    const distressedText = await distressedResponse.text();
+    const distressedData = Papa.parse(distressedText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
     // Process the data
-    state.data = processData(countiesData, statesData, parsedData);
+    state.data = processData(
+      countiesData,
+      statesData,
+      parsedData,
+      ruralFedData,
+      reservationData,
+      distressedData
+    );
 
     return state.data;
   } catch (error) {
@@ -115,6 +151,8 @@ function renderCurrentStep() {
   // Get the current step configuration
   const currentStepConfig = config.steps[state.currentStep];
   const isStateLevel = currentStepConfig.isStateLevel === true;
+  const isSpotlightView = currentStepConfig.isSpotlightView === true;
+  const isCombinedView = currentStepConfig.isCombinedView === true;
 
   // Clear the SVG
   const svgElement = d3.select(elements.svg);
@@ -132,8 +170,18 @@ function renderCurrentStep() {
   const features = isStateLevel ? state.data.states : state.data.counties;
 
   // Check for special visualization types
+  if (isSpotlightView) {
+    renderSpotlightView(svgElement, features, path, currentStepConfig);
+    return;
+  }
+
+  if (isCombinedView) {
+    renderCombinedClusterView(svgElement, features, path, currentStepConfig);
+    return;
+  }
+
+  // For special types like component previews
   if (currentStepConfig.isComponentPreview) {
-    // Render the combined component preview
     renderComponentPreview(svgElement, features, path, state.dimensions);
     return;
   }
@@ -190,7 +238,6 @@ function renderCurrentStep() {
       .attr("stroke-opacity", 0.5)
       .attr("pointer-events", "none");
   }
-
   // Add a simple legend
   createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
 
@@ -520,6 +567,69 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
     .attr("pointer-events", "none");
 }
 
+// New function to render spotlight views
+// Simplified function to render spotlight views
+function renderSpotlightView(svgElement, features, path, stepConfig) {
+  // Create color scale for vulnerability index (base layer)
+  const colorScale = createColorScale({
+    dataField: "vulnerabilityIndex",
+    colorSet: "vulnerability",
+    breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+  });
+
+  // Get the fields to use for this spotlight
+  const spotlightField = stepConfig.spotlightField;
+  const salientField = stepConfig.salientField;
+
+  // Draw the base vulnerability map with reduced opacity for non-spotlight counties
+  svgElement
+    .selectAll("path.county")
+    .data(features)
+    .join("path")
+    .attr("class", (d) => {
+      let classes = "county";
+      if (d.properties[spotlightField]) classes += " spotlight";
+      if (d.properties[salientField]) classes += " salient";
+      return classes;
+    })
+    .attr("d", path)
+    .attr("fill", (d) =>
+      getFillColor(d, { dataField: "vulnerabilityIndex" }, colorScale)
+    )
+    .attr("stroke", (d) => (d.properties[salientField] ? "#000" : "#ffffff"))
+    .attr("stroke-width", (d) => (d.properties[salientField] ? 1.5 : 0.2))
+    .attr("opacity", (d) => {
+      // Full opacity for spotlight counties, reduced for others
+      if (d.properties[spotlightField]) return 1.0;
+      return 0.3; // Dimmed for non-spotlight counties
+    })
+    .on("mouseover", function (event, d) {
+      handleSpotlightHover(event, d, stepConfig);
+    })
+    .on("mouseout", function () {
+      handleLeave();
+    });
+
+  // Add state boundaries for context
+  svgElement
+    .selectAll("path.state-outline")
+    .data(state.data.states)
+    .join("path")
+    .attr("class", "state-outline")
+    .attr("d", path)
+    .attr("fill", "none")
+    .attr("stroke", "#666")
+    .attr("stroke-width", 0.5)
+    .attr("stroke-opacity", 0.5)
+    .attr("pointer-events", "none");
+
+  // Add cluster stats (just basic information)
+  addClusterStats(svgElement, state.dimensions, stepConfig);
+
+  // Add the standard vulnerability legend
+  createSimpleLegend(svgElement, state.dimensions, stepConfig);
+}
+
 // Calculate a combined color based on all components
 function calculateCombinedColor(feature, components) {
   // Get normalized scores for each component
@@ -640,6 +750,176 @@ function handleCombinedHover(event, feature, components) {
   elements.tooltip.style.left = `${event.pageX + 10}px`;
   elements.tooltip.style.top = `${event.pageY + 10}px`;
   elements.tooltip.innerHTML = tooltipContent;
+}
+
+// New function to handle hover events for spotlight views
+function handleSpotlightHover(event, feature, stepConfig) {
+  // Highlight the hovered feature
+  d3.select(event.currentTarget)
+    .attr("stroke-width", 2)
+    .attr("stroke", "#000")
+    .attr("stroke-opacity", 1);
+
+  // Get data for tooltip
+  const name = feature.properties.name;
+  const stateName = feature.properties.stateName || "Unknown";
+  const isInCluster = feature.properties[stepConfig.spotlightField];
+  const isSalient = feature.properties[stepConfig.salientField];
+
+  // Get vulnerability and cluster scores
+  const vulnerabilityScore = feature.properties.vulnerabilityIndex;
+  const clusterScore = feature.properties[stepConfig.scoreField];
+
+  // Additional data points based on cluster type
+  let additionalData = "";
+
+  if (stepConfig.clusterType === "rural") {
+    const fedWorkers = feature.properties.fed_workers_per_100k;
+    additionalData = `
+      <div class="tooltip-row">
+        <span class="tooltip-label">Federal Workers:</span>
+        <span class="tooltip-value">${
+          fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
+        }</span>
+      </div>
+    `;
+  } else if (stepConfig.clusterType === "reservation") {
+    // Add Native American population percentage if available
+    const nativePercent = feature.properties.native_american_pct;
+    additionalData = `
+      <div class="tooltip-row">
+        <span class="tooltip-label">Federal Workers:</span>
+        <span class="tooltip-value">${
+          feature.properties.fed_workers_per_100k
+            ? feature.properties.fed_workers_per_100k.toLocaleString() +
+              " per 100k"
+            : "N/A"
+        }</span>
+      </div>
+    `;
+  } else if (stepConfig.clusterType === "distressed") {
+    // Add unemployment and median income
+    const unemployment = feature.properties.unemployment_rate;
+    const income = feature.properties.median_income;
+    additionalData = `
+      <div class="tooltip-row">
+        <span class="tooltip-label">Unemployment:</span>
+        <span class="tooltip-value">${
+          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+        }</span>
+      </div>
+      <div class="tooltip-row">
+        <span class="tooltip-label">Median Income:</span>
+        <span class="tooltip-value">${
+          income ? "$" + income.toLocaleString() : "N/A"
+        }</span>
+      </div>
+    `;
+  }
+
+  // Build tooltip content
+  let tooltipContent = `
+    <div class="tooltip-header">
+      <strong>${name}, ${stateName}</strong>
+      ${
+        isInCluster
+          ? '<div class="cluster-badge">' +
+            stepConfig.title.split(" ")[0] +
+            "</div>"
+          : ""
+      }
+      ${isSalient ? '<div class="salient-badge">Key Example</div>' : ""}
+    </div>
+    <div class="tooltip-data">
+      <div class="tooltip-row">
+        <span class="tooltip-label">Vulnerability Score:</span>
+        <span class="tooltip-value">${
+          vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
+        }</span>
+      </div>
+      ${
+        isInCluster && clusterScore
+          ? `
+      <div class="tooltip-row">
+        <span class="tooltip-label">${
+          stepConfig.clusterType === "rural"
+            ? "Rural Federal"
+            : stepConfig.clusterType === "reservation"
+            ? "Reservation"
+            : "Distress"
+        } Score:</span>
+        <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
+      </div>`
+          : ""
+      }
+      ${additionalData}
+    </div>
+  `;
+
+  // Show tooltip
+  elements.tooltip.style.display = "block";
+  elements.tooltip.style.left = `${event.pageX + 10}px`;
+  elements.tooltip.style.top = `${event.pageY + 10}px`;
+  elements.tooltip.innerHTML = tooltipContent;
+}
+
+// Add simple cluster statistics box
+function addClusterStats(svgElement, dimensions, stepConfig) {
+  const statsWidth = 180;
+  const statsHeight = 80;
+  const statsX = 20;
+  const statsY = 20;
+
+  // Create stats container
+  const stats = svgElement
+    .append("g")
+    .attr("class", "cluster-stats")
+    .attr("transform", `translate(${statsX}, ${statsY})`);
+
+  // Add background
+  stats
+    .append("rect")
+    .attr("width", statsWidth)
+    .attr("height", statsHeight)
+    .attr("fill", "rgba(255, 255, 255, 0.85)")
+    .attr("stroke", "#ccc")
+    .attr("rx", 5)
+    .attr("ry", 5);
+
+  // Add title
+  stats
+    .append("text")
+    .attr("x", 10)
+    .attr("y", 20)
+    .attr("font-weight", "bold")
+    .attr("font-size", "12px")
+    .text(
+      `${
+        stepConfig.clusterType === "rural"
+          ? "Rural Federal"
+          : stepConfig.clusterType === "reservation"
+          ? "Native American"
+          : "Economically Distressed"
+      } Cluster`
+    );
+
+  // Add county count
+  stats
+    .append("text")
+    .attr("x", 10)
+    .attr("y", 40)
+    .attr("font-size", "11px")
+    .text(`Counties: ${stepConfig.countiesCount.toLocaleString()}`);
+
+  // Add federal workers count
+  stats
+    .append("text")
+    .attr("x", 10)
+    .attr("y", 60)
+    .attr("font-size", "11px")
+    .text(
+      `Federal Workers: ${stepConfig.federalWorkersCount.toLocaleString()}`
+    );
 }
 
 // Add component weight indicator
@@ -772,7 +1052,14 @@ function getFillColor(feature, stepConfig, colorScale) {
 }
 
 // Enhanced data processing function to handle special counties
-function processData(countiesData, statesData, vulnerabilityData) {
+function processData(
+  countiesData,
+  statesData,
+  vulnerabilityData,
+  ruralFedData,
+  reservationData,
+  distressedData
+) {
   // Extract county features from topojson
   const counties = topojson.feature(
     countiesData,
@@ -802,10 +1089,44 @@ function processData(countiesData, statesData, vulnerabilityData) {
     };
   });
 
+  // Create lookups for the cluster data
+  const ruralFedByCounty = {};
+  ruralFedData.forEach((row) => {
+    if (!row.NAME) return;
+    ruralFedByCounty[row.NAME] = {
+      is_rural_federal_dependent: true,
+      rural_fed_score: row.rural_fed_score || 0,
+      rural_fed_salient_example:
+        row.salient_example === true || row.salient_example === "True",
+    };
+  });
+
+  const reservationByCounty = {};
+  reservationData.forEach((row) => {
+    if (!row.NAME) return;
+    reservationByCounty[row.NAME] = {
+      is_native_american_reservation: true,
+      reservation_score: row.reservation_score || 0,
+      reservation_salient_example:
+        row.salient_example === true || row.salient_example === "True",
+    };
+  });
+
+  const distressedByCounty = {};
+  distressedData.forEach((row) => {
+    if (!row.NAME) return;
+    distressedByCounty[row.NAME] = {
+      is_economically_distressed: true,
+      distress_score: row.distress_score || 0,
+      distress_salient_example:
+        row.salient_example === true || row.salient_example === "True",
+    };
+  });
+
   // Create a state-level aggregation for counties that are missing data
   const stateAverages = {};
 
-  // Merge county data with vulnerability data
+  // Merge county data with vulnerability and cluster data
   const processedCounties = counties.map((county) => {
     const countyFips = county.id;
     const stateFipsCode = countyFips.substring(0, 2);
@@ -814,8 +1135,13 @@ function processData(countiesData, statesData, vulnerabilityData) {
 
     // Find vulnerability data for this county using enhanced matching
     let vulnerabilityInfo = {};
+    let ruralFedInfo = {};
+    let reservationInfo = {};
+    let distressedInfo = {};
+
     const possibleKeys = getCountyMatchKeys(countyName, stateName);
 
+    // Find vulnerability data
     let matchFound = false;
     for (const key of possibleKeys) {
       if (vulnerabilityByCounty[key]) {
@@ -823,6 +1149,49 @@ function processData(countiesData, statesData, vulnerabilityData) {
         matchFound = true;
         break;
       }
+    }
+
+    // Find rural federal dependent data
+    for (const key of possibleKeys) {
+      if (ruralFedByCounty[key]) {
+        ruralFedInfo = ruralFedByCounty[key];
+        break;
+      }
+    }
+
+    // Find reservation data
+    for (const key of possibleKeys) {
+      if (reservationByCounty[key]) {
+        reservationInfo = reservationByCounty[key];
+        break;
+      }
+    }
+
+    // Find distressed data
+    for (const key of possibleKeys) {
+      if (distressedByCounty[key]) {
+        distressedInfo = distressedByCounty[key];
+        break;
+      }
+    }
+
+    // Track counties in multiple clusters
+    const clusterCount = [
+      ruralFedInfo.is_rural_federal_dependent,
+      reservationInfo.is_native_american_reservation,
+      distressedInfo.is_economically_distressed,
+    ].filter(Boolean).length;
+
+    // Determine the cluster type for the combined view
+    let clusterType = "none";
+    if (clusterCount > 1) {
+      clusterType = "multiple";
+    } else if (ruralFedInfo.is_rural_federal_dependent) {
+      clusterType = "rural";
+    } else if (reservationInfo.is_native_american_reservation) {
+      clusterType = "reservation";
+    } else if (distressedInfo.is_economically_distressed) {
+      clusterType = "distressed";
     }
 
     // If no match found, track for debugging
@@ -882,7 +1251,13 @@ function processData(countiesData, statesData, vulnerabilityData) {
       properties: {
         ...county.properties,
         ...vulnerabilityInfo,
+        ...ruralFedInfo,
+        ...reservationInfo,
+        ...distressedInfo,
         stateName,
+        combined_cluster_type: clusterType,
+        in_multiple_clusters: clusterCount > 1,
+        cluster_count: clusterCount,
         fed_workers_per_100k: vulnerabilityInfo.fed_workers_per_100k || null,
         vulnerabilityIndex: vulnerabilityInfo.vulnerabilityIndex || null,
       },
@@ -1062,10 +1437,23 @@ function processData(countiesData, statesData, vulnerabilityData) {
     };
   });
 
-  // Return the processed data without calling handleAlaskaSpecialCases
+  // Return the processed data
   return {
-    counties: filledCounties,
-    states: processedStates,
+    counties: processedCounties,
+    states: states.map((state) => {
+      const stateFips = state.id;
+      const stateName = config.stateFips[stateFips] || "Unknown";
+      const stateAvg = stateAverages[stateFips] || {};
+
+      return {
+        ...state,
+        properties: {
+          ...state.properties,
+          stateName,
+          state_fed_workers_per_100k: stateAvg.avgFedWorkers || null,
+        },
+      };
+    }),
   };
 }
 

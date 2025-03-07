@@ -162,3 +162,88 @@ body {
   margin-left: 10px;
   color: #333;
 }
+
+/* Styles for spotlight visualization */
+.county.spotlight {
+  stroke-width: 0.4px;
+}
+
+.county.salient {
+  stroke-width: 1.5px;
+  stroke: #000;
+}
+
+.tooltip-header {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.cluster-badge {
+  display: inline-block;
+  background-color: #3182bd;
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.salient-badge {
+  display: inline-block;
+  background-color: #de2d26;
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.tooltip-data {
+  font-size: 12px;
+}
+
+.tooltip-row {
+  margin: 4px 0;
+}
+
+.tooltip-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+/* Styles for spotlight visualization */
+.county.spotlight {
+  stroke-width: 0.4px;
+}
+
+.county.salient {
+  stroke-width: 1.5px;
+  stroke: #000;
+}
+
+.tooltip-header {
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.cluster-badge {
+  display: inline-block;
+  background-color: #3182bd;
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-left: 5px;
+}
+
+.salient-badge {
+  display: inline-block;
+  background-color: #de2d26;
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  border-radius: 3px;
+  margin-left: 5px;
+}

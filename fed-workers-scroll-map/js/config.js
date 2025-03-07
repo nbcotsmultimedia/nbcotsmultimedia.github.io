@@ -1,4 +1,4 @@
-// config.js - Simplified configuration settings
+// config.js - Updated configuration settings
 
 const config = {
   // URLs for data sources
@@ -8,6 +8,13 @@ const config = {
     statesGeoJSON: "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
     dataSheet:
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=0&single=true&output=csv",
+    // New data sources for vulnerability clusters
+    ruralFederalDependentData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=175285704&single=true&output=csv",
+    nativeAmericanReservationData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=1801797509&single=true&output=csv",
+    economicallyDistressedData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=948951406&single=true&output=csv",
   },
 
   // Step configuration
@@ -16,8 +23,8 @@ const config = {
     {
       id: "state_federal_workers",
       title: "Federal Workers per 100,000 by State",
-      // description:
-      //   "Some states rely more heavily on federal employment than others. Washington D.C., Alaska, Maryland, and Hawaii show the highest concentration of federal workers.",
+      description:
+        "Some states rely more heavily on federal employment than others. Washington D.C., Alaska, Maryland, and Hawaii show the highest concentration of federal workers.",
       dataField: "state_fed_workers_per_100k",
       colorSet: "blues",
       isStateLevel: true,
@@ -27,21 +34,74 @@ const config = {
     {
       id: "federal_workers",
       title: "Federal Workers per 100,000 by County",
-      // description:
-      //   "Zooming in reveals significant variation even within states, with some counties showing much higher federal employment than their neighbors.",
+      description:
+        "Zooming in reveals significant variation even within states, with some counties showing much higher federal employment than their neighbors.",
       dataField: "fed_workers_per_100k",
       colorSet: "blues",
       breaks: [1000, 2500, 5000, 7500, 10000],
     },
-    // Final vulnerability score by county
+    // Original vulnerability score by county
     {
       id: "vulnerability_index",
       title: "Vulnerability Index to Federal Job Cuts",
-      // description:
-      //   "The final vulnerability index shows areas most at risk from federal workforce reductions, based on federal employment (50%), unemployment (30%), and income (20%).",
+      description:
+        "The vulnerability index shows areas most at risk from federal workforce reductions, based on federal employment (50%), unemployment (30%), and income (20%).",
       dataField: "vulnerabilityIndex",
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+    },
+
+    // New steps for vulnerability clusters
+    // Rural Federal-Dependent Communities spotlight
+    {
+      id: "rural_federal_dependent",
+      title: "Rural Federal-Dependent Communities",
+      description:
+        "Rural areas with high federal employment (559 counties, 881,780 federal workers). These communities often have limited economic diversification and rely heavily on federal jobs.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
+      colorSet: "vulnerability",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "rural",
+      isSpotlightView: true, // New property for spotlight view
+      countiesCount: 559,
+      federalWorkersCount: 881780,
+      spotlightField: "is_rural_federal_dependent", // Field to identify cluster counties
+      salientField: "rural_fed_salient_example", // Field to identify salient examples
+      scoreField: "rural_fed_score", // Custom score field for tooltip info
+    },
+    // Native American Reservation Counties spotlight
+    {
+      id: "native_american_reservation",
+      title: "Native American Reservation Counties",
+      description:
+        "Counties with significant Native American populations and federal presence (204 counties, 138,910 federal workers). These areas often have limited economic diversification and rely on federal support.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
+      colorSet: "vulnerability",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "reservation",
+      isSpotlightView: true,
+      countiesCount: 204,
+      federalWorkersCount: 138910,
+      spotlightField: "is_native_american_reservation",
+      salientField: "reservation_salient_example",
+      scoreField: "reservation_score",
+    },
+    // Economically Distressed Areas spotlight
+    {
+      id: "economically_distressed",
+      title: "Economically Distressed Areas",
+      description:
+        "Counties with high unemployment, low income, and federal presence (132 counties, 50,821 federal workers). These areas are particularly vulnerable to federal job cuts due to limited economic opportunities.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
+      colorSet: "vulnerability",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "distressed",
+      isSpotlightView: true,
+      countiesCount: 132,
+      federalWorkersCount: 50821,
+      spotlightField: "is_economically_distressed",
+      salientField: "distress_salient_example",
+      scoreField: "distress_score",
     },
   ],
 
@@ -66,8 +126,17 @@ const config = {
       "#de2d26", // Medium red
       "#a50f15", // Dark red
     ],
+    blues: [
+      "#f7fbff", // Lightest blue (almost white)
+      "#deebf7", // Very light blue
+      "#c6dbef", // Light blue
+      "#9ecae1", // Medium light blue
+      "#6baed6", // Medium blue
+      "#3182bd", // Medium dark blue
+      "#08519c", // Dark blue
+    ],
 
-    // New Perceptually Optimized Scheme
+    // Perceptually Optimized Scheme for new clusters
     magenta: [
       "#fcf0ff", // Lightest magenta (almost white)
       "#f5d0f9", // Very light magenta
@@ -114,6 +183,15 @@ const config = {
       "#ef3b2c", // Medium dark red
       "#cb181d", // Dark red
     ],
+
+    // Specific colors for combined view
+    clusterColors: {
+      rural: "#41ab5d", // Green for rural federal-dependent
+      reservation: "#0fb7d4", // Cyan for Native American reservation
+      distressed: "#c13ec7", // Magenta for economically distressed
+      multiple: "#ffd000", // Yellow for counties in multiple clusters
+      none: "#f7f7f7", // Light gray for counties not in any cluster
+    },
   },
 
   // FIPS code mapping
