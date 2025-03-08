@@ -1,5 +1,7 @@
 // main.js - Main application code and visualization handling
 
+// #region - Configuration and state management
+
 import config from "./config.js";
 
 // Application state
@@ -20,15 +22,29 @@ let elements = {
   svg: null,
   tooltip: null,
   loadingMessage: null,
+  sectionsContainer: null,
+  progressContainer: null,
+  progressBar: null,
+  stepIndicators: null,
+  stickyContainer: null,
+  intersectionObserver: null,
 };
 
-// Initialize when DOM is loaded
+// #endregion
+
+// #region - Initialization and setup
+
+/**
+ * Initialize when DOM is loaded
+ */
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
 });
 
-// Initialize the application
-async function initializeApp() {
+/**
+ * Main application initialization function
+ */
+function initializeApp() {
   console.log("Initializing application...");
 
   // Get DOM elements
@@ -43,8 +59,8 @@ async function initializeApp() {
   elements.loadingMessage = createLoadingMessage();
   elements.svg.parentNode.appendChild(elements.loadingMessage);
 
-  // Create navigation buttons
-  createNavigationButtons();
+  // Set up sticky map container
+  setupStickyMap();
 
   // Set initial dimensions
   state.dimensions = setDimensions(elements.svg);
@@ -52,26 +68,160 @@ async function initializeApp() {
   // Load data
   try {
     showLoading("Loading map data...");
-    await loadData();
-    hideLoading();
+    loadData().then(() => {
+      hideLoading();
 
-    // Mark map as initialized
-    state.mapInitialized = true;
+      // Mark map as initialized
+      state.mapInitialized = true;
 
-    // Render initial state
-    updateDescription(state.currentStep);
-    renderCurrentStep();
+      // Initialize scrollytelling
+      initializeScrollytelling();
 
-    // Set up event listeners - using buttons instead of scroll
-    // window.addEventListener('scroll', handleScroll); // Disabled for button navigation
-    window.addEventListener("resize", debounce(handleResize, 200));
+      // Check if URL has a hash to navigate to specific step
+      checkInitialHash();
 
-    console.log("Application initialized successfully");
+      // Render initial state
+      renderCurrentStep();
+
+      // Set up event listeners
+      window.addEventListener("resize", debounce(handleResize, 200));
+
+      console.log("Application initialized successfully");
+    });
   } catch (error) {
     console.error("Error initializing application:", error);
     showError("Error loading map data. Please try refreshing the page.");
   }
 }
+
+/**
+ * Set up sticky map container for scrollytelling
+ */
+function setupStickyMap() {
+  // Check if we already have a sticky container in the HTML
+  const existingStickyContainer = document.querySelector(".sticky-container");
+
+  if (
+    existingStickyContainer &&
+    existingStickyContainer.contains(elements.mapContainer)
+  ) {
+    // Already set up correctly in HTML
+    elements.stickyContainer = existingStickyContainer;
+    console.log("Using existing sticky container from HTML");
+    return;
+  }
+
+  // Create a container for the sticky map if needed
+  const stickyContainer =
+    existingStickyContainer || document.createElement("div");
+  stickyContainer.className = "sticky-container";
+
+  // Get the parent of the map container
+  const parent = elements.mapContainer.parentNode;
+
+  // Only move things around if we're creating a new structure
+  if (!existingStickyContainer) {
+    // Move the map container into the sticky container
+    parent.insertBefore(stickyContainer, elements.mapContainer);
+    stickyContainer.appendChild(elements.mapContainer);
+  }
+
+  // Store reference
+  elements.stickyContainer = stickyContainer;
+  console.log("Sticky container set up:", stickyContainer);
+}
+
+/**
+ * Handle window resize
+ */
+function handleResize() {
+  state.dimensions = setDimensions(elements.svg);
+
+  if (state.mapInitialized) {
+    renderCurrentStep();
+  }
+}
+
+/**
+ * Set SVG dimensions based on window size
+ * @param {HTMLElement} svg - The SVG element
+ * @returns {Object} - The dimensions object with width and height
+ */
+function setDimensions(svg) {
+  const width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
+  const height = width * 0.625; // 8:5 aspect ratio
+
+  if (svg) {
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+  }
+
+  return { width, height };
+}
+
+// #endregion
+
+// #region - UI/DOM utilities
+
+// Create tooltip element
+function createTooltip() {
+  const tooltip = document.createElement("div");
+  tooltip.id = "tooltip";
+  tooltip.className = "tooltip";
+  document.body.appendChild(tooltip);
+
+  // Add scroll event listener to hide tooltip on scroll
+  window.addEventListener("scroll", hideTooltipOnScroll, { passive: true });
+
+  return tooltip;
+}
+
+/**
+ * Create loading message element
+ * @returns {HTMLElement} - The loading message element
+ */
+function createLoadingMessage() {
+  const message = document.createElement("div");
+  message.textContent = "Loading map data...";
+  message.className = "loading-message";
+  return message;
+}
+
+/**
+ * Show loading message
+ * @param {string} message - The message to display
+ */
+function showLoading(message) {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.textContent = message || "Loading...";
+    elements.loadingMessage.style.display = "block";
+  }
+}
+
+/**
+ * Hide loading message
+ */
+function hideLoading() {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.style.display = "none";
+  }
+}
+
+/**
+ * Show error message
+ * @param {string} message - The error message to display
+ */
+function showError(message) {
+  if (elements.loadingMessage) {
+    elements.loadingMessage.textContent = message;
+    elements.loadingMessage.style.backgroundColor = "rgba(255, 200, 200, 0.9)";
+    elements.loadingMessage.style.display = "block";
+  }
+}
+
+// #endregion
+
+// #region - Data loading and processing
 
 // Load all necessary data
 async function loadData() {
@@ -139,985 +289,6 @@ async function loadData() {
     console.error("Error loading data:", error);
     throw new Error("Failed to load map data");
   }
-}
-
-// Render the current step
-function renderCurrentStep() {
-  if (!state.mapInitialized) {
-    console.warn("Cannot render map: not initialized");
-    return;
-  }
-
-  // Get the current step configuration
-  const currentStepConfig = config.steps[state.currentStep];
-  const isStateLevel = currentStepConfig.isStateLevel === true;
-  const isSpotlightView = currentStepConfig.isSpotlightView === true;
-  const isCombinedView = currentStepConfig.isCombinedView === true;
-
-  // Clear the SVG
-  const svgElement = d3.select(elements.svg);
-  svgElement.selectAll("*").remove();
-
-  // Set up map projection
-  const projection = d3
-    .geoAlbersUsa()
-    .scale(state.dimensions.width * 1.3)
-    .translate([state.dimensions.width * 0.49, state.dimensions.height * 0.5]);
-
-  const path = d3.geoPath().projection(projection);
-
-  // Determine which data to use
-  const features = isStateLevel ? state.data.states : state.data.counties;
-
-  // Check for special visualization types
-  if (isSpotlightView) {
-    renderSpotlightView(svgElement, features, path, currentStepConfig);
-    return;
-  }
-
-  if (isCombinedView) {
-    renderCombinedClusterView(svgElement, features, path, currentStepConfig);
-    return;
-  }
-
-  // For special types like component previews
-  if (currentStepConfig.isComponentPreview) {
-    renderComponentPreview(svgElement, features, path, state.dimensions);
-    return;
-  }
-
-  // For the layered approach
-  if (currentStepConfig.showLayeredComponents) {
-    renderLayeredComponents(svgElement, features, path, currentStepConfig);
-    return;
-  }
-
-  // Create color scale
-  const colorScale = createColorScale(currentStepConfig);
-
-  // If this step shows previous components, render them first
-  if (currentStepConfig.showPrevious && currentStepConfig.isComponent) {
-    renderPreviousComponents(
-      svgElement,
-      features,
-      path,
-      state.dimensions,
-      currentStepConfig
-    );
-  }
-
-  // Draw the map
-  const featurePaths = svgElement
-    .selectAll(isStateLevel ? "path.state" : "path.county")
-    .data(features)
-    .join("path")
-    .attr("class", isStateLevel ? "state" : "county")
-    .attr("d", path)
-    .attr("fill", (d) => getFillColor(d, currentStepConfig, colorScale))
-    .attr("stroke", "#ffffff")
-    .attr("stroke-width", isStateLevel ? 0.5 : 0.2) // Reduced stroke width
-    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1) // Slightly transparent for components
-    .on("mouseover", function (event, d) {
-      handleHover(event, d, currentStepConfig);
-    })
-    .on("mouseout", function () {
-      handleLeave();
-    });
-
-  // If showing counties, also add state boundaries for context
-  if (!isStateLevel) {
-    svgElement
-      .selectAll("path.state-outline")
-      .data(state.data.states)
-      .join("path")
-      .attr("class", "state-outline")
-      .attr("d", path)
-      .attr("fill", "none")
-      .attr("stroke", "#666")
-      .attr("stroke-width", 0.5) // Reduced from 1
-      .attr("stroke-opacity", 0.5)
-      .attr("pointer-events", "none");
-  }
-  // Add a simple legend
-  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
-
-  // If this is a component, add a weight indicator
-  if (currentStepConfig.isComponent) {
-    addComponentWeightIndicator(
-      svgElement,
-      state.dimensions,
-      currentStepConfig
-    );
-  }
-}
-
-// Render layered components to create a trivariate choropleth
-function renderLayeredComponents(
-  svgElement,
-  features,
-  path,
-  currentStepConfig
-) {
-  // Get all the components we need to display
-  const steps = config.steps;
-  const currentIndex = steps.indexOf(currentStepConfig);
-
-  // First, add a base white/light gray layer
-  svgElement
-    .selectAll("path.base-layer")
-    .data(features)
-    .join("path")
-    .attr("class", "base-layer")
-    .attr("d", path)
-    .attr("fill", "#f8f8f8") // Very light gray
-    .attr("stroke", "#ffffff")
-    .attr("stroke-width", 0.1); // Very thin stroke for base layer
-
-  // Add state boundaries for context
-  svgElement
-    .selectAll("path.state-outline")
-    .data(state.data.states)
-    .join("path")
-    .attr("class", "state-outline")
-    .attr("d", path)
-    .attr("fill", "none")
-    .attr("stroke", "#666")
-    .attr("stroke-width", 0.5) // Reduced from 1
-    .attr("stroke-opacity", 0.5)
-    .attr("pointer-events", "none");
-
-  // Get components to display based on current step
-  let componentsToDisplay = [];
-
-  // For the federal workers component, just show that one
-  if (currentStepConfig.id === "federal_workers_component") {
-    componentsToDisplay = [currentStepConfig];
-  }
-  // For unemployment, show federal + unemployment
-  else if (currentStepConfig.id === "unemployment_component") {
-    componentsToDisplay = [
-      steps.find((s) => s.id === "federal_workers_component"),
-      currentStepConfig,
-    ];
-  }
-  // For income, show all three
-  else if (currentStepConfig.id === "income_component") {
-    componentsToDisplay = [
-      steps.find((s) => s.id === "federal_workers_component"),
-      steps.find((s) => s.id === "unemployment_component"),
-      currentStepConfig,
-    ];
-  }
-  // For vulnerability preview, show all three in full opacity
-  else if (currentStepConfig.id === "vulnerability_preview") {
-    componentsToDisplay = [
-      steps.find((s) => s.id === "federal_workers_component"),
-      steps.find((s) => s.id === "unemployment_component"),
-      steps.find((s) => s.id === "income_component"),
-    ];
-  }
-
-  // Create a layered visualization
-  componentsToDisplay.forEach((component, index) => {
-    // Create color scale for this component
-    const colorScale = createColorScale(component);
-
-    // Set opacity and blend mode based on component
-    let opacity = 0.7; // Semi-transparent
-    let blendMode = "multiply"; // Use multiply for blending colors
-
-    // For vulnerability preview, increase opacity
-    if (currentStepConfig.id === "vulnerability_preview") {
-      opacity = 0.8;
-    }
-
-    // Adjust blend mode for different color combinations
-    if (
-      component.colorSet === "magenta" ||
-      component.colorSet === "cyan" ||
-      component.colorSet === "yellow"
-    ) {
-      blendMode = "multiply"; // Better for CMY color mixing
-    }
-
-    // Create a group for this layer
-    const layerGroup = svgElement
-      .append("g")
-      .attr("class", `layer-${component.id}`);
-
-    // Draw this component layer
-    layerGroup
-      .selectAll("path.component")
-      .data(features)
-      .join("path")
-      .attr("class", `component ${component.id}`)
-      .attr("d", path)
-      .attr("fill", (d) => getFillColor(d, component, colorScale))
-      .attr("stroke", "none") // No stroke for better blending
-      .style("mix-blend-mode", blendMode)
-      .attr("opacity", opacity)
-      .on("mouseover", function (event, d) {
-        // Highlight on hover
-        d3.select(this).attr("stroke", "#000").attr("stroke-width", 0.3); // Thinner stroke on hover
-        handleLayeredHover(event, d, componentsToDisplay);
-      })
-      .on("mouseout", function () {
-        // Remove highlight
-        d3.select(this).attr("stroke", "none");
-        handleLeave();
-      });
-  });
-
-  // Add outlines for counties after all layers
-  svgElement
-    .selectAll("path.county-outline")
-    .data(features)
-    .join("path")
-    .attr("class", "county-outline")
-    .attr("d", path)
-    .attr("fill", "none")
-    .attr("stroke", "#fff")
-    .attr("stroke-width", 0.2) // Reduced from 0.5
-    .attr("pointer-events", "none"); // Pass through events to layers below
-}
-
-// Handle hover for layered view
-function handleLayeredHover(event, feature, components) {
-  // Build tooltip content
-  let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${feature.properties.name}, ${
-    feature.properties.stateName || ""
-  }</strong>
-    </div>
-    <div class="tooltip-data">
-      <div style="font-weight:bold;margin-bottom:5px;">Component Values:</div>
-  `;
-
-  // Add each component
-  components.forEach((component) => {
-    const fieldName = component.dataField;
-    const value = feature.properties[fieldName];
-
-    // Format the value based on the field
-    let formattedValue = "N/A";
-    if (value !== null && value !== undefined) {
-      if (fieldName === "median_income") {
-        formattedValue = `${value.toLocaleString()}`;
-      } else if (fieldName === "unemployment_rate") {
-        formattedValue = `${value.toFixed(1)}%`;
-      } else if (fieldName === "fed_workers_per_100k") {
-        formattedValue = value.toLocaleString() + " per 100k";
-      } else {
-        formattedValue = value.toLocaleString();
-      }
-    }
-
-    // Get component color for the label
-    const colorSet = component.colorSet || "blues";
-    const colors = config.colors[colorSet] || config.colors.federal;
-    const color = colors[colors.length - 2]; // Use a dark color from the set
-
-    // Add component row
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label" style="color:${color};font-weight:bold;">${
-      component.title.split(" (")[0]
-    }:</span>
-        <span class="tooltip-value">${formattedValue}</span>
-      </div>
-    `;
-  });
-
-  // Add vulnerability score if available
-  if (feature.properties.vulnerabilityIndex) {
-    tooltipContent += `
-      <div class="tooltip-row" style="margin-top:8px;border-top:1px solid #eee;padding-top:4px;">
-        <span class="tooltip-label">Vulnerability Score:</span>
-        <span class="tooltip-value">${feature.properties.vulnerabilityIndex.toFixed(
-          1
-        )}</span>
-      </div>
-    `;
-  }
-
-  tooltipContent += `</div>`;
-
-  // Show tooltip
-  elements.tooltip.style.display = "block";
-  elements.tooltip.style.left = `${event.pageX + 10}px`;
-  elements.tooltip.style.top = `${event.pageY + 10}px`;
-  elements.tooltip.innerHTML = tooltipContent;
-}
-
-// Render previous components with lower opacity
-function renderPreviousComponents(
-  svgElement,
-  features,
-  path,
-  dimensions,
-  currentStep
-) {
-  // Find previous component steps
-  const steps = config.steps;
-  const currentIndex = steps.indexOf(currentStep);
-  const previousComponents = steps
-    .slice(0, currentIndex)
-    .filter((step) => step.isComponent);
-
-  // Create a group for previous components
-  const prevGroup = svgElement
-    .append("g")
-    .attr("class", "previous-components")
-    .style("opacity", 0.5);
-
-  // Render each previous component with reduced size
-  previousComponents.forEach((component, i) => {
-    // Calculate position for the smaller component map
-    const mapWidth = dimensions.width * 0.3; // 30% of full width
-    const mapHeight = dimensions.height * 0.3;
-    const xPos = 20; // Left padding
-    const yPos = dimensions.height - mapHeight - 20 - i * (mapHeight + 10); // Bottom up
-
-    // Create a group for this component
-    const componentGroup = prevGroup
-      .append("g")
-      .attr("class", `component-${component.id}`)
-      .attr("transform", `translate(${xPos}, ${yPos})`);
-
-    // Add background
-    componentGroup
-      .append("rect")
-      .attr("width", mapWidth)
-      .attr("height", mapHeight)
-      .attr("fill", "#f9f9f9")
-      .attr("stroke", "#ccc")
-      .attr("stroke-width", 1)
-      .attr("rx", 3)
-      .attr("ry", 3);
-
-    // Create a smaller projection for this component
-    const smallProjection = d3
-      .geoAlbersUsa()
-      .scale(mapWidth * 1.3)
-      .translate([mapWidth * 0.49, mapHeight * 0.5]);
-
-    const smallPath = d3.geoPath().projection(smallProjection);
-
-    // Create color scale for this component
-    const colorScale = createColorScale(component);
-
-    // Draw the component map
-    componentGroup
-      .selectAll("path.mini-county")
-      .data(features)
-      .join("path")
-      .attr("class", "mini-county")
-      .attr("d", smallPath)
-      .attr("fill", (d) => getFillColor(d, component, colorScale))
-      .attr("stroke", "#ffffff")
-      .attr("stroke-width", 0.2);
-
-    // Add component title
-    componentGroup
-      .append("text")
-      .attr("x", mapWidth / 2)
-      .attr("y", -5)
-      .attr("text-anchor", "middle")
-      .attr("font-size", "10px")
-      .attr("font-weight", "bold")
-      .text(`${component.title}`);
-  });
-}
-
-// Render the combined component preview
-function renderComponentPreview(svgElement, features, path, dimensions) {
-  // Get all components
-  const components = config.steps.filter((step) => step.isComponent);
-
-  // Set up map for the combined view
-  svgElement
-    .selectAll("path.county")
-    .data(features)
-    .join("path")
-    .attr("class", "county")
-    .attr("d", path)
-    .attr("fill", (d) => calculateCombinedColor(d, components))
-    .attr("stroke", "#ffffff")
-    .attr("stroke-width", 0.5)
-    .on("mouseover", function (event, d) {
-      // Custom hover for combined view
-      handleCombinedHover(event, d, components);
-    })
-    .on("mouseout", function () {
-      handleLeave();
-    });
-
-  // Add state boundaries
-  svgElement
-    .selectAll("path.state-outline")
-    .data(state.data.states)
-    .join("path")
-    .attr("class", "state-outline")
-    .attr("d", path)
-    .attr("fill", "none")
-    .attr("stroke", "#666")
-    .attr("stroke-width", 1)
-    .attr("stroke-opacity", 0.5)
-    .attr("pointer-events", "none");
-}
-
-// Render spotlight views
-function renderSpotlightView(svgElement, features, path, stepConfig) {
-  // Create color scale for vulnerability index (base layer)
-  const colorScale = createColorScale({
-    dataField: "vulnerabilityIndex",
-    colorSet: "vulnerability",
-    breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
-  });
-
-  // Get the fields to use for this spotlight
-  const spotlightField = stepConfig.spotlightField;
-  const salientField = stepConfig.salientField;
-
-  // Draw the base vulnerability map with reduced opacity for non-spotlight counties
-  svgElement
-    .selectAll("path.county")
-    .data(features)
-    .join("path")
-    .attr("class", (d) => {
-      let classes = "county";
-      if (d.properties[spotlightField]) classes += " spotlight";
-      if (d.properties[salientField]) classes += " salient";
-      return classes;
-    })
-    .attr("d", path)
-    .attr("fill", (d) =>
-      getFillColor(d, { dataField: "vulnerabilityIndex" }, colorScale)
-    )
-    .attr("stroke", (d) => (d.properties[salientField] ? "#000" : "#ffffff"))
-    .attr("stroke-width", (d) => (d.properties[salientField] ? 1.5 : 0.2))
-    .attr("opacity", (d) => {
-      // Full opacity for spotlight counties, reduced for others
-      if (d.properties[spotlightField]) return 1.0;
-      return 0.3; // Dimmed for non-spotlight counties
-    })
-    .on("mouseover", function (event, d) {
-      handleSpotlightHover(event, d, stepConfig);
-    })
-    .on("mouseout", function () {
-      handleLeave();
-    });
-
-  // Add state boundaries for context
-  svgElement
-    .selectAll("path.state-outline")
-    .data(state.data.states)
-    .join("path")
-    .attr("class", "state-outline")
-    .attr("d", path)
-    .attr("fill", "none")
-    .attr("stroke", "#666")
-    .attr("stroke-width", 0.5)
-    .attr("stroke-opacity", 0.5)
-    .attr("pointer-events", "none");
-
-  // Add the standard vulnerability legend
-  createSimpleLegend(svgElement, state.dimensions, stepConfig);
-}
-
-// Calculate a combined color based on all components
-function calculateCombinedColor(feature, components) {
-  // Get normalized scores for each component
-  let totalScore = 0;
-  let totalWeight = 0;
-
-  components.forEach((component) => {
-    const value = feature.properties[component.dataField];
-    if (value !== undefined && value !== null) {
-      // Calculate normalized score (0-1)
-      let normalizedScore;
-      if (component.invertScale) {
-        // For inverted scales (like income where lower is worse)
-        const max = component.breaks[component.breaks.length - 1];
-        normalizedScore = 1 - Math.min(1, value / max);
-      } else {
-        const max = component.breaks[component.breaks.length - 1];
-        normalizedScore = Math.min(1, value / max);
-      }
-
-      // Add to weighted total
-      totalScore += normalizedScore * component.componentWeight;
-      totalWeight += component.componentWeight;
-    }
-  });
-
-  // Safety check for edge cases
-  if (totalWeight === 0) return "#cccccc";
-
-  // Get final score (0-1)
-  const finalScore = totalScore / totalWeight;
-
-  // Return color from vulnerability color scale
-  return d3.interpolateReds(finalScore);
-}
-
-// Handle hover for combined view
-function handleCombinedHover(event, feature, components) {
-  // Highlight the hovered feature
-  d3.select(event.currentTarget)
-    .attr("stroke-width", 1.5)
-    .attr("stroke", "#000");
-
-  // Calculate component scores
-  const scores = components.map((component) => {
-    const value = feature.properties[component.dataField];
-    let score = "N/A";
-    let normalizedScore = 0;
-
-    if (value !== undefined && value !== null) {
-      // Format the value appropriately
-      if (component.dataField === "median_income") {
-        score = `${value.toLocaleString()}`;
-      } else if (component.dataField === "unemployment_rate") {
-        score = `${value.toFixed(1)}%`;
-      } else {
-        score = value.toLocaleString();
-      }
-
-      // Calculate normalized score
-      const max = component.breaks[component.breaks.length - 1];
-      normalizedScore = component.invertScale
-        ? 1 - Math.min(1, value / max)
-        : Math.min(1, value / max);
-    }
-
-    // Calculate contribution to final score
-    const contribution = normalizedScore * component.componentWeight;
-
-    return {
-      title: component.title.split(" (")[0], // Remove the weight part
-      score,
-      normalizedScore,
-      weight: component.componentWeight,
-      contribution,
-    };
-  });
-
-  // Calculate total vulnerability score
-  const totalScore = scores.reduce((sum, s) => sum + s.contribution, 0);
-  const totalWeight = scores.reduce((sum, s) => sum + s.weight, 0);
-  const finalScore = totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0;
-
-  // Create tooltip content
-  let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${feature.properties.name}, ${
-    feature.properties.stateName || ""
-  }</strong>
-    </div>
-    <div class="tooltip-data">
-      <div style="font-weight:bold;margin-bottom:5px;">Component Scores:</div>
-  `;
-
-  // Add each component
-  scores.forEach((score) => {
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label">${score.title} (${(
-      score.weight * 100
-    ).toFixed(0)}%):</span>
-        <span class="tooltip-value">${score.score}</span>
-      </div>
-    `;
-  });
-
-  // Add final vulnerability score
-  tooltipContent += `
-      <div class="tooltip-row" style="margin-top:10px;font-weight:bold;border-top:1px solid #eee;padding-top:5px;">
-        <span class="tooltip-label">Vulnerability Score:</span>
-        <span class="tooltip-value">${finalScore.toFixed(1)}</span>
-      </div>
-    </div>
-  `;
-
-  // Show tooltip
-  elements.tooltip.style.display = "block";
-  elements.tooltip.style.left = `${event.pageX + 10}px`;
-  elements.tooltip.style.top = `${event.pageY + 10}px`;
-  elements.tooltip.innerHTML = tooltipContent;
-}
-
-// Handle hover events for spotlight views
-function handleSpotlightHover(event, feature, stepConfig) {
-  // Highlight the hovered feature
-  d3.select(event.currentTarget)
-    .attr("stroke-width", 2)
-    .attr("stroke", "#000")
-    .attr("stroke-opacity", 1);
-
-  // Get basic data for tooltip
-  const name = feature.properties.name;
-  const stateName = feature.properties.stateName || "Unknown";
-  const isInCluster = feature.properties[stepConfig.spotlightField];
-  const isSalient = feature.properties[stepConfig.salientField];
-
-  // Get vulnerability and cluster scores
-  const vulnerabilityScore = feature.properties.vulnerabilityIndex;
-  const clusterScore = feature.properties[stepConfig.scoreField];
-
-  // Get federal worker data
-  const fedWorkers = feature.properties.fed_workers_per_100k;
-  const totalWorkers = feature.properties.total_workers;
-  const pctFederal = feature.properties.pct_federal;
-
-  // Get new facility data if available
-  const facilityCount = feature.properties.facility_count;
-  const topAgencies = feature.properties.top_federal_agencies;
-  const facilityTypes = feature.properties.federal_facility_types;
-  const topInstallations = feature.properties.top_federal_installations;
-  const facilitySummary = feature.properties.federal_facilities_summary;
-
-  // Build tooltip content with a responsive layout
-  let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${name}, ${stateName}</strong>
-      ${
-        isInCluster
-          ? '<div class="cluster-badge">' +
-            stepConfig.title.split(" ")[0] +
-            "</div>"
-          : ""
-      }
-      ${isSalient ? '<div class="salient-badge">Key Example</div>' : ""}
-    </div>
-    <div class="tooltip-data">`;
-
-  // Add core vulnerability metrics
-  tooltipContent += `
-      <div class="tooltip-section">
-        <h4 style="margin: 0 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Vulnerability Metrics</h4>
-        <div class="tooltip-row">
-          <span class="tooltip-label">Vulnerability Score:</span>
-          <span class="tooltip-value">${
-            vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
-          }</span>
-        </div>`;
-
-  if (isInCluster && clusterScore) {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">${
-            stepConfig.clusterType === "rural"
-              ? "Rural Federal"
-              : stepConfig.clusterType === "reservation"
-              ? "Reservation"
-              : "Distress"
-          } Score:</span>
-          <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
-        </div>`;
-  }
-
-  // Add federal employment information
-  tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Federal Workers:</span>
-          <span class="tooltip-value">${
-            fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
-          }</span>
-        </div>`;
-
-  // Add percent federal if available
-  if (pctFederal !== undefined && pctFederal !== null) {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">% Federal Employment:</span>
-          <span class="tooltip-value">${(pctFederal * 100).toFixed(1)}%</span>
-        </div>`;
-  }
-
-  // Cluster-specific metrics
-  if (stepConfig.clusterType === "rural") {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Area Type:</span>
-          <span class="tooltip-value">Rural/Non-Metro</span>
-        </div>`;
-  } else if (stepConfig.clusterType === "reservation") {
-    const nativePercent = feature.properties.native_american_pct;
-    if (nativePercent !== undefined && nativePercent !== null) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Native Population:</span>
-          <span class="tooltip-value">${nativePercent.toFixed(1)}%</span>
-        </div>`;
-    }
-  } else if (stepConfig.clusterType === "distressed") {
-    // Add unemployment and median income
-    const unemployment = feature.properties.unemployment_rate;
-    const income = feature.properties.median_income;
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Unemployment:</span>
-          <span class="tooltip-value">${
-            unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-          }</span>
-        </div>
-        <div class="tooltip-row">
-          <span class="tooltip-label">Median Income:</span>
-          <span class="tooltip-value">${
-            income ? "$" + income.toLocaleString() : "N/A"
-          }</span>
-        </div>`;
-  }
-
-  tooltipContent += `
-      </div>`;
-
-  // Only add facility section if there's actual facility data available
-  if (
-    isInCluster &&
-    (facilityCount || topAgencies || facilityTypes || topInstallations)
-  ) {
-    tooltipContent += `
-      <div class="tooltip-section">
-        <h4 style="margin: 8px 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Federal Facilities</h4>`;
-
-    // Add facility count if available
-    if (facilityCount !== undefined && facilityCount !== null) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Facility Count:</span>
-          <span class="tooltip-value">${facilityCount}</span>
-        </div>`;
-    }
-
-    // Add top agencies if available (truncate if too long)
-    if (topAgencies) {
-      let displayAgencies = topAgencies;
-      if (displayAgencies.length > 60) {
-        displayAgencies = displayAgencies.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Top Agencies:</span>
-          <span class="tooltip-value">${displayAgencies}</span>
-        </div>`;
-    }
-
-    // Add top installations if available (truncate if too long)
-    if (topInstallations) {
-      let displayInstallations = topInstallations;
-      if (displayInstallations.length > 60) {
-        displayInstallations = displayInstallations.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Key Facilities:</span>
-          <span class="tooltip-value">${displayInstallations}</span>
-        </div>`;
-    }
-
-    // Add facility types if available (truncate if too long)
-    if (facilityTypes) {
-      let displayTypes = facilityTypes;
-      if (displayTypes.length > 60) {
-        displayTypes = displayTypes.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Facility Types:</span>
-          <span class="tooltip-value">${displayTypes}</span>
-        </div>`;
-    }
-
-    tooltipContent += `
-      </div>`;
-  }
-
-  // Close the tooltip-data div
-  tooltipContent += `
-    </div>
-    
-    <style>
-      .tooltip-section {
-        margin-bottom: 5px;
-      }
-      .tooltip-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2px;
-        font-size: 12px;
-      }
-      .tooltip-label {
-        font-weight: 500;
-        margin-right: 10px;
-      }
-      .cluster-badge, .salient-badge {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 10px;
-        font-weight: bold;
-        margin-left: 5px;
-      }
-      .cluster-badge {
-        background-color: ${
-          stepConfig.clusterType === "rural"
-            ? "#41ab5d"
-            : stepConfig.clusterType === "reservation"
-            ? "#0fb7d4"
-            : "#c13ec7"
-        };
-        color: white;
-      }
-      .salient-badge {
-        background-color: #ffd000;
-        color: black;
-      }
-      .tooltip-header {
-        margin-bottom: 8px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
-      }
-    </style>
-  `;
-
-  // Show tooltip with appropriate sizing
-  elements.tooltip.style.display = "block";
-  elements.tooltip.style.left = `${event.pageX + 10}px`;
-  elements.tooltip.style.top = `${event.pageY + 10}px`;
-  elements.tooltip.style.maxWidth = "300px";
-  elements.tooltip.innerHTML = tooltipContent;
-}
-
-// Add component weight indicator
-function addComponentWeightIndicator(svgElement, dimensions, component) {
-  // Create a weight indicator at the top right
-  const weight = component.componentWeight * 100;
-  const xPos = dimensions.width - 150;
-  const yPos = 30;
-
-  // Add background
-  const weightIndicator = svgElement
-    .append("g")
-    .attr("class", "weight-indicator")
-    .attr("transform", `translate(${xPos}, ${yPos})`);
-
-  // Add background
-  weightIndicator
-    .append("rect")
-    .attr("width", 140)
-    .attr("height", 40)
-    .attr("fill", "rgba(255, 255, 255, 0.8)")
-    .attr("stroke", "#ccc")
-    .attr("rx", 5)
-    .attr("ry", 5);
-
-  // Add title
-  weightIndicator
-    .append("text")
-    .attr("x", 70)
-    .attr("y", 15)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "10px")
-    .text("Weight in Vulnerability Index");
-
-  // Add weight percentage
-  weightIndicator
-    .append("text")
-    .attr("x", 70)
-    .attr("y", 30)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "16px")
-    .attr("font-weight", "bold")
-    .text(`${weight}%`);
-}
-
-// Create a simplified legend
-function createSimpleLegend(svgElement, dimensions, stepConfig) {
-  const legendWidth = 260;
-  const legendHeight = 20;
-  const legendX = dimensions.width - legendWidth - 20;
-  const legendY = dimensions.height - 40;
-
-  // Create legend container
-  const legend = svgElement
-    .append("g")
-    .attr("class", "legend")
-    .attr("transform", `translate(${legendX}, ${legendY})`);
-
-  // Add background for better readability
-  legend
-    .append("rect")
-    .attr("x", -10)
-    .attr("y", -25)
-    .attr("width", legendWidth + 20)
-    .attr("height", legendHeight + 45)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("rx", 4)
-    .attr("ry", 4);
-
-  // Add legend title
-  legend
-    .append("text")
-    .attr("x", 0)
-    .attr("y", -10)
-    .style("font-size", "12px")
-    .style("font-weight", "bold")
-    .text(stepConfig.title);
-
-  // Get colors from config
-  const colorSet = stepConfig.colorSet || "blues";
-  const colors = config.colors[colorSet] || config.colors.federal;
-
-  // Create color blocks
-  const numCategories = 5;
-  const segmentWidth = legendWidth / numCategories;
-
-  for (let i = 0; i < numCategories; i++) {
-    const x = i * segmentWidth;
-
-    // Draw the color block
-    legend
-      .append("rect")
-      .attr("x", x)
-      .attr("y", 0)
-      .attr("width", segmentWidth)
-      .attr("height", legendHeight)
-      .style("fill", colors[i + 1]) // Skip the lightest color
-      .style("stroke", "#555")
-      .style("stroke-width", 0.5);
-
-    // Add labels
-    legend
-      .append("text")
-      .attr("x", x + segmentWidth / 2)
-      .attr("y", legendHeight + 15)
-      .attr("text-anchor", "middle")
-      .style("font-size", "9px")
-      .text(i === 0 ? "Low" : i === numCategories - 1 ? "High" : "");
-  }
-}
-
-// Enhanced getFillColor function with debugging for missing data
-function getFillColor(feature, stepConfig, colorScale) {
-  const fieldName = stepConfig.dataField;
-  let value = feature.properties[fieldName];
-
-  // If we need to invert the scale (for median income where lower is worse)
-  if (stepConfig.invertScale) {
-    // Invert the color scale
-    const colors = config.colors[stepConfig.colorSet];
-    const normalizedValue = 1 - value / 150000; // Arbitrary max
-    const colorIndex = Math.min(
-      Math.floor(normalizedValue * colors.length),
-      colors.length - 1
-    );
-    return colors[colorIndex];
-  }
-
-  return colorScale(value);
 }
 
 // Enhanced data processing function to handle special counties
@@ -1620,6 +791,115 @@ function getCountyMatchKeys(countyName, stateName) {
   return keys;
 }
 
+// #endregion
+
+// #region - Map rendering core
+
+// Render the current step
+function renderCurrentStep() {
+  if (!state.mapInitialized) {
+    console.warn("Cannot render map: not initialized");
+    return;
+  }
+
+  // Get the current step configuration
+  const currentStepConfig = config.steps[state.currentStep];
+  const isStateLevel = currentStepConfig.isStateLevel === true;
+  const isSpotlightView = currentStepConfig.isSpotlightView === true;
+  const isCombinedView = currentStepConfig.isCombinedView === true;
+
+  // Clear the SVG
+  const svgElement = d3.select(elements.svg);
+  svgElement.selectAll("*").remove();
+
+  // Set up map projection
+  const projection = d3
+    .geoAlbersUsa()
+    .scale(state.dimensions.width * 1.3)
+    .translate([state.dimensions.width * 0.49, state.dimensions.height * 0.5]);
+
+  const path = d3.geoPath().projection(projection);
+
+  // Determine which data to use
+  const features = isStateLevel ? state.data.states : state.data.counties;
+
+  // Check for special visualization types
+  if (isSpotlightView) {
+    renderSpotlightView(svgElement, features, path, currentStepConfig);
+    return;
+  }
+
+  // For special types like component previews
+  if (currentStepConfig.isComponentPreview) {
+    renderComponentPreview(svgElement, features, path, state.dimensions);
+    return;
+  }
+
+  // For the layered approach
+  if (currentStepConfig.showLayeredComponents) {
+    renderLayeredComponents(svgElement, features, path, currentStepConfig);
+    return;
+  }
+
+  // Create color scale
+  const colorScale = createColorScale(currentStepConfig);
+
+  // If this step shows previous components, render them first
+  if (currentStepConfig.showPrevious && currentStepConfig.isComponent) {
+    renderPreviousComponents(
+      svgElement,
+      features,
+      path,
+      state.dimensions,
+      currentStepConfig
+    );
+  }
+
+  // Draw the map
+  const featurePaths = svgElement
+    .selectAll(isStateLevel ? "path.state" : "path.county")
+    .data(features)
+    .join("path")
+    .attr("class", isStateLevel ? "state" : "county")
+    .attr("d", path)
+    .attr("fill", (d) => getFillColor(d, currentStepConfig, colorScale))
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", isStateLevel ? 0.5 : 0.2) // Reduced stroke width
+    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1) // Slightly transparent for components
+    .on("mouseover", function (event, d) {
+      handleHover(event, d, currentStepConfig);
+    })
+    .on("mouseout", function () {
+      handleLeave();
+    });
+
+  // If showing counties, also add state boundaries for context
+  if (!isStateLevel) {
+    svgElement
+      .selectAll("path.state-outline")
+      .data(state.data.states)
+      .join("path")
+      .attr("class", "state-outline")
+      .attr("d", path)
+      .attr("fill", "none")
+      .attr("stroke", "#666")
+      .attr("stroke-width", 0.5) // Reduced from 1
+      .attr("stroke-opacity", 0.5)
+      .attr("pointer-events", "none");
+  }
+  // Add a simple legend
+  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
+
+  // If this is a component, add a weight indicator
+  if (currentStepConfig.isComponent) {
+    addComponentWeightIndicator(
+      svgElement,
+      state.dimensions,
+      currentStepConfig
+    );
+  }
+}
+
 // Create a color scale
 function createColorScale(stepConfig) {
   const colorSet = stepConfig.colorSet || "blues";
@@ -1631,130 +911,646 @@ function createColorScale(stepConfig) {
   return d3.scaleThreshold().domain(domain).range(colors);
 }
 
-// Create navigation buttons for easier debugging
-function createNavigationButtons() {
-  // Create container for the buttons
-  const buttonContainer = document.createElement("div");
-  buttonContainer.className = "navigation-buttons";
-  buttonContainer.style.display = "flex";
-  buttonContainer.style.justifyContent = "center";
-  buttonContainer.style.marginTop = "20px";
-  buttonContainer.style.marginBottom = "20px";
-  buttonContainer.style.gap = "10px";
+// Enhanced getFillColor function with debugging for missing data
+function getFillColor(feature, stepConfig, colorScale) {
+  const fieldName = stepConfig.dataField;
+  let value = feature.properties[fieldName];
 
-  // Create previous button
-  const prevButton = document.createElement("button");
-  prevButton.textContent = "← Previous";
-  prevButton.style.padding = "8px 15px";
-  prevButton.style.fontSize = "14px";
-  prevButton.style.cursor = "pointer";
-  prevButton.addEventListener("click", () =>
-    navigateToStep(state.currentStep - 1)
-  );
+  // If we need to invert the scale (for median income where lower is worse)
+  if (stepConfig.invertScale) {
+    // Invert the color scale
+    const colors = config.colors[stepConfig.colorSet];
+    const normalizedValue = 1 - value / 150000; // Arbitrary max
+    const colorIndex = Math.min(
+      Math.floor(normalizedValue * colors.length),
+      colors.length - 1
+    );
+    return colors[colorIndex];
+  }
 
-  // Create next button
-  const nextButton = document.createElement("button");
-  nextButton.textContent = "Next →";
-  nextButton.style.padding = "8px 15px";
-  nextButton.style.fontSize = "14px";
-  nextButton.style.cursor = "pointer";
-  nextButton.addEventListener("click", () =>
-    navigateToStep(state.currentStep + 1)
-  );
+  return colorScale(value);
+}
 
-  // Create step indicator
-  elements.stepIndicator = document.createElement("div");
-  elements.stepIndicator.style.padding = "8px 15px";
-  elements.stepIndicator.style.fontSize = "14px";
-  elements.stepIndicator.style.border = "1px solid #ccc";
-  updateStepIndicator();
+// #endregion
 
-  // Add direct step navigation dropdown
-  const stepSelect = document.createElement("select");
-  stepSelect.style.padding = "8px";
-  stepSelect.style.fontSize = "14px";
+// #region - Specialized visualization renderers
 
-  // Add options for each step
-  config.steps.forEach((step, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent = step.title;
-    stepSelect.appendChild(option);
+// Render layered components to create a trivariate choropleth
+function renderLayeredComponents(
+  svgElement,
+  features,
+  path,
+  currentStepConfig
+) {
+  // Get all the components we need to display
+  const steps = config.steps;
+  const currentIndex = steps.indexOf(currentStepConfig);
+
+  // First, add a base white/light gray layer
+  svgElement
+    .selectAll("path.base-layer")
+    .data(features)
+    .join("path")
+    .attr("class", "base-layer")
+    .attr("d", path)
+    .attr("fill", "#f8f8f8") // Very light gray
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", 0.1); // Very thin stroke for base layer
+
+  // Add state boundaries for context
+  svgElement
+    .selectAll("path.state-outline")
+    .data(state.data.states)
+    .join("path")
+    .attr("class", "state-outline")
+    .attr("d", path)
+    .attr("fill", "none")
+    .attr("stroke", "#666")
+    .attr("stroke-width", 0.5) // Reduced from 1
+    .attr("stroke-opacity", 0.5)
+    .attr("pointer-events", "none");
+
+  // Get components to display based on current step
+  let componentsToDisplay = [];
+
+  // For the federal workers component, just show that one
+  if (currentStepConfig.id === "federal_workers_component") {
+    componentsToDisplay = [currentStepConfig];
+  }
+  // For unemployment, show federal + unemployment
+  else if (currentStepConfig.id === "unemployment_component") {
+    componentsToDisplay = [
+      steps.find((s) => s.id === "federal_workers_component"),
+      currentStepConfig,
+    ];
+  }
+  // For income, show all three
+  else if (currentStepConfig.id === "income_component") {
+    componentsToDisplay = [
+      steps.find((s) => s.id === "federal_workers_component"),
+      steps.find((s) => s.id === "unemployment_component"),
+      currentStepConfig,
+    ];
+  }
+  // For vulnerability preview, show all three in full opacity
+  else if (currentStepConfig.id === "vulnerability_preview") {
+    componentsToDisplay = [
+      steps.find((s) => s.id === "federal_workers_component"),
+      steps.find((s) => s.id === "unemployment_component"),
+      steps.find((s) => s.id === "income_component"),
+    ];
+  }
+
+  // Create a layered visualization
+  componentsToDisplay.forEach((component, index) => {
+    // Create color scale for this component
+    const colorScale = createColorScale(component);
+
+    // Set opacity and blend mode based on component
+    let opacity = 0.7; // Semi-transparent
+    let blendMode = "multiply"; // Use multiply for blending colors
+
+    // For vulnerability preview, increase opacity
+    if (currentStepConfig.id === "vulnerability_preview") {
+      opacity = 0.8;
+    }
+
+    // Adjust blend mode for different color combinations
+    if (
+      component.colorSet === "magenta" ||
+      component.colorSet === "cyan" ||
+      component.colorSet === "yellow"
+    ) {
+      blendMode = "multiply"; // Better for CMY color mixing
+    }
+
+    // Create a group for this layer
+    const layerGroup = svgElement
+      .append("g")
+      .attr("class", `layer-${component.id}`);
+
+    // Draw this component layer
+    layerGroup
+      .selectAll("path.component")
+      .data(features)
+      .join("path")
+      .attr("class", `component ${component.id}`)
+      .attr("d", path)
+      .attr("fill", (d) => getFillColor(d, component, colorScale))
+      .attr("stroke", "none") // No stroke for better blending
+      .style("mix-blend-mode", blendMode)
+      .attr("opacity", opacity)
+      .on("mouseover", function (event, d) {
+        // Highlight on hover
+        d3.select(this).attr("stroke", "#000").attr("stroke-width", 0.3); // Thinner stroke on hover
+        handleLayeredHover(event, d, componentsToDisplay);
+      })
+      .on("mouseout", function () {
+        // Remove highlight
+        d3.select(this).attr("stroke", "none");
+        handleLeave();
+      });
   });
 
-  // Handle selection change
-  stepSelect.addEventListener("change", (e) => {
-    navigateToStep(parseInt(e.target.value));
+  // Add outlines for counties after all layers
+  svgElement
+    .selectAll("path.county-outline")
+    .data(features)
+    .join("path")
+    .attr("class", "county-outline")
+    .attr("d", path)
+    .attr("fill", "none")
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.2) // Reduced from 0.5
+    .attr("pointer-events", "none"); // Pass through events to layers below
+}
+
+// Render previous components with lower opacity
+function renderPreviousComponents(
+  svgElement,
+  features,
+  path,
+  dimensions,
+  currentStep
+) {
+  // Find previous component steps
+  const steps = config.steps;
+  const currentIndex = steps.indexOf(currentStep);
+  const previousComponents = steps
+    .slice(0, currentIndex)
+    .filter((step) => step.isComponent);
+
+  // Create a group for previous components
+  const prevGroup = svgElement
+    .append("g")
+    .attr("class", "previous-components")
+    .style("opacity", 0.5);
+
+  // Render each previous component with reduced size
+  previousComponents.forEach((component, i) => {
+    // Calculate position for the smaller component map
+    const mapWidth = dimensions.width * 0.3; // 30% of full width
+    const mapHeight = dimensions.height * 0.3;
+    const xPos = 20; // Left padding
+    const yPos = dimensions.height - mapHeight - 20 - i * (mapHeight + 10); // Bottom up
+
+    // Create a group for this component
+    const componentGroup = prevGroup
+      .append("g")
+      .attr("class", `component-${component.id}`)
+      .attr("transform", `translate(${xPos}, ${yPos})`);
+
+    // Add background
+    componentGroup
+      .append("rect")
+      .attr("width", mapWidth)
+      .attr("height", mapHeight)
+      .attr("fill", "#f9f9f9")
+      .attr("stroke", "#ccc")
+      .attr("stroke-width", 1)
+      .attr("rx", 3)
+      .attr("ry", 3);
+
+    // Create a smaller projection for this component
+    const smallProjection = d3
+      .geoAlbersUsa()
+      .scale(mapWidth * 1.3)
+      .translate([mapWidth * 0.49, mapHeight * 0.5]);
+
+    const smallPath = d3.geoPath().projection(smallProjection);
+
+    // Create color scale for this component
+    const colorScale = createColorScale(component);
+
+    // Draw the component map
+    componentGroup
+      .selectAll("path.mini-county")
+      .data(features)
+      .join("path")
+      .attr("class", "mini-county")
+      .attr("d", smallPath)
+      .attr("fill", (d) => getFillColor(d, component, colorScale))
+      .attr("stroke", "#ffffff")
+      .attr("stroke-width", 0.2);
+
+    // Add component title
+    componentGroup
+      .append("text")
+      .attr("x", mapWidth / 2)
+      .attr("y", -5)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "10px")
+      .attr("font-weight", "bold")
+      .text(`${component.title}`);
+  });
+}
+
+// Render the combined component preview
+function renderComponentPreview(svgElement, features, path, dimensions) {
+  // Get all components
+  const components = config.steps.filter((step) => step.isComponent);
+
+  // Set up map for the combined view
+  svgElement
+    .selectAll("path.county")
+    .data(features)
+    .join("path")
+    .attr("class", "county")
+    .attr("d", path)
+    .attr("fill", (d) => calculateCombinedColor(d, components))
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", function (event, d) {
+      // Custom hover for combined view
+      handleCombinedHover(event, d, components);
+    })
+    .on("mouseout", function () {
+      handleLeave();
+    });
+
+  // Add state boundaries
+  svgElement
+    .selectAll("path.state-outline")
+    .data(state.data.states)
+    .join("path")
+    .attr("class", "state-outline")
+    .attr("d", path)
+    .attr("fill", "none")
+    .attr("stroke", "#666")
+    .attr("stroke-width", 1)
+    .attr("stroke-opacity", 0.5)
+    .attr("pointer-events", "none");
+}
+
+// Render spotlight views
+function renderSpotlightView(svgElement, features, path, stepConfig) {
+  // Create color scale for vulnerability index (base layer)
+  const colorScale = createColorScale({
+    dataField: "vulnerabilityIndex",
+    colorSet: "vulnerability",
+    breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
   });
 
-  // Add the buttons to the container
-  buttonContainer.appendChild(prevButton);
-  buttonContainer.appendChild(elements.stepIndicator);
-  buttonContainer.appendChild(nextButton);
-  buttonContainer.appendChild(stepSelect);
+  // Get the fields to use for this spotlight
+  const spotlightField = stepConfig.spotlightField;
+  const salientField = stepConfig.salientField;
 
-  // Add the container to the page
-  elements.mapContainer.insertBefore(
-    buttonContainer,
-    elements.mapContainer.firstChild
+  // Draw the base vulnerability map with reduced opacity for non-spotlight counties
+  svgElement
+    .selectAll("path.county")
+    .data(features)
+    .join("path")
+    .attr("class", (d) => {
+      let classes = "county";
+      if (d.properties[spotlightField]) classes += " spotlight";
+      if (d.properties[salientField]) classes += " salient";
+      return classes;
+    })
+    .attr("d", path)
+    .attr("fill", (d) =>
+      getFillColor(d, { dataField: "vulnerabilityIndex" }, colorScale)
+    )
+    .attr("stroke", (d) => (d.properties[salientField] ? "#000" : "#ffffff"))
+    .attr("stroke-width", (d) => (d.properties[salientField] ? 1.5 : 0.2))
+    .attr("opacity", (d) => {
+      // Full opacity for spotlight counties, reduced for others
+      if (d.properties[spotlightField]) return 1.0;
+      return 0.3; // Dimmed for non-spotlight counties
+    })
+    .on("mouseover", function (event, d) {
+      handleSpotlightHover(event, d, stepConfig);
+    })
+    .on("mouseout", function () {
+      handleLeave();
+    });
+
+  // Add state boundaries for context
+  svgElement
+    .selectAll("path.state-outline")
+    .data(state.data.states)
+    .join("path")
+    .attr("class", "state-outline")
+    .attr("d", path)
+    .attr("fill", "none")
+    .attr("stroke", "#666")
+    .attr("stroke-width", 0.5)
+    .attr("stroke-opacity", 0.5)
+    .attr("pointer-events", "none");
+
+  // Add the standard vulnerability legend
+  createSimpleLegend(svgElement, state.dimensions, stepConfig);
+}
+
+// #endregion
+
+// #region - UI components
+
+// Create a simplified legend
+function createSimpleLegend(svgElement, dimensions, stepConfig) {
+  const legendWidth = 260;
+  const legendHeight = 20;
+  const legendX = dimensions.width - legendWidth - 20;
+  const legendY = dimensions.height - 40;
+
+  // Create legend container
+  const legend = svgElement
+    .append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${legendX}, ${legendY})`);
+
+  // Add background for better readability
+  legend
+    .append("rect")
+    .attr("x", -10)
+    .attr("y", -25)
+    .attr("width", legendWidth + 20)
+    .attr("height", legendHeight + 45)
+    .attr("fill", "rgba(255, 255, 255, 0.85)")
+    .attr("rx", 4)
+    .attr("ry", 4);
+
+  // Add legend title
+  legend
+    .append("text")
+    .attr("x", 0)
+    .attr("y", -10)
+    .style("font-size", "12px")
+    .style("font-weight", "bold")
+    .text(stepConfig.title);
+
+  // Get colors from config
+  const colorSet = stepConfig.colorSet || "blues";
+  const colors = config.colors[colorSet] || config.colors.federal;
+
+  // Create color blocks
+  const numCategories = 5;
+  const segmentWidth = legendWidth / numCategories;
+
+  for (let i = 0; i < numCategories; i++) {
+    const x = i * segmentWidth;
+
+    // Draw the color block
+    legend
+      .append("rect")
+      .attr("x", x)
+      .attr("y", 0)
+      .attr("width", segmentWidth)
+      .attr("height", legendHeight)
+      .style("fill", colors[i + 1]) // Skip the lightest color
+      .style("stroke", "#555")
+      .style("stroke-width", 0.5);
+
+    // Add labels
+    legend
+      .append("text")
+      .attr("x", x + segmentWidth / 2)
+      .attr("y", legendHeight + 15)
+      .attr("text-anchor", "middle")
+      .style("font-size", "9px")
+      .text(i === 0 ? "Low" : i === numCategories - 1 ? "High" : "");
+  }
+}
+
+// Add component weight indicator
+function addComponentWeightIndicator(svgElement, dimensions, component) {
+  // Create a weight indicator at the top right
+  const weight = component.componentWeight * 100;
+  const xPos = dimensions.width - 150;
+  const yPos = 30;
+
+  // Add background
+  const weightIndicator = svgElement
+    .append("g")
+    .attr("class", "weight-indicator")
+    .attr("transform", `translate(${xPos}, ${yPos})`);
+
+  // Add background
+  weightIndicator
+    .append("rect")
+    .attr("width", 140)
+    .attr("height", 40)
+    .attr("fill", "rgba(255, 255, 255, 0.8)")
+    .attr("stroke", "#ccc")
+    .attr("rx", 5)
+    .attr("ry", 5);
+
+  // Add title
+  weightIndicator
+    .append("text")
+    .attr("x", 70)
+    .attr("y", 15)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "10px")
+    .text("Weight in Vulnerability Index");
+
+  // Add weight percentage
+  weightIndicator
+    .append("text")
+    .attr("x", 70)
+    .attr("y", 30)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "16px")
+    .attr("font-weight", "bold")
+    .text(`${weight}%`);
+}
+
+// Calculate a combined color based on all components
+function calculateCombinedColor(feature, components) {
+  // Get normalized scores for each component
+  let totalScore = 0;
+  let totalWeight = 0;
+
+  components.forEach((component) => {
+    const value = feature.properties[component.dataField];
+    if (value !== undefined && value !== null) {
+      // Calculate normalized score (0-1)
+      let normalizedScore;
+      if (component.invertScale) {
+        // For inverted scales (like income where lower is worse)
+        const max = component.breaks[component.breaks.length - 1];
+        normalizedScore = 1 - Math.min(1, value / max);
+      } else {
+        const max = component.breaks[component.breaks.length - 1];
+        normalizedScore = Math.min(1, value / max);
+      }
+
+      // Add to weighted total
+      totalScore += normalizedScore * component.componentWeight;
+      totalWeight += component.componentWeight;
+    }
+  });
+
+  // Safety check for edge cases
+  if (totalWeight === 0) return "#cccccc";
+
+  // Get final score (0-1)
+  const finalScore = totalScore / totalWeight;
+
+  // Return color from vulnerability color scale
+  return d3.interpolateReds(finalScore);
+}
+
+// #endregion
+
+// #region - Tooltip and interaction handlers
+
+/**
+ * Hide tooltip on scroll (debounced for performance)
+ */
+const hideTooltipOnScroll = debounce(() => {
+  if (elements.tooltip) {
+    elements.tooltip.style.display = "none";
+  }
+}, 50);
+
+/**
+ * Position tooltip intelligently to avoid going offscreen with arrow pointing to cursor
+ * @param {Event} event - Mouse event
+ * @param {string} content - HTML content for the tooltip
+ */
+function positionTooltip(event, content) {
+  const tooltip = elements.tooltip;
+  if (!tooltip) return;
+
+  // Clear previous arrow classes
+  tooltip.classList.remove(
+    "left-arrow",
+    "right-arrow",
+    "top-arrow",
+    "bottom-arrow"
   );
 
-  // Store references to the buttons
-  elements.prevButton = prevButton;
-  elements.nextButton = nextButton;
-  elements.stepSelect = stepSelect;
+  // Show tooltip and set content
+  tooltip.style.display = "block";
+  tooltip.innerHTML = content;
+
+  // Get viewport dimensions
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Get tooltip dimensions
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+
+  // Get scroll position
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  // Calculate cursor position relative to viewport
+  const cursorX = event.clientX;
+  const cursorY = event.clientY;
+
+  // Default is to position tooltip to the right of cursor
+  let position = "right";
+  let left = event.pageX + 15; // More space for arrow
+  let top = event.pageY - tooltipHeight / 2;
+
+  // Check if tooltip would go off right edge
+  if (cursorX + tooltipWidth + 25 > viewportWidth) {
+    // Position to the left of cursor
+    position = "left";
+    left = event.pageX - tooltipWidth - 15;
+  }
+
+  // Ensure tooltip is not positioned off the left edge
+  if (left < scrollX + 10) {
+    position = "right";
+    left = event.pageX + 15;
+
+    // If it would still go off right edge, center it below cursor instead
+    if (cursorX + tooltipWidth + 25 > viewportWidth) {
+      position = "top";
+      left = event.pageX - tooltipWidth / 2;
+      top = event.pageY + 15;
+    }
+  }
+
+  // Check if tooltip would go off top/bottom edge
+  if (top < scrollY + 10) {
+    top = scrollY + 10;
+  } else if (top + tooltipHeight + 10 > scrollY + viewportHeight) {
+    // If it can't fit at the current vertical position, try to position above cursor
+    if (cursorY - tooltipHeight - 15 > 0) {
+      position = "bottom";
+      top = event.pageY - tooltipHeight - 15;
+    } else {
+      // If it won't fit above either, position below but adjust to fit viewport
+      position = "top";
+      top = event.pageY + 15;
+
+      // If it's still too tall, just position at top of viewport with margin
+      if (top + tooltipHeight + 10 > scrollY + viewportHeight) {
+        top = scrollY + viewportHeight - tooltipHeight - 10;
+      }
+    }
+  }
+
+  // Add arrow class based on position
+  tooltip.classList.add(`${position}-arrow`);
+
+  // Set final position
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+
+  // Add a slight fade-in effect
+  tooltip.style.opacity = "0";
+
+  // Trigger reflow and fade in
+  requestAnimationFrame(() => {
+    tooltip.style.opacity = "1";
+  });
+
+  // Store last event to help with determining if scroll is user-initiated
+  elements.lastTooltipEvent = {
+    x: event.pageX,
+    y: event.pageY,
+    timestamp: Date.now(),
+  };
 }
 
-// Update step indicator text
-function updateStepIndicator() {
-  if (!elements.stepIndicator) return;
+/**
+ * Hide tooltip with a short delay to make it feel more natural
+ */
+function hideTooltip() {
+  if (!elements.tooltip) return;
 
-  const totalSteps = config.steps.length;
-  elements.stepIndicator.textContent = `Step ${
-    state.currentStep + 1
-  } of ${totalSteps}`;
+  // Fade out
+  elements.tooltip.style.opacity = "0";
 
-  // Update dropdown too
-  if (elements.stepSelect) {
-    elements.stepSelect.value = state.currentStep;
+  // Then hide after transition
+  setTimeout(() => {
+    elements.tooltip.style.display = "none";
+  }, 200);
+}
+
+/**
+ * Special handler specifically for wheel events (mouse scroll)
+ * These should always hide the tooltip immediately
+ */
+function hideTooltipOnWheel() {
+  // For wheel events, always hide tooltip immediately
+  if (elements.tooltip) {
+    elements.tooltip.style.display = "none";
   }
 }
 
-// Navigate to a specific step
-function navigateToStep(stepIndex) {
-  // Ensure the step index is valid
-  const totalSteps = config.steps.length;
-  if (stepIndex < 0) stepIndex = 0;
-  if (stepIndex >= totalSteps) stepIndex = totalSteps - 1;
+/**
+ * Add scroll, resize, and wheel handlers to hide tooltip
+ * Call this in your initializeApp function
+ */
+function setupTooltipDismissHandlers() {
+  // These events should hide the tooltip
+  const events = ["scroll", "resize", "wheel"];
 
-  // Update only if step changed
-  if (stepIndex !== state.currentStep) {
-    state.currentStep = stepIndex;
+  events.forEach((eventType) => {
+    window.addEventListener(eventType, hideTooltipOnScroll, { passive: true });
+  });
 
-    // Update UI elements
-    updateDescription(state.currentStep);
-    updateStepIndicator();
+  // Also hide tooltip when user starts to interact with the keyboard
+  window.addEventListener("keydown", hideTooltipOnScroll);
 
-    // Render the new step
-    renderCurrentStep();
-  }
-}
-
-// Update description text
-function updateDescription(stepIndex) {
-  if (!elements.description) return;
-
-  const step = config.steps[stepIndex];
-
-  // Update with title and description
-  let descriptionHTML = `<strong>${step.title}</strong>`;
-
-  // Add description if available
-  if (step.description) {
-    descriptionHTML += `<p>${step.description}</p>`;
-  }
-
-  elements.description.innerHTML = descriptionHTML;
+  // Add touch event handlers for mobile
+  window.addEventListener("touchstart", hideTooltipOnScroll, { passive: true });
 }
 
 // Handle hover events
@@ -1877,10 +1673,395 @@ function handleHover(event, feature, stepConfig) {
   tooltipContent += `</div>`;
 
   // Show tooltip
-  elements.tooltip.style.display = "block";
-  elements.tooltip.style.left = `${event.pageX + 10}px`;
-  elements.tooltip.style.top = `${event.pageY + 10}px`;
-  elements.tooltip.innerHTML = tooltipContent;
+  positionTooltip(event, tooltipContent);
+}
+
+// Handle hover for layered view
+function handleLayeredHover(event, feature, components) {
+  // Build tooltip content
+  let tooltipContent = `
+    <div class="tooltip-header">
+      <strong>${feature.properties.name}, ${
+    feature.properties.stateName || ""
+  }</strong>
+    </div>
+    <div class="tooltip-data">
+      <div style="font-weight:bold;margin-bottom:5px;">Component Values:</div>
+  `;
+
+  // Add each component
+  components.forEach((component) => {
+    const fieldName = component.dataField;
+    const value = feature.properties[fieldName];
+
+    // Format the value based on the field
+    let formattedValue = "N/A";
+    if (value !== null && value !== undefined) {
+      if (fieldName === "median_income") {
+        formattedValue = `${value.toLocaleString()}`;
+      } else if (fieldName === "unemployment_rate") {
+        formattedValue = `${value.toFixed(1)}%`;
+      } else if (fieldName === "fed_workers_per_100k") {
+        formattedValue = value.toLocaleString() + " per 100k";
+      } else {
+        formattedValue = value.toLocaleString();
+      }
+    }
+
+    // Get component color for the label
+    const colorSet = component.colorSet || "blues";
+    const colors = config.colors[colorSet] || config.colors.federal;
+    const color = colors[colors.length - 2]; // Use a dark color from the set
+
+    // Add component row
+    tooltipContent += `
+      <div class="tooltip-row">
+        <span class="tooltip-label" style="color:${color};font-weight:bold;">${
+      component.title.split(" (")[0]
+    }:</span>
+        <span class="tooltip-value">${formattedValue}</span>
+      </div>
+    `;
+  });
+
+  // Add vulnerability score if available
+  if (feature.properties.vulnerabilityIndex) {
+    tooltipContent += `
+      <div class="tooltip-row" style="margin-top:8px;border-top:1px solid #eee;padding-top:4px;">
+        <span class="tooltip-label">Vulnerability Score:</span>
+        <span class="tooltip-value">${feature.properties.vulnerabilityIndex.toFixed(
+          1
+        )}</span>
+      </div>
+    `;
+  }
+
+  tooltipContent += `</div>`;
+
+  // Show tooltip
+  positionTooltip(event, tooltipContent);
+}
+
+// Handle hover for combined view
+function handleCombinedHover(event, feature, components) {
+  // Highlight the hovered feature
+  d3.select(event.currentTarget)
+    .attr("stroke-width", 1.5)
+    .attr("stroke", "#000");
+
+  // Calculate component scores
+  const scores = components.map((component) => {
+    const value = feature.properties[component.dataField];
+    let score = "N/A";
+    let normalizedScore = 0;
+
+    if (value !== undefined && value !== null) {
+      // Format the value appropriately
+      if (component.dataField === "median_income") {
+        score = `${value.toLocaleString()}`;
+      } else if (component.dataField === "unemployment_rate") {
+        score = `${value.toFixed(1)}%`;
+      } else {
+        score = value.toLocaleString();
+      }
+
+      // Calculate normalized score
+      const max = component.breaks[component.breaks.length - 1];
+      normalizedScore = component.invertScale
+        ? 1 - Math.min(1, value / max)
+        : Math.min(1, value / max);
+    }
+
+    // Calculate contribution to final score
+    const contribution = normalizedScore * component.componentWeight;
+
+    return {
+      title: component.title.split(" (")[0], // Remove the weight part
+      score,
+      normalizedScore,
+      weight: component.componentWeight,
+      contribution,
+    };
+  });
+
+  // Calculate total vulnerability score
+  const totalScore = scores.reduce((sum, s) => sum + s.contribution, 0);
+  const totalWeight = scores.reduce((sum, s) => sum + s.weight, 0);
+  const finalScore = totalWeight > 0 ? (totalScore / totalWeight) * 100 : 0;
+
+  // Create tooltip content
+  let tooltipContent = `
+    <div class="tooltip-header">
+      <strong>${feature.properties.name}, ${
+    feature.properties.stateName || ""
+  }</strong>
+    </div>
+    <div class="tooltip-data">
+      <div style="font-weight:bold;margin-bottom:5px;">Component Scores:</div>
+  `;
+
+  // Add each component
+  scores.forEach((score) => {
+    tooltipContent += `
+      <div class="tooltip-row">
+        <span class="tooltip-label">${score.title} (${(
+      score.weight * 100
+    ).toFixed(0)}%):</span>
+        <span class="tooltip-value">${score.score}</span>
+      </div>
+    `;
+  });
+
+  // Add final vulnerability score
+  tooltipContent += `
+      <div class="tooltip-row" style="margin-top:10px;font-weight:bold;border-top:1px solid #eee;padding-top:5px;">
+        <span class="tooltip-label">Vulnerability Score:</span>
+        <span class="tooltip-value">${finalScore.toFixed(1)}</span>
+      </div>
+    </div>
+  `;
+
+  // Show tooltip
+  positionTooltip(event, tooltipContent);
+}
+
+// Handle hover events for spotlight views
+function handleSpotlightHover(event, feature, stepConfig) {
+  // Highlight the hovered feature
+  d3.select(event.currentTarget)
+    .attr("stroke-width", 2)
+    .attr("stroke", "#000")
+    .attr("stroke-opacity", 1);
+
+  // Get basic data for tooltip
+  const name = feature.properties.name;
+  const stateName = feature.properties.stateName || "Unknown";
+  const isInCluster = feature.properties[stepConfig.spotlightField];
+  const isSalient = feature.properties[stepConfig.salientField];
+
+  // Get vulnerability and cluster scores
+  const vulnerabilityScore = feature.properties.vulnerabilityIndex;
+  const clusterScore = feature.properties[stepConfig.scoreField];
+
+  // Get federal worker data
+  const fedWorkers = feature.properties.fed_workers_per_100k;
+  const totalWorkers = feature.properties.total_workers;
+  const pctFederal = feature.properties.pct_federal;
+
+  // Get new facility data if available
+  const facilityCount = feature.properties.facility_count;
+  const topAgencies = feature.properties.top_federal_agencies;
+  const facilityTypes = feature.properties.federal_facility_types;
+  const topInstallations = feature.properties.top_federal_installations;
+  const facilitySummary = feature.properties.federal_facilities_summary;
+
+  // Build tooltip content with a responsive layout
+  let tooltipContent = `
+    <div class="tooltip-header">
+      <strong>${name}, ${stateName}</strong>
+      ${
+        isInCluster
+          ? '<div class="cluster-badge">' +
+            stepConfig.title.split(" ")[0] +
+            "</div>"
+          : ""
+      }
+      ${isSalient ? '<div class="salient-badge">Key Example</div>' : ""}
+    </div>
+    <div class="tooltip-data">`;
+
+  // Add core vulnerability metrics
+  tooltipContent += `
+      <div class="tooltip-section">
+        <h4 style="margin: 0 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Vulnerability Metrics</h4>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Vulnerability Score:</span>
+          <span class="tooltip-value">${
+            vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
+          }</span>
+        </div>`;
+
+  if (isInCluster && clusterScore) {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">${
+            stepConfig.clusterType === "rural"
+              ? "Rural Federal"
+              : stepConfig.clusterType === "reservation"
+              ? "Reservation"
+              : "Distress"
+          } Score:</span>
+          <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
+        </div>`;
+  }
+
+  // Add federal employment information
+  tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Federal Workers:</span>
+          <span class="tooltip-value">${
+            fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
+          }</span>
+        </div>`;
+
+  // Add percent federal if available
+  if (pctFederal !== undefined && pctFederal !== null) {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">% Federal Employment:</span>
+          <span class="tooltip-value">${(pctFederal * 100).toFixed(1)}%</span>
+        </div>`;
+  }
+
+  // Cluster-specific metrics
+  if (stepConfig.clusterType === "rural") {
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Area Type:</span>
+          <span class="tooltip-value">Rural/Non-Metro</span>
+        </div>`;
+  } else if (stepConfig.clusterType === "reservation") {
+    const nativePercent = feature.properties.native_american_pct;
+    if (nativePercent !== undefined && nativePercent !== null) {
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Native Population:</span>
+          <span class="tooltip-value">${nativePercent.toFixed(1)}%</span>
+        </div>`;
+    }
+  } else if (stepConfig.clusterType === "distressed") {
+    // Add unemployment and median income
+    const unemployment = feature.properties.unemployment_rate;
+    const income = feature.properties.median_income;
+    tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Unemployment:</span>
+          <span class="tooltip-value">${
+            unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+          }</span>
+        </div>
+        <div class="tooltip-row">
+          <span class="tooltip-label">Median Income:</span>
+          <span class="tooltip-value">${
+            income ? "$" + income.toLocaleString() : "N/A"
+          }</span>
+        </div>`;
+  }
+
+  tooltipContent += `
+      </div>`;
+
+  // Only add facility section if there's actual facility data available
+  if (
+    isInCluster &&
+    (facilityCount || topAgencies || facilityTypes || topInstallations)
+  ) {
+    tooltipContent += `
+      <div class="tooltip-section">
+        <h4 style="margin: 8px 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Federal Facilities</h4>`;
+
+    // Add facility count if available
+    if (facilityCount !== undefined && facilityCount !== null) {
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Facility Count:</span>
+          <span class="tooltip-value">${facilityCount}</span>
+        </div>`;
+    }
+
+    // Add top agencies if available (truncate if too long)
+    if (topAgencies) {
+      let displayAgencies = topAgencies;
+      if (displayAgencies.length > 60) {
+        displayAgencies = displayAgencies.substring(0, 57) + "...";
+      }
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Top Agencies:</span>
+          <span class="tooltip-value">${displayAgencies}</span>
+        </div>`;
+    }
+
+    // Add top installations if available (truncate if too long)
+    if (topInstallations) {
+      let displayInstallations = topInstallations;
+      if (displayInstallations.length > 60) {
+        displayInstallations = displayInstallations.substring(0, 57) + "...";
+      }
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Key Facilities:</span>
+          <span class="tooltip-value">${displayInstallations}</span>
+        </div>`;
+    }
+
+    // Add facility types if available (truncate if too long)
+    if (facilityTypes) {
+      let displayTypes = facilityTypes;
+      if (displayTypes.length > 60) {
+        displayTypes = displayTypes.substring(0, 57) + "...";
+      }
+      tooltipContent += `
+        <div class="tooltip-row">
+          <span class="tooltip-label">Facility Types:</span>
+          <span class="tooltip-value">${displayTypes}</span>
+        </div>`;
+    }
+
+    tooltipContent += `
+      </div>`;
+  }
+
+  // Close the tooltip-data div
+  tooltipContent += `
+    </div>
+    
+    <style>
+      .tooltip-section {
+        margin-bottom: 5px;
+      }
+      .tooltip-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .tooltip-label {
+        font-weight: 500;
+        margin-right: 10px;
+      }
+      .cluster-badge, .salient-badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: bold;
+        margin-left: 5px;
+      }
+      .cluster-badge {
+        background-color: ${
+          stepConfig.clusterType === "rural"
+            ? "#41ab5d"
+            : stepConfig.clusterType === "reservation"
+            ? "#0fb7d4"
+            : "#c13ec7"
+        };
+        color: white;
+      }
+      .salient-badge {
+        background-color: #ffd000;
+        color: black;
+      }
+      .tooltip-header {
+        margin-bottom: 8px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+    </style>
+  `;
+
+  // Show tooltip with appropriate sizing
+  positionTooltip(event, tooltipContent);
 }
 
 // Handle leave events
@@ -1896,87 +2077,378 @@ function handleLeave() {
   elements.tooltip.style.display = "none";
 }
 
-// Handle window resize
-function handleResize() {
-  state.dimensions = setDimensions(elements.svg);
+// #endregion
 
-  if (state.mapInitialized) {
+// #region - Scrollytelling functionality
+
+// Initialize scrollytelling functionality, creating sections for each set and setting up event listeners
+function initializeScrollytelling() {
+  console.log("Initializing scrollytelling...");
+
+  // Find or create sections container
+  let sectionsContainer = document.querySelector(".sections");
+
+  if (!sectionsContainer) {
+    sectionsContainer = document.createElement("div");
+    sectionsContainer.className = "sections";
+
+    // Insert after the sticky container
+    elements.stickyContainer.parentNode.insertBefore(
+      sectionsContainer,
+      elements.stickyContainer.nextSibling
+    );
+  }
+
+  // Store reference to sections container
+  elements.sectionsContainer = sectionsContainer;
+
+  // Create sections for each step
+  createScrollSections();
+
+  // Create progress indicator if it doesn't exist already
+  if (!document.querySelector(".progress-indicator")) {
+    createProgressIndicator();
+  }
+
+  // Set up scroll event listener with debounce for performance
+  window.addEventListener("scroll", debounce(handleScroll, 100));
+
+  // Try to use IntersectionObserver if available
+  if ("IntersectionObserver" in window) {
+    setupIntersectionObserver();
+  }
+
+  // Set initial state based on current scroll position
+  setTimeout(() => {
+    handleScroll();
+  }, 200);
+}
+
+/**
+ * Create scroll sections for each visualization step
+ */
+function createScrollSections() {
+  const sectionsContainer = elements.sectionsContainer;
+
+  // Clear existing sections
+  sectionsContainer.innerHTML = "";
+
+  console.log("Creating sections for", config.steps.length, "steps");
+
+  // Create a section for each step
+  config.steps.forEach((step, index) => {
+    const section = document.createElement("div");
+    section.className = "scroll-section";
+    section.id = `section-${index}`;
+    section.dataset.step = index;
+
+    // Add content to the section
+    const content = document.createElement("div");
+    content.className = "section-content";
+
+    // Add title
+    const title = document.createElement("h3");
+    title.textContent = step.title;
+    content.appendChild(title);
+
+    // Add description
+    if (step.description) {
+      const description = document.createElement("p");
+      description.textContent = step.description;
+      content.appendChild(description);
+    }
+
+    // Add any additional info from the step configuration
+    if (step.additionalInfo) {
+      const additionalInfo = document.createElement("div");
+      additionalInfo.className = "additional-info";
+      additionalInfo.innerHTML = step.additionalInfo;
+      content.appendChild(additionalInfo);
+    }
+
+    section.appendChild(content);
+    sectionsContainer.appendChild(section);
+
+    console.log(`Created section ${index}: ${step.title}`);
+  });
+
+  // Add some extra space at the bottom for better scrolling experience
+  const spacer = document.createElement("div");
+  spacer.className = "section-spacer";
+  spacer.style.height = "50vh";
+  sectionsContainer.appendChild(spacer);
+}
+
+/**
+ * Create progress indicator for navigation
+ */
+function createProgressIndicator() {
+  // Create container for progress indicator
+  const progressContainer = document.createElement("div");
+  progressContainer.className = "progress-indicator";
+
+  // Create progress bar
+  const progressBar = document.createElement("div");
+  progressBar.className = "progress-bar";
+  progressContainer.appendChild(progressBar);
+
+  // Create step indicators
+  const stepsContainer = document.createElement("div");
+  stepsContainer.className = "step-indicators";
+
+  config.steps.forEach((step, index) => {
+    const stepIndicator = document.createElement("div");
+    stepIndicator.className = "step-indicator";
+    stepIndicator.dataset.step = index;
+
+    // Add tooltip with step title
+    const tooltip = document.createElement("span");
+    tooltip.className = "step-tooltip";
+    tooltip.textContent = step.title;
+    stepIndicator.appendChild(tooltip);
+
+    // Add click event to navigate to step
+    stepIndicator.addEventListener("click", () => {
+      navigateToSection(index);
+    });
+
+    stepsContainer.appendChild(stepIndicator);
+  });
+
+  progressContainer.appendChild(stepsContainer);
+  document.body.appendChild(progressContainer);
+
+  // Store references
+  elements.progressContainer = progressContainer;
+  elements.progressBar = progressBar;
+  elements.stepIndicators = stepsContainer.querySelectorAll(".step-indicator");
+}
+
+/**
+ * Set up intersection observer for more efficient section tracking
+ */
+function setupIntersectionObserver() {
+  // First check if we already have sections to observe
+  const sections = document.querySelectorAll(".scroll-section");
+  if (sections.length === 0) {
+    console.warn("No sections found to observe");
+    return;
+  }
+
+  // Clean up existing observer if it exists
+  if (elements.intersectionObserver) {
+    elements.intersectionObserver.disconnect();
+  }
+
+  // Options for intersection observer
+  const options = {
+    root: null, // Use viewport as root
+    rootMargin: "0px",
+    threshold: 0.3, // Trigger when 30% of element is visible
+  };
+
+  console.log(
+    "Setting up IntersectionObserver for",
+    sections.length,
+    "sections"
+  );
+
+  // Create a new observer
+  const observer = new IntersectionObserver((entries) => {
+    // Find the most visible section
+    let maxVisibleSection = null;
+    let maxVisibility = 0;
+
+    entries.forEach((entry) => {
+      // Update active class for fading effect
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+
+        // Use intersection ratio as a measure of visibility
+        if (entry.intersectionRatio > maxVisibility) {
+          maxVisibility = entry.intersectionRatio;
+          maxVisibleSection = entry.target;
+        }
+      } else {
+        // Remove active class when not intersecting
+        entry.target.classList.remove("active");
+      }
+    });
+
+    // Update the current step if we have a new most visible section
+    if (maxVisibleSection) {
+      const sectionIndex = parseInt(maxVisibleSection.dataset.step, 10);
+      if (sectionIndex !== state.currentStep) {
+        console.log(`Transitioning to step ${sectionIndex}`);
+
+        // Update state
+        state.currentStep = sectionIndex;
+
+        // Update map
+        renderCurrentStep();
+
+        // Update progress indicator
+        updateProgressIndicator(sectionIndex, config.steps.length);
+      }
+    }
+  }, options);
+
+  // Start observing all sections
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
+
+  // Store observer for cleanup
+  elements.intersectionObserver = observer;
+}
+
+/**
+ * Handle scroll events (fallback for browsers without IntersectionObserver)
+ */
+function handleScroll() {
+  // Skip if we're using IntersectionObserver
+  if (elements.intersectionObserver && "IntersectionObserver" in window) return;
+
+  // Get all sections
+  const sections = document.querySelectorAll(".scroll-section");
+  if (sections.length === 0) {
+    console.warn("No sections found for scroll handling");
+    return;
+  }
+
+  // Find section closest to the middle of the viewport
+  let currentSectionIndex = 0;
+  let maxVisibility = 0;
+
+  const viewportHeight = window.innerHeight;
+  const viewportCenter = window.scrollY + viewportHeight / 2;
+
+  sections.forEach((section, index) => {
+    const rect = section.getBoundingClientRect();
+    const sectionTop = rect.top + window.scrollY;
+    const sectionBottom = sectionTop + rect.height;
+
+    // Calculate visibility of this section (0 to 1)
+    const visibilityTop =
+      Math.min(sectionBottom, viewportCenter) -
+      Math.max(sectionTop, viewportCenter - viewportHeight / 2);
+    const visibilityBottom =
+      Math.min(sectionBottom, viewportCenter + viewportHeight / 2) -
+      Math.max(sectionTop, viewportCenter);
+    const visibility = Math.max(
+      0,
+      (visibilityTop + visibilityBottom) / rect.height
+    );
+
+    // Update active class based on visibility
+    if (visibility > 0.3) {
+      // If at least 30% visible
+      section.classList.add("active");
+    } else {
+      section.classList.remove("active");
+    }
+
+    if (visibility > maxVisibility) {
+      maxVisibility = visibility;
+      currentSectionIndex = index;
+    }
+  });
+
+  // Only update if the step has changed or isn't set
+  if (currentSectionIndex !== state.currentStep) {
+    console.log(`Scroll: transitioning to step ${currentSectionIndex}`);
+
+    // Update state
+    state.currentStep = currentSectionIndex;
+
+    // Update map
     renderCurrentStep();
+
+    // Update progress indicator
+    updateProgressIndicator(currentSectionIndex, config.steps.length);
   }
 }
 
-// Set SVG dimensions
-function setDimensions(svg) {
-  const width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
-  const height = width * 0.625; // 8:5 aspect ratio
+/**
+ * Update progress indicator
+ * @param {number} currentStep - Index of current step
+ * @param {number} totalSteps - Total number of steps
+ */
+function updateProgressIndicator(currentStep, totalSteps) {
+  if (!elements.progressBar || !elements.stepIndicators) return;
 
-  if (svg) {
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
+  // Update progress bar
+  const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
+  elements.progressBar.style.width = `${progressPercentage}%`;
+
+  // Update step indicators
+  elements.stepIndicators.forEach((indicator, index) => {
+    indicator.classList.remove("active", "completed");
+
+    if (index === currentStep) {
+      indicator.classList.add("active");
+    } else if (index < currentStep) {
+      indicator.classList.add("completed");
+    }
+  });
+}
+
+/**
+ * Navigate to a specific section
+ * @param {number} sectionIndex - Index of the section to navigate to
+ */
+function navigateToSection(sectionIndex) {
+  const section = document.querySelector(`#section-${sectionIndex}`);
+  if (!section) {
+    console.warn(`Section with index ${sectionIndex} not found`);
+    return;
   }
 
-  return { width, height };
+  // Get the scroll position
+  const rect = section.getBoundingClientRect();
+  const scrollPosition = window.scrollY + rect.top - 100; // Offset for header
+
+  // Remove active class from all sections
+  document.querySelectorAll(".scroll-section").forEach((s) => {
+    s.classList.remove("active");
+  });
+
+  // Add active class to target section (for immediate visual feedback)
+  section.classList.add("active");
+
+  // Scroll to section
+  window.scrollTo({
+    top: scrollPosition,
+    behavior: "smooth",
+  });
+
+  // Update state immediately for better UX
+  state.currentStep = sectionIndex;
+  renderCurrentStep();
+  updateProgressIndicator(sectionIndex, config.steps.length);
 }
 
-// Create tooltip element
-function createTooltip() {
-  const tooltip = document.createElement("div");
-  tooltip.id = "tooltip";
-  tooltip.className = "tooltip";
-  tooltip.style.position = "absolute";
-  tooltip.style.display = "none";
-  tooltip.style.backgroundColor = "white";
-  tooltip.style.border = "1px solid #ddd";
-  tooltip.style.borderRadius = "4px";
-  tooltip.style.padding = "10px";
-  tooltip.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
-  tooltip.style.zIndex = "1000";
-  tooltip.style.pointerEvents = "none";
-  document.body.appendChild(tooltip);
-  return tooltip;
-}
-
-// Create loading message element
-function createLoadingMessage() {
-  const message = document.createElement("div");
-  message.textContent = "Loading map data...";
-  message.style.position = "absolute";
-  message.style.top = "50%";
-  message.style.left = "50%";
-  message.style.transform = "translate(-50%, -50%)";
-  message.style.background = "rgba(255, 255, 255, 0.8)";
-  message.style.padding = "10px 20px";
-  message.style.borderRadius = "4px";
-  message.style.zIndex = "100";
-  message.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-  return message;
-}
-
-// Show loading message
-function showLoading(message) {
-  if (elements.loadingMessage) {
-    elements.loadingMessage.textContent = message || "Loading...";
-    elements.loadingMessage.style.display = "block";
+/**
+ * Check if the page loaded with a hash tag and navigate there
+ */
+function checkInitialHash() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith("#section-")) {
+    const stepIndex = parseInt(hash.replace("#section-", ""), 10);
+    if (
+      !isNaN(stepIndex) &&
+      stepIndex >= 0 &&
+      stepIndex < config.steps.length
+    ) {
+      // Wait for everything to be set up
+      setTimeout(() => {
+        navigateToSection(stepIndex);
+      }, 500);
+    }
   }
 }
 
-// Hide loading message
-function hideLoading() {
-  if (elements.loadingMessage) {
-    elements.loadingMessage.style.display = "none";
-  }
-}
-
-// Show error message
-function showError(message) {
-  if (elements.loadingMessage) {
-    elements.loadingMessage.textContent = message;
-    elements.loadingMessage.style.backgroundColor = "rgba(255, 200, 200, 0.9)";
-    elements.loadingMessage.style.display = "block";
-  }
-}
-
-// Debounce function for resize events
+// Helper function for debouncing
 function debounce(func, wait) {
   let timeout;
   return function () {
@@ -1986,3 +2458,5 @@ function debounce(func, wait) {
     timeout = setTimeout(() => func.apply(context, args), wait);
   };
 }
+
+// #endregion

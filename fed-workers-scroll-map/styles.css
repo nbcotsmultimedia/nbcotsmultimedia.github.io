@@ -1,289 +1,253 @@
-/* Add styles for blended layers */
-.component {
-  pointer-events: all;
-  transition: stroke 0.2s ease;
-}
+/* styles.css - Updated with more subtle scrollytelling sections */
 
-/* CSS for blend modes - helps with color mixing */
-svg g {
-  isolation: isolate;
-}
-
-/* Tooltip enhancements for layered view */
-.tooltip-row .tooltip-label.component-label {
-  font-weight: bold;
-  padding-left: 15px;
-  position: relative;
-}
-
-.tooltip-row .tooltip-label.component-label::before {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 10px;
-  position: absolute;
-  left: 0;
-  top: 2px;
-} /* Base styles */
+/* Base styles */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   padding: 0;
-  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  overflow-x: hidden;
+  color: #333;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Map container */
-.map-container {
-  position: relative;
   width: 100%;
-  margin: 20px 0;
-}
-
-.map-svg {
-  display: block;
-  width: 100%;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
-  border: 1px solid #e0e0e0;
-  background-color: #f9f9f9;
 }
 
 /* Header styles */
 .map-header {
+  padding: 1rem 2rem;
   text-align: center;
-  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
 }
 
 .title {
-  margin-bottom: 10px;
+  margin-top: 0.5rem;
   color: #333;
 }
 
 .description {
+  margin-bottom: 1rem;
   color: #666;
-  font-size: 16px;
-  margin: 0 auto 30px auto;
-  max-width: 600px;
-  line-height: 1.5;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.description p {
-  margin-top: 8px;
+/* Scrollytelling: Sticky map container */
+.sticky-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background-color: #f9f9f9;
 }
 
-/* Sections styling */
+.map-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.map-svg {
+  max-width: 90%;
+  max-height: 90vh;
+}
+
+/* Scrollytelling: Sections - Updated for more subtle appearance */
 .sections {
-  padding: 40px 0; /* Reduced since we're using buttons not scroll */
+  position: relative;
+  z-index: 2;
+  pointer-events: none; /* Allow clicks to pass through to map */
 }
 
-.section {
-  min-height: 200px;
-  padding: 40px 20px;
-  border-top: 1px solid #eee;
+.scroll-section {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
 }
 
-/* Navigation button styles */
-.navigation-buttons {
-  margin: 20px 0;
-  text-align: center;
+/* Updated for smaller, more subtle appearance consistently on the right */
+.section-content {
+  max-width: 320px; /* Smaller width */
+  margin-left: 5%; /* Position on the right side */
+  margin-right: auto; /* Consistent right margin */
+  background-color: rgba(255, 255, 255, 0.85); /* More transparent */
+  padding: 1rem; /* Smaller padding */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* More subtle shadow */
+  pointer-events: auto; /* Re-enable clicks for the content box */
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.7s ease; /* Fade transition */
 }
 
-.navigation-buttons button {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 8px 15px;
-  margin: 0 5px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
+/* Fade in when in view */
+.scroll-section.active .section-content {
+  opacity: 1;
 }
 
-.navigation-buttons button:hover {
-  background-color: #e8e8e8;
+/* Fade out when not in view */
+.scroll-section:not(.active) .section-content {
+  opacity: 0;
 }
 
-.navigation-buttons select {
-  padding: 7px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-left: 10px;
-  font-size: 14px;
-}
-
-.section h3 {
+/* Smaller, more subtle typography */
+.section-content h3 {
   margin-top: 0;
+  font-size: 1rem; /* Smaller heading */
   color: #333;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 0.4rem;
 }
 
-/* Tooltip styles */
+.section-content p {
+  font-size: 0.85rem; /* Smaller text */
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+/* Scrollytelling: Progress indicator */
+.progress-indicator {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 8px 4px;
+  border-radius: 20px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+}
+
+.progress-bar {
+  width: 3px;
+  height: 0%;
+  background-color: #3182bd;
+  border-radius: 2px;
+  margin: 0 auto 8px;
+  transition: height 0.3s ease;
+}
+
+.step-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.step-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.step-indicator:hover {
+  transform: scale(1.2);
+}
+
+.step-indicator.active {
+  background-color: #3182bd;
+  transform: scale(1.3);
+}
+
+.step-indicator.completed {
+  background-color: #6baed6;
+}
+
+.step-tooltip {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  background-color: rgba(51, 51, 51, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.step-indicator:hover .step-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Map elements and visualization styles */
+path.county,
+path.state {
+  transition: fill 0.3s ease, stroke-width 0.2s ease;
+}
+
+path.county:hover,
+path.state:hover {
+  stroke-width: 1.5px;
+  stroke: #000;
+}
+
+/* Tooltip styling */
 .tooltip {
   position: absolute;
-  z-index: 1000;
+  display: none;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-size: 14px;
-  max-width: 250px;
-  min-width: 200px;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 300px;
 }
 
 .tooltip-header {
+  margin-bottom: 8px;
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;
-  margin-bottom: 5px;
-  font-size: 14px;
+  font-weight: bold;
+}
+
+.tooltip-data {
+  font-size: 0.9rem;
 }
 
 .tooltip-row {
   display: flex;
   justify-content: space-between;
-  margin: 4px 0;
-  font-size: 12px;
+  margin-bottom: 4px;
 }
 
 .tooltip-label {
-  color: #666;
-  font-weight: normal;
+  font-weight: 500;
+  margin-right: 10px;
 }
 
-.tooltip-value {
-  font-weight: bold;
-  margin-left: 10px;
-  color: #333;
+.tooltip-section {
+  margin-bottom: 5px;
 }
 
-/* Styles for spotlight visualization */
-.county.spotlight {
-  stroke-width: 0.4px;
-}
-
-.county.salient {
-  stroke-width: 1.5px;
-  stroke: #000;
-}
-
-.tooltip-header {
-  margin-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 4px;
-}
-
-.cluster-badge {
-  display: inline-block;
-  background-color: #3182bd;
-  color: white;
-  padding: 2px 4px;
-  font-size: 10px;
-  border-radius: 3px;
-  margin-left: 5px;
-}
-
-.salient-badge {
-  display: inline-block;
-  background-color: #de2d26;
-  color: white;
-  padding: 2px 4px;
-  font-size: 10px;
-  border-radius: 3px;
-  margin-left: 5px;
-}
-
-.tooltip-data {
-  font-size: 12px;
-}
-
-.tooltip-row {
-  margin: 4px 0;
-}
-
-.tooltip-label {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-/* Styles for spotlight visualization */
-.county.spotlight {
-  stroke-width: 0.4px;
-}
-
-.county.salient {
-  stroke-width: 1.5px;
-  stroke: #000;
-}
-
-.tooltip-header {
-  margin-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 4px;
-}
-
-.cluster-badge {
-  display: inline-block;
-  background-color: #3182bd;
-  color: white;
-  padding: 2px 4px;
-  font-size: 10px;
-  border-radius: 3px;
-  margin-left: 5px;
-}
-
-.salient-badge {
-  display: inline-block;
-  background-color: #de2d26;
-  color: white;
-  padding: 2px 4px;
-  font-size: 10px;
-  border-radius: 3px;
-  margin-left: 5px;
-}
-
-/* Add these CSS styles to your stylesheet or include them in your main CSS file */
-
-/* Main tooltip container */
-.tooltip {
-  max-width: 320px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  font-size: 12px;
-  line-height: 1.4;
-  color: #333;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  pointer-events: none;
-  z-index: 1000;
-}
-
-/* Tooltip header */
-.tooltip-header {
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.tooltip-header strong {
-  font-size: 14px;
-  font-weight: 600;
-  margin-right: 5px;
-}
-
-/* Badge styles */
+/* Cluster-specific styling */
 .cluster-badge,
 .salient-badge {
   display: inline-block;
@@ -292,23 +256,6 @@ body {
   font-size: 10px;
   font-weight: bold;
   margin-left: 5px;
-  white-space: nowrap;
-}
-
-/* Cluster type badges with appropriate colors */
-.cluster-badge.rural {
-  background-color: #41ab5d;
-  color: white;
-}
-
-.cluster-badge.reservation {
-  background-color: #0fb7d4;
-  color: white;
-}
-
-.cluster-badge.distressed {
-  background-color: #c13ec7;
-  color: white;
 }
 
 .salient-badge {
@@ -316,66 +263,167 @@ body {
   color: black;
 }
 
-/* Data sections */
-.tooltip-section {
-  margin-bottom: 10px;
+/* Loading and error messages */
+.loading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 20px;
+  border-radius: 4px;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.tooltip-section h4 {
-  margin: 0 0 6px 0;
-  font-size: 12px;
-  color: #555;
-  font-weight: 600;
+/* Section spacer */
+.section-spacer {
+  height: 50vh;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .section-content {
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.2rem;
+  }
+
+  .progress-indicator {
+    right: 10px;
+  }
+
+  .section-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .section-content p {
+    font-size: 0.9rem;
+  }
+
+  .scroll-section {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .section-content p {
+    font-size: 0.85rem;
+  }
+
+  .progress-indicator {
+    padding: 6px 3px;
+  }
+
+  .step-indicator {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Updated tooltip styles */
+
+.tooltip {
+  position: absolute;
+  display: none;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 280px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  transform: rotate(45deg);
+}
+
+/* Tooltip pointing right (when on the left side of cursor) */
+.tooltip.right-arrow::after {
+  top: 50%;
+  right: -5px;
+  margin-top: -4px;
+  transform: rotate(-45deg);
+}
+
+/* Tooltip pointing left (when on the right side of cursor) */
+.tooltip.left-arrow::after {
+  top: 50%;
+  left: -5px;
+  margin-top: -4px;
+  transform: rotate(135deg);
+}
+
+/* Tooltip pointing up (when below cursor) */
+.tooltip.top-arrow::after {
+  top: -5px;
+  left: 50%;
+  margin-left: -4px;
+  transform: rotate(45deg);
+}
+
+/* Tooltip pointing down (when above cursor) */
+.tooltip.bottom-arrow::after {
+  bottom: -5px;
+  left: 50%;
+  margin-left: -4px;
+  transform: rotate(225deg);
+}
+
+.tooltip-header {
+  margin-bottom: 8px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 3px;
+  padding-bottom: 5px;
+  font-weight: bold;
+  color: #333;
 }
 
-/* Data rows */
+.tooltip-data {
+  font-size: 0.9rem;
+}
+
 .tooltip-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3px;
-  line-height: 1.3;
+  margin-bottom: 6px;
 }
 
 .tooltip-label {
   font-weight: 500;
+  margin-right: 10px;
   color: #555;
-  padding-right: 8px;
-  flex: 1;
 }
 
 .tooltip-value {
-  text-align: right;
-  font-weight: 400;
+  font-weight: 600;
+  color: #333;
 }
 
-/* Special formatting for long text values */
-.tooltip-long-text {
-  text-align: left;
-  padding-top: 3px;
-  display: block;
-  white-space: normal;
-  word-wrap: break-word;
-  color: #555;
-  line-height: 1.4;
-  font-size: 11px;
+.tooltip-section {
+  margin-bottom: 8px;
 }
 
-/* For federal facility summaries that might be longer */
-.facility-summary {
-  font-style: italic;
-  margin-top: 4px;
-  padding-top: 4px;
-  border-top: 1px dotted #eee;
-  font-size: 11px;
-  color: #666;
-}
-
-/* Little helper for the facility count */
-.facility-count {
-  background-color: rgba(0, 0, 0, 0.05);
-  padding: 0 4px;
-  border-radius: 10px;
-  font-weight: bold;
+.tooltip-section h4 {
+  margin: 0 0 5px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  padding-bottom: 3px;
+  color: #333;
 }

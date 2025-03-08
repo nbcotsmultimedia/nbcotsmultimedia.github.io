@@ -4,52 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U.S. Counties Scrollytelling Map</title>
-
-    <!-- Style sheets -->
-    <link rel="stylesheet" href="css/styles.css">
-
-    <!-- External Libraries -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-
-    <!-- Application JavaScript -->
-    <script src="js/main.js" type="module"></script>
+    <title>Federal Employment Vulnerability Map</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div id="map-container" class="container">
+    <div class="container">
         <div class="map-header">
-            <h2 class="title">U.S. Counties Data Visualization</h2>
-            <p id="description" class="description">Use the buttons to navigate between map layers</p>
-
-            <div class="map-container">
-                <svg id="map-svg" class="map-svg" width="800" height="500"></svg>
+            <!-- <h1 class="title">Federal Employment Vulnerability Map</h1> -->
+            <div class="description" id="description">
+                <!-- Dynamic description will be inserted here -->
             </div>
         </div>
 
-        <!-- <div class="sections">
-            <div class="section intro-section">
-                <h3>Introduction</h3>
-                <p>This interactive map shows data for all U.S. counties. Scroll down to see different data layers.</p>
+        <!-- This is the correct structure for scrollytelling -->
+        <div class="sticky-container">
+            <div id="map-container" class="map-container">
+                <svg id="map-svg" class="map-svg"></svg>
             </div>
+        </div>
 
-            <div class="section percentage-section">
-                <h3>Federal Dependency</h3>
-                <p>This layer displays federal dependency for each county, with values ranging from 0% to 30%. Counties
-                    in darker blue indicate higher dependency on federal employment and funding.</p>
-            </div>
-
-            <div class="section index-section">
-                <h3>Vulnerability Index</h3>
-                <p>This layer shows the vulnerability index for each county. Counties in darker red have higher
-                    vulnerability scores based on combined factors of federal dependency, unemployment, and income
-                    measures.</p>
-            </div>
-        </div> -->
+        <!-- Sections will be created dynamically by JavaScript -->
+        <div class="sections">
+            <!-- Scroll sections will be inserted here -->
+        </div>
     </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="js/config.js" type="module"></script>
+    <script src="js/main.js" type="module"></script>
 </body>
 
 </html>
