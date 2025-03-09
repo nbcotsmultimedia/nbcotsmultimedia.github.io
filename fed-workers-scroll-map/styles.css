@@ -1,6 +1,7 @@
 /* styles.css - Updated with more subtle scrollytelling sections */
 
-/* Base styles */
+/* #region - Base styles */
+
 body {
   margin: 0;
   padding: 0;
@@ -16,7 +17,10 @@ body {
   margin: 0 auto;
 }
 
-/* Header styles */
+/* #endregion */
+
+/* #region - Header styles */
+
 .map-header {
   padding: 1rem 2rem;
   text-align: center;
@@ -37,7 +41,10 @@ body {
   margin-right: auto;
 }
 
-/* Scrollytelling: Sticky map container */
+/* #endregion */
+
+/* #region - Scrollytelling: Sticky map container */
+
 .sticky-container {
   position: sticky;
   top: 0;
@@ -63,11 +70,18 @@ body {
   max-height: 90vh;
 }
 
-/* Scrollytelling: Sections - Updated for more subtle appearance */
+/* #endregion */
+
+/* #region - Scrollytelling: sections */
 .sections {
   position: relative;
   z-index: 2;
   pointer-events: none; /* Allow clicks to pass through to map */
+}
+
+/* Section spacer */
+.section-spacer {
+  height: 50vh;
 }
 
 .scroll-section {
@@ -119,7 +133,10 @@ body {
   margin-bottom: 0.5rem;
 }
 
-/* Scrollytelling: Progress indicator */
+/* #endregion */
+
+/* #region - Scrollytelling: progress indicator */
+
 .progress-indicator {
   position: fixed;
   right: 20px;
@@ -194,7 +211,10 @@ body {
   visibility: visible;
 }
 
-/* Map elements and visualization styles */
+/* #endregion */
+
+/* #region - Map elements and visualization styles */
+
 path.county,
 path.state {
   transition: fill 0.3s ease, stroke-width 0.2s ease;
@@ -206,48 +226,10 @@ path.state:hover {
   stroke: #000;
 }
 
-/* Tooltip styling */
-.tooltip {
-  position: absolute;
-  display: none;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  pointer-events: none;
-  z-index: 1000;
-  max-width: 300px;
-}
+/* #endregion */
 
-.tooltip-header {
-  margin-bottom: 8px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-  font-weight: bold;
-}
+/* #region - Cluster-specific styling */
 
-.tooltip-data {
-  font-size: 0.9rem;
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.tooltip-label {
-  font-weight: 500;
-  margin-right: 10px;
-}
-
-.tooltip-section {
-  margin-bottom: 5px;
-}
-
-/* Cluster-specific styling */
 .cluster-badge,
 .salient-badge {
   display: inline-block;
@@ -263,7 +245,10 @@ path.state:hover {
   color: black;
 }
 
-/* Loading and error messages */
+/* #endregion */
+
+/* #region - Loading and error messages */
+
 .loading-message {
   position: absolute;
   top: 50%;
@@ -276,12 +261,10 @@ path.state:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Section spacer */
-.section-spacer {
-  height: 50vh;
-}
+/* #endregion */
 
-/* Responsive styles */
+/* #region - Responsive styles */
+
 @media (max-width: 768px) {
   .section-content {
     max-width: 75%;
@@ -326,104 +309,273 @@ path.state:hover {
   }
 }
 
-/* Updated tooltip styles */
+/* #endregion */
+
+/* #region - Tooltip styling */
 
 .tooltip {
   position: absolute;
-  display: none;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  font-size: 14px;
-  pointer-events: none;
   z-index: 1000;
-  max-width: 280px;
+  background-color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 15px 20px;
+  width: 320px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease-out;
+  display: none;
 }
 
+.tooltip.visible {
+  opacity: 1;
+  display: block;
+}
+
+/* Arrow styling for all positions */
 .tooltip::after {
   content: "";
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: white;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
   transform: rotate(45deg);
 }
 
-/* Tooltip pointing right (when on the left side of cursor) */
+/* Arrow positioning variants */
 .tooltip.right-arrow::after {
-  top: 50%;
-  right: -5px;
-  margin-top: -4px;
-  transform: rotate(-45deg);
-}
-
-/* Tooltip pointing left (when on the right side of cursor) */
-.tooltip.left-arrow::after {
-  top: 50%;
   left: -5px;
-  margin-top: -4px;
-  transform: rotate(135deg);
+  top: 50%;
+  margin-top: -5px;
+  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Tooltip pointing up (when below cursor) */
+.tooltip.left-arrow::after {
+  right: -5px;
+  top: 50%;
+  margin-top: -5px;
+  box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .tooltip.top-arrow::after {
-  top: -5px;
-  left: 50%;
-  margin-left: -4px;
-  transform: rotate(45deg);
-}
-
-/* Tooltip pointing down (when above cursor) */
-.tooltip.bottom-arrow::after {
   bottom: -5px;
   left: 50%;
-  margin-left: -4px;
-  transform: rotate(225deg);
+  margin-left: -5px;
+  box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip.bottom-arrow::after {
+  top: -5px;
+  left: 50%;
+  margin-left: -5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* #region - Simple tooltip style */
+.tooltip-simple {
+  padding: 10px 15px;
 }
 
 .tooltip-header {
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 8px;
-  border-bottom: 1px solid #eee;
   padding-bottom: 5px;
-  font-weight: bold;
-  color: #333;
+  border-bottom: 1px solid #eee;
 }
 
 .tooltip-data {
-  font-size: 0.9rem;
+  font-size: 14px;
 }
 
 .tooltip-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .tooltip-label {
   font-weight: 500;
-  margin-right: 10px;
   color: #555;
 }
 
 .tooltip-value {
   font-weight: 600;
-  color: #333;
+}
+/* #endregion */
+
+/* #region - Modern tooltip style */
+.tooltip-modern {
+  width: 100%;
 }
 
-.tooltip-section {
-  margin-bottom: 8px;
-}
-
-.tooltip-section h4 {
-  margin: 0 0 5px 0;
+.tooltip-modern h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
   border-bottom: 1px solid #eee;
-  font-size: 13px;
-  padding-bottom: 3px;
-  color: #333;
 }
+
+.tooltip-score {
+  margin-bottom: 20px;
+}
+
+.tooltip-score h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  position: relative;
+}
+
+.score-scale {
+  font-size: 14px;
+  color: #777;
+  font-weight: normal;
+  margin-left: 2px;
+}
+
+.tooltip-score p {
+  margin: 4px 0 8px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.score-bar {
+  position: relative;
+  width: 100%;
+  height: 3px;
+  background-color: rgba(255, 0, 0, 0.1);
+  margin-top: 8px;
+}
+
+.score-indicator {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #e05353;
+  transform: translate(-50%, -50%);
+}
+
+.tooltip-metrics {
+  margin-bottom: 20px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.metric-sub {
+  font-size: 11px;
+  color: #777;
+  margin-top: -4px;
+  margin-bottom: 15px;
+  text-align: right;
+}
+
+/* Facilities section */
+.tooltip-facilities {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.tooltip-facilities h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.facility-row {
+  margin-bottom: 10px;
+}
+
+.facility-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.facility-value {
+  font-size: 13px;
+  margin: 0;
+  color: #333;
+  line-height: 1.4;
+}
+/* #endregion */
+
+/* #endregion */
+
+/* #region - New tooltip */
+
+/* Force the tooltip to have critical styles */
+#tooltip {
+  position: absolute !important;
+  z-index: 9999 !important; /* Very high z-index to ensure visibility */
+  background-color: white !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  min-width: 200px !important;
+  transition: opacity 0.2s ease-out !important;
+  pointer-events: none !important;
+}
+
+/* When visible class is applied */
+#tooltip.visible {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Fix for the arrow */
+#tooltip::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: white;
+  transform: rotate(45deg);
+  z-index: -1; /* Behind the main tooltip content */
+}
+
+/* Fix tooltip content visibility */
+.tooltip-modern,
+.tooltip-simple {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Make sure score indicator is visible */
+.score-indicator {
+  position: absolute !important;
+  top: 0 !important;
+  margin-top: -4px !important;
+  background-color: #e05353 !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  transform: translateX(-4px) !important;
+}
+
+/* #endregion */

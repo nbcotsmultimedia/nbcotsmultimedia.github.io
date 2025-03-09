@@ -1,5 +1,8 @@
 // config.js - Updated configuration settings
 
+const DEV_MODE = true; // Set to false for production
+const TOOLTIP_DEV_MODE = true; // Set to false for production
+
 const config = {
   // URLs for data sources
   urls: {
@@ -22,9 +25,9 @@ const config = {
     // Federal workers per 100k, by state
     {
       id: "state_federal_workers",
-      title: "Federal Workers per 100,000 by State",
+      title: "Federal workers by state",
       description:
-        "Some states rely more heavily on federal employment than others. Washington D.C., Alaska, Maryland, and Hawaii show the highest concentration of federal workers.",
+        "Federal jobs aren't spread evenly across the country. D.C., Alaska, Maryland, and Hawaii have the most federal workers per capita.",
       dataField: "state_fed_workers_per_100k",
       colorSet: "blues",
       isStateLevel: true,
@@ -33,9 +36,9 @@ const config = {
     // Federal workers per 100k, by county
     {
       id: "federal_workers",
-      title: "Federal Workers per 100,000 by County",
+      title: "Federal workers by county",
       description:
-        "Zooming in reveals significant variation even within states, with some counties showing much higher federal employment than their neighbors.",
+        "Even within states, some counties depend much more on federal jobs than others.",
       dataField: "fed_workers_per_100k",
       colorSet: "blues",
       breaks: [1000, 2500, 5000, 7500, 10000],
@@ -43,9 +46,9 @@ const config = {
     // Original vulnerability score by county
     {
       id: "vulnerability_index",
-      title: "Vulnerability Index to Federal Job Cuts",
+      title: "Vulnerability to federal job cuts",
       description:
-        "The vulnerability index shows areas most at risk from federal workforce reductions, based on federal employment (50%), unemployment (30%), and income (20%).",
+        "This map shows which places would be hit hardest by federal job cuts, based on how many federal workers they have, local unemployment, and income levels.",
       dataField: "vulnerabilityIndex",
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -55,9 +58,9 @@ const config = {
     // Rural Federal-Dependent Communities spotlight
     {
       id: "rural_federal_dependent",
-      title: "Rural Federal-Dependent Communities",
+      title: "Rural federal-dependent communities",
       description:
-        "Rural areas with high federal employment (559 counties, 881,780 federal workers). These communities often have limited economic diversification and rely heavily on federal jobs.",
+        "Many rural counties (559 in total) rely heavily on federal jobs. With few other industries, cuts to federal employment would hit these areas hard.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -72,9 +75,9 @@ const config = {
     // Native American Reservation Counties spotlight
     {
       id: "native_american_reservation",
-      title: "Native American Reservation Counties",
+      title: "Native American reservation counties",
       description:
-        "Counties with significant Native American populations and federal presence (204 counties, 138,910 federal workers). These areas often have limited economic diversification and rely on federal support.",
+        "These 204 counties with large Native American populations depend heavily on federal jobs. Many reservations have few other employment options.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -89,9 +92,9 @@ const config = {
     // Economically Distressed Areas spotlight
     {
       id: "economically_distressed",
-      title: "Economically Distressed Areas",
+      title: "Economically distressed areas",
       description:
-        "Counties with high unemployment, low income, and federal presence (132 counties, 50,821 federal workers). These areas are particularly vulnerable to federal job cuts due to limited economic opportunities.",
+        "These 132 counties already face high unemployment and low incomes. They're especially vulnerable because federal jobs are among the few stable employers.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -251,3 +254,4 @@ const config = {
 };
 
 export default config;
+export { DEV_MODE, TOOLTIP_DEV_MODE };

@@ -2,7 +2,8 @@
 
 // #region - Configuration and state management
 
-import config from "./config.js";
+// Imports
+import config, { DEV_MODE, TOOLTIP_DEV_MODE } from "./config.js";
 
 // Application state
 let state = {
@@ -30,6 +31,27 @@ let elements = {
   intersectionObserver: null,
 };
 
+// Helper function for debouncing
+function debounce(func, wait) {
+  let timeout;
+  return function () {
+    const context = this;
+    const args = arguments;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+/**
+ * Special handler for scroll events (debounced)
+ */
+function hideTooltipOnScroll() {
+  if (elements.tooltip) {
+    elements.tooltip.classList.remove("visible");
+    elements.tooltip.style.display = "none";
+  }
+}
+
 // #endregion
 
 // #region - Initialization and setup
@@ -54,6 +76,7 @@ function initializeApp() {
 
   // Create tooltip
   elements.tooltip = createTooltip();
+  setupTooltipDismissHandlers();
 
   // Create loading message
   elements.loadingMessage = createLoadingMessage();
@@ -165,15 +188,171 @@ function setDimensions(svg) {
 
 // Create tooltip element
 function createTooltip() {
-  const tooltip = document.createElement("div");
-  tooltip.id = "tooltip";
-  tooltip.className = "tooltip";
-  document.body.appendChild(tooltip);
+  // Check if tooltip already exists
+  let tooltip = document.getElementById("tooltip");
 
-  // Add scroll event listener to hide tooltip on scroll
-  window.addEventListener("scroll", hideTooltipOnScroll, { passive: true });
+  if (!tooltip) {
+    tooltip = document.createElement("div");
+    tooltip.id = "tooltip";
+    tooltip.className = "tooltip";
+    document.body.appendChild(tooltip);
+
+    // Add scroll event listener to hide tooltip on scroll
+    window.addEventListener("scroll", hideTooltipOnScroll, { passive: true });
+  }
 
   return tooltip;
+}
+
+/**
+ * Position tooltip intelligently to avoid going offscreen with arrow pointing to cursor
+ * @param {Event} event - Mouse event
+ * @param {string} content - HTML content for the tooltip
+ */
+function positionTooltip(event, content) {
+  const tooltip = elements.tooltip;
+  if (!tooltip) {
+    console.warn("Tooltip element not found");
+    return;
+  }
+
+  // Clear previous arrow classes
+  tooltip.classList.remove(
+    "right-arrow",
+    "left-arrow",
+    "top-arrow",
+    "bottom-arrow",
+    "visible"
+  );
+
+  // Set content first so we can measure accurate dimensions
+  tooltip.innerHTML = content;
+
+  // Ensure tooltip is visible for measuring but not displayed yet
+  tooltip.style.display = "block";
+  tooltip.style.opacity = "0";
+
+  // Force a layout calculation to ensure offsetWidth/Height are accurate
+  void tooltip.offsetWidth;
+
+  // Get viewport dimensions
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Get tooltip dimensions after content is set
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+
+  // Get scroll position
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
+
+  // Calculate cursor position relative to viewport
+  const cursorX = event.clientX;
+  const cursorY = event.clientY;
+
+  // Calculate available space in each direction
+  const spaceRight = viewportWidth - cursorX - 15;
+  const spaceLeft = cursorX - 15;
+  const spaceBelow = viewportHeight - cursorY - 15;
+  const spaceAbove = cursorY - 15;
+
+  // Determine the best position based on available space
+  let position;
+  let left, top;
+
+  // Prefer positioning to the right if there's enough space
+  if (spaceRight >= tooltipWidth) {
+    position = "right";
+    left = event.pageX + 15;
+    top = Math.max(scrollY + 10, event.pageY - tooltipHeight / 2);
+  }
+  // Otherwise try positioning to the left
+  else if (spaceLeft >= tooltipWidth) {
+    position = "left";
+    left = event.pageX - tooltipWidth - 15;
+    top = Math.max(scrollY + 10, event.pageY - tooltipHeight / 2);
+  }
+  // If neither horizontal position works well, try below
+  else if (spaceBelow >= tooltipHeight) {
+    position = "top";
+    left = Math.max(
+      scrollX + 10,
+      Math.min(
+        event.pageX - tooltipWidth / 2,
+        scrollX + viewportWidth - tooltipWidth - 10
+      )
+    );
+    top = event.pageY + 15;
+  }
+  // Last resort, position above
+  else {
+    position = "bottom";
+    left = Math.max(
+      scrollX + 10,
+      Math.min(
+        event.pageX - tooltipWidth / 2,
+        scrollX + viewportWidth - tooltipWidth - 10
+      )
+    );
+    top = event.pageY - tooltipHeight - 15;
+  }
+
+  // Final adjustment to ensure tooltip is fully visible
+  top = Math.max(
+    scrollY + 10,
+    Math.min(top, scrollY + viewportHeight - tooltipHeight - 10)
+  );
+  left = Math.max(
+    scrollX + 10,
+    Math.min(left, scrollX + viewportWidth - tooltipWidth - 10)
+  );
+
+  // Add arrow class based on position
+  tooltip.classList.add(`${position}-arrow`);
+
+  // Set final position
+  tooltip.style.left = `${left}px`;
+  tooltip.style.top = `${top}px`;
+
+  // Make tooltip visible
+  tooltip.classList.add("visible");
+
+  // Store last event for reference
+  elements.lastTooltipEvent = {
+    x: event.pageX,
+    y: event.pageY,
+    timestamp: Date.now(),
+  };
+
+  // console.log("Tooltip positioned at:", left, top);
+}
+
+/**
+ * Special handler specifically for wheel events (mouse scroll)
+ * These should always hide the tooltip immediately
+ */
+function hideTooltipOnWheel() {
+  // For wheel events, always hide tooltip immediately
+  if (elements.tooltip) {
+    elements.tooltip.style.display = "none";
+  }
+}
+
+// Add scroll, resize, and wheel handlers to hide tooltip
+function setupTooltipDismissHandlers() {
+  // These events should hide the tooltip
+  const events = ["scroll", "resize", "wheel"];
+
+  events.forEach((eventType) => {
+    window.addEventListener(eventType, hideTooltipOnScroll, { passive: true });
+  });
+
+  // Also hide tooltip when user starts to interact with the keyboard
+  window.addEventListener("keydown", hideTooltipOnScroll);
+
+  // Add touch event handlers for mobile
+  window.addEventListener("touchstart", hideTooltipOnScroll, { passive: true });
 }
 
 /**
@@ -869,8 +1048,8 @@ function renderCurrentStep() {
     .on("mouseover", function (event, d) {
       handleHover(event, d, currentStepConfig);
     })
-    .on("mouseout", function () {
-      handleLeave();
+    .on("mouseout", function (event) {
+      handleLeave(event);
     });
 
   // If showing counties, also add state boundaries for context
@@ -1045,10 +1224,10 @@ function renderLayeredComponents(
         d3.select(this).attr("stroke", "#000").attr("stroke-width", 0.3); // Thinner stroke on hover
         handleLayeredHover(event, d, componentsToDisplay);
       })
-      .on("mouseout", function () {
+      .on("mouseout", function (event) {
         // Remove highlight
         d3.select(this).attr("stroke", "none");
-        handleLeave();
+        handleLeave(event);
       });
   });
 
@@ -1163,10 +1342,9 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
     .on("mouseover", function (event, d) {
       // Custom hover for combined view
       handleCombinedHover(event, d, components);
-    })
-    .on("mouseout", function () {
-      handleLeave();
     });
+  // Remove highlight
+  d3.select(this).attr("stroke", "none");
 
   // Add state boundaries
   svgElement
@@ -1220,8 +1398,8 @@ function renderSpotlightView(svgElement, features, path, stepConfig) {
     .on("mouseover", function (event, d) {
       handleSpotlightHover(event, d, stepConfig);
     })
-    .on("mouseout", function () {
-      handleLeave();
+    .on("mouseout", function (event) {
+      handleLeave(event);
     });
 
   // Add state boundaries for context
@@ -1394,286 +1572,179 @@ function calculateCombinedColor(feature, components) {
 
 // #region - Tooltip and interaction handlers
 
-/**
- * Hide tooltip on scroll (debounced for performance)
- */
-const hideTooltipOnScroll = debounce(() => {
-  if (elements.tooltip) {
-    elements.tooltip.style.display = "none";
-  }
-}, 50);
-
-/**
- * Position tooltip intelligently to avoid going offscreen with arrow pointing to cursor
- * @param {Event} event - Mouse event
- * @param {string} content - HTML content for the tooltip
- */
-function positionTooltip(event, content) {
-  const tooltip = elements.tooltip;
-  if (!tooltip) return;
-
-  // Clear previous arrow classes
-  tooltip.classList.remove(
-    "left-arrow",
-    "right-arrow",
-    "top-arrow",
-    "bottom-arrow"
-  );
-
-  // Show tooltip and set content
-  tooltip.style.display = "block";
-  tooltip.innerHTML = content;
-
-  // Get viewport dimensions
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  // Get tooltip dimensions
-  const tooltipWidth = tooltip.offsetWidth;
-  const tooltipHeight = tooltip.offsetHeight;
-
-  // Get scroll position
-  const scrollX = window.scrollX || window.pageXOffset;
-  const scrollY = window.scrollY || window.pageYOffset;
-
-  // Calculate cursor position relative to viewport
-  const cursorX = event.clientX;
-  const cursorY = event.clientY;
-
-  // Default is to position tooltip to the right of cursor
-  let position = "right";
-  let left = event.pageX + 15; // More space for arrow
-  let top = event.pageY - tooltipHeight / 2;
-
-  // Check if tooltip would go off right edge
-  if (cursorX + tooltipWidth + 25 > viewportWidth) {
-    // Position to the left of cursor
-    position = "left";
-    left = event.pageX - tooltipWidth - 15;
-  }
-
-  // Ensure tooltip is not positioned off the left edge
-  if (left < scrollX + 10) {
-    position = "right";
-    left = event.pageX + 15;
-
-    // If it would still go off right edge, center it below cursor instead
-    if (cursorX + tooltipWidth + 25 > viewportWidth) {
-      position = "top";
-      left = event.pageX - tooltipWidth / 2;
-      top = event.pageY + 15;
-    }
-  }
-
-  // Check if tooltip would go off top/bottom edge
-  if (top < scrollY + 10) {
-    top = scrollY + 10;
-  } else if (top + tooltipHeight + 10 > scrollY + viewportHeight) {
-    // If it can't fit at the current vertical position, try to position above cursor
-    if (cursorY - tooltipHeight - 15 > 0) {
-      position = "bottom";
-      top = event.pageY - tooltipHeight - 15;
-    } else {
-      // If it won't fit above either, position below but adjust to fit viewport
-      position = "top";
-      top = event.pageY + 15;
-
-      // If it's still too tall, just position at top of viewport with margin
-      if (top + tooltipHeight + 10 > scrollY + viewportHeight) {
-        top = scrollY + viewportHeight - tooltipHeight - 10;
-      }
-    }
-  }
-
-  // Add arrow class based on position
-  tooltip.classList.add(`${position}-arrow`);
-
-  // Set final position
-  tooltip.style.left = `${left}px`;
-  tooltip.style.top = `${top}px`;
-
-  // Add a slight fade-in effect
-  tooltip.style.opacity = "0";
-
-  // Trigger reflow and fade in
-  requestAnimationFrame(() => {
-    tooltip.style.opacity = "1";
-  });
-
-  // Store last event to help with determining if scroll is user-initiated
-  elements.lastTooltipEvent = {
-    x: event.pageX,
-    y: event.pageY,
-    timestamp: Date.now(),
-  };
-}
-
-/**
- * Hide tooltip with a short delay to make it feel more natural
- */
-function hideTooltip() {
-  if (!elements.tooltip) return;
-
-  // Fade out
-  elements.tooltip.style.opacity = "0";
-
-  // Then hide after transition
-  setTimeout(() => {
-    elements.tooltip.style.display = "none";
-  }, 200);
-}
-
-/**
- * Special handler specifically for wheel events (mouse scroll)
- * These should always hide the tooltip immediately
- */
-function hideTooltipOnWheel() {
-  // For wheel events, always hide tooltip immediately
-  if (elements.tooltip) {
-    elements.tooltip.style.display = "none";
-  }
-}
-
-/**
- * Add scroll, resize, and wheel handlers to hide tooltip
- * Call this in your initializeApp function
- */
-function setupTooltipDismissHandlers() {
-  // These events should hide the tooltip
-  const events = ["scroll", "resize", "wheel"];
-
-  events.forEach((eventType) => {
-    window.addEventListener(eventType, hideTooltipOnScroll, { passive: true });
-  });
-
-  // Also hide tooltip when user starts to interact with the keyboard
-  window.addEventListener("keydown", hideTooltipOnScroll);
-
-  // Add touch event handlers for mobile
-  window.addEventListener("touchstart", hideTooltipOnScroll, { passive: true });
-}
-
 // Handle hover events
 function handleHover(event, feature, stepConfig) {
+  // console.log("Hover detected on:", feature.properties.name);
+
   // Highlight the hovered feature
   d3.select(event.currentTarget)
     .attr("stroke-width", stepConfig.isStateLevel ? 2 : 1.5)
     .attr("stroke", "#000");
 
   // Get data for tooltip
-  const isStateLevel = stepConfig.isStateLevel === true;
   const name = feature.properties.name;
-  const stateName = isStateLevel
-    ? ""
-    : feature.properties.stateName || "Unknown";
-  const fieldName = stepConfig.dataField;
-  const value = feature.properties[fieldName];
+  const stateName = feature.properties.stateName || "Unknown";
+  const stateAbbr = getStateAbbreviation(stateName); // Add a helper function for this
+  const vulnerabilityIndex = feature.properties.vulnerabilityIndex;
+  const fedWorkers = feature.properties.fed_workers_per_100k;
+  const unemployment = feature.properties.unemployment_rate;
+  const income = feature.properties.median_income;
 
-  // Format the value based on the field
-  let formattedValue = "N/A";
-  if (value !== null && value !== undefined) {
-    if (fieldName === "median_income") {
-      formattedValue = `${value.toLocaleString()}`;
-    } else if (fieldName === "unemployment_rate") {
-      formattedValue = `${value.toFixed(1)}%`;
-    } else if (fieldName === "vulnerabilityIndex") {
-      formattedValue = `${value.toFixed(1)} / 100`;
-    } else if (fieldName === "fed_workers_per_100k") {
-      formattedValue = value.toLocaleString();
-    } else {
-      formattedValue = value.toLocaleString();
-    }
-  }
+  let tooltipContent = "";
 
-  // Build tooltip content based on step type
-  let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${name}${isStateLevel ? "" : `, ${stateName}`}</strong>
+  // Only use the special style for vulnerability-related maps
+  if (
+    stepConfig.id === "vulnerability_index" ||
+    stepConfig.isSpotlightView ||
+    stepConfig.showVulnerability
+  ) {
+    // Use the cleaned up modern style
+    // In your handleHover function
+    tooltipContent = `
+  <div class="tooltip-modern">
+    <h2>${name}, ${stateAbbr}</h2>
+    
+    <div class="tooltip-score">
+      <h1>${
+        vulnerabilityIndex ? vulnerabilityIndex.toFixed(1) : "N/A"
+      }<span class="score-scale">/100</span></h1>
+      <p>Vulnerability score</p>
+      <div class="score-bar">
+        <div class="score-indicator" style="left: ${
+          vulnerabilityIndex ? vulnerabilityIndex : 0
+        }%;"></div>
+      </div>
     </div>
-    <div class="tooltip-data">
-  `;
-
-  // If this is a component step, show additional info
-  if (stepConfig.isComponent) {
-    // Add component info
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label">${stepConfig.title.split(" (")[0]}:</span>
-        <span class="tooltip-value">${formattedValue}</span>
+    
+    <div class="tooltip-metrics">
+      <div class="metric-row">
+        <span class="metric-label">FEDERAL WORKERS</span>
+        <span class="metric-value">${formatValue(
+          fedWorkers,
+          "fed_workers_per_100k"
+        )}</span>
       </div>
-      <div class="tooltip-row">
-        <span class="tooltip-label">Weight in Index:</span>
-        <span class="tooltip-value">${stepConfig.componentWeight * 100}%</span>
+      <div class="metric-sub">per capita</div>
+      
+      <div class="metric-row">
+        <span class="metric-label">UNEMPLOYMENT</span>
+        <span class="metric-value">${
+          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+        }</span>
       </div>
-    `;
-
-    // Add vulnerability score if available
-    if (feature.properties.vulnerabilityIndex) {
-      tooltipContent += `
-        <div class="tooltip-row" style="margin-top:8px;border-top:1px solid #eee;padding-top:4px;">
-          <span class="tooltip-label">Vulnerability Score:</span>
-          <span class="tooltip-value">${feature.properties.vulnerabilityIndex.toFixed(
-            1
-          )}</span>
-        </div>
-      `;
-    }
-  } else if (stepConfig.id === "vulnerability_index") {
-    // For vulnerability index show component breakdowns
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label">Vulnerability Score:</span>
-        <span class="tooltip-value">${formattedValue}</span>
+      
+      <div class="metric-row" style="margin-bottom: 0;">
+        <span class="metric-label">MEDIAN INCOME</span>
+        <span class="metric-value">${
+          income ? "$" + income.toLocaleString() : "N/A"
+        }</span>
       </div>
-      <div style="margin-top:5px;font-size:11px;">Component values:</div>
-    `;
-
-    // Add federal workers component
-    const fedWorkers = feature.properties.fed_workers_per_100k;
-    if (fedWorkers) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Federal Workers:</span>
-          <span class="tooltip-value">${fedWorkers.toLocaleString()} per 100k</span>
-        </div>
-      `;
-    }
-
-    // Add unemployment component
-    const unemployment = feature.properties.unemployment_rate;
-    if (unemployment) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Unemployment:</span>
-          <span class="tooltip-value">${unemployment.toFixed(1)}%</span>
-        </div>
-      `;
-    }
-
-    // Add income component
-    const income = feature.properties.median_income;
-    if (income) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Median Income:</span>
-          <span class="tooltip-value">${income.toLocaleString()}</span>
-        </div>
-      `;
-    }
+    </div>
+  </div>`;
   } else {
-    // Standard tooltip for other steps
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label">${stepConfig.title}:</span>
-        <span class="tooltip-value">${formattedValue}</span>
-      </div>
-    `;
+    // For non-vulnerability maps, use a simpler tooltip
+    tooltipContent = `
+      <div class="tooltip-simple">
+        <div class="tooltip-header">
+          <strong>${name}, ${stateAbbr}</strong>
+        </div>
+        <div class="tooltip-data">
+          <div class="tooltip-row">
+            <span class="tooltip-label">${stepConfig.title}:</span>
+            <span class="tooltip-value">${formatValue(
+              feature.properties[stepConfig.dataField],
+              stepConfig.dataField
+            )}</span>
+          </div>
+        </div>
+      </div>`;
   }
-
-  tooltipContent += `</div>`;
 
   // Show tooltip
   positionTooltip(event, tooltipContent);
+}
+
+// Helper function to format values based on field type with better rounding
+function formatValue(value, fieldName) {
+  if (value === null || value === undefined) return "N/A";
+
+  if (fieldName === "median_income") {
+    return "$" + value.toLocaleString();
+  } else if (fieldName === "unemployment_rate") {
+    return value.toFixed(1) + "%";
+  } else if (
+    fieldName === "fed_workers_per_100k" ||
+    fieldName === "state_fed_workers_per_100k"
+  ) {
+    // Format with K notation for thousands
+    if (value >= 1000) {
+      return (Math.round(value / 100) / 10).toFixed(1) + "K";
+    } else {
+      return value.toLocaleString();
+    }
+  } else {
+    return value.toLocaleString();
+  }
+}
+
+// Helper function to convert state names to abbreviations
+function getStateAbbreviation(stateName) {
+  const stateAbbreviations = {
+    Alabama: "AL",
+    Alaska: "AK",
+    Arizona: "AZ",
+    Arkansas: "AR",
+    California: "CA",
+    Colorado: "CO",
+    Connecticut: "CT",
+    Delaware: "DE",
+    Florida: "FL",
+    Georgia: "GA",
+    Hawaii: "HI",
+    Idaho: "ID",
+    Illinois: "IL",
+    Indiana: "IN",
+    Iowa: "IA",
+    Kansas: "KS",
+    Kentucky: "KY",
+    Louisiana: "LA",
+    Maine: "ME",
+    Maryland: "MD",
+    Massachusetts: "MA",
+    Michigan: "MI",
+    Minnesota: "MN",
+    Mississippi: "MS",
+    Missouri: "MO",
+    Montana: "MT",
+    Nebraska: "NE",
+    Nevada: "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    Ohio: "OH",
+    Oklahoma: "OK",
+    Oregon: "OR",
+    Pennsylvania: "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    Tennessee: "TN",
+    Texas: "TX",
+    Utah: "UT",
+    Vermont: "VT",
+    Virginia: "VA",
+    Washington: "WA",
+    "West Virginia": "WV",
+    Wisconsin: "WI",
+    Wyoming: "WY",
+    "District of Columbia": "DC",
+    Unknown: "??",
+  };
+
+  return stateAbbreviations[stateName] || stateName;
 }
 
 // Handle hover for layered view
@@ -1828,244 +1899,110 @@ function handleCombinedHover(event, feature, components) {
 // Handle hover events for spotlight views
 function handleSpotlightHover(event, feature, stepConfig) {
   // Highlight the hovered feature
-  d3.select(event.currentTarget)
-    .attr("stroke-width", 2)
-    .attr("stroke", "#000")
-    .attr("stroke-opacity", 1);
+  d3.select(event.currentTarget).attr("stroke-width", 2).attr("stroke", "#000");
 
-  // Get basic data for tooltip
+  // Get basic data
   const name = feature.properties.name;
   const stateName = feature.properties.stateName || "Unknown";
-  const isInCluster = feature.properties[stepConfig.spotlightField];
-  const isSalient = feature.properties[stepConfig.salientField];
-
-  // Get vulnerability and cluster scores
+  const stateAbbr = getStateAbbreviation(stateName);
   const vulnerabilityScore = feature.properties.vulnerabilityIndex;
-  const clusterScore = feature.properties[stepConfig.scoreField];
-
-  // Get federal worker data
   const fedWorkers = feature.properties.fed_workers_per_100k;
-  const totalWorkers = feature.properties.total_workers;
-  const pctFederal = feature.properties.pct_federal;
+  const unemployment = feature.properties.unemployment_rate;
+  const income = feature.properties.median_income;
+  const facilityCount = feature.properties.facility_count || 0;
 
-  // Get new facility data if available
-  const facilityCount = feature.properties.facility_count;
-  const topAgencies = feature.properties.top_federal_agencies;
-  const facilityTypes = feature.properties.federal_facility_types;
-  const topInstallations = feature.properties.top_federal_installations;
-  const facilitySummary = feature.properties.federal_facilities_summary;
-
-  // Build tooltip content with a responsive layout
+  // Use the updated modern tooltip style matching the image
   let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${name}, ${stateName}</strong>
-      ${
-        isInCluster
-          ? '<div class="cluster-badge">' +
-            stepConfig.title.split(" ")[0] +
-            "</div>"
-          : ""
-      }
-      ${isSalient ? '<div class="salient-badge">Key Example</div>' : ""}
-    </div>
-    <div class="tooltip-data">`;
-
-  // Add core vulnerability metrics
-  tooltipContent += `
-      <div class="tooltip-section">
-        <h4 style="margin: 0 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Vulnerability Metrics</h4>
-        <div class="tooltip-row">
-          <span class="tooltip-label">Vulnerability Score:</span>
-          <span class="tooltip-value">${
-            vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
-          }</span>
-        </div>`;
-
-  if (isInCluster && clusterScore) {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">${
-            stepConfig.clusterType === "rural"
-              ? "Rural Federal"
-              : stepConfig.clusterType === "reservation"
-              ? "Reservation"
-              : "Distress"
-          } Score:</span>
-          <span class="tooltip-value">${clusterScore.toFixed(1)}</span>
-        </div>`;
-  }
-
-  // Add federal employment information
-  tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Federal Workers:</span>
-          <span class="tooltip-value">${
-            fedWorkers ? fedWorkers.toLocaleString() + " per 100k" : "N/A"
-          }</span>
-        </div>`;
-
-  // Add percent federal if available
-  if (pctFederal !== undefined && pctFederal !== null) {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">% Federal Employment:</span>
-          <span class="tooltip-value">${(pctFederal * 100).toFixed(1)}%</span>
-        </div>`;
-  }
-
-  // Cluster-specific metrics
-  if (stepConfig.clusterType === "rural") {
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Area Type:</span>
-          <span class="tooltip-value">Rural/Non-Metro</span>
-        </div>`;
-  } else if (stepConfig.clusterType === "reservation") {
-    const nativePercent = feature.properties.native_american_pct;
-    if (nativePercent !== undefined && nativePercent !== null) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Native Population:</span>
-          <span class="tooltip-value">${nativePercent.toFixed(1)}%</span>
-        </div>`;
-    }
-  } else if (stepConfig.clusterType === "distressed") {
-    // Add unemployment and median income
-    const unemployment = feature.properties.unemployment_rate;
-    const income = feature.properties.median_income;
-    tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Unemployment:</span>
-          <span class="tooltip-value">${
-            unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-          }</span>
-        </div>
-        <div class="tooltip-row">
-          <span class="tooltip-label">Median Income:</span>
-          <span class="tooltip-value">${
-            income ? "$" + income.toLocaleString() : "N/A"
-          }</span>
-        </div>`;
-  }
-
-  tooltipContent += `
-      </div>`;
-
-  // Only add facility section if there's actual facility data available
-  if (
-    isInCluster &&
-    (facilityCount || topAgencies || facilityTypes || topInstallations)
-  ) {
-    tooltipContent += `
-      <div class="tooltip-section">
-        <h4 style="margin: 8px 0 5px 0; border-bottom: 1px solid #ddd; font-size: 13px;">Federal Facilities</h4>`;
-
-    // Add facility count if available
-    if (facilityCount !== undefined && facilityCount !== null) {
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Facility Count:</span>
-          <span class="tooltip-value">${facilityCount}</span>
-        </div>`;
-    }
-
-    // Add top agencies if available (truncate if too long)
-    if (topAgencies) {
-      let displayAgencies = topAgencies;
-      if (displayAgencies.length > 60) {
-        displayAgencies = displayAgencies.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Top Agencies:</span>
-          <span class="tooltip-value">${displayAgencies}</span>
-        </div>`;
-    }
-
-    // Add top installations if available (truncate if too long)
-    if (topInstallations) {
-      let displayInstallations = topInstallations;
-      if (displayInstallations.length > 60) {
-        displayInstallations = displayInstallations.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Key Facilities:</span>
-          <span class="tooltip-value">${displayInstallations}</span>
-        </div>`;
-    }
-
-    // Add facility types if available (truncate if too long)
-    if (facilityTypes) {
-      let displayTypes = facilityTypes;
-      if (displayTypes.length > 60) {
-        displayTypes = displayTypes.substring(0, 57) + "...";
-      }
-      tooltipContent += `
-        <div class="tooltip-row">
-          <span class="tooltip-label">Facility Types:</span>
-          <span class="tooltip-value">${displayTypes}</span>
-        </div>`;
-    }
-
-    tooltipContent += `
-      </div>`;
-  }
-
-  // Close the tooltip-data div
-  tooltipContent += `
+  <div class="tooltip-modern">
+    <h2>${name}, ${stateAbbr}</h2>
+    
+    <div class="tooltip-score">
+      <h1>${
+        vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
+      }<span class="score-scale">/100</span></h1>
+      <p>Vulnerability score</p>
+      <div class="score-bar">
+        <div class="score-indicator" style="left: ${
+          vulnerabilityScore ? vulnerabilityScore : 0
+        }%;"></div>
+      </div>
     </div>
     
-    <style>
-      .tooltip-section {
-        margin-bottom: 5px;
-      }
-      .tooltip-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2px;
-        font-size: 12px;
-      }
-      .tooltip-label {
-        font-weight: 500;
-        margin-right: 10px;
-      }
-      .cluster-badge, .salient-badge {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 10px;
-        font-weight: bold;
-        margin-left: 5px;
-      }
-      .cluster-badge {
-        background-color: ${
-          stepConfig.clusterType === "rural"
-            ? "#41ab5d"
-            : stepConfig.clusterType === "reservation"
-            ? "#0fb7d4"
-            : "#c13ec7"
-        };
-        color: white;
-      }
-      .salient-badge {
-        background-color: #ffd000;
-        color: black;
-      }
-      .tooltip-header {
-        margin-bottom: 8px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
-      }
-    </style>
-  `;
+    <div class="tooltip-metrics">
+      <div class="metric-row">
+        <span class="metric-label">Federal workers</span>
+        <span class="metric-value">${formatValue(
+          fedWorkers,
+          "fed_workers_per_100k"
+        )}</span>
+      </div>
+      <div class="metric-sub">per capita</div>
+      
+      <!-- REMOVE THESE TWO BLOCKS FOR RESERVATION COUNTIES -->
+      <!-- Don't include reservation score and native american percentage -->
+      
+      <div class="metric-row">
+        <span class="metric-label">Unemployment</span>
+        <span class="metric-value">${
+          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+        }</span>
+      </div>
+      
+      <div class="metric-row">
+        <span class="metric-label">Median Income</span>
+        <span class="metric-value">${
+          income ? "$" + income.toLocaleString() : "N/A"
+        }</span>
+      </div>
+    </div>`;
 
-  // Show tooltip with appropriate sizing
+  // Add facilities section if data is available
+  if (facilityCount > 0) {
+    tooltipContent += `
+    <div class="tooltip-facilities">
+      <h3>${facilityCount} federal facilities</h3>`;
+
+    // Add additional facility details if available
+    if (feature.properties.top_federal_agencies) {
+      tooltipContent += `
+      <div class="facility-row">
+        <span class="facility-label">TOP AGENCIES</span>
+        <p class="facility-value">${
+          feature.properties.top_federal_agencies || "Data not available"
+        }</p>
+      </div>`;
+    }
+
+    if (feature.properties.federal_facility_types) {
+      tooltipContent += `
+      <div class="facility-row">
+        <span class="facility-label">KEY FACILITIES</span>
+        <p class="facility-value">${
+          feature.properties.federal_facility_types || "Data not available"
+        }</p>
+      </div>`;
+    }
+
+    tooltipContent += `</div>`;
+  }
+
+  // Close the tooltip
+  tooltipContent += `</div>`;
+
+  // Show tooltip
   positionTooltip(event, tooltipContent);
 }
 
+// Helper function to truncate long text
+function truncateText(text, maxLength) {
+  if (!text) return "Data not available";
+  return text.length > maxLength
+    ? text.substring(0, maxLength - 3) + "..."
+    : text;
+}
+
 // Handle leave events
-function handleLeave() {
+function handleLeave(event) {
   // Return to normal styling
   if (event && event.currentTarget) {
     d3.select(event.currentTarget)
@@ -2446,17 +2383,6 @@ function checkInitialHash() {
       }, 500);
     }
   }
-}
-
-// Helper function for debouncing
-function debounce(func, wait) {
-  let timeout;
-  return function () {
-    const context = this;
-    const args = arguments;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(context, args), wait);
-  };
 }
 
 // #endregion
