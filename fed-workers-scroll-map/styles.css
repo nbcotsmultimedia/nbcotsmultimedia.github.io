@@ -68,6 +68,7 @@ body {
 .map-svg {
   max-width: 90%;
   max-height: 90vh;
+  border: none;
 }
 
 /* #endregion */
@@ -135,7 +136,7 @@ body {
 
 /* #endregion */
 
-/* #region - Scrollytelling: progress indicator */
+/* #region - Progress indicator */
 
 .progress-indicator {
   position: fixed;
@@ -182,12 +183,12 @@ body {
 }
 
 .step-indicator.active {
-  background-color: #3182bd;
+  background-color: #aaaaaa;
   transform: scale(1.3);
 }
 
 .step-indicator.completed {
-  background-color: #6baed6;
+  background-color: #ddd;
 }
 
 .step-tooltip {
@@ -313,76 +314,85 @@ path.state:hover {
 
 /* #region - Tooltip styling */
 
+/* Base tooltip container */
+#tooltip,
 .tooltip {
-  position: absolute;
-  z-index: 1000;
+  position: absolute !important;
+  z-index: 9999 !important;
   background-color: white;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
-  padding: 15px 20px;
-  width: 320px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  padding: 0.7rem;
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.15); /* Slightly enhanced shadow */
   pointer-events: none;
+  min-width: 220px;
   opacity: 0;
-  transition: opacity 0.2s ease-out;
   display: none;
+  transition: opacity 0.25s ease-out;
+  line-height: 1.5; /* Improved line height for readability */
 }
 
+/* When visible */
+#tooltip.visible,
 .tooltip.visible {
-  opacity: 1;
-  display: block;
+  opacity: 1 !important;
+  display: block !important;
 }
 
-/* Arrow styling for all positions */
+/* Arrow styling */
+#tooltip::after,
 .tooltip::after {
   content: "";
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 12px; /* Slightly larger arrow */
+  height: 12px;
   background: white;
   transform: rotate(45deg);
+  z-index: -1;
 }
 
-/* Arrow positioning variants */
+/* Arrow positioning variants - adjusted for larger arrow */
+#tooltip.right-arrow::after,
 .tooltip.right-arrow::after {
-  left: -5px;
+  left: -6px;
   top: 50%;
-  margin-top: -5px;
+  margin-top: -6px;
   box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
 }
-
+#tooltip.left-arrow::after,
 .tooltip.left-arrow::after {
-  right: -5px;
+  right: -6px;
   top: 50%;
-  margin-top: -5px;
+  margin-top: -6px;
   box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.1);
 }
-
+#tooltip.top-arrow::after,
 .tooltip.top-arrow::after {
-  bottom: -5px;
+  bottom: -6px;
   left: 50%;
-  margin-left: -5px;
+  margin-left: -6px;
   box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.1);
 }
-
+#tooltip.bottom-arrow::after,
 .tooltip.bottom-arrow::after {
-  top: -5px;
+  top: -6px;
   left: 50%;
-  margin-left: -5px;
+  margin-left: -6px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* #region - Simple tooltip style */
+/* Simple tooltip style */
 .tooltip-simple {
-  padding: 10px 15px;
+  padding: 0.25rem;
 }
 
 .tooltip-header {
-  font-size: 16px;
+  font-size: 1rem; /* Larger header */
   font-weight: 600;
-  margin-bottom: 8px;
-  padding-bottom: 5px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #eee;
+  color: #333;
 }
 
 .tooltip-data {
@@ -392,190 +402,389 @@ path.state:hover {
 .tooltip-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 8px; /* More space between rows */
+  align-items: baseline;
 }
 
 .tooltip-label {
   font-weight: 500;
-  color: #555;
+  color: #444;
+  font-size: 13px;
 }
 
 .tooltip-value {
   font-weight: 600;
+  font-size: 15px; /* Slightly larger values for emphasis */
+  color: #222;
 }
-/* #endregion */
 
-/* #region - Modern tooltip style */
+/* Modern tooltip style */
 .tooltip-modern {
   width: 100%;
 }
 
 .tooltip-modern h2 {
-  font-size: 16px;
+  font-size: 18px; /* Larger heading */
   font-weight: 600;
-  margin: 0 0 15px 0;
-  padding-bottom: 10px;
+  margin: 0 0 18px 0;
+  padding-bottom: 12px;
   border-bottom: 1px solid #eee;
+  color: #222;
+  letter-spacing: -0.2px; /* Tighter letter spacing for headings */
 }
 
 .tooltip-score {
-  margin-bottom: 20px;
+  margin-bottom: 24px; /* More vertical spacing */
 }
 
 .tooltip-score h1 {
-  font-size: 32px;
+  font-size: 36px; /* Larger score */
   font-weight: 700;
   margin: 0;
   position: relative;
+  color: #111;
+  line-height: 1.2;
 }
 
 .score-scale {
-  font-size: 14px;
+  font-size: 15px;
   color: #777;
   font-weight: normal;
-  margin-left: 2px;
+  margin-left: 3px;
 }
 
 .tooltip-score p {
-  margin: 4px 0 8px 0;
-  color: #666;
-  font-size: 13px;
+  margin: 6px 0 10px 0;
+  color: #555;
+  font-size: 14px;
 }
 
 .score-bar {
   position: relative;
   width: 100%;
-  height: 3px;
+  height: 4px; /* Thicker bar */
   background-color: rgba(255, 0, 0, 0.1);
-  margin-top: 8px;
+  margin-top: 10px;
+  border-radius: 2px; /* Slightly rounded bar */
 }
 
 .score-indicator {
-  position: absolute;
-  top: 0;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #e05353;
-  transform: translate(-50%, -50%);
+  position: absolute !important;
+  top: 0 !important;
+  margin-top: -4px !important;
+  background-color: #e05353 !important;
+  width: 10px !important; /* Larger indicator dot */
+  height: 10px !important;
+  border-radius: 50% !important;
+  transform: translateX(-5px) !important; /* Adjusted for larger dot */
+  box-shadow: 0 0 4px rgba(224, 83, 83, 0.5); /* Subtle glow effect */
 }
 
 .tooltip-metrics {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .metric-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
 }
 
 .metric-label {
-  font-size: 12px;
+  font-size: 13px; /* Slightly larger label */
   font-weight: 600;
   text-transform: uppercase;
-  color: #555;
+  color: #444;
+  letter-spacing: 0.3px; /* Slightly spaced letters for readability */
 }
 
 .metric-value {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px; /* Larger value */
+  font-weight: 600;
   text-align: right;
+  color: #222;
 }
 
 .metric-sub {
-  font-size: 11px;
-  color: #777;
-  margin-top: -4px;
-  margin-bottom: 15px;
+  font-size: 12px;
+  color: #666;
+  margin-top: -3px;
+  margin-bottom: 16px;
   text-align: right;
+  font-style: italic; /* Adds subtle emphasis */
 }
 
 /* Facilities section */
 .tooltip-facilities {
   border-top: 1px solid #eee;
-  padding-top: 10px;
+  padding-top: 14px;
+  margin-top: 4px;
 }
 
 .tooltip-facilities h3 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  margin: 0 0 10px 0;
+  margin: 0 0 12px 0;
+  color: #333;
 }
 
 .facility-row {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .facility-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  color: #555;
+  color: #444;
   text-transform: uppercase;
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
+  letter-spacing: 0.2px;
 }
 
 .facility-value {
-  font-size: 13px;
+  font-size: 14px;
   margin: 0;
   color: #333;
-  line-height: 1.4;
+  line-height: 1.5;
 }
+
+/* Small screen adjustments */
+@media (max-width: 768px) {
+  #tooltip,
+  .tooltip {
+    padding: 0.5rem;
+    min-width: 200px;
+    max-width: 280px;
+  }
+
+  .tooltip-modern h2 {
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .tooltip-score h1 {
+    font-size: 32px;
+  }
+
+  .tooltip-label {
+    font-size: 12px;
+  }
+
+  .tooltip-value {
+    font-size: 14px;
+  }
+}
+
 /* #endregion */
 
+/* #region - Legend styling */
+
+/* #region - Legend styles */
+
+/* Legend container */
+.legend-container {
+  fill: #f9f9f9;
+  opacity: 60%;
+  rx: 4px;
+  ry: 4px;
+  stroke: #eee;
+  stroke-width: 0.5;
+}
+
+/* Legend title */
+.legend-title {
+  font-size: 12px;
+  font-weight: bold;
+  fill: #333;
+}
+
+/* Legend color blocks */
+.legend-block {
+  stroke: #555;
+  stroke-width: 0.5;
+}
+
+/* Legend labels */
+.legend-label {
+  font-size: 9px;
+  text-anchor: middle;
+  fill: #555;
+}
+
+/* Specific legend types */
+.legend-value {
+  font-size: 9px;
+  text-anchor: middle;
+  fill: #555;
+}
+
+.legend-value-start {
+  text-anchor: middle;
+}
+
+.legend-value-end {
+  text-anchor: middle;
+}
+
+/* #region - Legend styles */
+
+/* Legend container */
+.legend-container {
+  fill: rgba(255, 255, 255, 0.85);
+  rx: 4px;
+  ry: 4px;
+  stroke: #eee;
+  stroke-width: 0.5;
+}
+
+/* Legend title */
+.legend-title {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #333;
+  text-anchor: middle;
+}
+
+/* Legend color blocks */
+.legend-block {
+  stroke: none;
+}
+
+/* Legend labels */
+.legend-label {
+  font-size: 0.95rem;
+  text-anchor: middle;
+  fill: #555;
+  font-weight: 500;
+}
+
+/* Specific legend types */
+.legend-value {
+  font-size: 12px;
+  text-anchor: middle;
+  fill: #555;
+  font-weight: 500;
+}
+
+.legend-value-start {
+  text-anchor: middle;
+}
+
+.legend-value-end {
+  text-anchor: middle;
+}
+
 /* #endregion */
 
-/* #region - New tooltip */
+/* #region - transitions */
 
-/* Force the tooltip to have critical styles */
-#tooltip {
-  position: absolute !important;
-  z-index: 9999 !important; /* Very high z-index to ensure visibility */
-  background-color: white !important;
-  border-radius: 4px !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
-  min-width: 200px !important;
-  transition: opacity 0.2s ease-out !important;
-  pointer-events: none !important;
+/* Add smooth transitions for map paths */
+path.county,
+path.state {
+  transition: fill 0.5s ease-in-out, opacity 0.5s ease-in-out,
+    stroke-width 0.2s ease;
 }
 
-/* When visible class is applied */
-#tooltip.visible {
-  display: block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+/* Map container transitions */
+.map-group {
+  transition: transform 0.5s ease-in-out;
 }
 
-/* Fix for the arrow */
-#tooltip::after {
-  content: "";
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: white;
-  transform: rotate(45deg);
-  z-index: -1; /* Behind the main tooltip content */
+/* Additional CSS fixes for legend positioning */
+
+/* Extra margin for SVG to prevent cut-off */
+.map-svg {
+  max-width: 90%;
+  max-height: 90vh;
+  border: none;
+  margin-top: 20px; /* Add margin at the top to prevent legend cut-off */
 }
 
-/* Fix tooltip content visibility */
-.tooltip-modern,
-.tooltip-simple {
-  opacity: 1 !important;
-  visibility: visible !important;
+/* Improved legend styling and positioning */
+.legend-title {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #333;
+  text-anchor: middle;
 }
 
-/* Make sure score indicator is visible */
-.score-indicator {
-  position: absolute !important;
-  top: 0 !important;
-  margin-top: -4px !important;
-  background-color: #e05353 !important;
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 50% !important;
-  transform: translateX(-4px) !important;
+.legend-value,
+.legend-label {
+  font-size: 12px;
+  fill: #555;
+  dominant-baseline: middle; /* Improve vertical alignment */
+}
+
+/* Make sure the svg container has enough space at the top */
+.map-container {
+  /* padding-top: 50px; */
+  box-sizing: border-box;
+}
+
+/* Make sure sticky container has proper spacing */
+/* .sticky-container {
+  padding-top: 20px; Add top padding to the sticky container
+} */
+
+/* Add a background to the legend for better visibility */
+g.legend {
+  position: relative;
+  z-index: 10;
+}
+
+/* In case the legend isn't fully visible, add these overrides */
+.map-header {
+  margin-bottom: 30px; /* Add extra margin below the header */
+}
+
+/* CSS fixes for spotlight sections */
+
+/* Make spotlight sections more distinct */
+.spotlight-section {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh !important; /* Force full height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: auto !important; /* Ensure spotlight sections can be interacted with */
+}
+
+/* Ensure spotlight section content is fully visible */
+.spotlight-section .section-content {
+  opacity: 0; /* Start invisible */
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  transform: translateY(20px); /* Start slightly below final position */
+  background-color: rgba(255, 255, 255, 0.9); /* More opaque background */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+  padding: 1.2rem; /* Larger padding */
+  pointer-events: auto;
+  max-width: 350px; /* Slightly wider */
+}
+
+/* When active, make spotlight section content more prominent */
+.spotlight-section.active .section-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* All sections need pointer events for proper scrolling */
+.sections {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto; /* Enable interactions with all sections */
+}
+
+/* Each section needs to be clearly distinct for scrolling */
+.scroll-section {
+  position: relative;
+  min-height: 100vh;
+  border-top: 1px solid transparent; /* Invisible border to create separation */
+  margin-top: -1px; /* Offset the border */
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
 /* #endregion */

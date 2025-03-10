@@ -1,8 +1,5 @@
 // config.js - Updated configuration settings
 
-const DEV_MODE = true; // Set to false for production
-const TOOLTIP_DEV_MODE = true; // Set to false for production
-
 const config = {
   // URLs for data sources
   urls: {
@@ -253,5 +250,20 @@ const config = {
   },
 };
 
+const CACHE_CONFIG = {
+  version: "1.0.0", // Increment when data structure changes
+  keys: {
+    statesGeo: "map_states_geo_v1",
+    countiesGeo: "map_counties_geo_v1",
+    vulnerabilityData: "map_vulnerability_data_v1",
+    ruralFedData: "map_rural_fed_data_v1",
+    reservationData: "map_reservation_data_v1",
+    distressedData: "map_distressed_data_v1",
+    cacheVersion: "map_cache_version",
+    lastUpdated: "map_last_updated",
+  },
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+};
+
 export default config;
-export { DEV_MODE, TOOLTIP_DEV_MODE };
+export { CACHE_CONFIG };

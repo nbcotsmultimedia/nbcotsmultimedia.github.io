@@ -3,7 +3,15 @@
 // #region - Configuration and state management
 
 // Imports
-import config, { DEV_MODE, TOOLTIP_DEV_MODE } from "./config.js";
+import config, { CACHE_CONFIG } from "./config.js";
+
+// Caching
+const dataCache = {
+  states: null,
+  counties: null,
+  vulnerabilityData: null,
+  clusterData: null,
+};
 
 // Application state
 let state = {
@@ -52,33 +60,258 @@ function hideTooltipOnScroll() {
   }
 }
 
+// A simple USA outline path for quick initial rendering
+function getUSOutline() {
+  // This is a simplified outline of the USA for quick rendering
+  return "M234.5,53.7L233.1,53.5L231.3,53.1L224.3,52.2L222.7,51.9L219.6,51.2L217.9,50.9L218.5,50L219.8,49.2L220.6,49.3L221.5,49.2L220.9,48.5L218.8,48.6L217.6,48.1L217,46.8L215.2,45.9L214,45.3L210.5,44.5L208.5,43.2L207.7,43.2L206.5,41.9L207.3,41.3L205.1,39.5L204.4,37.9L205.9,37.1L207.2,36.3L207.4,34.6L208.9,34L210.1,32.5L211.3,32.5L212.7,33.7L214.7,33.5L217.4,32.2L217.7,30.5L215.6,29.3L214.7,27.3L213.1,24.4L211.9,23.6L211.9,22.3L216.2,22.3L217.9,24.6L218.3,24.7L219.7,25.7L221.1,26L224.3,24.2L225.1,24L226.2,25.1L226.7,26.8L227.9,28.1L232,29.2L234.1,30.9L234.8,32.2L235.2,33.2L235.4,34.4L236.7,36.2L237.9,37L239.1,38.4L239.5,39.1L240.1,40.3L241.2,41.2L243.9,44.7L244.8,45.3L245.9,45.2L246.7,45.9L248.3,45.9L249.1,47.6L249.2,49L250.1,49.9L250.9,49.9L252.1,51.3L252.9,51.9L252.6,53.1L252.6,53.7L251.2,54.9L250.6,55.7L250.5,57.3L249.4,58.2L248.7,58.2L246.9,56.2L245.6,56L243.2,56.8L241.9,57.1L239.9,57.5L237.5,57.6L237.2,57.3L235.9,57.4L233.8,58.1L232.2,56.7L232.2,55.4L233.1,54L234.5,53.7ZM283.5,469.9L226.7,437.2L226.7,415.5L226.7,409.1L228.1,407.2L229.2,406.6L230.7,406.3L231.9,405.3L232.6,404.1L233.8,404.1L241.9,400.7L257,391.8L259.3,390.2L263.8,386.2L268.5,384.3L270.5,382.1L275,380.7L279.3,376.9L284.3,375.5L284.3,378.8L284.3,380.4L287.7,380.4L287.7,382.1L287.7,384.9L294.4,384.9L294.4,385.4L294.4,387.1L296.1,387.1L296.1,401L296.1,450.1L296.1,465.7L283.5,469.9ZM303.9,465.7L303.9,460.7L302.2,462.4L302.2,464L303.9,465.7ZM309.8,382.1L309.8,380.4L309.8,375.5L313.2,375.5L313.2,378.8L312.1,380.4L309.8,382.1Z";
+}
+
+// #endregion
+
+// #region - Initialize cache
+
+// Initialize cache and check for version changes
+function initializeCache() {
+  try {
+    // Check if cache version matches current version
+    const cachedVersion = localStorage.getItem(CACHE_CONFIG.keys.cacheVersion);
+
+    // If version mismatch or no version, clear cache
+    if (!cachedVersion || cachedVersion !== CACHE_CONFIG.version) {
+      console.log("Cache version mismatch, clearing cache");
+      clearDataCache();
+      localStorage.setItem(
+        CACHE_CONFIG.keys.cacheVersion,
+        CACHE_CONFIG.version
+      );
+    } else {
+      // Check if cache is too old
+      const lastUpdated = localStorage.getItem(CACHE_CONFIG.keys.lastUpdated);
+      if (
+        lastUpdated &&
+        Date.now() - parseInt(lastUpdated) > CACHE_CONFIG.maxAge
+      ) {
+        console.log("Cache expired, clearing");
+        clearDataCache();
+      } else {
+        // Load cached data into memory
+        loadCachedData();
+      }
+    }
+  } catch (e) {
+    console.warn("Error initializing cache:", e);
+    // If any error in cache handling, clear it to be safe
+    try {
+      clearDataCache();
+    } catch (clearError) {
+      console.error("Failed to clear cache:", clearError);
+    }
+  }
+}
+
+// Clear all cached data
+function clearDataCache() {
+  // Clear in-memory cache
+  dataCache.states = null;
+  dataCache.counties = null;
+  dataCache.vulnerabilityData = null;
+  dataCache.ruralFedData = null;
+  dataCache.reservationData = null;
+  dataCache.distressedData = null;
+
+  // Clear localStorage cache (only our keys)
+  Object.values(CACHE_CONFIG.keys).forEach((key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.warn(`Failed to remove cache item: ${key}`, e);
+    }
+  });
+
+  // Update last cleared timestamp
+  try {
+    localStorage.setItem(CACHE_CONFIG.keys.lastUpdated, Date.now().toString());
+  } catch (e) {
+    console.warn("Failed to update last updated timestamp", e);
+  }
+}
+
+function optimizeInitialLoading() {
+  // Check if we're at the initial step
+  if (state.currentStep === 0 && !state.initialMapShown) {
+    const svgElement = d3.select(elements.svg);
+    const mapGroup = svgElement
+      .append("g")
+      .attr("class", "map-group")
+      .attr("transform", `translate(0, ${state.dimensions.topPadding})`);
+
+    // First show a simple outline of the United States while data loads
+    mapGroup
+      .append("path")
+      .attr("class", "usa-outline")
+      .attr("d", getUSOutline()) // This function should return a simple USA outline path
+      .attr("fill", "#f0f0f0")
+      .attr("stroke", "#ccc")
+      .attr("stroke-width", 0.5);
+
+    // Show loading text
+    mapGroup
+      .append("text")
+      .attr("x", state.dimensions.width / 2)
+      .attr("y", state.dimensions.height / 2)
+      .attr("text-anchor", "middle")
+      .attr("font-size", 14)
+      .text("Loading map data...");
+
+    // Mark that we've shown the initial map
+    state.initialMapShown = true;
+
+    return true;
+  }
+
+  return false;
+}
+
+// Load cached data from localStorage into memory
+function loadCachedData() {
+  console.log("Loading data from cache");
+  try {
+    // Load states geodata
+    const cachedStatesGeo = localStorage.getItem(CACHE_CONFIG.keys.statesGeo);
+    if (cachedStatesGeo) {
+      dataCache.statesRaw = JSON.parse(cachedStatesGeo);
+      console.log("Loaded states geodata from cache");
+    }
+
+    // Load counties geodata
+    const cachedCountiesGeo = localStorage.getItem(
+      CACHE_CONFIG.keys.countiesGeo
+    );
+    if (cachedCountiesGeo) {
+      dataCache.countiesRaw = JSON.parse(cachedCountiesGeo);
+      console.log("Loaded counties geodata from cache");
+    }
+
+    // Load vulnerability data
+    const cachedVulnerabilityData = localStorage.getItem(
+      CACHE_CONFIG.keys.vulnerabilityData
+    );
+    if (cachedVulnerabilityData) {
+      dataCache.vulnerabilityData = JSON.parse(cachedVulnerabilityData);
+      console.log("Loaded vulnerability data from cache");
+    }
+
+    // Load cluster data
+    const cachedRuralFedData = localStorage.getItem(
+      CACHE_CONFIG.keys.ruralFedData
+    );
+    if (cachedRuralFedData) {
+      dataCache.ruralFedData = JSON.parse(cachedRuralFedData);
+    }
+
+    const cachedReservationData = localStorage.getItem(
+      CACHE_CONFIG.keys.reservationData
+    );
+    if (cachedReservationData) {
+      dataCache.reservationData = JSON.parse(cachedReservationData);
+    }
+
+    const cachedDistressedData = localStorage.getItem(
+      CACHE_CONFIG.keys.distressedData
+    );
+    if (cachedDistressedData) {
+      dataCache.distressedData = JSON.parse(cachedDistressedData);
+    }
+  } catch (e) {
+    console.warn("Error loading cached data:", e);
+    // If error loading cache, start fresh
+    clearDataCache();
+  }
+}
+
+// Save fetched data to cache
+function saveFetchedDataToCache(dataType, data) {
+  try {
+    const cacheKey = CACHE_CONFIG.keys[dataType];
+    if (!cacheKey) {
+      console.warn(`Unknown data type for caching: ${dataType}`);
+      return;
+    }
+
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    localStorage.setItem(CACHE_CONFIG.keys.lastUpdated, Date.now().toString());
+    console.log(`Cached ${dataType} data`);
+  } catch (e) {
+    // Handle potential quota errors
+    if (e.name === "QuotaExceededError" || e.message.includes("quota")) {
+      console.warn("localStorage quota exceeded, clearing cache to make space");
+      clearDataCache();
+      // Try one more time after clearing
+      try {
+        localStorage.setItem(CACHE_CONFIG.keys[dataType], JSON.stringify(data));
+      } catch (retryError) {
+        console.error("Failed to cache data even after clearing:", retryError);
+      }
+    } else {
+      console.warn(`Error caching ${dataType} data:`, e);
+    }
+  }
+}
+
+// Modified fetch function with caching
+async function fetchWithCache(url, dataType) {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    let data;
+    if (url.endsWith(".json")) {
+      data = await response.json();
+    } else if (url.endsWith(".csv") || url.includes("output=csv")) {
+      const text = await response.text();
+      // Store raw CSV text
+      data = text;
+    } else {
+      data = await response.text();
+    }
+
+    // Cache the fetched data
+    if (dataType) {
+      saveFetchedDataToCache(dataType, data);
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`Error fetching ${url}:`, error);
+    throw error;
+  }
+}
+
 // #endregion
 
 // #region - Initialization and setup
 
-/**
- * Initialize when DOM is loaded
- */
+// Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   initializeApp();
 });
 
-/**
- * Main application initialization function
- */
+// App initialization with deferred loading
 function initializeApp() {
   console.log("Initializing application...");
 
-  // Get DOM elements
+  // Initialize cache system first
+  initializeCache();
+
+  // Get essential DOM elements
   elements.mapContainer = document.getElementById("map-container");
   elements.description = document.getElementById("description");
   elements.svg = document.getElementById("map-svg");
 
-  // Create tooltip
-  elements.tooltip = createTooltip();
-  setupTooltipDismissHandlers();
-
-  // Create loading message
+  // Create loading message (immediate visual feedback)
   elements.loadingMessage = createLoadingMessage();
   elements.svg.parentNode.appendChild(elements.loadingMessage);
 
@@ -86,30 +319,53 @@ function initializeApp() {
   setupStickyMap();
 
   // Set initial dimensions
-  state.dimensions = setDimensions(elements.svg);
+  state.dimensions = setDimensionsWithPadding(elements.svg);
 
-  // Load data
+  // Stage 1: Initial load of just state outlines for immediate display
   try {
     showLoading("Loading map data...");
-    loadData().then(() => {
-      hideLoading();
 
-      // Mark map as initialized
+    // First, try to load from cache for immediate display
+    if (dataCache.states) {
+      // We have cached states, show them immediately
+      console.log("Using cached states for immediate display");
+      state.data = {
+        states: dataCache.states,
+        counties: [],
+      };
       state.mapInitialized = true;
-
-      // Initialize scrollytelling
-      initializeScrollytelling();
-
-      // Check if URL has a hash to navigate to specific step
-      checkInitialHash();
-
-      // Render initial state
       renderCurrentStep();
 
-      // Set up event listeners
-      window.addEventListener("resize", debounce(handleResize, 200));
+      // If we also have counties cached, show them next
+      if (dataCache.counties) {
+        setTimeout(() => {
+          state.data.counties = dataCache.counties;
+          renderCurrentStep();
+        }, 100);
+      }
+    }
 
-      console.log("Application initialized successfully");
+    // Start progressive loading of all data
+    loadDataProgressive().then(() => {
+      // Mark map as fully initialized
+      state.mapInitialized = true;
+      hideLoading();
+
+      // Defer non-essential initializations
+      setTimeout(() => {
+        // Initialize scrollytelling after map is visible
+        initializeScrollytelling();
+
+        // Check if URL has a hash to navigate to specific step
+        checkInitialHash();
+
+        // Set up event listeners with better performance
+        window.addEventListener("resize", debounce(handleResize, 200), {
+          passive: true,
+        });
+
+        console.log("Application fully initialized");
+      }, 500); // Delay to ensure main content is visible first
     });
   } catch (error) {
     console.error("Error initializing application:", error);
@@ -117,9 +373,7 @@ function initializeApp() {
   }
 }
 
-/**
- * Set up sticky map container for scrollytelling
- */
+// Set up sticky map container for scrollytelling
 function setupStickyMap() {
   // Check if we already have a sticky container in the HTML
   const existingStickyContainer = document.querySelector(".sticky-container");
@@ -151,187 +405,27 @@ function setupStickyMap() {
 
   // Store reference
   elements.stickyContainer = stickyContainer;
+
+  // Add additional padding to leave more room for legend
+  elements.mapContainer.style.paddingTop = "40px";
+
   console.log("Sticky container set up:", stickyContainer);
 }
 
-/**
- * Handle window resize
- */
+// Handle window resize
 function handleResize() {
-  state.dimensions = setDimensions(elements.svg);
+  state.dimensions = setDimensionsWithPadding(elements.svg);
 
   if (state.mapInitialized) {
     renderCurrentStep();
   }
 }
 
-/**
- * Set SVG dimensions based on window size
- * @param {HTMLElement} svg - The SVG element
- * @returns {Object} - The dimensions object with width and height
- */
-function setDimensions(svg) {
-  const width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
-  const height = width * 0.625; // 8:5 aspect ratio
-
-  if (svg) {
-    svg.setAttribute("width", width);
-    svg.setAttribute("height", height);
-  }
-
-  return { width, height };
-}
-
 // #endregion
 
 // #region - UI/DOM utilities
 
-// Create tooltip element
-function createTooltip() {
-  // Check if tooltip already exists
-  let tooltip = document.getElementById("tooltip");
-
-  if (!tooltip) {
-    tooltip = document.createElement("div");
-    tooltip.id = "tooltip";
-    tooltip.className = "tooltip";
-    document.body.appendChild(tooltip);
-
-    // Add scroll event listener to hide tooltip on scroll
-    window.addEventListener("scroll", hideTooltipOnScroll, { passive: true });
-  }
-
-  return tooltip;
-}
-
-/**
- * Position tooltip intelligently to avoid going offscreen with arrow pointing to cursor
- * @param {Event} event - Mouse event
- * @param {string} content - HTML content for the tooltip
- */
-function positionTooltip(event, content) {
-  const tooltip = elements.tooltip;
-  if (!tooltip) {
-    console.warn("Tooltip element not found");
-    return;
-  }
-
-  // Clear previous arrow classes
-  tooltip.classList.remove(
-    "right-arrow",
-    "left-arrow",
-    "top-arrow",
-    "bottom-arrow",
-    "visible"
-  );
-
-  // Set content first so we can measure accurate dimensions
-  tooltip.innerHTML = content;
-
-  // Ensure tooltip is visible for measuring but not displayed yet
-  tooltip.style.display = "block";
-  tooltip.style.opacity = "0";
-
-  // Force a layout calculation to ensure offsetWidth/Height are accurate
-  void tooltip.offsetWidth;
-
-  // Get viewport dimensions
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  // Get tooltip dimensions after content is set
-  const tooltipWidth = tooltip.offsetWidth;
-  const tooltipHeight = tooltip.offsetHeight;
-
-  // Get scroll position
-  const scrollX = window.scrollX || window.pageXOffset;
-  const scrollY = window.scrollY || window.pageYOffset;
-
-  // Calculate cursor position relative to viewport
-  const cursorX = event.clientX;
-  const cursorY = event.clientY;
-
-  // Calculate available space in each direction
-  const spaceRight = viewportWidth - cursorX - 15;
-  const spaceLeft = cursorX - 15;
-  const spaceBelow = viewportHeight - cursorY - 15;
-  const spaceAbove = cursorY - 15;
-
-  // Determine the best position based on available space
-  let position;
-  let left, top;
-
-  // Prefer positioning to the right if there's enough space
-  if (spaceRight >= tooltipWidth) {
-    position = "right";
-    left = event.pageX + 15;
-    top = Math.max(scrollY + 10, event.pageY - tooltipHeight / 2);
-  }
-  // Otherwise try positioning to the left
-  else if (spaceLeft >= tooltipWidth) {
-    position = "left";
-    left = event.pageX - tooltipWidth - 15;
-    top = Math.max(scrollY + 10, event.pageY - tooltipHeight / 2);
-  }
-  // If neither horizontal position works well, try below
-  else if (spaceBelow >= tooltipHeight) {
-    position = "top";
-    left = Math.max(
-      scrollX + 10,
-      Math.min(
-        event.pageX - tooltipWidth / 2,
-        scrollX + viewportWidth - tooltipWidth - 10
-      )
-    );
-    top = event.pageY + 15;
-  }
-  // Last resort, position above
-  else {
-    position = "bottom";
-    left = Math.max(
-      scrollX + 10,
-      Math.min(
-        event.pageX - tooltipWidth / 2,
-        scrollX + viewportWidth - tooltipWidth - 10
-      )
-    );
-    top = event.pageY - tooltipHeight - 15;
-  }
-
-  // Final adjustment to ensure tooltip is fully visible
-  top = Math.max(
-    scrollY + 10,
-    Math.min(top, scrollY + viewportHeight - tooltipHeight - 10)
-  );
-  left = Math.max(
-    scrollX + 10,
-    Math.min(left, scrollX + viewportWidth - tooltipWidth - 10)
-  );
-
-  // Add arrow class based on position
-  tooltip.classList.add(`${position}-arrow`);
-
-  // Set final position
-  tooltip.style.left = `${left}px`;
-  tooltip.style.top = `${top}px`;
-
-  // Make tooltip visible
-  tooltip.classList.add("visible");
-
-  // Store last event for reference
-  elements.lastTooltipEvent = {
-    x: event.pageX,
-    y: event.pageY,
-    timestamp: Date.now(),
-  };
-
-  // console.log("Tooltip positioned at:", left, top);
-}
-
-/**
- * Special handler specifically for wheel events (mouse scroll)
- * These should always hide the tooltip immediately
- */
+// Special handler specifically for wheel events (mouse scroll)
 function hideTooltipOnWheel() {
   // For wheel events, always hide tooltip immediately
   if (elements.tooltip) {
@@ -355,10 +449,7 @@ function setupTooltipDismissHandlers() {
   window.addEventListener("touchstart", hideTooltipOnScroll, { passive: true });
 }
 
-/**
- * Create loading message element
- * @returns {HTMLElement} - The loading message element
- */
+// Create loading message element
 function createLoadingMessage() {
   const message = document.createElement("div");
   message.textContent = "Loading map data...";
@@ -366,10 +457,7 @@ function createLoadingMessage() {
   return message;
 }
 
-/**
- * Show loading message
- * @param {string} message - The message to display
- */
+// Show loading message
 function showLoading(message) {
   if (elements.loadingMessage) {
     elements.loadingMessage.textContent = message || "Loading...";
@@ -470,14 +558,390 @@ async function loadData() {
   }
 }
 
+// Add a more aggressive preloading strategy:
+function preloadDataForAdjacentSteps() {
+  const currentStep = state.currentStep;
+  const nextStep = Math.min(currentStep + 1, config.steps.length - 1);
+  const prevStep = Math.max(currentStep - 1, 0);
+
+  // Preload data needed for adjacent steps
+  [prevStep, nextStep].forEach((stepIndex) => {
+    const stepConfig = config.steps[stepIndex];
+    if (stepConfig.isSpotlightView && !dataCache.ruralFedData) {
+      loadClusterData().then((data) => {
+        // Cache but don't render yet
+        dataCache.ruralFedData = data.ruralFedData;
+        dataCache.reservationData = data.reservationData;
+        dataCache.distressedData = data.distressedData;
+      });
+    }
+  });
+}
+
+// Enhance already loaded county data with cluster information
+function enhanceDataWithClusters(clusterData) {
+  if (!state.data || !state.data.counties || !clusterData) {
+    console.warn("Cannot enhance data: missing required data");
+    return;
+  }
+
+  console.log("Enhancing county data with cluster information");
+
+  // Create lookup tables for each cluster type
+  const ruralLookup = {};
+  const reservationLookup = {};
+  const distressedLookup = {};
+
+  // Build lookup objects from cluster data
+  if (clusterData.ruralFedData && Array.isArray(clusterData.ruralFedData)) {
+    clusterData.ruralFedData.forEach((row) => {
+      if (row.NAME) ruralLookup[row.NAME] = row;
+    });
+  }
+
+  if (
+    clusterData.reservationData &&
+    Array.isArray(clusterData.reservationData)
+  ) {
+    clusterData.reservationData.forEach((row) => {
+      if (row.NAME) reservationLookup[row.NAME] = row;
+    });
+  }
+
+  if (clusterData.distressedData && Array.isArray(clusterData.distressedData)) {
+    clusterData.distressedData.forEach((row) => {
+      if (row.NAME) distressedLookup[row.NAME] = row;
+    });
+  }
+
+  // Enhance each county with cluster data
+  state.data.counties.forEach((county) => {
+    const countyName = county.properties.name;
+    const stateName = county.properties.stateName;
+
+    // Get possible matching keys
+    const possibleKeys = getCountyMatchKeys(countyName, stateName);
+
+    // Look for matches in each cluster
+    for (const key of possibleKeys) {
+      // Check for rural federal dependent data
+      if (ruralLookup[key]) {
+        Object.assign(county.properties, {
+          is_rural_federal_dependent: true,
+          rural_fed_score: ruralLookup[key].rural_fed_score || 0,
+          rural_fed_salient_example:
+            ruralLookup[key].salient_example === true ||
+            ruralLookup[key].salient_example === "True",
+          facility_count: ruralLookup[key].facility_count,
+          top_federal_agencies: ruralLookup[key].top_federal_agencies,
+          federal_facility_types: ruralLookup[key].federal_facility_types,
+          top_federal_installations: ruralLookup[key].top_federal_installations,
+          federal_facilities_summary:
+            ruralLookup[key].federal_facilities_summary,
+        });
+      }
+
+      // Check for reservation data
+      if (reservationLookup[key]) {
+        Object.assign(county.properties, {
+          is_native_american_reservation: true,
+          reservation_score: reservationLookup[key].reservation_score || 0,
+          reservation_salient_example:
+            reservationLookup[key].salient_example === true ||
+            reservationLookup[key].salient_example === "True",
+          native_american_pct: reservationLookup[key].native_american_pct,
+        });
+      }
+
+      // Check for distressed data
+      if (distressedLookup[key]) {
+        Object.assign(county.properties, {
+          is_economically_distressed: true,
+          distress_score: distressedLookup[key].distress_score || 0,
+          distress_salient_example:
+            distressedLookup[key].salient_example === true ||
+            distressedLookup[key].salient_example === "True",
+        });
+      }
+    }
+
+    // Track counties in multiple clusters
+    const clusterCount = [
+      county.properties.is_rural_federal_dependent,
+      county.properties.is_native_american_reservation,
+      county.properties.is_economically_distressed,
+    ].filter(Boolean).length;
+
+    // Determine the cluster type for the combined view
+    let clusterType = "none";
+    if (clusterCount > 1) {
+      clusterType = "multiple";
+    } else if (county.properties.is_rural_federal_dependent) {
+      clusterType = "rural";
+    } else if (county.properties.is_native_american_reservation) {
+      clusterType = "reservation";
+    } else if (county.properties.is_economically_distressed) {
+      clusterType = "distressed";
+    }
+
+    // Add combined properties
+    county.properties.combined_cluster_type = clusterType;
+    county.properties.in_multiple_clusters = clusterCount > 1;
+    county.properties.cluster_count = clusterCount;
+  });
+
+  console.log("Cluster data enhancement complete");
+}
+
+// Staged loading approach with caching
+async function loadDataProgressive() {
+  try {
+    // Check if we have complete cached data
+    if (dataCache.states && dataCache.counties && dataCache.vulnerabilityData) {
+      console.log("Using cached data");
+
+      // Construct state from cache
+      state.data = {
+        states: dataCache.states,
+        counties: dataCache.counties,
+      };
+
+      hideLoading();
+      renderCurrentStep();
+
+      // Still load cluster data in the background if not cached
+      if (!dataCache.ruralFedData) {
+        loadClusterData().then((clusterData) => {
+          enhanceDataWithClusters(clusterData);
+          renderCurrentStep();
+        });
+      }
+
+      return state.data;
+    }
+
+    // Step 1: Load basic map structure first
+    showLoading("Loading base map...");
+
+    // Check if we have cached states data
+    let statesData;
+    if (dataCache.states) {
+      statesData = dataCache.states;
+      console.log("Using cached states data");
+    } else {
+      const statesResponse = await fetch(config.urls.statesGeoJSON);
+      statesData = await statesResponse.json();
+      // Cache the raw state geodata
+      dataCache.statesRaw = statesData;
+    }
+
+    // Process and display basic state map right away
+    const processedStates = processStateData(statesData);
+    dataCache.states = processedStates; // Cache processed states
+
+    state.data = { states: processedStates, counties: [] };
+    hideLoading();
+    renderCurrentStep(); // Show initial state map
+
+    // Step 2: Load county data and main dataset in parallel
+    showLoading("Loading detailed data...");
+
+    let countiesPromise, dataPromise;
+
+    // Use cached county data if available
+    if (dataCache.countiesRaw) {
+      console.log("Using cached counties geodata");
+      countiesPromise = Promise.resolve(dataCache.countiesRaw);
+    } else {
+      countiesPromise = fetch(config.urls.countiesGeoJSON)
+        .then((response) => response.json())
+        .then((data) => {
+          dataCache.countiesRaw = data; // Cache raw county geodata
+          return data;
+        });
+    }
+
+    // Use cached vulnerability data if available
+    if (dataCache.vulnerabilityData) {
+      console.log("Using cached vulnerability data");
+      dataPromise = Promise.resolve(dataCache.vulnerabilityData);
+    } else {
+      dataPromise = fetch(config.urls.dataSheet)
+        .then((response) => response.text())
+        .then((csvText) => {
+          const parsedData = Papa.parse(csvText, {
+            header: true,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+          }).data;
+
+          dataCache.vulnerabilityData = parsedData; // Cache parsed data
+          return parsedData;
+        });
+    }
+
+    // Wait for both to complete
+    const [countiesData, parsedData] = await Promise.all([
+      countiesPromise,
+      dataPromise,
+    ]);
+
+    hideLoading();
+
+    // Process combined data now that we have both
+    const processedData = processData(
+      countiesData,
+      dataCache.statesRaw,
+      parsedData
+    );
+    state.data = processedData;
+
+    // Cache the processed counties
+    dataCache.counties = processedData.counties;
+
+    // Render with the basic data
+    renderCurrentStep();
+
+    // Step 3: Load additional cluster data in the background
+    if (!dataCache.ruralFedData) {
+      console.log("Loading cluster data in background");
+
+      // Use setTimeout to ensure the UI remains responsive
+      setTimeout(() => {
+        loadClusterData().then((clusterData) => {
+          // Cache cluster data
+          dataCache.ruralFedData = clusterData.ruralFedData;
+          dataCache.reservationData = clusterData.reservationData;
+          dataCache.distressedData = clusterData.distressedData;
+
+          // Enhance already rendered map with cluster data
+          enhanceDataWithClusters(clusterData);
+          renderCurrentStep();
+        });
+      }, 100);
+    }
+
+    return state.data;
+  } catch (error) {
+    console.error("Error loading data:", error);
+    hideLoading();
+    showError("Failed to load map data. Please try refreshing the page.");
+    throw new Error("Failed to load map data");
+  }
+}
+
+// Load additional data only when needed based on current view
+function loadDataForCurrentStep() {
+  const currentStep = config.steps[state.currentStep];
+
+  // Only load cluster data if we're on a spotlight view
+  if (currentStep.isSpotlightView && !dataCache.ruralFedData) {
+    console.log("Loading cluster data for spotlight view");
+    loadClusterData().then((clusterData) => {
+      enhanceDataWithClusters(clusterData);
+      renderCurrentStep();
+    });
+  }
+}
+
+// Load cluster-specific data
+async function loadClusterData() {
+  try {
+    // Check cache first
+    if (
+      dataCache.ruralFedData &&
+      dataCache.reservationData &&
+      dataCache.distressedData
+    ) {
+      return {
+        ruralFedData: dataCache.ruralFedData,
+        reservationData: dataCache.reservationData,
+        distressedData: dataCache.distressedData,
+      };
+    }
+
+    // Load all three datasets in parallel
+    const [ruralFedText, reservationText, distressedText] = await Promise.all([
+      fetch(config.urls.ruralFederalDependentData).then((res) => res.text()),
+      fetch(config.urls.nativeAmericanReservationData).then((res) =>
+        res.text()
+      ),
+      fetch(config.urls.economicallyDistressedData).then((res) => res.text()),
+    ]);
+
+    // Parse all datasets
+    const ruralFedData = Papa.parse(ruralFedText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
+    const reservationData = Papa.parse(reservationText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
+    const distressedData = Papa.parse(distressedText, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    }).data;
+
+    // Cache the results
+    dataCache.ruralFedData = ruralFedData;
+    dataCache.reservationData = reservationData;
+    dataCache.distressedData = distressedData;
+
+    // Return all data
+    return {
+      ruralFedData,
+      reservationData,
+      distressedData,
+    };
+  } catch (error) {
+    console.error("Error loading cluster data:", error);
+    // Return empty datasets to prevent errors
+    return {
+      ruralFedData: [],
+      reservationData: [],
+      distressedData: [],
+    };
+  }
+}
+
+// Process state data for initial display
+function processStateData(statesData) {
+  // Extract features from topojson
+  const states = topojson.feature(
+    statesData,
+    statesData.objects.states
+  ).features;
+
+  // Add basic properties
+  return states.map((state) => {
+    const stateFips = state.id;
+    const stateName = config.stateFips[stateFips] || "Unknown";
+
+    return {
+      ...state,
+      properties: {
+        ...state.properties,
+        stateName,
+        state_fed_workers_per_100k: null, // Will be populated later
+      },
+    };
+  });
+}
+
 // Enhanced data processing function to handle special counties
 function processData(
   countiesData,
   statesData,
   vulnerabilityData,
-  ruralFedData,
-  reservationData,
-  distressedData
+  ruralFedData = [],
+  reservationData = [],
+  distressedData = []
 ) {
   // Extract county features from topojson
   const counties = topojson.feature(
@@ -985,11 +1449,24 @@ function renderCurrentStep() {
   const currentStepConfig = config.steps[state.currentStep];
   const isStateLevel = currentStepConfig.isStateLevel === true;
   const isSpotlightView = currentStepConfig.isSpotlightView === true;
-  const isCombinedView = currentStepConfig.isCombinedView === true;
 
-  // Clear the SVG
+  // Prepare SVG for rendering
   const svgElement = d3.select(elements.svg);
-  svgElement.selectAll("*").remove();
+
+  // Clear any existing legends first (fix for overlapping legends)
+  svgElement.selectAll("g.legend").remove();
+
+  // Don't clear the SVG immediately - keep old content until new content is ready
+  const oldMapGroup = svgElement.select("g.map-group");
+  const hasExistingMap = !oldMapGroup.empty();
+
+  // Create a new group with a unique class for the new map view
+  const newGroupClass = `map-group-${Date.now()}`;
+  const newMapGroup = svgElement
+    .append("g")
+    .attr("class", `map-group ${newGroupClass}`)
+    .attr("transform", `translate(0, ${state.dimensions.topPadding})`)
+    .style("opacity", 0); // Start invisible
 
   // Set up map projection
   const projection = d3
@@ -1002,40 +1479,78 @@ function renderCurrentStep() {
   // Determine which data to use
   const features = isStateLevel ? state.data.states : state.data.counties;
 
-  // Check for special visualization types
+  // Check if we have loaded data yet - if not, show loading state
+  if (!features || features.length === 0) {
+    renderLoadingState(svgElement, state.dimensions);
+    return;
+  }
+
+  // Render in the new group
   if (isSpotlightView) {
-    renderSpotlightView(svgElement, features, path, currentStepConfig);
-    return;
-  }
-
-  // For special types like component previews
-  if (currentStepConfig.isComponentPreview) {
-    renderComponentPreview(svgElement, features, path, state.dimensions);
-    return;
-  }
-
-  // For the layered approach
-  if (currentStepConfig.showLayeredComponents) {
-    renderLayeredComponents(svgElement, features, path, currentStepConfig);
-    return;
-  }
-
-  // Create color scale
-  const colorScale = createColorScale(currentStepConfig);
-
-  // If this step shows previous components, render them first
-  if (currentStepConfig.showPrevious && currentStepConfig.isComponent) {
-    renderPreviousComponents(
+    // Special spotlight view rendering
+    renderSpotlightView(
       svgElement,
       features,
       path,
-      state.dimensions,
-      currentStepConfig
+      currentStepConfig,
+      newMapGroup
     );
+  } else {
+    // Standard view rendering
+    renderMapInNewGroup(newMapGroup, features, path, currentStepConfig);
   }
 
-  // Draw the map
-  const featurePaths = svgElement
+  // Add legend after map (with proper placement)
+  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
+
+  // Fade in the new content and remove old content
+  newMapGroup
+    .transition()
+    .duration(400)
+    .style("opacity", 1)
+    .on("end", function () {
+      // After new content is fully visible, remove the old content
+      if (hasExistingMap) {
+        oldMapGroup.remove();
+      }
+
+      // Rename the new group to the standard name after transition
+      newMapGroup.classed(newGroupClass, false);
+    });
+}
+
+// Render a simple loading state for the map
+function renderLoadingState(svgElement, dimensions) {
+  const centerX = dimensions.width / 2;
+  const centerY = dimensions.height / 2;
+
+  // Add text indicator
+  svgElement
+    .append("text")
+    .attr("x", centerX)
+    .attr("y", centerY)
+    .attr("text-anchor", "middle")
+    .attr("font-size", 14)
+    .text("Loading map data...");
+
+  // Simple outline of United States for context
+  if (typeof window.usOutline !== "undefined") {
+    svgElement
+      .append("path")
+      .attr("d", window.usOutline)
+      .attr("fill", "#f0f0f0")
+      .attr("stroke", "#ccc");
+  }
+}
+
+// Render map in batches for better performance with large datasets
+function renderMapInBatches(svgElement, features, path, currentStepConfig) {
+  const isStateLevel = currentStepConfig.isStateLevel === true;
+  const colorScale = createColorScale(currentStepConfig);
+  const mapGroup = svgElement.select("g.map-group");
+
+  // Create all paths efficiently - use a join pattern
+  mapGroup
     .selectAll(isStateLevel ? "path.state" : "path.county")
     .data(features)
     .join("path")
@@ -1043,18 +1558,21 @@ function renderCurrentStep() {
     .attr("d", path)
     .attr("fill", (d) => getFillColor(d, currentStepConfig, colorScale))
     .attr("stroke", "#ffffff")
-    .attr("stroke-width", isStateLevel ? 0.5 : 0.2) // Reduced stroke width
-    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1) // Slightly transparent for components
+    .attr("stroke-width", isStateLevel ? 0.5 : 0.2)
+    .attr("opacity", 0) // Start invisible for a fade-in effect
     .on("mouseover", function (event, d) {
       handleHover(event, d, currentStepConfig);
     })
     .on("mouseout", function (event) {
       handleLeave(event);
-    });
+    })
+    .transition() // Animate fade-in
+    .duration(400)
+    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1);
 
-  // If showing counties, also add state boundaries for context
-  if (!isStateLevel) {
-    svgElement
+  // If showing counties, add state boundaries for context
+  if (!isStateLevel && state.data.states) {
+    mapGroup
       .selectAll("path.state-outline")
       .data(state.data.states)
       .join("path")
@@ -1062,21 +1580,211 @@ function renderCurrentStep() {
       .attr("d", path)
       .attr("fill", "none")
       .attr("stroke", "#666")
-      .attr("stroke-width", 0.5) // Reduced from 1
+      .attr("stroke-width", 0.5)
       .attr("stroke-opacity", 0.5)
       .attr("pointer-events", "none");
   }
-  // Add a simple legend
-  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
 
-  // If this is a component, add a weight indicator
-  if (currentStepConfig.isComponent) {
-    addComponentWeightIndicator(
-      svgElement,
-      state.dimensions,
-      currentStepConfig
-    );
+  // Add legend
+  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
+}
+
+function renderImprovedMap(svgElement, features, path, currentStepConfig) {
+  const isStateLevel = currentStepConfig.isStateLevel === true;
+  const colorScale = createColorScale(currentStepConfig);
+  const mapGroup = svgElement.select("g.map-group");
+
+  // Use D3's join pattern for better performance
+  const selection = mapGroup
+    .selectAll(isStateLevel ? "path.state" : "path.county")
+    .data(features)
+    .join("path")
+    .attr("class", isStateLevel ? "state" : "county")
+    .attr("d", path)
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", isStateLevel ? 0.5 : 0.2)
+    .attr("opacity", 0) // Start invisible for fade-in
+    .on("mouseover", function (event, d) {
+      handleHover(event, d, currentStepConfig);
+    })
+    .on("mouseout", function (event) {
+      handleLeave(event);
+    });
+
+  // Fade in with color
+  selection
+    .transition()
+    .duration(300)
+    .attr("fill", (d) => getFillColor(d, currentStepConfig, colorScale))
+    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1);
+
+  // If showing counties, add state boundaries for context
+  if (!isStateLevel && state.data.states) {
+    mapGroup
+      .selectAll("path.state-outline")
+      .data(state.data.states)
+      .join("path")
+      .attr("class", "state-outline")
+      .attr("d", path)
+      .attr("fill", "none")
+      .attr("stroke", "#666")
+      .attr("stroke-width", 0.5)
+      .attr("stroke-opacity", 0)
+      .transition()
+      .duration(400)
+      .attr("stroke-opacity", 0.5);
   }
+
+  // Add legend
+  createSimpleLegend(svgElement, state.dimensions, currentStepConfig);
+}
+
+// New function to render map in a specific group for transitions
+function renderMapInNewGroup(mapGroup, features, path, currentStepConfig) {
+  const isStateLevel = currentStepConfig.isStateLevel === true;
+  const colorScale = createColorScale(currentStepConfig);
+
+  // Draw features (states or counties)
+  mapGroup
+    .selectAll(isStateLevel ? "path.state" : "path.county")
+    .data(features)
+    .join("path")
+    .attr("class", isStateLevel ? "state" : "county")
+    .attr("d", path)
+    .attr("fill", (d) => getFillColor(d, currentStepConfig, colorScale))
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", isStateLevel ? 0.5 : 0.2)
+    .attr("opacity", currentStepConfig.isComponent ? 0.85 : 1)
+    .on("mouseover", function (event, d) {
+      handleHover(event, d, currentStepConfig);
+    })
+    .on("mouseout", function (event) {
+      handleLeave(event);
+    });
+
+  // If showing counties, add state boundaries for context
+  if (!isStateLevel && state.data.states) {
+    mapGroup
+      .selectAll("path.state-outline")
+      .data(state.data.states)
+      .join("path")
+      .attr("class", "state-outline")
+      .attr("d", path)
+      .attr("fill", "none")
+      .attr("stroke", "#666")
+      .attr("stroke-width", 0.5)
+      .attr("stroke-opacity", 0.5)
+      .attr("pointer-events", "none");
+  }
+}
+
+// Optimize tooltip creation - create only on first interaction
+function createTooltip() {
+  // Check if tooltip already exists
+  let tooltip = document.getElementById("tooltip");
+
+  if (!tooltip) {
+    tooltip = document.createElement("div");
+    tooltip.id = "tooltip";
+    tooltip.className = "tooltip";
+    document.body.appendChild(tooltip);
+
+    // Use passive event listener for better performance
+    window.addEventListener("scroll", hideTooltipOnScroll, { passive: true });
+  }
+
+  return tooltip;
+}
+
+// Defer tooltip initialization until needed
+function getTooltip() {
+  if (!elements.tooltip) {
+    elements.tooltip = createTooltip();
+    setupTooltipDismissHandlers();
+  }
+  return elements.tooltip;
+}
+
+// Optimize tooltip positioning with less reflow
+function positionTooltip(event, content) {
+  const tooltip = getTooltip();
+
+  // Clear previous arrow classes
+  tooltip.classList.remove(
+    "right-arrow",
+    "left-arrow",
+    "top-arrow",
+    "bottom-arrow",
+    "visible"
+  );
+
+  // Set content first so we can measure accurate dimensions
+  tooltip.innerHTML = content;
+
+  // Ensure tooltip is visible for measuring but not displayed yet
+  tooltip.style.cssText = "display: block; opacity: 0; position: absolute;";
+
+  // Get tooltip dimensions after content is set
+  const tooltipWidth = tooltip.offsetWidth;
+  const tooltipHeight = tooltip.offsetHeight;
+
+  // Get viewport dimensions
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  // Calculate cursor position relative to viewport
+  const cursorX = event.clientX;
+  const cursorY = event.clientY;
+
+  // Calculate available space in each direction
+  const spaceRight = viewportWidth - cursorX - 15;
+  const spaceLeft = cursorX - 15;
+  const spaceBelow = viewportHeight - cursorY - 15;
+  const spaceAbove = cursorY - 15;
+
+  // Determine position and set coordinates in one operation
+  let position, styleText;
+
+  if (spaceRight >= tooltipWidth) {
+    position = "right";
+    styleText = `left: ${event.pageX + 15}px; top: ${Math.max(
+      window.scrollY + 10,
+      event.pageY - tooltipHeight / 2
+    )}px;`;
+  } else if (spaceLeft >= tooltipWidth) {
+    position = "left";
+    styleText = `left: ${event.pageX - tooltipWidth - 15}px; top: ${Math.max(
+      window.scrollY + 10,
+      event.pageY - tooltipHeight / 2
+    )}px;`;
+  } else if (spaceBelow >= tooltipHeight) {
+    position = "top";
+    const left = Math.max(
+      window.scrollX + 10,
+      Math.min(
+        event.pageX - tooltipWidth / 2,
+        window.scrollX + viewportWidth - tooltipWidth - 10
+      )
+    );
+    styleText = `left: ${left}px; top: ${event.pageY + 15}px;`;
+  } else {
+    position = "bottom";
+    const left = Math.max(
+      window.scrollX + 10,
+      Math.min(
+        event.pageX - tooltipWidth / 2,
+        window.scrollX + viewportWidth - tooltipWidth - 10
+      )
+    );
+    styleText = `left: ${left}px; top: ${event.pageY - tooltipHeight - 15}px;`;
+  }
+
+  // Apply all styles at once to minimize reflow
+  styleText += "display: block; opacity: 1;";
+  tooltip.style.cssText = styleText;
+
+  // Add arrow class based on position
+  tooltip.classList.add(`${position}-arrow`, "visible");
 }
 
 // Create a color scale
@@ -1127,6 +1835,7 @@ function renderLayeredComponents(
 
   // First, add a base white/light gray layer
   svgElement
+    .select("g.map-group")
     .selectAll("path.base-layer")
     .data(features)
     .join("path")
@@ -1138,6 +1847,7 @@ function renderLayeredComponents(
 
   // Add state boundaries for context
   svgElement
+    .select("g.map-group")
     .selectAll("path.state-outline")
     .data(state.data.states)
     .join("path")
@@ -1205,6 +1915,7 @@ function renderLayeredComponents(
 
     // Create a group for this layer
     const layerGroup = svgElement
+      .select("g.map-group")
       .append("g")
       .attr("class", `layer-${component.id}`);
 
@@ -1331,6 +2042,7 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
 
   // Set up map for the combined view
   svgElement
+    .select("g.map-group")
     .selectAll("path.county")
     .data(features)
     .join("path")
@@ -1348,6 +2060,7 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
 
   // Add state boundaries
   svgElement
+    .select("g.map-group")
     .selectAll("path.state-outline")
     .data(state.data.states)
     .join("path")
@@ -1360,8 +2073,13 @@ function renderComponentPreview(svgElement, features, path, dimensions) {
     .attr("pointer-events", "none");
 }
 
-// Render spotlight views
-function renderSpotlightView(svgElement, features, path, stepConfig) {
+// Modified renderSpotlightView to work with a specific group
+function renderSpotlightView(svgElement, features, path, stepConfig, mapGroup) {
+  // If no specific group is provided, use the main map group
+  if (!mapGroup) {
+    mapGroup = svgElement.select("g.map-group");
+  }
+
   // Create color scale for vulnerability index (base layer)
   const colorScale = createColorScale({
     dataField: "vulnerabilityIndex",
@@ -1374,7 +2092,7 @@ function renderSpotlightView(svgElement, features, path, stepConfig) {
   const salientField = stepConfig.salientField;
 
   // Draw the base vulnerability map with reduced opacity for non-spotlight counties
-  svgElement
+  mapGroup
     .selectAll("path.county")
     .data(features)
     .join("path")
@@ -1403,7 +2121,7 @@ function renderSpotlightView(svgElement, features, path, stepConfig) {
     });
 
   // Add state boundaries for context
-  svgElement
+  mapGroup
     .selectAll("path.state-outline")
     .data(state.data.states)
     .join("path")
@@ -1414,55 +2132,81 @@ function renderSpotlightView(svgElement, features, path, stepConfig) {
     .attr("stroke-width", 0.5)
     .attr("stroke-opacity", 0.5)
     .attr("pointer-events", "none");
-
-  // Add the standard vulnerability legend
-  createSimpleLegend(svgElement, state.dimensions, stepConfig);
 }
 
 // #endregion
 
-// #region - UI components
+// #region - UI components, legend
 
-// Create a simplified legend
+// Function to get the appropriate legend title based on the step
+function getLegendTitle(stepConfig) {
+  // Map of step IDs to custom legend titles
+  const legendTitles = {
+    state_federal_workers: "Federal workers per capita",
+    federal_workers: "Federal workers per capita",
+    vulnerability_index: "Vulnerability to cuts",
+    rural_federal_dependent: "Vulnerability to cuts",
+    native_american_reservation: "Vulnerability to cuts",
+    economically_distressed: "Vulnerability to cuts",
+  };
+
+  // Return the custom title if it exists, otherwise use the step title
+  return legendTitles[stepConfig.id] || stepConfig.title;
+}
+
+// Format large numbers for display
+function formatLegendValue(value, stepConfig) {
+  // For federal workers per capita
+  if (stepConfig.id.includes("federal_workers")) {
+    // Format as K
+    if (value >= 1000) {
+      return Math.round(value / 1000) + "K";
+    }
+    return value;
+  }
+
+  // For vulnerability index or other metrics
+  return value;
+}
+
+// Updated createSimpleLegend function with top center positioning and better spacing
 function createSimpleLegend(svgElement, dimensions, stepConfig) {
-  const legendWidth = 260;
-  const legendHeight = 20;
-  const legendX = dimensions.width - legendWidth - 20;
-  const legendY = dimensions.height - 40;
+  // Define legend dimensions
+  const legendWidth = 400; // Wider to accommodate the blocks
+  const legendHeight = 10;
 
-  // Create legend container
+  // Position at top center with more space to prevent cut-off
+  const legendX = (dimensions.width - legendWidth) / 2; // Center horizontally
+  const legendY = 30; // Increased vertical position to prevent cut-off
+  const titleOffset = 20; // Increased space between title and color blocks
+
+  // Create legend container directly on the SVG, not in the map group
   const legend = svgElement
     .append("g")
     .attr("class", "legend")
     .attr("transform", `translate(${legendX}, ${legendY})`);
 
-  // Add background for better readability
-  legend
-    .append("rect")
-    .attr("x", -10)
-    .attr("y", -25)
-    .attr("width", legendWidth + 20)
-    .attr("height", legendHeight + 45)
-    .attr("fill", "rgba(255, 255, 255, 0.85)")
-    .attr("rx", 4)
-    .attr("ry", 4);
-
-  // Add legend title
+  // Add legend title at the top center with more space
   legend
     .append("text")
-    .attr("x", 0)
-    .attr("y", -10)
-    .style("font-size", "12px")
-    .style("font-weight", "bold")
-    .text(stepConfig.title);
+    .attr("x", legendWidth / 2) // Center the title
+    .attr("y", -titleOffset) // Position above the color blocks with more space
+    .attr("class", "legend-title")
+    .text(getLegendTitle(stepConfig));
 
   // Get colors from config
   const colorSet = stepConfig.colorSet || "blues";
   const colors = config.colors[colorSet] || config.colors.federal;
 
-  // Create color blocks
+  // Get breaks from the step configuration
+  const breaks = stepConfig.breaks || [1000, 2500, 5000, 7500, 10000];
+
+  // Create color blocks (5 blocks)
   const numCategories = 5;
   const segmentWidth = legendWidth / numCategories;
+
+  // Determine if this is a federal workers legend or vulnerability legend
+  const isFederalWorkersLegend = stepConfig.id.includes("federal_workers");
 
   for (let i = 0; i < numCategories; i++) {
     const x = i * segmentWidth;
@@ -1474,19 +2218,83 @@ function createSimpleLegend(svgElement, dimensions, stepConfig) {
       .attr("y", 0)
       .attr("width", segmentWidth)
       .attr("height", legendHeight)
-      .style("fill", colors[i + 1]) // Skip the lightest color
-      .style("stroke", "#555")
-      .style("stroke-width", 0.5);
+      .attr("class", "legend-block")
+      .style("fill", colors[i + 1]); // Skip the lightest color
+  }
 
-    // Add labels
+  // Add labels based on the legend type
+  if (isFederalWorkersLegend) {
+    // For federal workers, add numeric values at equal intervals
+    // Add the "0" label at the start
     legend
       .append("text")
-      .attr("x", x + segmentWidth / 2)
+      .attr("x", 0)
       .attr("y", legendHeight + 15)
-      .attr("text-anchor", "middle")
-      .style("font-size", "9px")
-      .text(i === 0 ? "Low" : i === numCategories - 1 ? "High" : "");
+      .attr("class", "legend-value")
+      .text("0");
+
+    // Add middle breaks (2K, 3K, 4K)
+    for (let i = 0; i < breaks.length - 1; i++) {
+      legend
+        .append("text")
+        .attr("x", (i + 1) * segmentWidth)
+        .attr("y", legendHeight + 15)
+        .attr("class", "legend-value")
+        .text(formatLegendValue(breaks[i], stepConfig));
+    }
+
+    // Add the end label with "+"
+    legend
+      .append("text")
+      .attr("x", legendWidth)
+      .attr("y", legendHeight + 15)
+      .attr("class", "legend-value")
+      .text(formatLegendValue(breaks[breaks.length - 1], stepConfig) + "+");
+  } else {
+    // For vulnerability, just add "Low" and "High" labels at the ends
+    legend
+      .append("text")
+      .attr("x", 0)
+      .attr("y", legendHeight + 15)
+      .attr("class", "legend-label")
+      .text("Low");
+
+    legend
+      .append("text")
+      .attr("x", legendWidth)
+      .attr("y", legendHeight + 15)
+      .attr("class", "legend-label")
+      .text("High");
   }
+}
+
+// This function should be called once when you're setting up the SVG
+function setDimensionsWithPadding(svg) {
+  const width = window.innerWidth > 800 ? 800 : window.innerWidth - 40;
+  const height = width * 0.625; // 8:5 aspect ratio
+
+  // Add more top padding for legend
+  const topPadding = 90; // Increased from 70 to 90 for more legend space
+
+  if (svg) {
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height + topPadding);
+
+    // Create a group for the map with a transform to move it down
+    const mapGroup = d3.select(svg).select("g.map-group");
+    if (mapGroup.empty()) {
+      // If the group doesn't exist, create it
+      d3.select(svg)
+        .append("g")
+        .attr("class", "map-group")
+        .attr("transform", `translate(0, ${topPadding})`);
+    } else {
+      // If it already exists, just update the transform
+      mapGroup.attr("transform", `translate(0, ${topPadding})`);
+    }
+  }
+
+  return { width, height, topPadding };
 }
 
 // Add component weight indicator
@@ -1572,19 +2380,15 @@ function calculateCombinedColor(feature, components) {
 
 // #region - Tooltip and interaction handlers
 
-// Handle hover events
-function handleHover(event, feature, stepConfig) {
-  // console.log("Hover detected on:", feature.properties.name);
+// Separate tooltip content generation for better code organization
+function generateTooltipContent(feature, stepConfig) {
+  // Generate tooltip content based on feature and step config
+  // Implementation depends on your specific tooltip needs
 
-  // Highlight the hovered feature
-  d3.select(event.currentTarget)
-    .attr("stroke-width", stepConfig.isStateLevel ? 2 : 1.5)
-    .attr("stroke", "#000");
-
-  // Get data for tooltip
+  // Reuse existing tooltip content generation...
   const name = feature.properties.name;
   const stateName = feature.properties.stateName || "Unknown";
-  const stateAbbr = getStateAbbreviation(stateName); // Add a helper function for this
+  const stateAbbr = getStateAbbreviation(stateName);
   const vulnerabilityIndex = feature.properties.vulnerabilityIndex;
   const fedWorkers = feature.properties.fed_workers_per_100k;
   const unemployment = feature.properties.unemployment_rate;
@@ -1599,48 +2403,47 @@ function handleHover(event, feature, stepConfig) {
     stepConfig.showVulnerability
   ) {
     // Use the cleaned up modern style
-    // In your handleHover function
     tooltipContent = `
-  <div class="tooltip-modern">
-    <h2>${name}, ${stateAbbr}</h2>
-    
-    <div class="tooltip-score">
-      <h1>${
-        vulnerabilityIndex ? vulnerabilityIndex.toFixed(1) : "N/A"
-      }<span class="score-scale">/100</span></h1>
-      <p>Vulnerability score</p>
-      <div class="score-bar">
-        <div class="score-indicator" style="left: ${
-          vulnerabilityIndex ? vulnerabilityIndex : 0
-        }%;"></div>
-      </div>
-    </div>
-    
-    <div class="tooltip-metrics">
-      <div class="metric-row">
-        <span class="metric-label">FEDERAL WORKERS</span>
-        <span class="metric-value">${formatValue(
-          fedWorkers,
-          "fed_workers_per_100k"
-        )}</span>
-      </div>
-      <div class="metric-sub">per capita</div>
-      
-      <div class="metric-row">
-        <span class="metric-label">UNEMPLOYMENT</span>
-        <span class="metric-value">${
-          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-        }</span>
-      </div>
-      
-      <div class="metric-row" style="margin-bottom: 0;">
-        <span class="metric-label">MEDIAN INCOME</span>
-        <span class="metric-value">${
-          income ? "$" + income.toLocaleString() : "N/A"
-        }</span>
-      </div>
-    </div>
-  </div>`;
+      <div class="tooltip-modern">
+        <h2>${name}, ${stateAbbr}</h2>
+        
+        <div class="tooltip-score">
+          <h1>${
+            vulnerabilityIndex ? vulnerabilityIndex.toFixed(1) : "N/A"
+          }<span class="score-scale">/100</span></h1>
+          <p>Vulnerability score</p>
+          <div class="score-bar">
+            <div class="score-indicator" style="left: ${
+              vulnerabilityIndex ? vulnerabilityIndex : 0
+            }%;"></div>
+          </div>
+        </div>
+        
+        <div class="tooltip-metrics">
+          <div class="metric-row">
+            <span class="metric-label">FEDERAL WORKERS</span>
+            <span class="metric-value">${formatValue(
+              fedWorkers,
+              "fed_workers_per_100k"
+            )}</span>
+          </div>
+          <div class="metric-sub">per capita</div>
+          
+          <div class="metric-row">
+            <span class="metric-label">UNEMPLOYMENT</span>
+            <span class="metric-value">${
+              unemployment ? unemployment.toFixed(1) + "%" : "N/A"
+            }</span>
+          </div>
+          
+          <div class="metric-row" style="margin-bottom: 0;">
+            <span class="metric-label">MEDIAN INCOME</span>
+            <span class="metric-value">${
+              income ? "$" + income.toLocaleString() : "N/A"
+            }</span>
+          </div>
+        </div>
+      </div>`;
   } else {
     // For non-vulnerability maps, use a simpler tooltip
     tooltipContent = `
@@ -1659,6 +2462,22 @@ function handleHover(event, feature, stepConfig) {
         </div>
       </div>`;
   }
+
+  return tooltipContent;
+}
+
+// Modified hover handler to initialize tooltip on first use
+function handleHover(event, feature, stepConfig) {
+  // Initialize tooltip if this is first interaction
+  initializeTooltipOnDemand();
+
+  // Continue with normal hover handling
+  d3.select(event.currentTarget)
+    .attr("stroke-width", stepConfig.isStateLevel ? 2 : 1.5)
+    .attr("stroke", "#000");
+
+  // Get tooltip content
+  const tooltipContent = generateTooltipContent(feature, stepConfig);
 
   // Show tooltip
   positionTooltip(event, tooltipContent);
@@ -2018,42 +2837,54 @@ function handleLeave(event) {
 
 // #region - Scrollytelling functionality
 
-// Initialize scrollytelling functionality, creating sections for each set and setting up event listeners
+// Lazy-load scrollytelling sections only when needed
 function initializeScrollytelling() {
   console.log("Initializing scrollytelling...");
 
-  // Find or create sections container
-  let sectionsContainer = document.querySelector(".sections");
+  // Only create sections container if it doesn't exist
+  if (!elements.sectionsContainer) {
+    let sectionsContainer = document.querySelector(".sections");
 
-  if (!sectionsContainer) {
-    sectionsContainer = document.createElement("div");
-    sectionsContainer.className = "sections";
+    if (!sectionsContainer) {
+      sectionsContainer = document.createElement("div");
+      sectionsContainer.className = "sections";
 
-    // Insert after the sticky container
-    elements.stickyContainer.parentNode.insertBefore(
-      sectionsContainer,
-      elements.stickyContainer.nextSibling
-    );
+      // Insert after the sticky container
+      elements.stickyContainer.parentNode.insertBefore(
+        sectionsContainer,
+        elements.stickyContainer.nextSibling
+      );
+    }
+
+    // Store reference to sections container
+    elements.sectionsContainer = sectionsContainer;
   }
 
-  // Store reference to sections container
-  elements.sectionsContainer = sectionsContainer;
-
-  // Create sections for each step
-  createScrollSections();
+  // Always create ALL scroll sections
+  lazyCreateScrollSections();
 
   // Create progress indicator if it doesn't exist already
   if (!document.querySelector(".progress-indicator")) {
     createProgressIndicator();
   }
 
-  // Set up scroll event listener with debounce for performance
-  window.addEventListener("scroll", debounce(handleScroll, 100));
+  // Set up scroll event listener with better performance options
+  window.addEventListener("scroll", debounce(handleScroll, 100), {
+    passive: true,
+  });
 
-  // Try to use IntersectionObserver if available
+  // Use IntersectionObserver if available (much better performance)
   if ("IntersectionObserver" in window) {
     setupIntersectionObserver();
   }
+
+  // Log the current sections for debugging
+  console.log(
+    "Created " +
+      document.querySelectorAll(".scroll-section").length +
+      " sections"
+  );
+  console.log("Total steps in config: " + config.steps.length);
 
   // Set initial state based on current scroll position
   setTimeout(() => {
@@ -2061,64 +2892,113 @@ function initializeScrollytelling() {
   }, 200);
 }
 
-/**
- * Create scroll sections for each visualization step
- */
-function createScrollSections() {
+function ensureSpotlightSectionsVisibility() {
+  // Get all sections
+  const sections = document.querySelectorAll(".scroll-section");
+
+  // Loop through each section
+  sections.forEach((section) => {
+    const stepIndex = parseInt(section.dataset.step, 10);
+    const stepConfig = config.steps[stepIndex];
+
+    // If this is a spotlight section, ensure it has proper styling
+    if (stepConfig && stepConfig.isSpotlightView) {
+      // Make sure spotlight sections have clear visibility
+      section.style.minHeight = "100vh";
+      section.style.position = "relative";
+      section.style.zIndex = "2";
+
+      // Add a special class for spotlight sections
+      section.classList.add("spotlight-section");
+
+      console.log(`Enhanced spotlight section: ${stepConfig.title}`);
+    }
+  });
+}
+
+// Lazy-create scroll sections - only create the ones near the viewport initially
+// Improved lazyCreateScrollSections function to ensure all sections are created
+function lazyCreateScrollSections() {
   const sectionsContainer = elements.sectionsContainer;
 
-  // Clear existing sections
-  sectionsContainer.innerHTML = "";
+  // Clear any existing sections first
+  while (sectionsContainer.firstChild) {
+    sectionsContainer.removeChild(sectionsContainer.firstChild);
+  }
 
-  console.log("Creating sections for", config.steps.length, "steps");
+  console.log(
+    "Creating scroll sections for all steps including spotlight views"
+  );
 
-  // Create a section for each step
-  config.steps.forEach((step, index) => {
-    const section = document.createElement("div");
-    section.className = "scroll-section";
-    section.id = `section-${index}`;
-    section.dataset.step = index;
+  // Create all sections at once - safer approach to ensure scroll works
+  for (let i = 0; i < config.steps.length; i++) {
+    // Always create full section for ALL steps
+    createScrollSection(i, sectionsContainer);
+  }
 
-    // Add content to the section
-    const content = document.createElement("div");
-    content.className = "section-content";
-
-    // Add title
-    const title = document.createElement("h3");
-    title.textContent = step.title;
-    content.appendChild(title);
-
-    // Add description
-    if (step.description) {
-      const description = document.createElement("p");
-      description.textContent = step.description;
-      content.appendChild(description);
-    }
-
-    // Add any additional info from the step configuration
-    if (step.additionalInfo) {
-      const additionalInfo = document.createElement("div");
-      additionalInfo.className = "additional-info";
-      additionalInfo.innerHTML = step.additionalInfo;
-      content.appendChild(additionalInfo);
-    }
-
-    section.appendChild(content);
-    sectionsContainer.appendChild(section);
-
-    console.log(`Created section ${index}: ${step.title}`);
-  });
-
-  // Add some extra space at the bottom for better scrolling experience
+  // Add spacer at the bottom
   const spacer = document.createElement("div");
   spacer.className = "section-spacer";
   spacer.style.height = "50vh";
   sectionsContainer.appendChild(spacer);
+
+  // Make sure all spotlight sections have proper height and visibility
+  ensureSpotlightSectionsVisibility();
 }
 
-/**
- * Create progress indicator for navigation
- */
+// Create a single scroll section
+function createScrollSection(index, container) {
+  const step = config.steps[index];
+
+  const section = document.createElement("div");
+  section.className = "scroll-section";
+  section.id = `section-${index}`;
+  section.dataset.step = index;
+  section.dataset.loaded = "true";
+
+  // Add content to the section
+  const content = document.createElement("div");
+  content.className = "section-content";
+
+  // Add title
+  const title = document.createElement("h3");
+  title.textContent = step.title;
+  content.appendChild(title);
+
+  // Add description
+  if (step.description) {
+    const description = document.createElement("p");
+    description.textContent = step.description;
+    content.appendChild(description);
+  }
+
+  // Add any additional info from the step configuration
+  if (step.additionalInfo) {
+    const additionalInfo = document.createElement("div");
+    additionalInfo.className = "additional-info";
+    additionalInfo.innerHTML = step.additionalInfo;
+    content.appendChild(additionalInfo);
+  }
+
+  section.appendChild(content);
+  container.appendChild(section);
+}
+
+// Create a placeholder for a scroll section (for lazy loading)
+function createScrollSectionPlaceholder(index, container) {
+  const section = document.createElement("div");
+  section.className = "scroll-section placeholder";
+  section.id = `section-${index}`;
+  section.dataset.step = index;
+  section.dataset.loaded = "false";
+
+  // Set the height to match a regular section to maintain scroll position
+  section.style.height = "100vh";
+
+  container.appendChild(section);
+}
+
+// Create progress indicator for navigation
 function createProgressIndicator() {
   // Create container for progress indicator
   const progressContainer = document.createElement("div");
@@ -2161,9 +3041,54 @@ function createProgressIndicator() {
   elements.stepIndicators = stepsContainer.querySelectorAll(".step-indicator");
 }
 
-/**
- * Set up intersection observer for more efficient section tracking
- */
+// Set up observer to lazy-load sections as they approach viewport
+function setupLazyLoadObserver() {
+  // Create observer for placeholders
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        // If placeholder is approaching viewport, replace with real content
+        if (entry.isIntersecting && entry.target.dataset.loaded === "false") {
+          const index = parseInt(entry.target.dataset.step, 10);
+          const container = entry.target.parentNode;
+
+          // Remove placeholder
+          container.removeChild(entry.target);
+
+          // Create actual section
+          createScrollSection(index, container);
+
+          // Insert at correct position
+          const sections = container.querySelectorAll(".scroll-section");
+          const sectionsArray = Array.from(sections);
+
+          // Sort by index
+          sectionsArray.sort((a, b) => {
+            return parseInt(a.dataset.step, 10) - parseInt(b.dataset.step, 10);
+          });
+
+          // Reorder in DOM
+          sectionsArray.forEach((section) => {
+            container.appendChild(section);
+          });
+        }
+      });
+    },
+    {
+      rootMargin: "300px 0px", // Start loading when section is 300px from viewport
+      threshold: 0,
+    }
+  );
+
+  // Observe all placeholders
+  document
+    .querySelectorAll(".scroll-section.placeholder")
+    .forEach((placeholder) => {
+      observer.observe(placeholder);
+    });
+}
+
+// Optimize section visibility detection with IntersectionObserver
 function setupIntersectionObserver() {
   // First check if we already have sections to observe
   const sections = document.querySelectorAll(".scroll-section");
@@ -2177,52 +3102,52 @@ function setupIntersectionObserver() {
     elements.intersectionObserver.disconnect();
   }
 
-  // Options for intersection observer
+  // Options for intersection observer - better threshold settings for spotlight sections
   const options = {
     root: null, // Use viewport as root
-    rootMargin: "0px",
-    threshold: 0.3, // Trigger when 30% of element is visible
+    rootMargin: "-15% 0px -15% 0px", // More centered detection
+    threshold: [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4], // More granular thresholds
   };
 
   console.log(
-    "Setting up IntersectionObserver for",
-    sections.length,
-    "sections"
+    "Setting up IntersectionObserver for " + sections.length + " sections"
   );
 
-  // Create a new observer
+  // Create a new observer with better spotlight view detection
   const observer = new IntersectionObserver((entries) => {
-    // Find the most visible section
-    let maxVisibleSection = null;
-    let maxVisibility = 0;
+    // Find the most visible section using intersection ratio as measure
+    const visibleEntries = entries.filter((entry) => entry.isIntersecting);
 
-    entries.forEach((entry) => {
-      // Update active class for fading effect
-      if (entry.isIntersecting) {
-        entry.target.classList.add("active");
+    if (visibleEntries.length > 0) {
+      // Sort by visibility for more reliable detection
+      const mostVisible = visibleEntries.sort(
+        (a, b) => b.intersectionRatio - a.intersectionRatio
+      )[0];
 
-        // Use intersection ratio as a measure of visibility
-        if (entry.intersectionRatio > maxVisibility) {
-          maxVisibility = entry.intersectionRatio;
-          maxVisibleSection = entry.target;
+      // Update active class for sections
+      sections.forEach((section) => {
+        if (section === mostVisible.target) {
+          section.classList.add("active");
+        } else {
+          section.classList.remove("active");
         }
-      } else {
-        // Remove active class when not intersecting
-        entry.target.classList.remove("active");
-      }
-    });
+      });
 
-    // Update the current step if we have a new most visible section
-    if (maxVisibleSection) {
-      const sectionIndex = parseInt(maxVisibleSection.dataset.step, 10);
+      // Update current step if changed
+      const sectionIndex = parseInt(mostVisible.target.dataset.step, 10);
       if (sectionIndex !== state.currentStep) {
-        console.log(`Transitioning to step ${sectionIndex}`);
+        // Log the step change
+        console.log(
+          `Changing from step ${state.currentStep} to ${sectionIndex}`
+        );
 
         // Update state
         state.currentStep = sectionIndex;
 
-        // Update map
-        renderCurrentStep();
+        // Render only if we have data
+        if (state.mapInitialized) {
+          renderCurrentStep();
+        }
 
         // Update progress indicator
         updateProgressIndicator(sectionIndex, config.steps.length);
@@ -2239,9 +3164,7 @@ function setupIntersectionObserver() {
   elements.intersectionObserver = observer;
 }
 
-/**
- * Handle scroll events (fallback for browsers without IntersectionObserver)
- */
+// Handle scroll events (fallback for browsers without IntersectionObserver)
 function handleScroll() {
   // Skip if we're using IntersectionObserver
   if (elements.intersectionObserver && "IntersectionObserver" in window) return;
@@ -2265,21 +3188,33 @@ function handleScroll() {
     const sectionTop = rect.top + window.scrollY;
     const sectionBottom = sectionTop + rect.height;
 
-    // Calculate visibility of this section (0 to 1)
-    const visibilityTop =
-      Math.min(sectionBottom, viewportCenter) -
-      Math.max(sectionTop, viewportCenter - viewportHeight / 2);
-    const visibilityBottom =
-      Math.min(sectionBottom, viewportCenter + viewportHeight / 2) -
-      Math.max(sectionTop, viewportCenter);
-    const visibility = Math.max(
-      0,
-      (visibilityTop + visibilityBottom) / rect.height
-    );
+    // Enhanced visibility calculation for spotlight sections
+    let visibility;
+    if (section.classList.contains("spotlight-section")) {
+      // For spotlight sections, more weight to even partial visibility
+      visibility = Math.min(
+        1,
+        (Math.min(viewportCenter + viewportHeight / 2, sectionBottom) -
+          Math.max(viewportCenter - viewportHeight / 2, sectionTop)) /
+          (viewportHeight * 0.7) // Lower threshold for spotlight sections
+      );
+    } else {
+      // For regular sections, standard visibility
+      const visibilityTop =
+        Math.min(sectionBottom, viewportCenter) -
+        Math.max(sectionTop, viewportCenter - viewportHeight / 2);
+      const visibilityBottom =
+        Math.min(sectionBottom, viewportCenter + viewportHeight / 2) -
+        Math.max(sectionTop, viewportCenter);
+      visibility = Math.max(
+        0,
+        (visibilityTop + visibilityBottom) / rect.height
+      );
+    }
 
     // Update active class based on visibility
-    if (visibility > 0.3) {
-      // If at least 30% visible
+    if (visibility > 0.25) {
+      // Lower threshold for "active"
       section.classList.add("active");
     } else {
       section.classList.remove("active");
@@ -2303,6 +3238,17 @@ function handleScroll() {
 
     // Update progress indicator
     updateProgressIndicator(currentSectionIndex, config.steps.length);
+  }
+}
+
+// Defer tooltip creation until first interaction
+let tooltipInitialized = false;
+
+function initializeTooltipOnDemand() {
+  if (!tooltipInitialized) {
+    elements.tooltip = createTooltip();
+    setupTooltipDismissHandlers();
+    tooltipInitialized = true;
   }
 }
 
