@@ -1271,3 +1271,68 @@ body:not(.is-loading) .loader {
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
+
+/* Add these styles to your styles.css file */
+
+/* Ensure the visualization works properly in iframe embeds */
+html.pym {
+  overflow-y: hidden;
+  height: auto;
+}
+
+body.pym {
+  margin: 0;
+  padding: 0;
+  overflow-y: visible;
+  height: auto;
+}
+
+/* Make header more compact in embedded view */
+body.pym header {
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 5px;
+}
+
+body.pym .sticky-container {
+  top: 20px;
+}
+
+/* Make fonts more readable on smaller embedded widths */
+@media (max-width: 480px) {
+  body.pym h1 {
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+  }
+
+  body.pym .subtitle {
+    font-size: 0.8rem;
+  }
+
+  body.pym .current-step-title {
+    font-size: 0.9rem;
+  }
+
+  body.pym .current-step-description {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+}
+
+/* Add responsive adjustments for different iframe widths */
+@media (max-width: 600px) {
+  body.pym .sticky-container {
+    min-height: calc(70vh - 120px);
+  }
+
+  body.pym .scroll-section {
+    min-height: 50vh;
+    margin-bottom: 15vh;
+  }
+}
+
+/* When embedded, prioritize the visualization over footer */
+body.pym footer {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm);
+}

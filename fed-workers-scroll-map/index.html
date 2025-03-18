@@ -4,12 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Federal Dependency Visualization</title>
+    <title>Federal dependency visualization</title>
 
     <!-- External libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <!-- Add pym.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pym/1.3.2/pym.v1.min.js"></script>
 
     <!-- Core styles -->
     <link rel="stylesheet" href="styles.css">
@@ -61,6 +63,28 @@
     <script src="js/mapRenderer.js" type="module"></script>
     <script src="js/scrollHandler.js" type="module"></script>
     <script src="js/main.js" type="module"></script>
+
+    <!-- Initialize pym.js -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize pym.js child after the page is loaded
+            var pymChild = new pym.Child({
+                polling: 500,  // Check for size changes every 500ms
+                renderCallback: function () {
+                    // This function runs after the parent has sent a width
+                    console.log('Pym.js: Parent container resized');
+
+                    // Trigger resize to adjust the visualization
+                    if (window.dispatchEvent) {
+                        window.dispatchEvent(new Event('resize'));
+                    }
+                }
+            });
+
+            // Make pymChild available globally for other scripts to use
+            window.pymChild = pymChild;
+        });
+    </script>
 </body>
 
 </html>
