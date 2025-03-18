@@ -525,21 +525,21 @@ export function enhanceDataWithClusters(data, clusterData) {
   }
 
   // Log county array
-  console.log(`County array available: ${data.counties.length} counties`);
+  // console.log(`County array available: ${data.counties.length} counties`);
 
-  console.log("Enhancing county data with cluster information", {
-    countiesCount: data.counties.length,
-    ruralDataCount: clusterData.ruralFedData?.length || 0,
-    reservationDataCount: clusterData.reservationData?.length || 0,
-    distressedDataCount: clusterData.distressedData?.length || 0,
-  });
+  // console.log("Enhancing county data with cluster information", {
+  //   countiesCount: data.counties.length,
+  //   ruralDataCount: clusterData.ruralFedData?.length || 0,
+  //   reservationDataCount: clusterData.reservationData?.length || 0,
+  //   distressedDataCount: clusterData.distressedData?.length || 0,
+  // });
 
   // Add a check for sample data from each cluster type
-  if (clusterData.ruralFedData?.length) {
-    console.log("Sample rural data:", clusterData.ruralFedData[0]);
-  }
+  // if (clusterData.ruralFedData?.length) {
+  //   console.log("Sample rural data:", clusterData.ruralFedData[0]);
+  // }
 
-  console.log("Enhancing county data with cluster information");
+  // console.log("Enhancing county data with cluster information");
 
   // Create lookup tables for each cluster type
   const ruralLookup = {};
@@ -628,13 +628,13 @@ export function enhanceDataWithClusters(data, clusterData) {
     }
 
     // After the loop that enhances counties:
-    console.log(`Enhanced ${enhancedCountRural} counties with rural data`);
-    console.log(
-      `Enhanced ${enhancedCountReservation} counties with reservation data`
-    );
-    console.log(
-      `Enhanced ${enhancedCountDistressed} counties with distressed data`
-    );
+    // console.log(`Enhanced ${enhancedCountRural} counties with rural data`);
+    // console.log(
+    //   `Enhanced ${enhancedCountReservation} counties with reservation data`
+    // );
+    // console.log(
+    //   `Enhanced ${enhancedCountDistressed} counties with distressed data`
+    // );
 
     // Track counties in multiple clusters
     const clusterCount = [

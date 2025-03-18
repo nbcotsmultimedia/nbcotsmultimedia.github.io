@@ -24,7 +24,7 @@ const config = {
       id: "state_federal_workers",
       title: "Federal workers by state",
       description:
-        "Federal jobs aren't spread evenly across the country. D.C., Alaska, Maryland, and Hawaii have the most federal workers per capita.",
+        "Federal jobs aren't spread evenly across the country. D.C., Alaska, Maryland, and Hawaii have 5-10 times more federal workers per capita than the national average.",
       dataField: "state_fed_workers_per_100k",
       colorSet: "blues",
       isStateLevel: true,
@@ -45,7 +45,7 @@ const config = {
       id: "vulnerability_index",
       title: "Vulnerability to federal job cuts",
       description:
-        "This map shows which places would be hit hardest by federal job cuts, based on how many federal workers they have, local unemployment, and income levels.",
+        "Our vulnerability index reveals which communities are most at risk from federal job cuts, based on how many federal workers they have, local unemployment, and income levels.",
       dataField: "vulnerabilityIndex",
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -57,7 +57,7 @@ const config = {
       id: "rural_federal_dependent",
       title: "Rural federal-dependent communities",
       description:
-        "Many rural counties (559 in total) rely heavily on federal jobs. With few other industries, cuts to federal employment would hit these areas hard.",
+        "Over 500 rural counties are home to nearly 900,000 federal workers. With limited employment alternatives, cuts to federal employment could hit these areas hard.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
@@ -91,7 +91,7 @@ const config = {
       id: "economically_distressed",
       title: "Economically distressed areas",
       description:
-        "These 132 counties already face high unemployment and low incomes. They're especially vulnerable because federal jobs are among the few stable employers.",
+        "For 132 counties already experiencing economic distress, federal agencies provide rare stable employment. These areas—with unemployment rates often double the national average—have few alternatives to replace the 50,000+ federal jobs that support local economies.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],

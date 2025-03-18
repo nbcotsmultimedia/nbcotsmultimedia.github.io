@@ -279,10 +279,10 @@ function updateStepTitle(stepIndex) {
     ".current-step-description"
   );
 
-  console.log("Updating title for step:", stepIndex, {
-    titleElement,
-    descriptionElement,
-  });
+  // console.log("Updating title for step:", stepIndex, {
+  //   titleElement,
+  //   descriptionElement,
+  // });
 
   const stepConfig = config.steps[stepIndex];
   if (stepConfig) {
@@ -323,11 +323,11 @@ function renderCurrentStep() {
   }
 
   // Add debug logging to verify elements exist
-  console.log("Step title elements:", {
-    container: elements.stepTitleContainer,
-    title: elements.currentStepTitle,
-    description: elements.currentStepDescription,
-  });
+  // console.log("Step title elements:", {
+  //   container: elements.stepTitleContainer,
+  //   title: elements.currentStepTitle,
+  //   description: elements.currentStepDescription,
+  // });
 
   // Update the step title
   updateStepTitle(state.currentStep);

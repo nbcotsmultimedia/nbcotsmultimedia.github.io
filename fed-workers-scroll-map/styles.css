@@ -1,4 +1,59 @@
-/* styles.css - Consolidated and streamlined styles */
+/* styles.css - Consolidated and streamlined styles with CSS variables */
+
+/* #region - Variables */
+:root {
+  /* Breakpoints */
+  --breakpoint-xs: 480px; /* Mobile */
+  --breakpoint-sm: 768px; /* Tablet/small screens */
+  --breakpoint-md: 992px; /* Medium screens */
+  --breakpoint-lg: 1200px; /* Large screens */
+
+  /* Colors */
+  --color-text: #333;
+  --color-text-light: #666;
+  --color-text-lighter: #888;
+  --color-background: #f9f9f9;
+  --color-white: #ffffff;
+  --color-border-light: #eee;
+  --color-border: #ccc;
+  --color-shadow: rgba(0, 0, 0, 0.2);
+  --color-shadow-light: rgba(0, 0, 0, 0.1);
+  --color-shadow-lighter: rgba(0, 0, 0, 0.08);
+  --color-highlight: rgb(129, 0, 0);
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+
+  /* Typography */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.85rem; /* ~14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.2rem; /* ~19px */
+  --font-size-lg: 1.5rem; /* 24px */
+
+  /* Map-specific */
+  --title-container-top-position: 300px;
+
+  /* Z-index layers */
+  --z-index-base: 1;
+  --z-index-middle: 100;
+  --z-index-high: 200;
+  --z-index-top: 300;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease-out;
+  --transition-medium: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* #endregion */
 
 /* #region - Global Styles */
 
@@ -13,8 +68,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   line-height: 1.5;
-  color: #333;
-  background-color: #f9f9f9;
+  color: var(--color-text);
+  background-color: var(--color-white);
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,15 +77,15 @@ body {
 
 header {
   position: fixed;
-  width: 100%;
+  width: 98%;
   text-align: center;
-  z-index: 300;
-  transition: transform 0.5s ease-out;
+  z-index: var(--z-index-top);
+  transition: transform var(--transition-slow);
   height: auto;
   margin: 0;
 }
 
-@media (max-width: 480) {
+@media (max-width: var(--breakpoint-xs)) {
   header {
     background-color: rgba(255, 255, 255, 0.9);
     padding: 5px 0;
@@ -39,16 +94,16 @@ header {
 
 header.scrolled {
   transform: translateY(-100%);
-  opacity: 0; /* Add opacity to fully hide the header */
-  visibility: hidden; /* Add visibility hidden for complete removal from view */
+  opacity: 0;
+  visibility: hidden;
 }
 
 h1 {
   margin: 0 0 0.5rem;
-  font-size: 1.5rem;
+  font-size: var(--font-size-lg);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   header h1 {
     font-size: 1.3rem;
     margin-bottom: 0.2rem;
@@ -56,26 +111,26 @@ h1 {
 }
 
 .subtitle {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   margin: 0;
-  color: #666;
+  color: var(--color-text-light);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .subtitle {
     font-size: 0.9rem;
   }
 }
 
 main {
-  max-width: 1200px;
+  max-width: var(--breakpoint-lg);
   margin: 0 auto;
-  padding: 0 1rem 0;
+  padding: 0 var(--spacing-sm) 0;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   main {
-    padding: 0 0.5rem;
+    padding: 0 var(--spacing-xs);
   }
 }
 
@@ -83,16 +138,16 @@ footer {
   position: relative;
   z-index: 4;
   text-align: center;
-  padding: 2rem 1rem;
-  margin-top: 3rem;
-  font-size: 0.9rem;
-  color: #666;
+  padding: var(--spacing-md) var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   footer {
-    padding: 1.5rem 0.5rem;
-    margin-top: 2rem;
+    padding: 1.5rem var(--spacing-xs);
+    margin-top: var(--spacing-md);
   }
 }
 
@@ -111,16 +166,18 @@ footer {
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
-  transition: top 0.5s ease-out;
+  transition: top var(--transition-slow);
   display: flex;
   flex-direction: column;
   top: 100px;
-  padding-top: 20px; /* Add padding to make room for the title container */
+  padding-top: 20px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .sticky-container {
-    padding-top: 0px;
+    padding-top: 10px;
+    min-height: auto;
+    max-height: 85vh;
   }
 }
 
@@ -130,19 +187,22 @@ footer {
 
 #map-container {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--breakpoint-lg);
   margin: 0 auto;
   position: relative;
   pointer-events: auto;
-  z-index: 1;
+  z-index: var(--z-index-base);
   height: auto;
   min-height: 400px;
-  overflow: visible; /* Ensure content outside doesn't get clipped */
+  overflow: visible;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   #map-container {
+    padding-bottom: 0;
+    margin-bottom: 0;
     margin-top: 5px;
+    min-height: 300px;
   }
 }
 
@@ -161,14 +221,17 @@ footer {
   backface-visibility: hidden;
   overflow: visible;
   position: relative;
-  z-index: 1;
+  z-index: var(--z-index-base);
+  transition: all var(--transition-medium);
+  overflow: visible;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   #map-svg {
-    aspect-ratio: 3/4; /* More vertical space for the map on mobile */
-    width: 100%;
-    height: auto;
+    margin-bottom: 0;
+    max-height: 28vh;
+    margin-top: 50px;
+    aspect-ratio: 4/3;
   }
 }
 
@@ -180,20 +243,20 @@ path {
 
 /* Map group styling */
 .map-group {
-  transition: opacity 0.4s ease-out;
-  transform: translateY(-30px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  transform: translateY(0);
 }
 
 /* Special styling for specific map elements */
 path.county.spotlight {
   opacity: 1 !important;
   stroke: #000 !important;
-  stroke-width: 1px !important;
+  stroke-width: 0 !important;
 }
 
 path.county.salient {
-  stroke: #f00 !important;
-  stroke-width: 2px !important;
+  stroke: var(--color-highlight) !important;
+  stroke-width: 0 !important;
   stroke-opacity: 0.8 !important;
 }
 
@@ -209,16 +272,17 @@ path.county[data-state="Alaska"] {
 
 .legend-container {
   width: 100%;
-  height: auto; /* Allow height to adjust to content */
-  min-height: 70px; /* Provide minimum height to accommodate all legend elements */
+  height: auto;
+  min-height: 70px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 10px; /* Add horizontal padding */
-  margin-bottom: 10px;
+  padding: 0 10px;
+  /* margin-bottom: var(--spacing-md); */
   position: relative;
   box-sizing: border-box;
   overflow: visible;
+  z-index: var(--z-index-middle);
 }
 
 .legend-container svg {
@@ -228,18 +292,17 @@ path.county[data-state="Alaska"] {
   overflow: visible;
 }
 
-@media (max-width: 480px) {
+.legend-svg {
+  max-width: 100%;
+}
+
+@media (max-width: var(--breakpoint-xs)) {
   .legend-container {
-    height: 60px;
-    padding-top: 0;
-    width: 100%;
     height: auto;
-    min-height: 50px;
-    padding: 0;
-    margin-bottom: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: 60px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    z-index: var(--z-index-middle);
   }
 
   .legend-container svg {
@@ -251,32 +314,31 @@ path.county[data-state="Alaska"] {
 
 .legend {
   position: absolute;
-  top: 10px; /* Adjust this value to control spacing */
+  top: 10px;
   left: 50%;
-  /* transform: translateX(-50%); */
-  z-index: 200; /* Ensure it's above the map */
+  z-index: var(--z-index-high);
 }
 
 .legend-title {
   text-anchor: middle;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   font-weight: bold;
   margin-bottom: 15px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .legend-title {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
   }
 }
 
 .legend-value,
 .legend-label {
   text-anchor: middle;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .legend-value,
   .legend-label {
     font-size: 10px;
@@ -284,28 +346,28 @@ path.county[data-state="Alaska"] {
 }
 
 .legend-block {
-  transition: fill-opacity 0.3s ease-out;
+  transition: fill-opacity var(--transition-medium);
 }
 /* #endregion */
 
 /* #region - Scrollytelling Sections */
 .sections {
-  margin-top: 20px;
+  margin-top: var(--spacing-md);
 }
 
 .scroll-section {
   min-height: 100vh;
-  /* transition: opacity 0.4s ease-out, transform 0.4s ease-out; */
   position: relative;
   box-sizing: border-box;
-  padding: 8vh 1rem;
+  padding: 8vh var(--spacing-sm);
   margin-bottom: 30vh;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .scroll-section {
-    padding: 5vh 0.75rem !important;
-    margin-bottom: 10vh !important;
+    padding: 3vh 0.75rem !important;
+    margin-bottom: 5vh !important;
+    min-height: 70vh;
   }
 }
 
@@ -313,9 +375,15 @@ path.county[data-state="Alaska"] {
   padding-top: calc(120px + 50px);
 }
 
+@media (max-width: var(--breakpoint-xs)) {
+  .scroll-section:first-child {
+    padding-top: calc(80px + 30px) !important;
+  }
+}
+
 .spotlight-section {
-  z-index: 2;
-  padding: 2rem;
+  z-index: var(--z-index-base);
+  padding: var(--spacing-md);
   border-radius: 8px;
   max-width: 800px;
   margin: 5vh auto 25vh auto;
@@ -324,37 +392,42 @@ path.county[data-state="Alaska"] {
 .section-content {
   max-width: 800px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--spacing-sm);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .section-content {
-    padding: 0.75rem;
+    padding: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
   }
 }
 
 .section-title {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .section-title {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xs);
   }
 }
 
 .section-description {
-  font-size: 1.2rem;
+  font-size: var(--font-size-md);
   line-height: 1.6;
   color: #444;
+  margin-bottom: 1.5rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .section-description {
-    font-size: 0.9rem;
-    line-height: 1.4;
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
   }
 }
 
@@ -377,13 +450,13 @@ path.county[data-state="Alaska"] {
 /* #region - Spotlight sections styling */
 .spotlight-section {
   position: relative;
-  z-index: 2;
-  margin: 2rem 0;
-  padding: 2rem;
+  z-index: var(--z-index-base);
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
   min-height: 100vh;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .spotlight-section {
     padding: 1.5rem 0.75rem !important;
     border-left-width: 4px;
@@ -415,48 +488,30 @@ path.county[data-state="Alaska"] {
 
 /* #endregion */
 
-.section-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.section-title {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.section-description {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  color: #444;
-  margin-bottom: 1.5rem;
-}
-
 /* #endregion */
 
 /* #region - Tooltip Styling */
 .tooltip {
   position: absolute;
   padding: 10px;
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px var(--color-shadow);
   pointer-events: none;
   z-index: 1000;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
   max-width: 300px;
   opacity: 0;
   transform: translateZ(0);
   will-change: transform, opacity;
-  transition: opacity 0.2s ease-out;
+  /* transition: opacity var(--transition-fast); */
+  transition: opacity 0.2s ease-out, transform 0.3s ease-out;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .tooltip {
     max-width: 240px;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     padding: 8px;
   }
 }
@@ -475,35 +530,35 @@ path.county[data-state="Alaska"] {
   left: -16px;
   top: 50%;
   transform: translateY(-50%);
-  border-right-color: white;
+  border-right-color: var(--color-white);
 }
 
 .tooltip.left-arrow::before {
   right: -16px;
   top: 50%;
   transform: translateY(-50%);
-  border-left-color: white;
+  border-left-color: var(--color-white);
 }
 
 .tooltip.top-arrow::before {
   bottom: -16px;
   left: 50%;
   transform: translateX(-50%);
-  border-top-color: white;
+  border-top-color: var(--color-white);
 }
 
 .tooltip.bottom-arrow::before {
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  border-bottom-color: white;
+  border-bottom-color: var(--color-white);
 }
 
 /* Base tooltip styles */
 .tooltip-header {
   font-weight: bold;
   margin-bottom: 5px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border-light);
   padding-bottom: 5px;
 }
 
@@ -515,7 +570,7 @@ path.county[data-state="Alaska"] {
 
 .tooltip-label {
   font-weight: normal;
-  color: #666;
+  color: var(--color-text-light);
 }
 
 .tooltip-value {
@@ -524,13 +579,13 @@ path.county[data-state="Alaska"] {
 
 /* Modern tooltip styling */
 .tooltip-modern {
-  color: #333;
+  color: var(--color-text);
   max-width: 300px;
   padding: 12px;
   border-radius: 8px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .tooltip-modern {
     max-width: 280px;
   }
@@ -540,11 +595,11 @@ path.county[data-state="Alaska"] {
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--color-border-light);
   padding-bottom: 5px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .tooltip-modern h2 {
     font-size: 14px;
     margin-bottom: 6px;
@@ -561,21 +616,21 @@ path.county[data-state="Alaska"] {
   font-size: 28px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .tooltip-score h1 {
     font-size: 22px;
   }
 }
 
 .score-scale {
-  font-size: 14px;
-  color: #888;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-lighter);
   font-weight: normal;
 }
 
 .score-bar {
   height: 4px;
-  background-color: #eee;
+  background-color: var(--color-border-light);
   border-radius: 2px;
   position: relative;
   margin-top: 5px;
@@ -589,7 +644,7 @@ path.county[data-state="Alaska"] {
   background-color: #de2d26;
   border-radius: 50%;
   margin-left: -5px;
-  transition: left 0.3s ease-out;
+  transition: left var(--transition-medium);
 }
 
 .tooltip-metrics {
@@ -604,12 +659,12 @@ path.county[data-state="Alaska"] {
 
 .metric-label {
   font-weight: normal;
-  color: #666;
+  color: var(--color-text-light);
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .metric-label {
     font-size: 10px;
   }
@@ -621,13 +676,13 @@ path.county[data-state="Alaska"] {
 
 .metric-sub {
   text-align: right;
-  font-size: 12px;
-  color: #888;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-lighter);
   margin-top: -5px;
   margin-bottom: 8px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .metric-sub {
     font-size: 10px;
     margin-top: -3px;
@@ -636,19 +691,19 @@ path.county[data-state="Alaska"] {
 }
 
 .tooltip-facilities {
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--color-border-light);
   padding-top: 10px;
   margin-top: 10px;
 }
 
 .tooltip-facilities h3 {
   margin: 0 0 10px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .tooltip-facilities h3 {
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     margin-bottom: 6px;
   }
 }
@@ -660,13 +715,13 @@ path.county[data-state="Alaska"] {
 .facility-label {
   display: block;
   font-weight: normal;
-  color: #666;
+  color: var(--color-text-light);
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   margin-bottom: 2px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .facility-label {
     font-size: 10px;
   }
@@ -677,7 +732,7 @@ path.county[data-state="Alaska"] {
   font-size: 13px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .facility-value {
     font-size: 11px;
     margin-top: 2px;
@@ -696,13 +751,13 @@ path.county[data-state="Alaska"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 100;
-  transition: top 0.5s ease-out, opacity 0.3s ease-out;
+  z-index: var(--z-index-middle);
+  transition: top var(--transition-slow), opacity var(--transition-medium);
   opacity: 1;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 1px 3px var(--color-shadow-lighter));
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .progress-indicator {
     display: none !important;
   }
@@ -714,7 +769,7 @@ path.county[data-state="Alaska"] {
 
 .progress-bar {
   width: 2px;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark gray progress bar */
+  background-color: rgba(0, 0, 0, 0.5);
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -731,7 +786,7 @@ path.county[data-state="Alaska"] {
   gap: 16px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .step-indicators {
     gap: 10px;
   }
@@ -741,12 +796,12 @@ path.county[data-state="Alaska"] {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgba(200, 200, 200, 0.8); /* Light gray dots */
-  border: 2px solid white;
+  background-color: rgba(200, 200, 200, 0.8);
+  border: 2px solid var(--color-white);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
   position: relative;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px var(--color-shadow-light);
   /* Reset button styles */
   padding: 0;
   margin: 0;
@@ -758,22 +813,22 @@ path.county[data-state="Alaska"] {
 .step-indicator:hover,
 .step-indicator:focus {
   transform: scale(1.3);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  outline: none; /* Remove default focus outline */
+  box-shadow: 0 2px 5px var(--color-shadow);
+  outline: none;
 }
 
 .step-indicator:focus-visible {
-  box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.4); /* Gray focus ring */
+  box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.4);
 }
 
 .step-indicator.active {
-  background-color: rgba(50, 50, 50, 0.9); /* Dark gray for active */
+  background-color: rgba(50, 50, 50, 0.9);
   transform: scale(1.3);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px var(--color-shadow);
 }
 
 .step-indicator.completed {
-  background-color: rgba(120, 120, 120, 0.8); /* Medium gray for completed */
+  background-color: rgba(120, 120, 120, 0.8);
 }
 
 .step-tooltip {
@@ -781,17 +836,17 @@ path.county[data-state="Alaska"] {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: white;
+  background-color: var(--color-white);
   padding: 6px 12px;
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--color-shadow-light);
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s;
-  font-size: 14px;
+  transition: opacity var(--transition-medium);
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  color: #333;
+  color: var(--color-text);
 }
 
 .step-indicator:hover .step-tooltip {
@@ -800,18 +855,18 @@ path.county[data-state="Alaska"] {
 
 /* Use darker gray for spotlight sections for subtle differentiation */
 body[data-active-spotlight] .step-indicator.active {
-  background-color: rgba(40, 40, 40, 0.95); /* Slightly darker for spotlight */
+  background-color: rgba(40, 40, 40, 0.95);
 }
 
 /* Mobile styles */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-sm)) {
   .progress-indicator {
     right: 12px;
     transform: translateY(-50%) scale(0.85);
   }
 
   .step-tooltip {
-    display: none; /* Hide tooltips on mobile */
+    display: none;
   }
 
   .step-indicator {
@@ -821,7 +876,7 @@ body[data-active-spotlight] .step-indicator.active {
 }
 
 /* Small mobile styles */
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .progress-indicator {
     right: 8px;
     transform: translateY(-50%) scale(0.75);
@@ -834,100 +889,112 @@ body[data-active-spotlight] .step-indicator.active {
 
 /* #endregion */
 
-/* #region - Step Title Container
-/* These styles control the floating title and description that appears over the map */
-
-:root {
-  /* Central variable for vertical positioning - adjust this to move title up/down */
-  --title-container-top-position: 300px;
-}
+/* #region - Step Title Container */
 
 .step-title-container {
-  /* Positioning */
   position: absolute;
   top: var(--title-container-top-position);
   left: 20px;
-  z-index: 200;
-
-  /* Sizing */
+  z-index: var(--z-index-high);
   max-width: 600px;
   width: auto;
-  right: 20px; /* Constrains max-width on very small screens */
-
-  /* Content layout */
+  right: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-
-  /* Visual styling */
   background-color: rgba(255, 255, 255, 0.7);
-
-  /* Behavior */
-  pointer-events: none; /* Let clicks pass through to map */
-  transition: all 0.3s ease-out;
+  pointer-events: none;
+  transition: all var(--transition-medium);
 }
 
-@media (max-width: 480px) {
-  /* Improve map title container positioning */
+@media (max-width: var(--breakpoint-xs)) {
   .step-title-container {
-    top: 100px;
-    background-color: rgba(
-      255,
-      255,
-      255,
-      0.85
-    ); /* More opacity for better readability */
-    padding: 8px;
-    max-width: calc(100% - 10px);
+    position: relative;
+    top: auto;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    margin: 5px 5px 0;
+    padding: 6px;
+    z-index: 150;
   }
 }
 
+/* Desktop title container styles */
+.step-title-container.desktop {
+  position: absolute;
+  top: var(--title-container-top-position);
+}
+
+/* Mobile title container styles */
+.step-title-container.mobile {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-index-high);
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 4px;
+}
+
+/* Legend SVG styling */
+.legend-container svg {
+  max-width: 100%;
+}
+
 .current-step-title {
-  /* Typography */
-  font-size: 1.1rem;
+  font-size: var(--font-size-md);
   font-weight: bold;
   color: #222;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
-
-  /* Spacing */
   margin: 0;
   padding: 5px 10px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .current-step-title {
-    font-size: 0.9rem;
-    padding: 2px 6px;
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    padding-left: 8px;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }
 
 .current-step-description {
   /* Typography */
-  font-size: 0.9rem;
-  line-height: 1.4;
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
   font-weight: normal;
-  color: #333;
+  color: var(--color-text);
 
   /* Sizing & Spacing */
   margin: 0;
   padding: 8px 12px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .current-step-description {
     font-size: 0.8rem;
-    padding: 4px 6px;
     line-height: 1.3;
+    margin-bottom: 5px;
+    padding-left: 8px;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 }
 
 /* Stats shown for spotlight views */
 .step-stats {
   /* Typography */
-  font-size: 0.85rem;
+  font-size: var(--font-size-sm);
   font-weight: 500;
-  color: #444;
+  color: var(--color-text-light);
 
   /* Spacing */
   margin-top: 8px;
@@ -943,21 +1010,17 @@ body[data-active-spotlight] .step-indicator.active {
 /* Responsive breakpoints for different screen sizes */
 
 /* Medium screens (tablets, smaller desktops) */
-@media (max-width: 992px) {
+@media (max-width: var(--breakpoint-md)) {
   .step-title-container {
     /* Adjust vertical position */
     --title-container-top-position: 200px;
     left: 15px;
     max-width: 450px;
   }
-
-  .current-step-description {
-    font-size: 0.9rem;
-  }
 }
 
 /* Small screens (mobile landscape, small tablets) */
-@media (max-width: 768px) {
+@media (max-width: var(--breakpoint-sm)) {
   :root {
     /* Override the root variable for smaller screens */
     --title-container-top-position: 50px;
@@ -967,32 +1030,13 @@ body[data-active-spotlight] .step-indicator.active {
     max-width: calc(100% - 20px);
     left: 10px;
   }
-
-  .current-step-title {
-    font-size: 1.1rem;
-  }
-
-  .current-step-description {
-    font-size: 0.85rem;
-    max-width: 100%;
-  }
 }
 
 /* Extra small screens (mobile portrait) */
-@media (max-width: 480px) {
+@media (max-width: var(--breakpoint-xs)) {
   .step-title-container {
     left: 5px;
     max-width: calc(100% - 10px);
-  }
-
-  .current-step-title {
-    font-size: 1rem;
-    padding: 4px 8px;
-  }
-
-  .current-step-description {
-    padding: 6px 8px;
-    font-size: 0.8rem;
   }
 
   .step-stats {
@@ -1026,8 +1070,8 @@ body[data-active-spotlight] .step-indicator.active {
   left: 0;
   width: 100%;
   text-align: center;
-  font-size: 0.85rem;
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
   padding: 5px 0;
   margin: 0;
   line-height: 1.4;
@@ -1035,8 +1079,8 @@ body[data-active-spotlight] .step-indicator.active {
 }
 
 .map-copyright {
-  font-size: 0.75rem;
-  color: #888;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-lighter);
   margin-top: 2px;
 }
 
@@ -1047,17 +1091,12 @@ body[data-active-spotlight] .step-indicator.active {
   transform: translate(-50%, -50%);
   padding: 1em;
   border-radius: 0.5em;
-  z-index: 100;
+  z-index: var(--z-index-middle);
 }
 /* #endregion */
 
 /* Device orientation specific adjustments */
-@media (max-width: 480px) and (orientation: landscape) {
-  /* In landscape mode on small devices, adjust the map aspect ratio */
-  #map-svg {
-    aspect-ratio: 4/3;
-  }
-
+@media (max-width: var(--breakpoint-xs)) and (orientation: landscape) {
   /* Move the step title to better position in landscape */
   .step-title-container {
     top: 60px;
@@ -1067,7 +1106,7 @@ body[data-active-spotlight] .step-indicator.active {
 }
 
 /* Make sure we have basic responsiveness even on mid-sized devices */
-@media (min-width: 481px) and (max-width: 768px) {
+@media (min-width: calc(var(--breakpoint-xs) + 1px)) and (max-width: var(--breakpoint-sm)) {
   .legend-container {
     height: 60px;
     padding-top: 5px;
@@ -1083,9 +1122,152 @@ body[data-active-spotlight] .step-indicator.active {
   }
 }
 
-/* Improved transitions across all screen sizes */
-.legend-container svg,
-#map-svg,
+/* Apply to elements that need smooth animation */
+.sticky-container,
+.map-svg,
+.tooltip,
 .step-title-container {
-  transition: all 0.3s ease-out;
+  /* Hardware acceleration for smoother animations */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Remove will-change when not animating to save resources */
+.transition-complete {
+  will-change: auto;
+}
+
+/* Apply to transitions that need to feel more polished */
+.map-group {
+  transition: opacity 0.4s var(--ease-out-cubic),
+    transform 0.4s var(--ease-out-cubic);
+}
+
+/* For elements that need to feel quick but smooth */
+.tooltip {
+  transition: opacity 0.2s var(--ease-out-quint);
+}
+
+/* Add these to your CSS */
+body.is-loading {
+  overflow: hidden; /* Prevent scrolling during load */
+}
+
+body.is-loading .map-container,
+body.is-loading .scroll-section {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s var(--ease-out-cubic);
+}
+
+body:not(.is-loading) .loader {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Simple loading animation */
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #666;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading states */
+body.is-loading {
+  overflow: hidden; /* Prevent scrolling during load */
+}
+
+body.is-loading .map-container,
+body.is-loading .scroll-section {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background, #f9f9f9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1));
+}
+
+body:not(.is-loading) .loader {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Loading spinner */
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #666;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Class for elements with completed transitions */
+.transition-complete {
+  will-change: auto;
+}
+
+/* Specific transition properties instead of 'all' */
+.map-group {
+  transition: opacity 0.4s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1)),
+    transform 0.4s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1));
+}
+
+.tooltip {
+  transition: opacity 0.2s var(--ease-out-quint, cubic-bezier(0.22, 1, 0.36, 1)),
+    transform 0.3s var(--ease-out-quint, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.step-title-container {
+  transition: opacity 0.3s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1)),
+    transform 0.3s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1));
+}
+
+/* Hardware acceleration for smoother animations */
+.sticky-container,
+#map-svg,
+.tooltip,
+.step-title-container {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }

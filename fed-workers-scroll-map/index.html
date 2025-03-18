@@ -13,6 +13,13 @@
 
     <!-- Core styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <script src="js/loader.js"></script>
+    <!-- Add preloading directives for critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+
+    <link rel="modulepreload" href="js/mapRenderer.js">
+    <link rel="modulepreload" href="js/main.js">
 </head>
 
 <body>

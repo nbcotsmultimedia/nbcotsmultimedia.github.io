@@ -66,19 +66,25 @@ export function renderCurrentStep(
   const renderId = Date.now();
   state.currentRenderId = renderId;
 
-  // Create a new group with a unique class for the new map view
+  // 1. First create the new group but keep it hidden
   const newGroupClass = `map-group-${renderId}`;
   const newMapGroup = svgElement
     .append("g")
     .attr("class", `map-group ${newGroupClass}`)
     .attr("transform", `translate(0, ${dimensions.topPadding})`)
-    .style("opacity", 0); // Start invisible
+    .style("opacity", 0) // Start invisible
+    .style("pointer-events", "none"); // Disable interactions during transition
 
-  // Use optimized projection
+  // Tell the style loader to prepare for this transition
+  if (window.styleLoader && window.styleLoader.prepareForTransition) {
+    window.styleLoader.prepareForTransition(newMapGroup.node());
+  }
+
+  // 2. Use optimized projection
   const projection = createOptimizedProjection(dimensions);
   const path = d3.geoPath().projection(projection);
 
-  // Determine which data to use
+  // 3. Determine which data to use
   const features = isStateLevel ? data.states : data.counties;
 
   // Check if we have loaded data yet - if not, show loading state
@@ -87,14 +93,8 @@ export function renderCurrentStep(
     return;
   }
 
-  console.log(
-    "Number of map groups before rendering:",
-    svgElement.selectAll("g.map-group").size()
-  );
-
-  // Render in the new group
+  // 4. Prepare for transition - pre-render the new content while hidden
   if (isSpotlightView) {
-    // Special spotlight view rendering
     renderSpotlightView(
       svgElement,
       features,
@@ -104,7 +104,6 @@ export function renderCurrentStep(
       tooltipHandlers
     );
   } else {
-    // Standard view rendering
     renderMapInNewGroup(
       newMapGroup,
       features,
@@ -114,53 +113,80 @@ export function renderCurrentStep(
     );
   }
 
-  // Render legend in its own container
+  // 5. Render legend in its own container
   createLegend(dimensions, currentStepConfig);
 
-  // Find ALL old map groups to transition out
+  // 6. Find old map groups to transition out
   const oldMapGroups = svgElement.selectAll(
     "g.map-group:not(." + newGroupClass + ")"
   );
 
-  // Ensure sources are positioned below the map
+  // 7. Position sources below the map
   const mapContainer = document.getElementById("map-container");
   const sourcesElement = mapContainer.querySelector(".map-sources");
-
   if (sourcesElement) {
-    // Position below the visualized map content
     const mapBounds = svgElement.node().getBBox();
     const totalHeight = mapBounds.y + mapBounds.height;
-
-    // Add some buffer for the sources
     sourcesElement.style.top = `${totalHeight + 20}px`;
   }
 
-  // Fade in the new content and remove old content
-  newMapGroup
-    .transition()
-    .duration(500)
-    .ease(d3.easeCubicOut)
-    .style("opacity", 1)
-    .on("end", function () {
-      // After new content is fully visible, remove ALL old content
+  // 8. Ensure step title container is properly positioned
+  ensureStepTitleContainerPosition();
+
+  // 9. Use nextFrame to ensure DOM is ready for transitions
+  if (window.styleLoader && window.styleLoader.nextFrame) {
+    window.styleLoader.nextFrame(() => {
+      // 10. First fade out old content
       if (!oldMapGroups.empty()) {
         oldMapGroups
           .transition()
-          .duration(200)
+          .duration(300)
+          .ease(d3.easeCubicOut)
           .style("opacity", 0)
           .on("end", function () {
-            d3.select(this).remove(); // Remove each specific group when its transition ends
+            // 11. Remove this specific old group when its transition is complete
+            d3.select(this).remove();
           });
       }
 
-      // Rename the new group to the standard name after transition
-      newMapGroup.classed(newGroupClass, false);
+      // 12. Wait for a brief moment to stagger the transitions
+      setTimeout(() => {
+        // 13. Now fade in the new content
+        newMapGroup
+          .transition()
+          .duration(500)
+          .ease(d3.easeCubicOut)
+          .style("opacity", 1)
+          .style("pointer-events", "auto") // Re-enable interactions
+          .on("end", function () {
+            // 14. Rename the group after transition is complete
+            newMapGroup.classed(newGroupClass, false);
 
-      console.log(
-        "Number of map groups after rendering:",
-        svgElement.selectAll("g.map-group").size()
-      );
+            // 15. Notify that transition is complete
+            newMapGroup.node().classList.add("transition-complete");
+          });
+      }, 150); // Small delay between transitions
     });
+  } else {
+    // Fallback to the original transition approach if styleLoader is not available
+    newMapGroup
+      .transition()
+      .duration(500)
+      .ease(d3.easeCubicOut)
+      .style("opacity", 1)
+      .on("end", function () {
+        if (!oldMapGroups.empty()) {
+          oldMapGroups
+            .transition()
+            .duration(200)
+            .style("opacity", 0)
+            .on("end", function () {
+              d3.select(this).remove();
+            });
+        }
+        newMapGroup.classed(newGroupClass, false);
+      });
+  }
 }
 
 const stepTitleContainer = document.querySelector(".step-title-container");
@@ -483,19 +509,144 @@ function createOptimizedProjection(dimensions) {
   // Get the current viewport width
   const viewportWidth = window.innerWidth;
 
-  // Adjust scale factor based on screen size
-  const scaleFactor = viewportWidth < 480 ? 1.3 : 1.15;
+  // Adjust scale factor based on screen size AND aspect ratio
+  const isMobile = viewportWidth < 480;
+  const scaleFactor = isMobile ? 1.4 : 1.15; // Increased scale for mobile for better visibility
 
   // Create base Albers USA projection
   const projection = d3
     .geoAlbersUsa()
     .scale(dimensions.width * scaleFactor)
     .translate([
-      dimensions.width * 0.49,
-      dimensions.height * (viewportWidth < 480 ? 0.5 : 0.45), // Adjust center point for mobile
+      dimensions.width * 0.49, // Centered horizontally
+      dimensions.height * (isMobile ? 0.42 : 0.45), // Adjusted vertical position for mobile
     ]);
 
   return projection;
+}
+
+/**
+ * Ensure the step title container is in the right position based on viewport size
+ * This should be called during rendering and on window resize
+ */
+// Update this function in mapRenderer.js
+
+/**
+ * Ensure the step title container is in the right position based on viewport size
+ * This should be called during rendering and on window resize
+ */
+export function ensureStepTitleContainerPosition() {
+  const stepTitleContainer = document.querySelector(".step-title-container");
+  const mapContainer = document.getElementById("map-container");
+  const mapSvg = document.getElementById("map-svg");
+
+  if (!stepTitleContainer || !mapContainer) {
+    console.warn("Cannot position step title container: elements not found");
+    return;
+  }
+
+  // Check if we're on mobile viewport
+  const isMobile = window.innerWidth <= 480;
+
+  if (isMobile) {
+    // Apply mobile class for styling
+    stepTitleContainer.classList.add("mobile");
+    stepTitleContainer.classList.remove("desktop");
+
+    // Find map SVG to position title container right after it
+    if (mapSvg) {
+      // First remove the title container from its current position
+      if (stepTitleContainer.parentElement) {
+        stepTitleContainer.parentElement.removeChild(stepTitleContainer);
+      }
+
+      // Insert it immediately after the map SVG with no extra space
+      if (mapSvg.nextSibling) {
+        mapContainer.insertBefore(stepTitleContainer, mapSvg.nextSibling);
+      } else {
+        mapContainer.appendChild(stepTitleContainer);
+      }
+    }
+  } else {
+    // Add desktop class and remove mobile class
+    stepTitleContainer.classList.remove("mobile");
+    stepTitleContainer.classList.add("desktop");
+
+    // Desktop positioning unchanged
+    if (stepTitleContainer.parentElement !== mapContainer) {
+      mapContainer.appendChild(stepTitleContainer);
+    }
+  }
+}
+
+// Function to help you check for issues
+export function fixTitleDisplay() {
+  // This can be called from the console to force-recreate the title container if needed
+  const mapContainer = document.getElementById("map-container");
+  if (!mapContainer) {
+    console.error("Map container not found");
+    return;
+  }
+
+  let stepTitleContainer = document.querySelector(".step-title-container");
+
+  // If the container doesn't exist, create it
+  if (!stepTitleContainer) {
+    console.log("Creating missing step title container");
+    stepTitleContainer = document.createElement("div");
+    stepTitleContainer.className = "step-title-container";
+
+    // Add the title and description elements
+    const titleElement = document.createElement("h2");
+    titleElement.className = "current-step-title";
+    titleElement.textContent = "Step Title";
+
+    const descriptionElement = document.createElement("p");
+    descriptionElement.className = "current-step-description";
+    descriptionElement.textContent = "Step description goes here.";
+
+    stepTitleContainer.appendChild(titleElement);
+    stepTitleContainer.appendChild(descriptionElement);
+
+    // Add it to the map container
+    mapContainer.appendChild(stepTitleContainer);
+  }
+
+  // Force mobile styling
+  if (window.innerWidth <= 480) {
+    stepTitleContainer.style.display = "flex";
+    stepTitleContainer.style.visibility = "visible";
+    stepTitleContainer.style.opacity = "1";
+    stepTitleContainer.style.zIndex = "200";
+    stepTitleContainer.style.position = "relative";
+    stepTitleContainer.style.top = "auto";
+    stepTitleContainer.style.left = "0";
+    stepTitleContainer.style.right = "0";
+    stepTitleContainer.style.maxWidth = "100%";
+    stepTitleContainer.style.margin = "10px 5px 0";
+    stepTitleContainer.style.backgroundColor = "rgba(255, 255, 255, 0.85)";
+    stepTitleContainer.style.padding = "8px";
+    stepTitleContainer.style.borderTop = "1px solid rgba(0, 0, 0, 0.1)";
+  }
+
+  console.log("Title container styling fixed. Current state:", {
+    exists: !!stepTitleContainer,
+    styles: {
+      display: stepTitleContainer.style.display,
+      position: stepTitleContainer.style.position,
+      visibility: stepTitleContainer.style.visibility,
+      opacity: stepTitleContainer.style.opacity,
+      zIndex: stepTitleContainer.style.zIndex,
+    },
+    content: {
+      title: stepTitleContainer.querySelector(".current-step-title")
+        ?.textContent,
+      description: stepTitleContainer.querySelector(".current-step-description")
+        ?.textContent,
+    },
+  });
+
+  return "Title display fix attempted";
 }
 
 /**
@@ -503,35 +654,32 @@ function createOptimizedProjection(dimensions) {
  * @param {HTMLElement} svg - SVG element
  * @return {Object} dimensions - Width, height, and padding values
  */
-/**
- * Initialize the SVG for map rendering with optimized dimensions
- * @param {HTMLElement} svg - SVG element
- * @return {Object} dimensions - Width, height, and padding values
- */
+// Update this function in mapRenderer.js
+// Update the initializeMapSvg function in mapRenderer.js
+
 export function initializeMapSvg(svg) {
   // Get the current viewport width
   const viewportWidth = window.innerWidth;
 
   // Adjust width calculation for mobile
-  const width = viewportWidth > 1000 ? 1000 : viewportWidth - 20; // Reduce padding for mobile
+  const width = viewportWidth > 1000 ? 1000 : viewportWidth - 20;
 
-  // Adjust aspect ratio for different screen sizes
-  const aspectRatio = viewportWidth < 480 ? 0.75 : 0.6; // Taller aspect ratio on mobile
+  // Use consistent aspect ratios that match CSS values
+  const aspectRatio = viewportWidth < 480 ? 0.5 : 3 / 4;
   const height = width * aspectRatio;
 
-  // Adjust padding based on screen size
-  const topPadding = viewportWidth < 480 ? 30 : 40;
-  const bottomPadding = viewportWidth < 480 ? 30 : 40;
+  // Reduce padding values for mobile to minimize extra space
+  const topPadding = viewportWidth < 480 ? 20 : 40; // Reduced from 50 to 20
+  const bottomPadding = viewportWidth < 480 ? 5 : 40; // Reduced from 20 to 5
 
   if (svg) {
-    // Set dimensions with enough height for Alaska
+    // Set dimensions with more compact spacing
     svg.setAttribute("width", width);
     svg.setAttribute("height", height + topPadding + bottomPadding);
     svg.setAttribute(
       "viewBox",
       `0 0 ${width} ${height + topPadding + bottomPadding}`
     );
-    svg.style.overflow = "visible"; // Ensure nothing is clipped
 
     // Create or update group for the map
     const mapGroup = d3.select(svg).select("g.map-group");
@@ -644,11 +792,7 @@ function formatLegendValue(value, stepConfig) {
  * @param {Object} dimensions - Dimensions object
  * @param {Object} stepConfig - Step configuration
  */
-/**
- * Create a legend in a dedicated container with improved height handling
- * @param {Object} dimensions - Dimensions object
- * @param {Object} stepConfig - Step configuration
- */
+// Find this function in mapRenderer.js and replace it with this updated version
 export function createLegend(dimensions, stepConfig) {
   // Get the current viewport width
   const viewportWidth = window.innerWidth;
@@ -698,9 +842,6 @@ export function createLegend(dimensions, stepConfig) {
     }
   }
 
-  // Set a minimum height for the container to prevent cutting off
-  legendContainer.style.minHeight = `${totalSvgHeight + 10}px`;
-
   // Clear any existing content
   legendContainer.innerHTML = "";
 
@@ -720,7 +861,8 @@ export function createLegend(dimensions, stepConfig) {
     "viewBox",
     `0 0 ${legendWidth + horizontalPadding * 2} ${totalSvgHeight}`
   );
-  legendSvg.style.maxWidth = "100%"; // Ensure the SVG is responsive
+
+  legendSvg.classList.add("legend-svg");
 
   legendContainer.appendChild(legendSvg);
 
@@ -770,6 +912,18 @@ export function createLegend(dimensions, stepConfig) {
       .attr("height", legendHeight)
       .attr("class", "legend-block")
       .style("fill", colors[i + 1]); // Skip the lightest color
+
+    // Add marker line at each break point (NEW!)
+    // if (i > 0) {
+    //   legendGroup
+    //     .append("line")
+    //     .attr("x1", x)
+    //     .attr("y1", blocksY - 2)
+    //     .attr("x2", x)
+    //     .attr("y2", blocksY + legendHeight + 2)
+    //     .attr("stroke", "#666")
+    //     .attr("stroke-width", 1);
+    // }
   }
 
   // Position labels below the blocks with enough space
@@ -777,7 +931,12 @@ export function createLegend(dimensions, stepConfig) {
 
   // Add labels based on the legend type
   if (isFederalWorkersLegend) {
-    // For federal workers, add numeric values at equal intervals
+    // For federal workers, optimize mobile values (NEW!)
+    const mobileBreaks =
+      viewportWidth < 480
+        ? [1000, 2500, 5000, 7500, 10000] // Better mobile values
+        : breaks;
+
     // Add the "0" label at the start with padding
     legendGroup
       .append("text")
@@ -788,12 +947,10 @@ export function createLegend(dimensions, stepConfig) {
       .attr("font-size", viewportWidth < 480 ? "10px" : "12px")
       .text("0");
 
-    // Add middle breaks (2K, 3K, 4K) - but on mobile, only show first, middle and last
-    const labelsToShow = viewportWidth < 480 ? [0, 2, 4] : [0, 1, 2, 3, 4];
-
-    labelsToShow.forEach((i) => {
+    // Add all break points on mobile (NEW!)
+    for (let i = 0; i < numCategories; i++) {
       if (i > 0) {
-        // Skip the first one as it's already added
+        // Skip the first one (0) as it's already added
         legendGroup
           .append("text")
           .attr("x", i * segmentWidth)
@@ -801,9 +958,9 @@ export function createLegend(dimensions, stepConfig) {
           .attr("text-anchor", "middle")
           .attr("class", "legend-value")
           .attr("font-size", viewportWidth < 480 ? "10px" : "12px")
-          .text(formatLegendValue(breaks[i - 1], stepConfig));
+          .text(formatLegendValue(mobileBreaks[i - 1], stepConfig));
       }
-    });
+    }
 
     // Add the end label with "+" and padding
     legendGroup
@@ -813,7 +970,10 @@ export function createLegend(dimensions, stepConfig) {
       .attr("text-anchor", "end")
       .attr("class", "legend-value")
       .attr("font-size", viewportWidth < 480 ? "10px" : "12px")
-      .text(formatLegendValue(breaks[breaks.length - 1], stepConfig) + "+");
+      .text(
+        formatLegendValue(mobileBreaks[mobileBreaks.length - 1], stepConfig) +
+          "+"
+      );
   } else {
     // For vulnerability, just add "Low" and "High" labels at the ends with padding
     legendGroup
@@ -846,6 +1006,12 @@ export function createLegend(dimensions, stepConfig) {
 }
 
 // #endregion
+
+// Call it once on initial load to make sure it's positioned correctly:
+document.addEventListener("DOMContentLoaded", () => {
+  // Wait a moment for the DOM to fully load
+  setTimeout(ensureStepTitleContainerPosition, 100);
+});
 
 // Export a public API for the renderer
 export default {

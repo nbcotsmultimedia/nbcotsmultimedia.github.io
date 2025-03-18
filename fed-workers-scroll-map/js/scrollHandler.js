@@ -353,13 +353,6 @@ function createProgressIndicator() {
       },
     });
 
-    // Add tooltip with step title
-    const tooltip = createElement("span", {
-      className: "step-tooltip",
-      textContent: step.title,
-    });
-
-    stepIndicator.appendChild(tooltip);
     stepsContainer.appendChild(stepIndicator);
   });
 
