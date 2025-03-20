@@ -80,11 +80,6 @@ function getTooltip() {
  * @param {Event} event - Mouse event
  * @param {string} content - Tooltip HTML content
  */
-/**
- * Position tooltip at optimal location based on available space
- * @param {Event} event - Mouse event
- * @param {string} content - Tooltip HTML content
- */
 function positionTooltip(event, content) {
   const tooltip = getTooltip();
   const viewportWidth = window.innerWidth;
@@ -215,155 +210,107 @@ function positionTooltip(event, content) {
 // #region - Tooltip Content Generators
 
 /**
- * Generate tooltip content based on feature and step config
+ * Generate tooltip content for federal worker distribution
  * @param {Object} feature - Feature data
  * @param {Object} stepConfig - Step configuration
  * @return {string} - HTML content for tooltip
  */
-function generateTooltipContent(feature, stepConfig) {
+function generateFederalWorkersTooltipContent(feature, stepConfig) {
   const name = feature.properties.name;
-  const stateName = feature.properties.stateName || "Unknown";
-  const stateAbbr = getStateAbbreviation(stateName);
-  const vulnerabilityIndex = feature.properties.vulnerabilityIndex;
-  const fedWorkers = feature.properties.fed_workers_per_100k;
-  const unemployment = feature.properties.unemployment_rate;
-  const income = feature.properties.median_income;
+  const stateAbbr = getStateAbbreviation(
+    feature.properties.stateName || "Unknown"
+  );
+  const isStateLevel = stepConfig.isStateLevel === true;
 
-  let tooltipContent = "";
+  // Choose the correct field based on whether this is state or county level
+  const fedWorkersField = isStateLevel
+    ? "state_fed_workers_per_100k"
+    : "fed_workers_per_100k";
 
-  // Only use the special style for vulnerability-related maps
-  if (
+  // For debugging
+  // console.log("Feature properties:", feature.properties);
+
+  // Get the federal workers value using the correct field
+  const fedWorkers = feature.properties[fedWorkersField] || 0;
+
+  // For workforce percentage:
+  // 1. Try direct field
+  // 2. Try calculated field
+  // 3. Fall back to reasonable default (2.5% for states, matching national average)
+  let workforcePercent = 0;
+
+  // Try multiple possible field names
+  if (isStateLevel) {
+    // For states, try these field names in order
+    if (feature.properties.state_fed_workers_pct !== undefined) {
+      workforcePercent = feature.properties.state_fed_workers_pct;
+    } else if (feature.properties.state_workforce_pct !== undefined) {
+      workforcePercent = feature.properties.state_workforce_pct;
+    } else if (feature.properties.pct_federal !== undefined) {
+      workforcePercent = feature.properties.pct_federal;
+    } else if (fedWorkers > 0) {
+      // Calculate percentage based on rule of thumb:
+      // ~2.5% of U.S. workforce is federal, and 2,500 federal workers per 100k = ~2.5%
+      workforcePercent = fedWorkers / 1000;
+    } else {
+      workforcePercent = 2.5; // Default approximation for states
+    }
+  } else {
+    // For counties, try these field names in order
+    if (feature.properties.fed_workers_pct !== undefined) {
+      workforcePercent = feature.properties.fed_workers_pct;
+    } else if (feature.properties.pct_federal !== undefined) {
+      workforcePercent = feature.properties.pct_federal;
+    } else if (feature.properties.workforce_pct !== undefined) {
+      workforcePercent = feature.properties.workforce_pct;
+    } else if (fedWorkers > 0) {
+      // Calculate percentage based on rule of thumb:
+      // ~2.5% of U.S. workforce is federal, and 2,500 federal workers per 100k = ~2.5%
+      workforcePercent = fedWorkers / 1000;
+    } else {
+      workforcePercent = 1.5; // Default approximation for counties
+    }
+  }
+
+  // Format numbers appropriately
+  const formattedFedWorkers =
+    fedWorkers > 1000
+      ? (fedWorkers / 1000).toFixed(1) + "K"
+      : fedWorkers.toLocaleString();
+
+  const formattedPercent = workforcePercent.toFixed(1) + "%";
+
+  // Clean modern tooltip design matching goal implementation
+  return `
+    <div class="tooltip-modern">
+      <h2>${name}, ${stateAbbr}</h2>
+      <div class="tooltip-metrics">
+        <div class="metric-row">
+          <span class="metric-label">FEDERAL WORKERS</span>
+          <span class="metric-value">${formattedFedWorkers}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function generateTooltipContent(feature, stepConfig) {
+  // Route to specific tooltip generators based on step ID
+  if (stepConfig.id.includes("federal_workers")) {
+    return generateFederalWorkersTooltipContent(feature, stepConfig);
+  } else if (
     stepConfig.id === "vulnerability_index" ||
-    stepConfig.isSpotlightView ||
     stepConfig.showVulnerability
   ) {
-    // Use the cleaned up modern style
-    tooltipContent = `
-      <div class="tooltip-modern">
-        <h2>${name}, ${stateAbbr}</h2>
-        
-        <div class="tooltip-score">
-          <h1>${
-            vulnerabilityIndex ? vulnerabilityIndex.toFixed(1) : "N/A"
-          }<span class="score-scale">/100</span></h1>
-          <p>Vulnerability score</p>
-          <div class="score-bar">
-            <div class="score-indicator" style="left: ${
-              vulnerabilityIndex ? vulnerabilityIndex : 0
-            }%;"></div>
-          </div>
-        </div>
-        
-        <div class="tooltip-metrics">
-          <div class="metric-row">
-            <span class="metric-label">FEDERAL WORKERS</span>
-            <span class="metric-value">${formatValue(
-              fedWorkers,
-              "fed_workers_per_100k"
-            )}</span>
-          </div>
-          <div class="metric-sub">per capita</div>
-          
-          <div class="metric-row">
-            <span class="metric-label">UNEMPLOYMENT</span>
-            <span class="metric-value">${
-              unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-            }</span>
-          </div>
-          
-          <div class="metric-row" style="margin-bottom: 0;">
-            <span class="metric-label">MEDIAN INCOME</span>
-            <span class="metric-value">${
-              income ? "$" + income.toLocaleString() : "N/A"
-            }</span>
-          </div>
-        </div>
-      </div>`;
-  } else {
-    // For non-vulnerability maps, use a simpler tooltip
-    tooltipContent = `
-      <div class="tooltip-simple">
-        <div class="tooltip-header">
-          <strong>${name}, ${stateAbbr}</strong>
-        </div>
-        <div class="tooltip-data">
-          <div class="tooltip-row">
-            <span class="tooltip-label">${stepConfig.title}:</span>
-            <span class="tooltip-value">${formatValue(
-              feature.properties[stepConfig.dataField],
-              stepConfig.dataField
-            )}</span>
-          </div>
-        </div>
-      </div>`;
+    return generateVulnerabilityTooltipContent(feature, stepConfig);
+  } else if (stepConfig.isSpotlightView) {
+    return generateSpotlightTooltipContent(feature, stepConfig);
   }
 
-  return tooltipContent;
+  // Default tooltip for other steps
+  return generateDefaultTooltipContent(feature, stepConfig);
 }
-
 /**
- * Generate tooltip content for layered components
- * @param {Object} feature - Feature data
- * @param {Array} components - Component configurations
- * @return {string} - HTML content for tooltip
- */
-function generateLayeredTooltipContent(feature, components) {
-  let tooltipContent = `
-    <div class="tooltip-header">
-      <strong>${feature.properties.name}, ${
-    feature.properties.stateName || ""
-  }</strong>
-    </div>
-    <div class="tooltip-data">
-      <div style="font-weight:bold;margin-bottom:5px;">Component Values:</div>
-  `;
-
-  // Add each component
-  components.forEach((component) => {
-    const fieldName = component.dataField;
-    const value = feature.properties[fieldName];
-
-    // Format the value based on the field
-    let formattedValue = "N/A";
-    if (value !== null && value !== undefined) {
-      formattedValue = formatValue(value, fieldName);
-    }
-
-    // Get component color for the label
-    const colorSet = component.colorSet || "blues";
-    const colors = config.colors[colorSet] || config.colors.federal;
-    const color = colors[colors.length - 2]; // Use a dark color from the set
-
-    // Add component row
-    tooltipContent += `
-      <div class="tooltip-row">
-        <span class="tooltip-label" style="color:${color};font-weight:bold;">${
-      component.title.split(" (")[0]
-    }:</span>
-        <span class="tooltip-value">${formattedValue}</span>
-      </div>
-    `;
-  });
-
-  // Add vulnerability score if available
-  if (feature.properties.vulnerabilityIndex) {
-    tooltipContent += `
-      <div class="tooltip-row" style="margin-top:8px;border-top:1px solid #eee;padding-top:4px;">
-        <span class="tooltip-label">Vulnerability Score:</span>
-        <span class="tooltip-value">${feature.properties.vulnerabilityIndex.toFixed(
-          1
-        )}</span>
-      </div>
-    `;
-  }
-
-  tooltipContent += `</div>`;
-
-  return tooltipContent;
-}
-
-/**
- * Generate tooltip content for spotlight views
+ * Generate tooltip content for spotlight views without facilities data
  * @param {Object} feature - Feature data
  * @param {Object} stepConfig - Step configuration
  * @return {string} - HTML content for tooltip
@@ -371,94 +318,169 @@ function generateLayeredTooltipContent(feature, components) {
 function generateSpotlightTooltipContent(feature, stepConfig) {
   // Get basic data
   const name = feature.properties.name;
-  const stateName = feature.properties.stateName || "Unknown";
-  const stateAbbr = getStateAbbreviation(stateName);
-  const vulnerabilityScore = feature.properties.vulnerabilityIndex;
-  const fedWorkers = feature.properties.fed_workers_per_100k;
-  const unemployment = feature.properties.unemployment_rate;
-  const income = feature.properties.median_income;
-  const facilityCount = feature.properties.facility_count || 0;
+  const stateAbbr = getStateAbbreviation(
+    feature.properties.stateName || "Unknown"
+  );
+  const vulnerabilityScore = feature.properties.vulnerabilityIndex || 0;
+  const fedWorkers = feature.properties.fed_workers_per_100k || 0;
+  const unemployment = feature.properties.unemployment_rate || 0;
+  const income = feature.properties.median_income || 0;
 
-  // Use the updated modern tooltip style matching the image
-  let tooltipContent = `
+  // Format the federal workers value (per capita)
+  const formattedFedWorkers =
+    fedWorkers > 1000
+      ? (fedWorkers / 1000).toFixed(1) + "K"
+      : fedWorkers.toLocaleString();
+
+  // Use the updated modern tooltip style matching the goal implementation - no facilities data
+  return `
   <div class="tooltip-modern">
     <h2>${name}, ${stateAbbr}</h2>
     
     <div class="tooltip-score">
-      <h1>${
-        vulnerabilityScore ? vulnerabilityScore.toFixed(1) : "N/A"
-      }<span class="score-scale">/100</span></h1>
+      <h1>${vulnerabilityScore.toFixed(
+        0
+      )}<span class="score-scale">/100</span></h1>
       <p>Vulnerability score</p>
       <div class="score-bar">
-        <div class="score-indicator" style="left: ${
-          vulnerabilityScore ? vulnerabilityScore : 0
-        }%;"></div>
+        <div class="score-indicator" style="left: ${vulnerabilityScore}%;"></div>
       </div>
     </div>
     
     <div class="tooltip-metrics">
       <div class="metric-row">
-        <span class="metric-label">Federal workers</span>
-        <span class="metric-value">${formatValue(
-          fedWorkers,
-          "fed_workers_per_100k"
-        )}</span>
-      </div>
-      <div class="metric-sub">per capita</div>
-      
-      <!-- REMOVE THESE TWO BLOCKS FOR RESERVATION COUNTIES -->
-      <!-- Don't include reservation score and native american percentage -->
-      
-      <div class="metric-row">
-        <span class="metric-label">Unemployment</span>
-        <span class="metric-value">${
-          unemployment ? unemployment.toFixed(1) + "%" : "N/A"
-        }</span>
+        <span class="metric-label">FEDERAL WORKERS</span>
+        <span class="metric-value">${formattedFedWorkers}</span>
       </div>
       
       <div class="metric-row">
-        <span class="metric-label">Median Income</span>
-        <span class="metric-value">${
-          income ? "$" + income.toLocaleString() : "N/A"
-        }</span>
+        <span class="metric-label">UNEMPLOYMENT</span>
+        <span class="metric-value">${unemployment.toFixed(1)}%</span>
       </div>
-    </div>`;
-
-  // Add facilities section if data is available
-  if (facilityCount > 0) {
-    tooltipContent += `
-    <div class="tooltip-facilities">
-      <h3>${facilityCount} federal facilities</h3>`;
-
-    // Add additional facility details if available
-    if (feature.properties.top_federal_agencies) {
-      tooltipContent += `
-      <div class="facility-row">
-        <span class="facility-label">TOP AGENCIES</span>
-        <p class="facility-value">${
-          feature.properties.top_federal_agencies || "Data not available"
-        }</p>
-      </div>`;
-    }
-
-    if (feature.properties.federal_facility_types) {
-      tooltipContent += `
-      <div class="facility-row">
-        <span class="facility-label">KEY FACILITIES</span>
-        <p class="facility-value">${
-          feature.properties.federal_facility_types || "Data not available"
-        }</p>
-      </div>`;
-    }
-
-    tooltipContent += `</div>`;
-  }
-
-  // Close the tooltip
-  tooltipContent += `</div>`;
-
-  return tooltipContent;
+      
+      <div class="metric-row">
+        <span class="metric-label">MEDIAN INCOME</span>
+        <span class="metric-value">$${income.toLocaleString("en-US", {
+          maximumFractionDigits: 0,
+        })}</span>
+      </div>
+    </div>
+  </div>
+  `;
 }
+/**
+ * Generate tooltip content for vulnerability map
+ * @param {Object} feature - Feature data
+ * @param {Object} stepConfig - Step configuration
+ * @return {string} - HTML content for tooltip
+ */
+function generateVulnerabilityTooltipContent(feature, stepConfig) {
+  const name = feature.properties.name;
+  const stateAbbr = getStateAbbreviation(
+    feature.properties.stateName || "Unknown"
+  );
+  const vulnerabilityScore = feature.properties.vulnerabilityIndex || 0;
+  const fedWorkers = feature.properties.fed_workers_per_100k || 0;
+  const unemployment = feature.properties.unemployment_rate || 0;
+  const income = feature.properties.median_income || 0;
+
+  // Format the federal workers value (per capita)
+  const formattedFedWorkers =
+    fedWorkers > 1000
+      ? (fedWorkers / 1000).toFixed(1) + "K"
+      : fedWorkers.toLocaleString();
+
+  // Create clean tooltip design with gradient score bar - no facilities data
+  return `
+    <div class="tooltip-modern">
+      <h2>${name}, ${stateAbbr}</h2>
+      
+      <div class="tooltip-score">
+        <h1>${vulnerabilityScore.toFixed(
+          0
+        )}<span class="score-scale">/100</span></h1>
+        <p>Vulnerability score</p>
+        <div class="score-bar">
+          <div class="score-indicator" style="left: ${vulnerabilityScore}%;"></div>
+        </div>
+      </div>
+      
+      <div class="tooltip-metrics">
+        <div class="metric-row">
+          <span class="metric-label">FEDERAL WORKERS</span>
+          <span class="metric-value">${formattedFedWorkers}</span>
+        </div>
+        
+        <div class="metric-row">
+          <span class="metric-label">UNEMPLOYMENT</span>
+          <span class="metric-value">${unemployment.toFixed(1)}%</span>
+        </div>
+        
+        <div class="metric-row">
+          <span class="metric-label">MEDIAN INCOME</span>
+          <span class="metric-value">$${income.toLocaleString()}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// #region - Helper functions
+
+/**
+ * Generate default tooltip content for any other map types
+ * @param {Object} feature - Feature data
+ * @param {Object} stepConfig - Step configuration
+ * @return {string} - HTML content for tooltip
+ */
+function generateDefaultTooltipContent(feature, stepConfig) {
+  const name = feature.properties.name;
+  const stateAbbr = getStateAbbreviation(
+    feature.properties.stateName || "Unknown"
+  );
+  const dataField = stepConfig.dataField;
+  const value = feature.properties[dataField];
+
+  return `
+    <div class="tooltip-modern">
+      <h2>${name}, ${stateAbbr}</h2>
+      <div class="tooltip-metrics">
+        <div class="metric-row">
+          <span class="metric-label">${stepConfig.title}</span>
+          <span class="metric-value">${formatValue(value, dataField)}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+/**
+ * Format agencies data to match the goal implementation
+ * @param {string} agenciesData - Raw agencies data
+ * @return {string} - Formatted agencies data
+ */
+function formatAgenciesData(agenciesData) {
+  if (!agenciesData) return "Not available";
+
+  // Format: "Interior (123), Health and Human Services (62), Agriculture (4), Energy (2), Commerce (1)"
+  // Parse the string logic would depend on your data structure
+  // This is a placeholder assuming your data is already in the right format
+  return agenciesData;
+}
+/**
+ * Format facility types data to match the goal implementation
+ * @param {string} facilityTypesData - Raw facility types data
+ * @return {string} - Formatted facility types data
+ */
+function formatFacilityTypesData(facilityTypesData) {
+  if (!facilityTypesData) return "Not available";
+
+  // Format: "Building (177), Land (2), Structure (15)"
+  // Parse the string logic would depend on your data structure
+  // This is a placeholder assuming your data is already in the right format
+  return facilityTypesData;
+}
+
+// #endregion
 
 // #endregion
 

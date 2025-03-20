@@ -189,7 +189,110 @@ export function getCountyMatchKeys(countyName, stateName) {
   return keys;
 }
 
-// Get state abbreviation from full state name
+// #region - Enhanced Data Formatting Utilities
+
+/**
+ * Format value based on data field type
+ * @param {any} value - Value to format
+ * @param {string} fieldName - Name of the data field
+ * @return {string} - Formatted value
+ */
+export function formatValue(value, fieldName) {
+  // Handle undefined, null or NaN values
+  if (value === undefined || value === null || Number.isNaN(value)) {
+    return "N/A";
+  }
+
+  // Format based on field type
+  if (fieldName === "median_income") {
+    return formatCurrency(value);
+  } else if (fieldName === "unemployment_rate") {
+    return formatPercentage(value);
+  } else if (
+    fieldName === "fed_workers_per_100k" ||
+    fieldName === "state_fed_workers_per_100k"
+  ) {
+    return formatFederalWorkers(value);
+  } else if (fieldName.includes("vulnerability")) {
+    return formatScore(value);
+  } else if (fieldName.includes("percent") || fieldName.includes("pct")) {
+    return formatPercentage(value);
+  } else if (fieldName.includes("count") || fieldName.includes("facilities")) {
+    return formatCount(value);
+  }
+
+  // Default number formatting for other numeric fields
+  if (typeof value === "number") {
+    return value.toLocaleString();
+  }
+
+  // Return as is for non-numeric fields
+  return value;
+}
+
+/**
+ * Format federal workers count with appropriate suffix
+ * @param {number} value - Federal workers count
+ * @return {string} - Formatted value
+ */
+function formatFederalWorkers(value) {
+  if (value >= 1000) {
+    // Format as K for thousands with one decimal point
+    return (value / 1000).toFixed(1) + "K";
+  }
+  return value.toLocaleString();
+}
+
+/**
+ * Format percentage values with consistent decimal places
+ * @param {number} value - Percentage value
+ * @return {string} - Formatted percentage
+ */
+function formatPercentage(value) {
+  // Always show one decimal place for percentages
+  return value.toFixed(1) + "%";
+}
+
+/**
+ * Format currency values consistently
+ * @param {number} value - Currency value
+ * @return {string} - Formatted currency
+ */
+function formatCurrency(value) {
+  // Format as currency with no decimal places
+  return (
+    "$" +
+    value.toLocaleString("en-US", {
+      maximumFractionDigits: 0,
+    })
+  );
+}
+
+/**
+ * Format vulnerability scores consistently
+ * @param {number} value - Score value
+ * @return {string} - Formatted score
+ */
+function formatScore(value) {
+  // Format score with one decimal place
+  return value.toFixed(1);
+}
+
+/**
+ * Format count values consistently
+ * @param {number} value - Count value
+ * @return {string} - Formatted count
+ */
+function formatCount(value) {
+  // Format as integer
+  return Math.round(value).toLocaleString();
+}
+
+/**
+ * Get state abbreviation from full state name
+ * @param {string} stateName - Full state name
+ * @return {string} - State abbreviation
+ */
 export function getStateAbbreviation(stateName) {
   const stateAbbreviations = {
     Alabama: "AL",
@@ -249,28 +352,49 @@ export function getStateAbbreviation(stateName) {
   return stateAbbreviations[stateName] || stateName;
 }
 
-// Format values based on field type with better rounding
-export function formatValue(value, fieldName) {
-  if (value === null || value === undefined) return "N/A";
-
-  if (fieldName === "median_income") {
-    return "$" + value.toLocaleString();
-  } else if (fieldName === "unemployment_rate") {
-    return value.toFixed(1) + "%";
-  } else if (
-    fieldName === "fed_workers_per_100k" ||
-    fieldName === "state_fed_workers_per_100k"
-  ) {
-    // Format with K notation for thousands
-    if (value >= 1000) {
-      return (Math.round(value / 100) / 10).toFixed(1) + "K";
-    } else {
-      return value.toLocaleString();
-    }
-  } else {
-    return value.toLocaleString();
+/**
+ * Format agency data for tooltip display
+ * @param {Object|string} agencyData - Raw agency data (object or string)
+ * @return {string} - Formatted agency data
+ */
+export function formatAgencyData(agencyData) {
+  // If the data is already a string, return it
+  if (typeof agencyData === "string") {
+    return agencyData;
   }
+
+  // If it's an object with agency counts, format it nicely
+  if (agencyData && typeof agencyData === "object") {
+    return Object.entries(agencyData)
+      .map(([agency, count]) => `${agency} (${count})`)
+      .join(", ");
+  }
+
+  return "Data not available";
 }
+
+/**
+ * Format facility type data for tooltip display
+ * @param {Object|string} facilityData - Raw facility data (object or string)
+ * @return {string} - Formatted facility data
+ */
+export function formatFacilityData(facilityData) {
+  // If the data is already a string, return it
+  if (typeof facilityData === "string") {
+    return facilityData;
+  }
+
+  // If it's an object with facility type counts, format it nicely
+  if (facilityData && typeof facilityData === "object") {
+    return Object.entries(facilityData)
+      .map(([type, count]) => `${type} (${count})`)
+      .join(", ");
+  }
+
+  return "Data not available";
+}
+
+// #endregion
 
 // A simple USA outline path for quick initial rendering
 export function getUSOutline() {

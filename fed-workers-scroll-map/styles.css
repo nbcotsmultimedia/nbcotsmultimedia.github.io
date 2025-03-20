@@ -490,257 +490,6 @@ path.county[data-state="Alaska"] {
 
 /* #endregion */
 
-/* #region - Tooltip Styling */
-.tooltip {
-  position: absolute;
-  padding: 10px;
-  background-color: var(--color-white);
-  border-radius: 4px;
-  box-shadow: 0 2px 10px var(--color-shadow);
-  pointer-events: none;
-  z-index: 1000;
-  font-size: var(--font-size-sm);
-  max-width: 300px;
-  opacity: 0;
-  transform: translateZ(0);
-  will-change: transform, opacity;
-  /* transition: opacity var(--transition-fast); */
-  transition: opacity 0.2s ease-out, transform 0.3s ease-out;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .tooltip {
-    max-width: 240px;
-    font-size: var(--font-size-xs);
-    padding: 8px;
-  }
-}
-
-.tooltip.visible {
-  opacity: 1;
-}
-
-.tooltip::before {
-  content: "";
-  position: absolute;
-  border: 8px solid transparent;
-}
-
-.tooltip.right-arrow::before {
-  left: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-right-color: var(--color-white);
-}
-
-.tooltip.left-arrow::before {
-  right: -16px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-left-color: var(--color-white);
-}
-
-.tooltip.top-arrow::before {
-  bottom: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-top-color: var(--color-white);
-}
-
-.tooltip.bottom-arrow::before {
-  top: -16px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-bottom-color: var(--color-white);
-}
-
-/* Base tooltip styles */
-.tooltip-header {
-  font-weight: bold;
-  margin-bottom: 5px;
-  border-bottom: 1px solid var(--color-border-light);
-  padding-bottom: 5px;
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.tooltip-label {
-  font-weight: normal;
-  color: var(--color-text-light);
-}
-
-.tooltip-value {
-  font-weight: bold;
-}
-
-/* Modern tooltip styling */
-.tooltip-modern {
-  color: var(--color-text);
-  max-width: 300px;
-  padding: 12px;
-  border-radius: 8px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .tooltip-modern {
-    max-width: 280px;
-  }
-}
-
-.tooltip-modern h2 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  font-size: 16px;
-  border-bottom: 1px solid var(--color-border-light);
-  padding-bottom: 5px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .tooltip-modern h2 {
-    font-size: 14px;
-    margin-bottom: 6px;
-  }
-}
-
-.tooltip-score {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.tooltip-score h1 {
-  margin: 0;
-  font-size: 28px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .tooltip-score h1 {
-    font-size: 22px;
-  }
-}
-
-.score-scale {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-lighter);
-  font-weight: normal;
-}
-
-.score-bar {
-  height: 4px;
-  background-color: var(--color-border-light);
-  border-radius: 2px;
-  position: relative;
-  margin-top: 5px;
-}
-
-.score-indicator {
-  position: absolute;
-  top: -3px;
-  width: 10px;
-  height: 10px;
-  background-color: #de2d26;
-  border-radius: 50%;
-  margin-left: -5px;
-  transition: left var(--transition-medium);
-}
-
-.tooltip-metrics {
-  margin-bottom: 10px;
-}
-
-.metric-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.metric-label {
-  font-weight: normal;
-  color: var(--color-text-light);
-  text-transform: uppercase;
-  font-size: var(--font-size-xs);
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .metric-label {
-    font-size: 10px;
-  }
-}
-
-.metric-value {
-  font-weight: bold;
-}
-
-.metric-sub {
-  text-align: right;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-lighter);
-  margin-top: -5px;
-  margin-bottom: 8px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .metric-sub {
-    font-size: 10px;
-    margin-top: -3px;
-    margin-bottom: 6px;
-  }
-}
-
-.tooltip-facilities {
-  border-top: 1px solid var(--color-border-light);
-  padding-top: 10px;
-  margin-top: 10px;
-}
-
-.tooltip-facilities h3 {
-  margin: 0 0 10px;
-  font-size: var(--font-size-sm);
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .tooltip-facilities h3 {
-    font-size: var(--font-size-xs);
-    margin-bottom: 6px;
-  }
-}
-
-.facility-row {
-  margin-bottom: 8px;
-}
-
-.facility-label {
-  display: block;
-  font-weight: normal;
-  color: var(--color-text-light);
-  text-transform: uppercase;
-  font-size: var(--font-size-xs);
-  margin-bottom: 2px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .facility-label {
-    font-size: 10px;
-  }
-}
-
-.facility-value {
-  margin: 0;
-  font-size: 13px;
-}
-
-@media (max-width: var(--breakpoint-xs)) {
-  .facility-value {
-    font-size: 11px;
-    margin-top: 2px;
-  }
-}
-
-/* #endregion */
-
 /* #region - Progress Indicator Bar (Right Side) */
 
 .progress-indicator {
@@ -1272,67 +1021,235 @@ body:not(.is-loading) .loader {
   backface-visibility: hidden;
 }
 
-/* Add these styles to your styles.css file */
+/* #region - new tooltip styles */
 
-/* Ensure the visualization works properly in iframe embeds */
-html.pym {
-  overflow-y: hidden;
-  height: auto;
+.tooltip {
+  position: absolute;
+  padding: 10px;
+  background-color: var(--color-white);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px var(--color-shadow);
+  pointer-events: none;
+  z-index: 1000;
+  font-size: var(--font-size-sm);
+  max-width: 300px;
+  opacity: 0;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  /* transition: opacity var(--transition-fast); */
+  transition: opacity 0.2s ease-out, transform 0.3s ease-out;
 }
 
-body.pym {
+@media (max-width: var(--breakpoint-xs)) {
+  .tooltip {
+    max-width: 240px;
+    font-size: var(--font-size-xs);
+    padding: 8px;
+  }
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  border: 8px solid transparent;
+}
+
+.tooltip.right-arrow::before {
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--color-white);
+}
+
+.tooltip.left-arrow::before {
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--color-white);
+}
+
+.tooltip.top-arrow::before {
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--color-white);
+}
+
+.tooltip.bottom-arrow::before {
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--color-white);
+}
+
+.tooltip-modern {
+  padding: 16px;
+  border-radius: 4px;
+  max-width: 340px; /* Increased from 320px */
+  min-width: 280px; /* Added min-width */
+}
+
+/* County/State header */
+.tooltip-modern h2 {
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+/* Vulnerability score section */
+.tooltip-score {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.tooltip-score h1 {
   margin: 0;
-  padding: 0;
-  overflow-y: visible;
-  height: auto;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #333;
 }
 
-/* Make header more compact in embedded view */
-body.pym header {
+.tooltip-score p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.score-scale {
+  font-size: 14px;
+  font-weight: normal;
+  color: #888;
+  margin-left: 2px;
+}
+
+.score-bar {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    #fff5f0 0%,
+    /* Lightest pink/salmon */ #fee0d2 20%,
+    #fcbba1 40%,
+    #fc9272 60%,
+    #fb6a4a 80%,
+    #de2d26 100%
+  ); /* Darkest red */
+  border-radius: 2px;
+  margin-top: 8px;
   position: relative;
-  padding-top: 10px;
-  padding-bottom: 5px;
 }
 
-body.pym .sticky-container {
-  top: 20px;
+.score-indicator {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #de2d26; /* Red indicator */
+  border-radius: 50%;
+  top: -4px;
+  margin-left: -6px;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Make fonts more readable on smaller embedded widths */
+/* Metrics section */
+.tooltip-metrics {
+  margin-bottom: 12px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px; /* Increased from 8px */
+  align-items: baseline;
+}
+
+.metric-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.5px;
+  margin-right: 60px; /* Add right margin to push value further right */
+}
+
+/* Value styling */
+.metric-value {
+  font-weight: 600;
+  font-size: 16px; /* Increased from 14px */
+  color: #333;
+}
+
+/* Facilities section */
+.tooltip-facilities {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.tooltip-facilities h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.facility-row {
+  margin-bottom: 10px;
+}
+
+.facility-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.facility-value {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
+}
+
+/* Mobile adjustments */
 @media (max-width: 480px) {
-  body.pym h1 {
-    font-size: 1.1rem;
-    margin-bottom: 0.1rem;
+  .tooltip-modern {
+    padding: 12px;
+    max-width: 300px;
+    min-width: 240px;
   }
 
-  body.pym .subtitle {
-    font-size: 0.8rem;
+  .tooltip-modern h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
   }
 
-  body.pym .current-step-title {
-    font-size: 0.9rem;
+  .tooltip-score h1 {
+    font-size: 24px;
   }
 
-  body.pym .current-step-description {
-    font-size: 0.75rem;
-    line-height: 1.2;
-  }
-}
-
-/* Add responsive adjustments for different iframe widths */
-@media (max-width: 600px) {
-  body.pym .sticky-container {
-    min-height: calc(70vh - 120px);
+  .metric-label {
+    font-size: 11px;
+    margin-right: 24px; /* Less margin on mobile but still maintain spacing */
   }
 
-  body.pym .scroll-section {
-    min-height: 50vh;
-    margin-bottom: 15vh;
+  .metric-value {
+    font-size: 14px;
+  }
+
+  .facility-value {
+    font-size: 12px;
   }
 }
 
-/* When embedded, prioritize the visualization over footer */
-body.pym footer {
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-sm);
-}
+/* #endregion */

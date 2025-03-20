@@ -10,8 +10,9 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <!-- Add pym.js from CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pym/1.3.2/pym.v1.min.js"></script>
+
+    <!-- Add pym.js from NBC -->
+    <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/pym.v1.min.js"></script>
 
     <!-- Core styles -->
     <link rel="stylesheet" href="styles.css">
@@ -25,6 +26,7 @@
 </head>
 
 <body>
+    <div id="federal-workers-natl"></div>
     <header>
         <h1>The geography of federal dependency</h1>
         <p class="subtitle">Which communities would be hit hardest by federal job cuts?</p>
@@ -55,6 +57,8 @@
         <p>&copy; Sources: US Census Bureau, Bureau of Labor Statistics, Office of Personnel Management</p>
     </footer>
 
+    </div>
+
     <!-- Modular JS files -->
     <script src="js/config.js" type="module"></script>
     <script src="js/utils.js" type="module"></script>
@@ -63,28 +67,6 @@
     <script src="js/mapRenderer.js" type="module"></script>
     <script src="js/scrollHandler.js" type="module"></script>
     <script src="js/main.js" type="module"></script>
-
-    <!-- Initialize pym.js -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize pym.js child after the page is loaded
-            var pymChild = new pym.Child({
-                polling: 500,  // Check for size changes every 500ms
-                renderCallback: function () {
-                    // This function runs after the parent has sent a width
-                    console.log('Pym.js: Parent container resized');
-
-                    // Trigger resize to adjust the visualization
-                    if (window.dispatchEvent) {
-                        window.dispatchEvent(new Event('resize'));
-                    }
-                }
-            });
-
-            // Make pymChild available globally for other scripts to use
-            window.pymChild = pymChild;
-        });
-    </script>
 </body>
 
 </html>
