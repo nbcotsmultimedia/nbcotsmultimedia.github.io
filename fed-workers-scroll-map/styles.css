@@ -165,8 +165,7 @@ footer {
   transition: top var(--transition-slow);
   display: flex;
   flex-direction: column;
-  top: 100px;
-  padding-top: 20px;
+  top: 90px;
 }
 
 .sticky-container.header-hidden {
@@ -174,7 +173,7 @@ footer {
 }
 
 #map-container {
-  width: 100%;
+  width: 96%;
   max-width: var(--breakpoint-lg);
   margin: 0 auto;
   position: relative;
@@ -268,12 +267,12 @@ path.county[data-state="Alaska"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0 10px;
+  /* padding: 0 10px; */
   position: relative;
   box-sizing: border-box;
   overflow: visible;
   z-index: var(--z-index-middle);
-  margin-top: 20px; /* Increased space between map and legend */
+  /* margin-top: 20px; */
   /* Ensure legend doesn't start at the very top of the container */
   margin-bottom: 15px;
 }
@@ -881,8 +880,9 @@ body:not(.is-loading) .loader {
   }
 
   header h1 {
-    font-size: 1.3rem;
+    font-size: 1.15rem;
     margin-bottom: 0.2rem;
+    line-height: 1.15;
   }
 
   .subtitle {
@@ -1216,3 +1216,174 @@ body:not(.is-loading) .loader {
   }
 }
 /* #endregion */
+
+/* Complete CSS for button navigation */
+
+/* Complete CSS for button navigation */
+
+/* Hide scroll sections when not using scrollytelling */
+.sections.button-navigation-active {
+  display: none;
+}
+
+/* Button navigation container */
+.click-navigation-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
+  padding: 6px 8px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  /* Streamlined design */
+  max-width: 120px;
+}
+
+/* Navigation buttons */
+.nav-button {
+  background: none;
+  border: none;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  transition: all 0.2s ease;
+  margin: 0 2px;
+}
+
+.nav-button:hover,
+.nav-button:focus {
+  background-color: rgba(0, 0, 0, 0.07);
+  color: #000;
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Current step indicator */
+.current-step-indicator {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 12px;
+}
+
+/* Step indicator dots */
+.step-indicators {
+  display: none;
+  gap: 8px;
+  margin: 0 10px;
+}
+
+.step-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(200, 200, 200, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.step-indicator.active {
+  background-color: #333;
+  transform: scale(1.3);
+}
+
+.step-indicator:hover,
+.step-indicator:focus {
+  transform: scale(1.3);
+  background-color: #666;
+}
+
+.info-button {
+  margin-left: 5px;
+}
+
+/* Show step indicators on larger screens */
+@media (min-width: 768px) {
+  .step-indicators {
+    display: flex;
+  }
+
+  .current-step-indicator {
+    display: none;
+  }
+
+  .click-navigation-container {
+    padding: 8px 15px;
+  }
+}
+
+/* Information overlay for mobile */
+.info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.info-overlay.visible {
+  transform: translateY(0);
+}
+
+.info-overlay-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.info-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .click-navigation-container {
+    bottom: 10px;
+    padding: 6px 10px;
+  }
+
+  .nav-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .current-step-indicator {
+    font-size: 14px;
+    margin: 0 8px;
+  }
+
+  .info-overlay-content {
+    padding: 15px;
+  }
+}

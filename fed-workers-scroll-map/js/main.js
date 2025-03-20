@@ -3,7 +3,9 @@
 import config from "./config.js";
 import dataService from "./dataService.js";
 import mapRenderer from "./mapRenderer.js";
+// Import both navigation systems, but we'll only use one
 import scrollHandler from "./scrollHandler.js";
+import clickNavigation from "./clickNavigation.js"; // New import
 import tooltipManager from "./tooltipManager.js";
 import {
   createLoadingMessage,
@@ -28,6 +30,8 @@ const state = {
   currentRenderId: null,
   headerHidden: false,
   lastScrollY: 0,
+  // New flag to indicate which navigation system to use
+  useButtonNavigation: true, // Set to true to use button navigation
 };
 
 // DOM elements
@@ -67,6 +71,7 @@ async function initializeApp() {
   elements.svg = document.getElementById("map-svg");
   elements.header = document.querySelector("header");
   elements.stickyContainer = document.querySelector(".sticky-container");
+  elements.sectionsContainer = document.querySelector(".sections");
 
   // Create loading message (immediate visual feedback)
   elements.loadingMessage = createLoadingMessage();
@@ -123,16 +128,35 @@ async function initializeApp() {
 
         // Defer non-essential initializations
         setTimeout(() => {
-          // Initialize scrollytelling after map is visible
-          scrollHandler.initializeScrollytelling(state, renderCurrentStep);
+          // Initialize either scrollytelling or button navigation based on configuration
+          if (state.useButtonNavigation) {
+            // Use button-based navigation instead of scrollytelling
+            clickNavigation.initializeButtonNavigation(
+              state,
+              renderCurrentStep
+            );
+          } else {
+            // Use original scrollytelling
+            scrollHandler.initializeScrollytelling(state, renderCurrentStep);
+          }
 
           // Check if URL has a hash to navigate to specific step
-          scrollHandler.checkInitialHash();
+          // This method exists in both navigation systems
+          if (state.useButtonNavigation) {
+            clickNavigation.checkInitialHash();
+          } else {
+            scrollHandler.checkInitialHash();
+          }
 
           // Apply enhanced scroll performance optimizations
           enhanceScrollPerformance();
 
-          console.log("Application fully initialized");
+          console.log(
+            "Application fully initialized with " +
+              (state.useButtonNavigation
+                ? "button navigation"
+                : "scrollytelling")
+          );
         }, 500); // Delay to ensure main content is visible first
       });
   } catch (error) {
@@ -144,15 +168,7 @@ async function initializeApp() {
   }
 }
 
-// This function is now a placeholder and doesn't add its own scroll listener
-// All scroll handling is now managed by scrollHandler.js
-function setupScrollListeners() {
-  // No longer adding scroll listeners here
-  // The header transitions are now handled in scrollHandler.js
-  console.log("Scroll handling consolidated in scrollHandler.js");
-}
-
-// Set up sticky map container for scrollytelling
+// Set up sticky map container for visualization
 function setupStickyMap() {
   // Check if we already have a sticky container in the HTML
   const existingStickyContainer = document.querySelector(".sticky-container");
@@ -185,8 +201,6 @@ function setupStickyMap() {
   // Store reference
   elements.stickyContainer = stickyContainer;
 
-  // Create and add a title container if it doesn't exist
-  // In the setupStickyMap function, replace the section that handles the title container
   // Store reference to the existing title container
   elements.stepTitleContainer = document.querySelector(".step-title-container");
   if (elements.stepTitleContainer) {
@@ -275,6 +289,9 @@ function renderCurrentStep() {
     return;
   }
 
+  // Show loading indicator when rendering starts
+  showMapLoading(elements.mapContainer, true);
+
   // Update the step title
   updateStepTitle(state.currentStep);
 
@@ -293,6 +310,12 @@ function renderCurrentStep() {
   if (history.replaceState) {
     history.replaceState(null, null, `#section-${state.currentStep}`);
   }
+
+  // Hide loading indicator when rendering completes
+  // Slight delay to ensure map has time to render
+  setTimeout(() => {
+    showMapLoading(elements.mapContainer, false);
+  }, 500);
 }
 
 // #endregion
@@ -303,6 +326,8 @@ export default {
   state,
   elements,
   renderCurrentStep,
-  navigateToSection: scrollHandler.navigateToSection,
+  navigateToSection: state.useButtonNavigation
+    ? clickNavigation.navigateToSection
+    : scrollHandler.navigateToSection,
   updateStepTitle,
 };

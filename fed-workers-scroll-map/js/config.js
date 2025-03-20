@@ -72,9 +72,9 @@ const config = {
     // Native American Reservation Counties spotlight
     {
       id: "native_american_reservation",
-      title: "Native American reservation counties",
+      title: "Counties with large Native American populations",
       description:
-        "These 204 counties with large Native American populations depend heavily on federal jobs. Many reservations have few other employment options.",
+        "These 204 counties with significant Native American populations rely more heavily on federal employment (4.83%) than non-tribal areas (2.93%). With higher unemployment and lower incomes, these communities have fewer alternative job options.",
       dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
       breaks: [17.8, 20.0, 26.2, 30.1, 40.0],

@@ -140,7 +140,7 @@
                     const headerHeight = header.getBoundingClientRect().height;
 
                     // Add a buffer for visual separation
-                    const newTopPosition = headerHeight + 8;
+                    const newTopPosition = headerHeight + 4;
 
                     // Set the top position of the sticky container
                     stickyContainer.style.top = `${newTopPosition}px`;
@@ -148,7 +148,7 @@
                     // Adjust any other elements that need to be positioned relative to the header
                     const sections = document.querySelectorAll('.scroll-section:first-child');
                     if (sections.length > 0) {
-                        sections[0].style.paddingTop = `${newTopPosition + 20}px`;
+                        sections[0].style.paddingTop = `${newTopPosition + 10}px`;
                     }
                 }
             }
