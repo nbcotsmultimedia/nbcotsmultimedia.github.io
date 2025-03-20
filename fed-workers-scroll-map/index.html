@@ -10,7 +10,6 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <!-- Scrollama -->
     <script src="https://unpkg.com/scrollama"></script>
 
     <!-- Add pym.js from NBC -->
@@ -18,6 +17,14 @@
 
     <!-- Core styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Bootstrap NBC CSS -->
+    <!-- <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <!-- Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+    <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet'
+        type='text/css'>
 
     <script src="js/loader.js"></script>
     <!-- Add preloading directives for critical resources -->
@@ -118,6 +125,49 @@
     <script src="js/mapRenderer.js" type="module"></script>
     <script src="js/scrollHandler.js" type="module"></script>
     <script src="js/main.js" type="module"></script>
+
+    <!-- Dynamic header resizing -->
+    <script>
+        // Adjust spacing based on header height
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to adjust spacing based on header height
+            function adjustMapPositioning() {
+                const header = document.querySelector('header');
+                const stickyContainer = document.querySelector('.sticky-container');
+
+                if (header && stickyContainer) {
+                    // Get the actual header height including any margins
+                    const headerHeight = header.getBoundingClientRect().height;
+
+                    // Add a buffer for visual separation
+                    const newTopPosition = headerHeight + 8;
+
+                    // Set the top position of the sticky container
+                    stickyContainer.style.top = `${newTopPosition}px`;
+
+                    // Adjust any other elements that need to be positioned relative to the header
+                    const sections = document.querySelectorAll('.scroll-section:first-child');
+                    if (sections.length > 0) {
+                        sections[0].style.paddingTop = `${newTopPosition + 20}px`;
+                    }
+                }
+            }
+
+            // Run on load
+            adjustMapPositioning();
+
+            // Rerun on resize
+            window.addEventListener('resize', adjustMapPositioning);
+
+            // If your header can change height dynamically (e.g., collapsing menus)
+            // you may want to observe it for changes
+            const resizeObserver = new ResizeObserver(adjustMapPositioning);
+            const header = document.querySelector('header');
+            if (header) {
+                resizeObserver.observe(header);
+            }
+        });
+    </script>
 
 </body>
 

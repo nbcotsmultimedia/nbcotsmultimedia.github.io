@@ -62,14 +62,21 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
   line-height: 1.5;
-  color: var(--color-text);
-  background-color: var(--color-white);
+  color: #191919;
+  background-color: #fff !important;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  color: #191919;
 }
 
 header {
@@ -80,6 +87,7 @@ header {
   transition: transform var(--transition-slow);
   height: auto;
   margin: 0;
+  padding-bottom: 10px; /* Added padding to prevent content overlap */
 }
 
 header.scrolled {
@@ -88,15 +96,21 @@ header.scrolled {
   visibility: hidden;
 }
 
-h1 {
+h1,
+.headline {
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 24px;
+  color: #191919;
   margin: 0 0 0.5rem;
-  font-size: var(--font-size-lg);
 }
 
-.subtitle {
-  font-size: var(--font-size-base);
-  margin: 0;
-  color: var(--color-text-light);
+.subtitle,
+.subhead {
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
+  color: #999;
+  margin: 0 0 10px;
+  line-height: 1.4em;
 }
 
 main {
@@ -113,6 +127,14 @@ footer {
   margin-top: var(--spacing-lg);
   font-size: var(--font-size-sm);
   color: var(--color-text-light);
+}
+
+.credits {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.5em;
 }
 
 .sr-only {
@@ -251,6 +273,9 @@ path.county[data-state="Alaska"] {
   box-sizing: border-box;
   overflow: visible;
   z-index: var(--z-index-middle);
+  margin-top: 20px; /* Increased space between map and legend */
+  /* Ensure legend doesn't start at the very top of the container */
+  margin-bottom: 15px;
 }
 
 .legend-container svg {
@@ -273,14 +298,16 @@ path.county[data-state="Alaska"] {
 
 .legend-title {
   text-anchor: middle;
+  font-family: "ArtHouseMed", sans-serif;
   font-size: var(--font-size-sm);
-  font-weight: bold;
   margin-bottom: 15px;
+  margin-top: 8px; /* Added space between description and legend title */
 }
 
 .legend-value,
 .legend-label {
   text-anchor: middle;
+  font-family: "Roboto", sans-serif;
   font-size: var(--font-size-xs);
 }
 
@@ -332,19 +359,20 @@ path.county[data-state="Alaska"] {
 }
 
 .current-step-title {
+  font-family: "ArtHouseBold", sans-serif;
   font-size: var(--font-size-md);
-  font-weight: bold;
-  color: #222;
+  color: #191919;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
   margin: 0;
   padding: 5px 10px;
 }
 
 .current-step-description {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
   font-size: var(--font-size-sm);
   line-height: 1.3;
-  font-weight: normal;
-  color: var(--color-text);
+  color: #191919;
   margin: 0;
   padding: 8px 12px;
 }
@@ -406,15 +434,18 @@ path.county[data-state="Alaska"] {
 }
 
 .section-title {
+  font-family: "ArtHouseBold", sans-serif;
   font-size: var(--font-size-md);
   margin-bottom: var(--spacing-sm);
-  color: var(--color-text);
+  color: #191919;
 }
 
 .section-description {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
   font-size: var(--font-size-md);
   line-height: 1.6;
-  color: #444;
+  color: #191919;
   margin-bottom: 1.5rem;
 }
 
@@ -823,6 +854,8 @@ body:not(.is-loading) .loader {
   cursor: pointer;
   border-radius: 50%;
   padding: 0;
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
 }
 
 .mobile-nav-button:hover,
@@ -873,6 +906,9 @@ body:not(.is-loading) .loader {
     max-height: 85vh;
     top: 80px !important;
     min-height: 70vh !important;
+    width: 96% !important; /* Slightly reduced width */
+    left: 2% !important; /* Center the container */
+    right: 2% !important;
   }
 
   #map-container {
@@ -880,38 +916,53 @@ body:not(.is-loading) .loader {
     margin-bottom: 0;
     margin-top: 5px;
     min-height: 300px;
+    padding-left: 15px; /* Added space on left edge */
+    padding-right: 15px; /* Added space on right edge */
+    max-width: 90% !important; /* Limit maximum width */
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   #map-svg {
     margin-bottom: 0;
-    max-height: 28vh;
+    height: auto;
+    max-height: 25vh; /* Reduced from 28vh */
     margin-top: 50px;
     aspect-ratio: 4/3;
-    margin-top: 10px !important;
+    margin-top: 15px !important; /* Slight increase */
+    width: 90% !important; /* Reduce the width of the SVG */
+    margin-left: auto !important; /* Center the SVG */
+    margin-right: auto !important;
   }
 
   /* Legend */
   .legend-container {
     height: auto;
-    min-height: 60px;
+    min-height: 70px;
     margin-bottom: 15px;
-    padding-bottom: 5px;
-    z-index: var(--z-index-middle);
     padding: 4px !important;
     min-height: 60px !important;
     background-color: rgba(255, 255, 255, 0.8) !important;
     border-radius: 4px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 15px !important;
+    margin-top: 30px !important; /* Further increased space between map and legend */
+    /* Make sure we have enough space for header */
+    position: relative;
+    top: auto;
   }
 
+  /* Ensure SVG legend fits within container */
   .legend-container svg {
     width: 100%;
     height: auto;
-    max-width: 320px;
+    max-width: 300px; /* Slightly reduced from 320px */
+    margin: 0 auto;
   }
 
   .legend-title {
     font-size: var(--font-size-xs);
+    margin-top: 15px !important; /* More space between description and legend title on mobile */
+    margin-bottom: 12px !important;
   }
 
   .legend-value,
@@ -960,38 +1011,34 @@ body:not(.is-loading) .loader {
     left: 0 !important;
     right: 0 !important;
     max-width: 100% !important;
-    margin: 5px 5px 0 !important;
-    padding: 6px !important;
+    margin: 5px 15px 0 !important; /* Added horizontal space */
+    padding: 12px 15px !important; /* Added internal padding */
     z-index: 150 !important;
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    border-radius: 6px !important;
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.9
+    ) !important; /* Made slightly more opaque */
+    border-radius: 8px !important; /* Increased border radius */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
-    padding: 12px !important;
-    margin: 8px !important;
   }
 
   .current-step-title {
-    font-size: 0.95rem;
-    margin-bottom: 5px;
+    font-size: 20px !important;
+    margin-bottom: 12px !important; /* Increased margin for more space */
     padding-left: 8px;
-    margin-bottom: 0;
     padding-bottom: 0;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    margin-bottom: 0.3rem !important;
-    color: #222 !important;
+    color: #191919 !important;
   }
 
   .current-step-description {
-    font-size: 0.8rem;
-    line-height: 1.3;
-    margin-bottom: 5px;
-    padding-left: 8px;
-    margin-bottom: 0;
-    padding-bottom: 0;
-    font-size: 0.95rem !important;
+    font-size: 16px !important;
     line-height: 1.4 !important;
-    color: #444 !important;
+    margin-bottom: 18px !important; /* Increased margin for more space before legend */
+    padding-left: 8px;
+    padding-bottom: 0;
+    color: #191919 !important;
   }
 
   /* Progress indicator */
@@ -1115,22 +1162,33 @@ body:not(.is-loading) .loader {
 /* Small mobile - header adjustments */
 @media (max-width: var(--breakpoint-xs)) {
   /* Main title */
-  h1 {
-    font-size: 1.6rem !important;
+  h1,
+  .headline {
+    font-size: 20px !important;
     line-height: 1.2 !important;
     margin: 0.5rem 0 0.6rem !important;
     padding: 0 1rem !important;
-    font-weight: 700 !important;
   }
 
   /* Subtitle */
-  .subtitle {
-    font-size: 1.1rem !important;
+  .subtitle,
+  .subhead {
+    font-size: 16px !important;
     line-height: 1.3 !important;
     margin: 0 auto 1rem !important;
     padding: 0 1.5rem !important;
-    color: #444 !important;
+    color: #999 !important;
     max-width: 95% !important;
+  }
+
+  /* Paragraph */
+  p {
+    font-size: 16px !important;
+  }
+
+  /* Credits */
+  .credits {
+    font-size: 12px !important;
   }
 
   /* Header background */
