@@ -1,16 +1,17 @@
 // main.js - Entry point and core application logic
 
 import config from "./config.js";
+import dataService from "./dataService.js";
+import mapRenderer from "./mapRenderer.js";
+import scrollHandler from "./scrollHandler.js";
+import tooltipManager from "./tooltipManager.js";
 import {
   createLoadingMessage,
   showLoading,
   hideLoading,
   showError,
+  showMapLoading,
 } from "./utils.js";
-import dataService from "./dataService.js";
-import mapRenderer from "./mapRenderer.js";
-import scrollHandler from "./scrollHandler.js";
-import tooltipManager from "./tooltipManager.js";
 
 // #region - Application State
 
@@ -73,9 +74,6 @@ async function initializeApp() {
 
   // Set up sticky map container
   setupStickyMap();
-
-  // Set up scroll event listeners for header hiding
-  setupScrollListeners();
 
   // Set initial dimensions
   state.dimensions = mapRenderer.initializeMapSvg(elements.svg);
@@ -146,52 +144,12 @@ async function initializeApp() {
   }
 }
 
-// Set up scroll event listeners for header/sticky behavior
+// This function is now a placeholder and doesn't add its own scroll listener
+// All scroll handling is now managed by scrollHandler.js
 function setupScrollListeners() {
-  if (!elements.header || !elements.stickyContainer) return;
-
-  let ticking = false;
-  const headerHeight = elements.header.offsetHeight;
-
-  // Listen for scroll events
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentScrollY = window.scrollY;
-          const scrollDirection =
-            currentScrollY > state.lastScrollY ? "down" : "up";
-
-          // Hide header when scrolling down past header height
-          if (scrollDirection === "down" && currentScrollY > headerHeight) {
-            if (!state.headerHidden) {
-              elements.header.classList.add("scrolled");
-              console.log("Added scrolled class", currentScrollY, headerHeight);
-              elements.stickyContainer.classList.add("header-hidden");
-              state.headerHidden = true;
-            }
-          }
-          // Show header when scrolling up significantly or at top
-          else if (
-            (scrollDirection === "up" &&
-              state.headerHidden &&
-              state.lastScrollY - currentScrollY > 50) ||
-            currentScrollY < headerHeight / 2
-          ) {
-            elements.header.classList.remove("scrolled");
-            elements.stickyContainer.classList.remove("header-hidden");
-            state.headerHidden = false;
-          }
-
-          state.lastScrollY = currentScrollY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    },
-    { passive: true }
-  );
+  // No longer adding scroll listeners here
+  // The header transitions are now handled in scrollHandler.js
+  console.log("Scroll handling consolidated in scrollHandler.js");
 }
 
 // Set up sticky map container for scrollytelling
@@ -279,11 +237,6 @@ function updateStepTitle(stepIndex) {
     ".current-step-description"
   );
 
-  // console.log("Updating title for step:", stepIndex, {
-  //   titleElement,
-  //   descriptionElement,
-  // });
-
   const stepConfig = config.steps[stepIndex];
   if (stepConfig) {
     // Update title
@@ -321,13 +274,6 @@ function renderCurrentStep() {
     console.warn("Cannot render map: not initialized");
     return;
   }
-
-  // Add debug logging to verify elements exist
-  // console.log("Step title elements:", {
-  //   container: elements.stepTitleContainer,
-  //   title: elements.currentStepTitle,
-  //   description: elements.currentStepDescription,
-  // });
 
   // Update the step title
   updateStepTitle(state.currentStep);

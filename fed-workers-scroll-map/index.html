@@ -10,6 +10,8 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <!-- Scrollama -->
+    <script src="https://unpkg.com/scrollama"></script>
 
     <!-- Add pym.js from NBC -->
     <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/pym.v1.min.js"></script>
@@ -49,13 +51,62 @@
             </div>
         </div>
 
-        <!-- Scroll sections will be added dynamically -->
-        <div class="sections"></div>
+        <!-- Scroll sections -->
+        <div class="sections">
+            <!-- Federal workers by state -->
+            <div class="scroll-section" id="section-0" data-step="0">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+
+            <!-- Federal workers by county -->
+            <div class="scroll-section" id="section-1" data-step="1">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+
+            <!-- Vulnerability to federal job cuts -->
+            <div class="scroll-section" id="section-2" data-step="2">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+
+            <!-- Rural federal-dependent communities -->
+            <div class="scroll-section spotlight-section" id="section-3" data-step="3" data-cluster-type="rural">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+
+            <!-- Native American reservation counties -->
+            <div class="scroll-section spotlight-section" id="section-4" data-step="4" data-cluster-type="reservation">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+
+            <!-- Economically distressed areas -->
+            <div class="scroll-section spotlight-section" id="section-5" data-step="5" data-cluster-type="distressed">
+                <!-- Empty section - just serves as a scroll trigger -->
+            </div>
+        </div>
+
+        <!-- Mobile controls -->
+        <div class="mobile-controls">
+            <button class="mobile-nav-button prev-button" aria-label="Previous section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <div class="mobile-step-indicator">
+                <span class="current-step">1</span>/<span class="total-steps">6</span>
+            </div>
+            <button class="mobile-nav-button next-button" aria-label="Next section">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+        </div>
     </main>
 
-    <footer>
+    <!-- <footer>
         <p>&copy; Sources: US Census Bureau, Bureau of Labor Statistics, Office of Personnel Management</p>
-    </footer>
+    </footer> -->
 
     </div>
 
@@ -67,6 +118,7 @@
     <script src="js/mapRenderer.js" type="module"></script>
     <script src="js/scrollHandler.js" type="module"></script>
     <script src="js/main.js" type="module"></script>
+
 </body>
 
 </html>

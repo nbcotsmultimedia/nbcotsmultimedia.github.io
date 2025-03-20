@@ -435,4 +435,135 @@ export function setDimensionsWithPadding(svg) {
   return { width, height, topPadding };
 }
 
+// Add this function to utils.js
+
+/**
+ * Show a minimalist loading indicator on the map when data is loading
+ * @param {HTMLElement} mapContainer - The map container element
+ * @param {boolean} isLoading - Loading state
+ */
+export function showMapLoading(mapContainer, isLoading) {
+  // Find or create the loading indicator
+  let loadingIndicator = mapContainer.querySelector(".map-loading-indicator");
+
+  if (!loadingIndicator && isLoading) {
+    loadingIndicator = document.createElement("div");
+    loadingIndicator.className = "map-loading-indicator";
+    loadingIndicator.innerHTML = `
+      <div class="map-loading-spinner"></div>
+      <div class="map-loading-text">Updating map data...</div>
+    `;
+    mapContainer.appendChild(loadingIndicator);
+  }
+
+  // Add this CSS to your stylesheet
+  /*
+  .map-loading-indicator {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    z-index: 100;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .map-loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0,0,0,0.1);
+    border-top-color: #666;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  .map-loading-text {
+    font-size: 14px;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  @media (max-width: 480px) {
+    .map-loading-indicator {
+      bottom: 10px;
+      right: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    
+    .map-loading-spinner {
+      width: 14px;
+      height: 14px;
+    }
+  }
+  */
+
+  if (loadingIndicator) {
+    if (isLoading) {
+      loadingIndicator.style.display = "flex";
+
+      // Auto-hide after a minimum time to prevent flashing
+      setTimeout(() => {
+        if (loadingIndicator && !isLoading) {
+          loadingIndicator.style.display = "none";
+        }
+      }, 1000);
+    } else {
+      // Add fade-out animation
+      loadingIndicator.style.opacity = "0";
+      setTimeout(() => {
+        if (loadingIndicator) {
+          loadingIndicator.style.display = "none";
+          loadingIndicator.style.opacity = "1";
+        }
+      }, 300);
+    }
+  }
+}
+
+// Use this in renderCurrentStep in main.js:
+
+function renderCurrentStep() {
+  if (!state.mapInitialized || !elements.svg) {
+    console.warn("Cannot render map: not initialized");
+    return;
+  }
+
+  // Show loading indicator when rendering starts
+  showMapLoading(elements.mapContainer, true);
+
+  // Update the step title
+  updateStepTitle(state.currentStep);
+
+  const svgElement = d3.select(elements.svg);
+
+  // Delegate to the renderer, passing all necessary elements
+  mapRenderer.renderCurrentStep(
+    state,
+    state.data,
+    svgElement,
+    state.dimensions,
+    tooltipManager
+  );
+
+  // Update window location hash for easier sharing
+  if (history.replaceState) {
+    history.replaceState(null, null, `#section-${state.currentStep}`);
+  }
+
+  // Hide loading indicator when rendering completes
+  // Slight delay to ensure map has time to render
+  setTimeout(() => {
+    showMapLoading(elements.mapContainer, false);
+  }, 500);
+}
+
 // #endregion
