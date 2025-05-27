@@ -1,530 +1,1389 @@
-/* Reset */
+/* styles.css - Consolidated and streamlined styles with CSS variables */
+
+/* #region - CSS Variables */
+:root {
+  /* Breakpoints */
+  --breakpoint-xs: 480px; /* Mobile */
+  --breakpoint-sm: 768px; /* Tablet/small screens */
+  --breakpoint-md: 992px; /* Medium screens */
+  --breakpoint-lg: 1200px; /* Large screens */
+
+  /* Colors */
+  --color-text: #333;
+  --color-text-light: #666;
+  --color-text-lighter: #888;
+  --color-background: #f9f9f9;
+  --color-white: #ffffff;
+  --color-border-light: #eee;
+  --color-border: #ccc;
+  --color-shadow: rgba(0, 0, 0, 0.2);
+  --color-shadow-light: rgba(0, 0, 0, 0.1);
+  --color-shadow-lighter: rgba(0, 0, 0, 0.08);
+  --color-highlight: rgb(129, 0, 0);
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+
+  /* Typography */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.85rem; /* ~14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.2rem; /* ~19px */
+  --font-size-lg: 1.5rem; /* 24px */
+
+  /* Map-specific */
+  --title-container-top-position: 300px;
+
+  /* Z-index layers */
+  --z-index-base: 1;
+  --z-index-middle: 100;
+  --z-index-high: 200;
+  --z-index-top: 300;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease-out;
+  --transition-medium: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+  --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+/* #endregion */
+
+/* #region - Global Styles */
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
+html,
 body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #191919;
+  background-color: #fff !important;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Container styles */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  min-height: 100vh;
+p {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  color: #191919;
 }
 
-/* Map header with the fixed visualization */
-.map-header {
-  position: sticky;
-  top: 0;
-  width: 100%;
-  background-color: white;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+header {
+  position: fixed;
+  width: 98%;
   text-align: center;
+  z-index: var(--z-index-top);
+  transition: transform var(--transition-slow);
+  height: auto;
+  margin: 0;
+  padding-bottom: 10px; /* Added padding to prevent content overlap */
 }
 
-/* Title styling */
-.title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 0.5rem;
-  display: none;
+header.scrolled {
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
 }
 
-/* Description text */
-.description {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-weight: 500;
+h1,
+.headline {
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: 24px;
+  color: #191919;
+  margin: 0 0 0.5rem;
 }
 
-/* Map container */
-.map-container {
-  position: relative;
+.subtitle,
+.subhead {
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
+  color: #999;
+  margin: 0 0 10px;
+  line-height: 1.4em;
+}
+
+main {
+  max-width: var(--breakpoint-lg);
   margin: 0 auto;
-  max-width: 800px;
-  background-color: #f8f9fa;
-  padding: 10px;
+  padding: 0 var(--spacing-sm) 0;
 }
 
-/* SVG map styling */
-.map-svg {
+footer {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  padding: var(--spacing-md) var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+
+.credits {
+  font-family: "Roboto", sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.5em;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+/* #endregion */
+
+/* #region - Map Container & SVG */
+.sticky-container {
+  position: fixed;
+  left: 0;
   width: 100%;
   height: auto;
-  max-width: 800px;
-}
-
-/* Tooltip styling */
-.tooltip {
-  position: absolute;
-  background-color: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid #e0e0e0;
-  font-size: 0.875rem;
-  display: none;
+  min-height: calc(100vh - 120px);
+  z-index: 5;
   pointer-events: none;
-  z-index: 100;
-  max-width: 250px;
-  font-family: Arial, sans-serif;
-  transition: transform 0.1s ease-out;
-  transform-origin: top left;
-}
-
-.tooltip-header {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.tooltip-data {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: top var(--transition-slow);
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  top: 90px;
 }
 
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.sticky-container.header-hidden {
+  top: 0px;
 }
 
-.tooltip-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.tooltip-value {
-  font-weight: normal;
-  color: #333;
-}
-
-.tooltip-category {
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-category.low {
-  background-color: #ffeeaa;
-  color: #806600;
-}
-
-.tooltip-category.very.low {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.tooltip-category.moderate {
-  background-color: #ffccbc;
-  color: #c63f17;
-}
-
-.tooltip-category.high {
-  background-color: #ffcdd2;
-  color: #b71c1c;
-}
-
-/* Sections container */
-.sections {
-  width: 100%;
-  max-width: 800px;
-  margin-top: 1rem;
-  padding-bottom: 16rem;
-}
-
-/* Individual section styling */
-.section {
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 16rem;
-}
-
-/* Section-specific styling */
-.intro-section {
-  background-color: #f5f5f5;
-}
-
-.percentage-section {
-  background-color: #e6f0ff;
-  display: none;
-}
-
-.index-section {
-  background-color: #fff0f0;
-  display: none;
-}
-
-/* Section headings */
-.section h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-/* Section paragraphs */
-.section p {
-  line-height: 1.5;
-  display: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 840px) {
-  .map-header {
-    padding: 0.75rem;
-  }
-
-  .map-svg {
-    height: auto;
-    width: 100%;
-  }
-
-  .title {
-    font-size: 1.125rem;
-  }
-
-  .description {
-    font-size: 0.875rem;
-  }
-
-  .section {
-    padding: 0.75rem;
-    margin-bottom: 12rem;
-  }
-}
-
-/* Add these styles to your existing styles.css file */
-
-/* Enhanced tooltip styling */
-.tooltip {
-  position: absolute;
-  background-color: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border: 1px solid #e0e0e0;
-  font-size: 0.875rem;
-  display: none;
-  pointer-events: none;
-  z-index: 100;
-  max-width: 250px;
-  font-family: Arial, sans-serif;
-  transition: transform 0.1s ease-out;
-  transform-origin: top left;
-}
-
-.tooltip-header {
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.tooltip-data {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tooltip-label {
-  font-weight: 600;
-  color: #555;
-}
-
-.tooltip-value {
-  font-weight: normal;
-  color: #333;
-}
-
-/* New styles for outlier indicators in tooltip */
-.tooltip-outlier {
-  background-color: #f8f8f8;
-  border-left: 3px solid;
-  padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-outlier.high {
-  border-left-color: #d32f2f;
-  color: #d32f2f;
-}
-
-.tooltip-outlier.low {
-  border-left-color: #1976d2;
-  color: #1976d2;
-}
-
-/* Vulnerability category indicators */
-.tooltip-category {
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.tooltip-category.low {
-  background-color: #ffeeaa;
-  color: #806600;
-}
-
-.tooltip-category.very.low {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.tooltip-category.moderate {
-  background-color: #ffccbc;
-  color: #c63f17;
-}
-
-.tooltip-category.high {
-  background-color: #ffcdd2;
-  color: #b71c1c;
-}
-
-/* Style for pattern overlays */
-.pattern-overlay {
-  pointer-events: none;
-}
-
-/* Enhanced legend styles */
-.legend text {
-  font-family: Arial, sans-serif;
-}
-
-/* Additional elements description in sections */
-.section .data-elements {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  font-size: 0.85rem;
-}
-
-.data-elements ul {
-  list-style-type: none;
-  padding-left: 0.5rem;
-}
-
-.data-elements li {
-  margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-}
-
-.data-elements .element-icon {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 0.5rem;
-}
-
-/* Style adjustments for the pattern legend */
-.pattern-legend-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.25rem;
-}
-
-.pattern-legend-icon {
-  width: 15px;
-  height: 15px;
-  margin-right: 0.5rem;
-}
-
-/* Add this to your CSS to ensure enough scroll height */
 #map-container {
-  min-height: 300vh; /* 3x the viewport height to ensure enough scroll space */
+  width: 96%;
+  max-width: var(--breakpoint-lg);
+  margin: 0 auto;
+  position: relative;
+  pointer-events: auto;
+  z-index: var(--z-index-base);
+  height: auto;
+  min-height: 400px;
+  overflow: visible;
+  transition: height 0.3s ease-out;
 }
 
-/* Add these styles to your CSS file */
-
-/* Tooltip styles for vulnerability information */
-.tooltip-vulnerable {
-  background-color: #a50f15;
-  color: white;
-  padding: 4px 8px;
-  font-weight: bold;
-  border-radius: 3px;
-  margin-bottom: 8px;
+#map-wrapper {
+  width: 100%;
+  position: relative;
 }
 
-/* Narrative example highlight styles */
-.county.narrative-highlight {
-  stroke: #ff4500;
-  stroke-width: 2px;
-  stroke-dasharray: none;
+#map-svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/3;
+  display: block;
+  margin: 0 auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: var(--z-index-base);
+  transition: all var(--transition-medium);
 }
 
-/* Description styles for better readability */
-#description p {
-  margin-top: 8px;
-  line-height: 1.4;
-  font-size: 14px;
+/* Map paths styling */
+path {
+  shape-rendering: geometricPrecision;
+  vector-effect: non-scaling-stroke;
+  transition: fill 0.3s ease-out, stroke-width 0.2s ease-out,
+    opacity 0.3s ease-out;
 }
 
-/* Style for callout labels */
-.county-label {
-  font-weight: bold;
-  pointer-events: none;
+/* Map group styling */
+.map-group {
+  transition: opacity 0.4s var(--ease-out-cubic),
+    transform 0.4s var(--ease-out-cubic);
+  transform: translateY(0);
 }
 
-.county-label-bg {
-  fill: white;
-  fill-opacity: 0.8;
-  rx: 3px;
-  ry: 3px;
+/* Special styling for specific map elements */
+path.county.spotlight {
+  opacity: 1 !important;
+  stroke: #000 !important;
+  stroke-width: 0 !important;
 }
 
-/* Add these styles to your styles.css file */
+path.county.salient {
+  stroke: var(--color-highlight) !important;
+  stroke-width: 0 !important;
+  stroke-opacity: 0.8 !important;
+}
 
-/* Spotlight Panel */
-.spotlight-panel {
+/* Position Alaska correctly */
+path.state[data-state="Alaska"],
+path.county[data-state="Alaska"] {
+  transform: scale(0.35) translate(0, 0);
+}
+
+.map-sources {
   position: absolute;
-  right: 20px;
-  top: 100px;
-  width: 300px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 5px;
-  padding: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  max-height: 60vh;
-  overflow-y: auto;
-  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  padding: 5px 0;
+  margin: 0;
+  line-height: 1.4;
+  margin-top: 10px;
 }
 
-.spotlight-panel h4 {
-  margin-top: 0;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-  font-size: 18px;
+.map-copyright {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-lighter);
+  margin-top: 2px;
 }
+/* #endregion */
 
-.spotlight-section {
+/* #region - Legend Styling */
+.legend-container {
+  width: 100%;
+  height: auto;
+  min-height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* padding: 0 10px; */
+  position: relative;
+  box-sizing: border-box;
+  overflow: visible;
+  z-index: var(--z-index-middle);
+  /* margin-top: 20px; */
+  /* Ensure legend doesn't start at the very top of the container */
   margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-  cursor: pointer;
 }
 
-.spotlight-section:hover {
-  background-color: #f5f5f5;
+.legend-container svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.legend-svg {
+  max-width: 100%;
+}
+
+.legend {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: var(--z-index-high);
+}
+
+.legend-title {
+  text-anchor: middle;
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: var(--font-size-sm);
+  margin-bottom: 15px;
+  margin-top: 8px; /* Added space between description and legend title */
+}
+
+.legend-value,
+.legend-label {
+  text-anchor: middle;
+  font-family: "Roboto", sans-serif;
+  font-size: var(--font-size-xs);
+}
+
+.legend-block {
+  transition: fill-opacity var(--transition-medium);
+}
+/* #endregion */
+
+/* #region - Step Title Container */
+.step-title-container {
+  position: absolute;
+  top: var(--title-container-top-position);
+  left: 20px;
+  z-index: var(--z-index-high);
+  max-width: 600px;
+  width: auto;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-out-cubic),
+    transform 0.3s var(--ease-out-cubic);
+  will-change: opacity, transform;
+  transform: translateZ(0);
+}
+
+/* Desktop title container styles */
+.step-title-container.desktop {
+  position: absolute;
+  top: var(--title-container-top-position);
+}
+
+/* Mobile title container styles */
+.step-title-container.mobile {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-index-high);
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 4px;
+}
+
+.current-step-title {
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: var(--font-size-md);
+  color: #191919;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+  margin: 0;
+  padding: 5px 10px;
+}
+
+.current-step-description {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: var(--font-size-sm);
+  line-height: 1.3;
+  color: #191919;
+  margin: 0;
+  padding: 8px 12px;
+}
+
+/* Stats shown for spotlight views */
+.step-stats {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-light);
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.stat-highlight {
+  color: #222;
+  font-weight: bold;
+}
+/* #endregion */
+
+/* #region - Scrollytelling Sections */
+.sections {
+  margin-top: var(--spacing-md);
+}
+
+.scroll-section {
+  min-height: 80vh;
+  position: relative;
+  box-sizing: border-box;
+  padding: 8vh var(--spacing-sm);
+  margin-bottom: 20vh;
+  transition: opacity 0.5s var(--ease-out-cubic),
+    transform 0.5s var(--ease-out-cubic);
+  opacity: 0.35;
+  transform: translateY(10px);
+  will-change: opacity, transform;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 50vh;
+}
+
+.scroll-section:first-child {
+  padding-top: calc(120px + 50px);
+}
+
+.scroll-section.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-section:not(.active) {
+  opacity: 0.5;
+  transform: translateY(5px);
+}
+
+.section-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-sm);
+}
+
+.section-title {
+  font-family: "ArtHouseBold", sans-serif;
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-sm);
+  color: #191919;
+}
+
+.section-description {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+  color: #191919;
+  margin-bottom: 1.5rem;
+}
+
+.section-spacer {
+  height: 40vh;
+  border: none;
+  outline: none;
+}
+
+/* Spotlight Sections */
+.spotlight-section {
+  position: relative;
+  z-index: var(--z-index-base);
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 5vh auto 25vh auto;
+  opacity: 0.4;
+  transform: translateY(10px);
+  border-left-width: 5px;
+  transition: opacity 0.6s var(--ease-out-quint),
+    transform 0.6s var(--ease-out-quint);
 }
 
 .spotlight-section.active {
-  background-color: #f0f0f0;
-  border-left: 4px solid #de2d26;
-  padding-left: 12px;
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.spotlight-section h5 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  font-size: 16px;
+.spotlight-section:not(.active) {
+  opacity: 0.65;
+  transform: translateY(10px);
 }
+/* #endregion */
 
-.spotlight-section p {
-  margin-bottom: 8px;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.spotlight-section ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.spotlight-section li {
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-
-/* Facility Markers */
-.facility-markers circle {
-  cursor: pointer;
-  transition: r 0.2s ease, stroke-width 0.2s ease;
-}
-
-.facility-markers circle:hover {
-  stroke-width: 2px;
-}
-
-/* Tooltip */
-.tooltip {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
-  font-size: 12px;
-  pointer-events: none;
-  z-index: 1500;
-  max-width: 300px;
-}
-
-.tooltip-header {
-  font-weight: bold;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-}
-
-.tooltip-data {
+/* #region - Progress Indicator */
+.progress-indicator {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%) translateZ(0);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  z-index: var(--z-index-middle);
+  transition: top var(--transition-slow), opacity var(--transition-medium);
+  opacity: 1;
+  filter: drop-shadow(0 1px 3px var(--color-shadow-lighter));
 }
 
-.tooltip-row {
+.progress-indicator.initializing {
+  opacity: 0;
+}
+
+.progress-bar {
+  width: 2px;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+  top: 0;
+  transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  border-radius: 3px;
+  opacity: 0.7;
+}
+
+.step-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(200, 200, 200, 0.8);
+  border: 2px solid var(--color-white);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  position: relative;
+  box-shadow: 0 1px 3px var(--color-shadow-light);
+  /* Reset button styles */
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.step-indicator:hover,
+.step-indicator:focus {
+  transform: scale(1.3);
+  box-shadow: 0 2px 5px var(--color-shadow);
+  outline: none;
+}
+
+.step-indicator:focus-visible {
+  box-shadow: 0 0 0 3px rgba(100, 100, 100, 0.4);
+}
+
+.step-indicator.active {
+  background-color: rgba(50, 50, 50, 0.9);
+  transform: scale(1.3);
+  box-shadow: 0 2px 5px var(--color-shadow);
+}
+
+.step-indicator.completed {
+  background-color: rgba(120, 120, 120, 0.8);
+}
+
+.step-tooltip {
+  display: none !important;
+}
+
+.step-indicator:hover .step-tooltip {
+  opacity: 1;
+}
+/* #endregion */
+
+/* #region - Tooltip Styling */
+.tooltip {
+  position: absolute;
+  padding: 10px;
+  background-color: var(--color-white);
+  border-radius: 4px;
+  box-shadow: 0 2px 10px var(--color-shadow);
+  pointer-events: none;
+  z-index: 1000;
+  font-size: var(--font-size-sm);
+  max-width: 300px;
+  opacity: 0;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  transition: opacity 0.2s ease-out, transform 0.3s ease-out;
+}
+
+.tooltip.visible {
+  opacity: 1;
+}
+
+.tooltip::before {
+  content: "";
+  position: absolute;
+  border: 8px solid transparent;
+}
+
+.tooltip.right-arrow::before {
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: var(--color-white);
+}
+
+.tooltip.left-arrow::before {
+  right: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: var(--color-white);
+}
+
+.tooltip.top-arrow::before {
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--color-white);
+}
+
+.tooltip.bottom-arrow::before {
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: var(--color-white);
+}
+
+/* Modern tooltip styling */
+.tooltip-modern {
+  padding: 16px;
+  border-radius: 4px;
+  max-width: 340px;
+  min-width: 280px;
+}
+
+.tooltip-modern h2 {
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 1px solid #f0f0f0;
+  color: #333;
+}
+
+.tooltip-score {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.tooltip-score h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #333;
+}
+
+.tooltip-score p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.score-scale {
+  font-size: 14px;
+  font-weight: normal;
+  color: #888;
+  margin-left: 2px;
+}
+
+.score-bar {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    #fff5f0 0%,
+    #fee0d2 20%,
+    #fcbba1 40%,
+    #fc9272 60%,
+    #fb6a4a 80%,
+    #de2d26 100%
+  );
+  border-radius: 2px;
+  margin-top: 8px;
+  position: relative;
+}
+
+.score-indicator {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #de2d26;
+  border-radius: 50%;
+  top: -4px;
+  margin-left: -6px;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-metrics {
+  margin-bottom: 12px;
+}
+
+.metric-row {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 16px;
+  align-items: baseline;
 }
 
-.tooltip-label {
+.metric-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.5px;
+  margin-right: 60px;
+}
+
+.metric-value {
   font-weight: 600;
-  margin-right: 10px;
+  font-size: 16px;
+  color: #333;
 }
 
-.tooltip-value {
-  text-align: right;
+.tooltip-facilities {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+  margin-top: 12px;
 }
 
-.tooltip-spotlight {
-  background-color: #de2d26;
-  color: white;
-  padding: 3px 6px;
-  border-radius: 3px;
-  margin-bottom: 5px;
-  font-weight: bold;
+.tooltip-facilities h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.facility-row {
+  margin-bottom: 10px;
+}
+
+.facility-label {
+  display: block;
   font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #666;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
 }
 
-/* Transition Text */
-#transition-text {
-  text-align: center;
-  font-style: italic;
-  margin: 20px 0;
-  padding: 0 40px;
+.facility-value {
+  margin: 0;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
+}
+/* #endregion */
+
+/* #region - Loading & Animation */
+body.is-loading {
+  overflow: hidden;
+}
+
+body.is-loading .map-container,
+body.is-loading .scroll-section {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s var(--ease-out-cubic);
+}
+
+body:not(.is-loading) .loader {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #666;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1em;
+  border-radius: 0.5em;
+  z-index: var(--z-index-middle);
+}
+
+.transition-complete {
+  will-change: auto;
+}
+
+/* Hardware acceleration for smooth animations */
+.sticky-container,
+#map-svg,
+.tooltip,
+.step-title-container {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+/* #endregion */
+
+/* #region - Mobile Navigation */
+.mobile-controls {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  padding: 8px 12px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 180px;
+}
+
+.mobile-nav-button {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  font-family: "ArtHouseMed", sans-serif;
+  font-size: 17px;
+}
+
+.mobile-nav-button:hover,
+.mobile-nav-button:focus {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.mobile-step-indicator {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+/* #endregion */
+
+/* #region - Media Queries */
+/* Small mobile (portrait) */
+@media (max-width: var(--breakpoint-xs)) {
+  /* Header */
+  header {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 0;
+  }
+
+  header h1 {
+    font-size: 1.15rem;
+    margin-bottom: 0.2rem;
+    line-height: 1.15;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  /* Layout */
+  main {
+    padding: 0 var(--spacing-xs);
+  }
+
+  footer {
+    padding: 1.5rem var(--spacing-xs);
+    margin-top: var(--spacing-md);
+  }
+
+  /* Map container */
+  .sticky-container {
+    padding-top: 10px;
+    min-height: auto;
+    max-height: 85vh;
+    top: 80px !important;
+    min-height: 70vh !important;
+    width: 96% !important; /* Slightly reduced width */
+    left: 2% !important; /* Center the container */
+    right: 2% !important;
+  }
+
+  #map-container {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    margin-top: 5px;
+    min-height: 300px;
+    padding-left: 15px; /* Added space on left edge */
+    padding-right: 15px; /* Added space on right edge */
+    max-width: 90% !important; /* Limit maximum width */
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  #map-svg {
+    margin-bottom: 0;
+    height: auto;
+    max-height: 25vh; /* Reduced from 28vh */
+    margin-top: 50px;
+    aspect-ratio: 4/3;
+    margin-top: 15px !important; /* Slight increase */
+    width: 90% !important; /* Reduce the width of the SVG */
+    margin-left: auto !important; /* Center the SVG */
+    margin-right: auto !important;
+  }
+
+  /* Legend */
+  .legend-container {
+    height: auto;
+    min-height: 70px;
+    margin-bottom: 15px;
+    padding: 4px !important;
+    min-height: 60px !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 4px !important;
+    margin-bottom: 15px !important;
+    margin-top: 30px !important; /* Further increased space between map and legend */
+    /* Make sure we have enough space for header */
+    position: relative;
+    top: auto;
+  }
+
+  /* Ensure SVG legend fits within container */
+  .legend-container svg {
+    width: 100%;
+    height: auto;
+    max-width: 300px; /* Slightly reduced from 320px */
+    margin: 0 auto;
+  }
+
+  .legend-title {
+    font-size: var(--font-size-xs);
+    margin-top: 15px !important; /* More space between description and legend title on mobile */
+    margin-bottom: 12px !important;
+  }
+
+  .legend-value,
+  .legend-label {
+    font-size: 10px;
+  }
+
+  /* Scroll sections */
+  .scroll-section {
+    padding: 3vh 0.75rem !important;
+    margin-bottom: 5vh !important;
+    min-height: 70vh;
+  }
+
+  .scroll-section:first-child {
+    padding-top: calc(80px + 30px) !important;
+  }
+
+  .section-content {
+    padding: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .section-title {
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .section-description {
+    font-size: var(--font-size-sm);
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Spotlight sections */
+  .spotlight-section {
+    padding: 1.5rem 0.75rem !important;
+    border-left-width: 4px;
+  }
+
+  /* Step title container */
+  .step-title-container {
+    position: relative !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-width: 100% !important;
+    margin: 5px 15px 0 !important; /* Added horizontal space */
+    padding: 12px 15px !important; /* Added internal padding */
+    z-index: 150 !important;
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.9
+    ) !important; /* Made slightly more opaque */
+    border-radius: 8px !important; /* Increased border radius */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .current-step-title {
+    font-size: 20px !important;
+    margin-bottom: 12px !important; /* Increased margin for more space */
+    padding-left: 8px;
+    padding-bottom: 0;
+    color: #191919 !important;
+  }
+
+  .current-step-description {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 18px !important; /* Increased margin for more space before legend */
+    padding-left: 8px;
+    padding-bottom: 0;
+    color: #191919 !important;
+  }
+
+  /* Progress indicator */
+  .progress-indicator {
+    display: none !important;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    max-width: 240px;
+    font-size: var(--font-size-xs);
+    padding: 8px;
+  }
+
+  .tooltip-modern {
+    padding: 12px;
+    max-width: 300px;
+    min-width: 240px;
+  }
+
+  .tooltip-modern h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .tooltip-score h1 {
+    font-size: 24px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    margin-right: 24px;
+  }
+
+  .metric-value {
+    font-size: 14px;
+  }
+
+  .facility-value {
+    font-size: 12px;
+  }
+
+  /* Map path elements */
+  path.county,
+  path.state {
+    stroke-width: 0.3 !important;
+  }
+
+  /* Mobile stats */
+  .section-stats {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    margin-top: 10px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .stat-item {
+    margin: 4px 0 !important;
+  }
+
+  /* Mobile step indicator */
+  .mobile-step-indicator {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    padding: 0 4px !important;
+  }
+}
+
+/* Tablet/small screens */
+@media (max-width: var(--breakpoint-sm)) {
+  /* Step title container */
+  .step-title-container {
+    max-width: calc(100% - 20px);
+    left: 10px;
+  }
+
+  /* Legend container */
+  .legend-container {
+    height: 60px;
+    padding-top: 5px;
+  }
+
+  /* Progress indicator */
+  .progress-indicator {
+    right: 10px;
+    transform: translateY(-50%) scale(0.8);
+  }
+
+  /* Show mobile controls */
+  .mobile-controls {
+    display: flex;
+  }
+
+  /* Hide vertical progress indicator */
+  .progress-indicator {
+    display: none;
+  }
+}
+
+/* Medium screens */
+@media (max-width: var(--breakpoint-md)) {
+  .step-title-container {
+    --title-container-top-position: 200px;
+    left: 15px;
+    max-width: 450px;
+  }
+}
+
+/* Small screens - orientation specific */
+@media (max-width: var(--breakpoint-xs)) and (orientation: landscape) {
+  /* Move the step title to better position in landscape */
+  .step-title-container {
+    top: 60px;
+    width: 70%;
+    left: 15%;
+  }
+}
+
+/* Small mobile - header adjustments */
+@media (max-width: var(--breakpoint-xs)) {
+  /* Main title */
+  h1,
+  .headline {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    margin: 0.5rem 0 0.6rem !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Subtitle */
+  .subtitle,
+  .subhead {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+    margin: 0 auto 1rem !important;
+    padding: 0 1.5rem !important;
+    color: #999 !important;
+    max-width: 95% !important;
+  }
+
+  /* Paragraph */
+  p {
+    font-size: 16px !important;
+  }
+
+  /* Credits */
+  .credits {
+    font-size: 12px !important;
+  }
+
+  /* Header background */
+  header {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    padding: 0.8rem 0 1rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Mobile navigation */
+  .mobile-controls {
+    background-color: white !important;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 30px !important;
+    padding: 8px 16px !important;
+    width: auto !important;
+    min-width: 180px !important;
+    bottom: 25px !important;
+  }
+
+  /* Mobile navigation buttons */
+  .mobile-nav-button {
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+/* #endregion */
+
+/* Complete CSS for button navigation */
+
+/* Complete CSS for button navigation */
+
+/* Hide scroll sections when not using scrollytelling */
+.sections.button-navigation-active {
+  display: none;
+}
+
+/* Button navigation container */
+.click-navigation-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
+  padding: 6px 8px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  /* Streamlined design */
+  max-width: 120px;
+}
+
+/* Navigation buttons */
+.nav-button {
+  background: none;
+  border: none;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+  transition: all 0.2s ease;
+  margin: 0 2px;
+}
+
+.nav-button:hover,
+.nav-button:focus {
+  background-color: rgba(0, 0, 0, 0.07);
+  color: #000;
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Current step indicator */
+.current-step-indicator {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 12px;
+}
+
+/* Step indicator dots */
+.step-indicators {
+  display: none;
+  gap: 8px;
+  margin: 0 10px;
+}
+
+.step-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(200, 200, 200, 0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.step-indicator.active {
+  background-color: #333;
+  transform: scale(1.3);
+}
+
+.step-indicator:hover,
+.step-indicator:focus {
+  transform: scale(1.3);
+  background-color: #666;
+}
+
+.info-button {
+  margin-left: 5px;
+}
+
+/* Show step indicators on larger screens */
+@media (min-width: 768px) {
+  .step-indicators {
+    display: flex;
+  }
+
+  .current-step-indicator {
+    display: none;
+  }
+
+  .click-navigation-container {
+    padding: 8px 15px;
+  }
+}
+
+/* Information overlay for mobile */
+.info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-out;
+}
+
+.info-overlay.visible {
+  transform: translateY(0);
+}
+
+.info-overlay-content {
+  max-width: 600px;
+  width: 100%;
+}
+
+.info-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .click-navigation-container {
+    bottom: 10px;
+    padding: 6px 10px;
+  }
+
+  .nav-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .current-step-indicator {
+    font-size: 14px;
+    margin: 0 8px;
+  }
+
+  .info-overlay-content {
+    padding: 15px;
+  }
 }

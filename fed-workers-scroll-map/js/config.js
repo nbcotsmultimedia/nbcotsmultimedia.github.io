@@ -1,211 +1,113 @@
-// config.js - Configuration settings for the county map visualization
+// config.js - Updated configuration settings
 
 const config = {
-  // Urls for data sources
+  // URLs for data sources
   urls: {
     countiesGeoJSON:
       "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json",
     statesGeoJSON: "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json",
     dataSheet:
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=0&single=true&output=csv",
-    vulnerableCounties:
-      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=451832244&single=true&output=csv",
+    // New data sources for vulnerability clusters
+    ruralFederalDependentData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=175285704&single=true&output=csv",
+    nativeAmericanReservationData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=1801797509&single=true&output=csv",
+    economicallyDistressedData:
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUMJpmtcUCBBKkeU-DfCoSjW1t7Y_tQGSDGjw7oZ3C1rOPPLd2sICVpYoS8CVEXTsFl71OfrMozurU/pub?gid=948951406&single=true&output=csv",
   },
 
   // Step configuration
   steps: [
-    // Step 1: Federal workers per 100k, by state
+    // Federal workers per 100k, by state
     {
       id: "state_federal_workers",
-      title: "Federal Workers per 100,000 by State",
-      // description:
-      //   "While D.C. leads with over 10% federal employment, states like Alaska, Maryland and Hawaii show surprising concentrations far from the capital.",
-      transitionText:
-        "Let's look closer to see how these patterns emerge at the county level.",
+      title: "Federal workers by state",
+      description:
+        "Federal jobs aren't spread evenly across the country. D.C., Alaska, Maryland, and Hawaii have 5-10 times more federal workers per capita than the national average.",
       dataField: "state_fed_workers_per_100k",
-      colorScheme: "blues",
-      colorSet: "federal",
-      isStateLevel: true, // Add this flag to indicate state-level visualization
+      colorSet: "blues",
+      isStateLevel: true,
+      breaks: [2400, 3000, 3600, 4200, 5000],
     },
-    // Step 2: Federal workers per 100k, by county
+    // Federal workers per 100k, by county
     {
       id: "federal_workers",
-      title: "Federal Workers per 100,000 across U.S. counties",
-      // description:
-      //   "Federal employment isn't evenly distributed even within states.",
-      transitionText:
-        "What makes some communities more dependent on federal jobs than others?",
+      title: "Federal workers by county",
+      description:
+        "Even within states, some counties depend much more on federal jobs than others.",
       dataField: "fed_workers_per_100k",
-      colorScheme: "blues",
-      colorSet: "federal",
+      colorSet: "blues",
+      breaks: [1000, 2500, 5000, 7500, 10000],
     },
-    // Step 3: Vulnerability score by county
+    // Original vulnerability score by county
     {
       id: "vulnerability_index",
-      title: "Vulnerability Index across U.S. counties",
-      // description:
-      //   "Vulnerability to federal cuts isn't just about how many federal workers live there. Some areas with moderate federal employment face higher vulnerability due to economic factors.",
-      transitionText: "Now let's focus on the most vulnerable counties.",
+      title: "Vulnerability to federal job cuts",
+      description:
+        "Our vulnerability index reveals which communities are most at risk from federal job cuts, based on how many federal workers they have, local unemployment, and income levels.",
       dataField: "vulnerabilityIndex",
-      colorScheme: "reds",
       colorSet: "vulnerability",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
     },
-    // Step 4: Triple Threat Spotlight
+
+    // New steps for vulnerability clusters
+    // Rural Federal-Dependent Communities spotlight
     {
-      id: "triple_threat_spotlight",
-      title: 'Spotlight 1: "Triple Threat" Areas',
-      // description:
-      //   "For communities like Wolfe County, federal job cuts would remove some of the only stable, well-paying employment opportunities in an area already struggling with high unemployment and low incomes.",
-      transitionText:
-        "Next, let's look at communities with extreme dependency on federal employment.",
-      dataField: "vulnerabilityIndex",
-      colorScheme: "reds",
+      id: "rural_federal_dependent",
+      title: "Rural federal-dependent communities",
+      description:
+        "Over 500 rural counties are home to nearly 900,000 federal workers. With limited employment alternatives, cuts to federal employment could hit these areas hard.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
-      spotlightMode: true,
-      // Only include the triple_threat spotlight
-      spotlights: [
-        {
-          id: "triple_threat",
-          countyFips: "21237", // Wolfe County, Kentucky
-          title: "Triple threat",
-          description:
-            "For communities like Wolfe County, federal job cuts would remove some of the only stable, well-paying employment opportunities in an area already struggling with high unemployment and low incomes.",
-          stats: [
-            "14.8% of jobs are federal",
-            "Unemployment already at 27% (over 5x the national average)",
-            "Median income of just $24,349 (less than 10% of the national average)",
-          ],
-          highlightOpacity: 1.0, // Main county fully opaque
-          otherOpacity: 0.6, // Other counties at 60% opacity
-        },
-      ],
-      // Additional properties specific to this spotlight category
-      spotlightCategory: "triple_threat",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "rural",
+      isSpotlightView: true, // New property for spotlight view
+      countiesCount: 559,
+      federalWorkersCount: 881780,
+      spotlightField: "is_rural_federal_dependent", // Field to identify cluster counties
+      salientField: "rural_fed_salient_example", // Field to identify salient examples
+      scoreField: "rural_fed_score", // Custom score field for tooltip info
     },
-    // Step 5: Extreme Dependency Spotlight
+    // Native American Reservation Counties spotlight
     {
-      id: "extreme_dependency_spotlight",
-      title: 'Spotlight 2: "Extreme Dependency" Communities',
-      // description:
-      //   "While Kalawao County currently enjoys full employment, its extreme dependence on federal jobs means cuts could transform it from one of the most stable employment markets to one of the most vulnerable almost overnight.",
-      transitionText:
-        "Finally, let's examine the impact on tribal communities and rural areas.",
-      dataField: "vulnerabilityIndex",
-      colorScheme: "reds",
+      id: "native_american_reservation",
+      title: "Counties with large Native American populations",
+      description:
+        "These 204 counties with significant Native American populations rely more heavily on federal employment (4.83%) than non-tribal areas (2.93%). With higher unemployment and lower incomes, these communities have fewer alternative job options.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
-      spotlightMode: true,
-      // Only include the extreme_dependency spotlight
-      spotlights: [
-        {
-          id: "extreme_dependency",
-          countyFips: "15005", // Kalawao County, Hawaii
-          title: "Extreme dependency",
-          description:
-            "While Kalawao County currently enjoys full employment, its extreme dependence on federal jobs means cuts could transform it from one of the most stable employment markets to one of the most vulnerable almost overnight.",
-          stats: [
-            "38.7% of all jobs are federal (11x the national average)",
-            "Currently has low unemployment (0%)",
-            "A 20% reduction in federal workforce would directly eliminate nearly 8% of all jobs",
-          ],
-          highlightOpacity: 1.0, // Main county fully opaque
-          otherOpacity: 0.6, // Other counties at 60% opacity
-        },
-      ],
-      // Additional properties specific to this spotlight category
-      spotlightCategory: "extreme_dependency",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "reservation",
+      isSpotlightView: true,
+      countiesCount: 204,
+      federalWorkersCount: 138910,
+      spotlightField: "is_native_american_reservation",
+      salientField: "reservation_salient_example",
+      scoreField: "reservation_score",
     },
-    // Step 6: Tribal Communities Spotlight
+    // Economically Distressed Areas spotlight
     {
-      id: "tribal_rural_spotlight",
-      title: "Spotlight 3: Tribal Communities and Rural Areas",
-      // description:
-      //   "In tribal areas and rural communities, federal employment often represents one of the few sources of stable, career-path jobs. Cuts would disproportionately impact areas already facing limited economic opportunities.",
-      dataField: "vulnerabilityIndex",
-      colorScheme: "reds",
+      id: "economically_distressed",
+      title: "Economically distressed areas",
+      description:
+        "For 132 counties already experiencing economic distress, federal agencies provide rare stable employment. These areas—with unemployment rates often double the national average—have few alternatives to replace the 50,000+ federal jobs that support local economies.",
+      dataField: "vulnerabilityIndex", // Keep using vulnerability index as base
       colorSet: "vulnerability",
-      spotlightMode: true,
-      // Only include the tribal_rural spotlight
-      spotlights: [
-        {
-          id: "tribal_rural",
-          // Array of county FIPS for tribal areas
-          countyFips: [
-            "46121", // South Dakota
-            "46135", // South Dakota
-            "04017", // Arizona
-            "35045", // New Mexico
-            "02270", // Alaska
-            "30031", // Montana
-            "38085", // North Dakota
-          ],
-          title: "Tribal communities and rural areas",
-          description:
-            "In tribal areas and rural communities, federal employment often represents one of the few sources of stable, career-path jobs. Cuts would disproportionately impact areas already facing limited economic opportunities.",
-          highlightOpacity: 0.8, // All tribal areas at 80% opacity
-        },
-      ],
-      // Additional properties specific to this spotlight category
-      spotlightCategory: "tribal_rural",
+      breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
+      clusterType: "distressed",
+      isSpotlightView: true,
+      countiesCount: 132,
+      federalWorkersCount: 50821,
+      spotlightField: "is_economically_distressed",
+      salientField: "distress_salient_example",
+      scoreField: "distress_score",
     },
   ],
 
-  // Color scale configurations
-  scales: {
-    state_federal_workers: {
-      useJenks: true,
-      colorSet: "federal",
-      breaks: [2400, 3000, 3600, 4200, 5000, 10000], // Use values that match your data range
-      maxValue: 11000,
-      showEndLabel: true,
-    },
-    federal_workers: {
-      // breaks: [1000, 2500, 5000, 7500, 10000],
-      useJenks: true,
-      colorSet: "federal",
-      maxValue: 15000,
-      showEndLabel: true,
-    },
-    vulnerability_index: {
-      // breaks: [17.8, 20.0, 26.2, 30.1, 40.0],
-      useJenks: true,
-      colorSet: "vulnerability",
-      maxValue: 65.0, // Maximum vulnerability score from analysis
-    },
-    vulnerable_counties: {
-      useJenks: true,
-      colorSet: "vulnerability", // Use vulnerability color scheme for the spotlight
-      maxValue: 65.0,
-      showEndLabel: true,
-    },
-    // Scale for narrative example 1 (triple threat)
-    narrative_example_1: {
-      useJenks: true,
-      colorSet: "federal",
-      maxValue: 15000,
-      showEndLabel: true,
-    },
-    // Scale for narrative example 2 (extreme dependency)
-    narrative_example_2: {
-      useJenks: true,
-      colorSet: "federal",
-      maxValue: 15000,
-      showEndLabel: true,
-    },
-    // Scale for narrative example 3 (tribal and rural areas)
-    narrative_example_3: {
-      useJenks: true,
-      colorSet: "federal",
-      maxValue: 15000,
-      showEndLabel: true,
-    },
-  },
-
   // Colors for color scale
   colors: {
-    regularStroke: "#ffffff", // County outlines
-    highlightStroke: "#000000", // Highlighted county outlines
-
-    // Color palettes for different data types
+    // Original color palettes
     federal: [
       "#f7fbff", // Lightest blue (almost white)
       "#deebf7", // Very light blue
@@ -215,7 +117,6 @@ const config = {
       "#3182bd", // Medium dark blue
       "#08519c", // Dark blue
     ],
-
     vulnerability: [
       "#fff5f0", // Lightest pink (almost white)
       "#fee0d2", // Very light salmon
@@ -225,68 +126,72 @@ const config = {
       "#de2d26", // Medium red
       "#a50f15", // Dark red
     ],
+    blues: [
+      "#f7fbff", // Lightest blue (almost white)
+      "#deebf7", // Very light blue
+      "#c6dbef", // Light blue
+      "#9ecae1", // Medium light blue
+      "#6baed6", // Medium blue
+      "#3182bd", // Medium dark blue
+      "#08519c", // Dark blue
+    ],
 
-    // Category-specific colors using the vulnerability palette
-    vulnerabilityCategory: {
-      "Very Low": "#fff5f0", // Lightest pink
-      Low: "#fee0d2", // Light pink
-      "Moderate-Low": "#fcbba1", // Light salmon
-      "Moderate-High": "#fc9272", // Medium salmon
-      High: "#fb6a4a", // Salmon/light red
-      "Very High": "#a50f15", // Dark red
+    // Perceptually Optimized Scheme for new clusters
+    magenta: [
+      "#fcf0ff", // Lightest magenta (almost white)
+      "#f5d0f9", // Very light magenta
+      "#eeaff2", // Light magenta
+      "#e48be9", // Medium light magenta
+      "#d265dc", // Medium magenta
+      "#c13ec7", // Medium dark magenta
+      "#9c0f9e", // Dark magenta
+    ],
+    cyan: [
+      "#eafcff", // Lightest cyan (almost white)
+      "#c5f1fa", // Very light cyan
+      "#a0e6f5", // Light cyan
+      "#6ed9ee", // Medium light cyan
+      "#33c9e4", // Medium cyan
+      "#0fb7d4", // Medium dark cyan
+      "#0392ab", // Dark cyan
+    ],
+    yellow: [
+      "#fffdf0", // Lightest yellow (almost white)
+      "#fff9c2", // Very light bright yellow
+      "#fff58f", // Light bright yellow
+      "#ffee5c", // Medium light bright yellow
+      "#ffe70a", // Bright yellow
+      "#ffd000", // Medium bright yellow
+      "#e6bc00", // Darkest bright yellow
+    ],
+    // Keep original color palettes for reference
+    greens: [
+      "#f7fcf5", // Lightest green (almost white)
+      "#e5f5e0", // Very light green
+      "#c7e9c0", // Light green
+      "#a1d99b", // Medium light green
+      "#74c476", // Medium green
+      "#41ab5d", // Medium dark green
+      "#238b45", // Dark green
+    ],
+    reds: [
+      "#fff5f0", // Lightest red (almost white)
+      "#fee0d2", // Very light red
+      "#fcbba1", // Light red
+      "#fc9272", // Medium light red
+      "#fb6a4a", // Medium red
+      "#ef3b2c", // Medium dark red
+      "#cb181d", // Dark red
+    ],
+
+    // Specific colors for combined view
+    clusterColors: {
+      rural: "#41ab5d", // Green for rural federal-dependent
+      reservation: "#0fb7d4", // Cyan for Native American reservation
+      distressed: "#c13ec7", // Magenta for economically distressed
+      multiple: "#ffd000", // Yellow for counties in multiple clusters
+      none: "#f7f7f7", // Light gray for counties not in any cluster
     },
-
-    // Spotlight highlight colors
-    spotlight: {
-      default: "rgba(200, 200, 200, 0.3)", // Faded background for non-spotlighted counties
-      highlight: "#de2d26", // Highlighting for spotlighted counties
-      tripleThreat: "#a50f15",
-      extremeDependency: "#de2d26",
-      tribalRural: "#fb6a4a",
-    },
-  },
-
-  // Classification configuration - change to use Jenks natural breaks
-  classification: {
-    method: "jenks", // Changed from implicit 'quantile' to explicit 'jenks'
-    numBreaks: 6, // Number of breaks for color classes
-    outlierMultiplier: 3, // For IQR-based outlier detection
-    percentileThreshold: 0.05, // For top/bottom percentile identification
-  },
-
-  // Add category names configuration to config.js
-  categoryNames: {
-    federal_workers: [
-      "Very Low",
-      "Low",
-      "Moderate",
-      "High",
-      "Very High",
-      "Extremely High",
-    ],
-    vulnerability_index: [
-      "Very Low",
-      "Low",
-      "Moderate-Low",
-      "Moderate-High",
-      "High",
-      "Very High",
-    ],
-    vulnerability_category: [
-      "Very Low",
-      "Low",
-      "Moderate",
-      "High",
-      "Very High",
-    ],
-  },
-
-  // Add descriptions for each map type
-  descriptions: {
-    federal_workers: "Federal workers per 100,000 population",
-    vulnerability_index:
-      "Based on federal employment, unemployment rate, and median income",
-    vulnerability_category: "Vulnerability categories by county",
   },
 
   // FIPS code mapping
@@ -342,18 +247,23 @@ const config = {
     54: "West Virginia",
     55: "Wisconsin",
     56: "Wyoming",
-    60: "American Samoa",
-    66: "Guam",
-    69: "Northern Mariana Islands",
-    72: "Puerto Rico",
-    78: "Virgin Islands",
-  },
-
-  // Vulnerability thresholds
-  vulnerability: {
-    highFederalThreshold: 2500, // Fed workers per 100k
-    highVulnerabilityThreshold: 20, // Vulnerability score
   },
 };
 
+const CACHE_CONFIG = {
+  version: "1.0.0", // Increment when data structure changes
+  keys: {
+    statesGeo: "map_states_geo_v1",
+    countiesGeo: "map_counties_geo_v1",
+    vulnerabilityData: "map_vulnerability_data_v1",
+    ruralFedData: "map_rural_fed_data_v1",
+    reservationData: "map_reservation_data_v1",
+    distressedData: "map_distressed_data_v1",
+    cacheVersion: "map_cache_version",
+    lastUpdated: "map_last_updated",
+  },
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+};
+
 export default config;
+export { CACHE_CONFIG };
