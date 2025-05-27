@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBC Local Social Image Generator</title>
+  <!-- Cropper.js CSS -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+     />
+
+   <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse-condensed.css' rel='stylesheet' type='text/css'>
+     
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .controls { margin: 10px 0; }
+    #crop-container { width: 100%; max-width: 800px; height: 534px; background: #f0f0f0; position: relative; }
+    #crop-container img { max-width: 100%; display: block; }
+    #size-buttons button { margin-right: 5px; }
+    #previews { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
+    .preview { text-align: center; }
+    .preview img { max-width: 200px; display: block; margin-bottom: 5px; border: 1px solid #ccc; }
+    .notes { margin-top: -10px; color: #666; font-size: 12px;}
+    button { background-color:#007bff; color: #FFF; border: #007bff; border-radius: 16px; padding: 7px 12px;}
+    button:hover { background-color: #005bbb; cursor: pointer;}
+    hr { height: 1px; color: #CCC; background: #CCC; font-size: 0; border: 0; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div id="container" style="max-width: 800px; margin:0 auto">
+
+  <h1>NBC Local Social Cards Generator BETA</h1>
+  
+  <h3>Step 1: Upload your image</h3>
+  <p class="notes">Image should be high quality and at least 1080x1080, jpg, png, gif.</p>
+  <input type="file" id="fileInput" accept="image/*" />
+  <hr/>
+
+  <h3>Step 2: Make your crops</h3>
+  <p class="notes">You <strong><em>must</em></strong> click on each button to at least check the crop</p>
+  <div class="controls" id="size-buttons"></div>
+
+  <div class="controls">
+    <label for="zoomSlider">Zoom:</label>
+    <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" />
+  </div>
+
+  <div id="crop-container">
+    <img id="image" style="display:none;" />
+  </div>
+  <hr/>
+
+  <h3>Step 3: Choose language</h3>
+    <p class="notes">This will determine which brand style and logo to add</p>
+    <div class="controls">
+      <label><input type="radio" name="language" value="en" checked> English</label>
+      <label><input type="radio" name="language" value="es"> Español</label>
+    </div>
+  <hr/>
+
+  <h3>Step 5: Enter headline/text</h3>
+  <p class="notes">Ideally 50-60 characters long</p>
+  <div class="controls">
+    <input type="text" id="headlineInput" placeholder="Enter headline overlay" style="width:97%; padding:10px;" />
+    <button id="previewButton" style="margin-top:10px; padding:6px 12px;">Preview</button>
+  </div>
+  <hr/>
+
+  <h3>Previews & Download</h3>
+  <div id="previews"></div>
+  <div id="offscreen" style="display:none;"></div>
+
+  <!-- Cropper.js  -->
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
+    ></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const SIZES = [
+        { id: '16-9', width: 1920, height: 1080, label: 'Horizontal', ratio: 1920/1080 },
+        { id: '9-16', width: 1080, height: 1920, label: 'Vertical', ratio: 1080/1920 },
+        { id: '1-1', width: 1080, height: 1080, label: 'Square', ratio: 1 },
+        { id: '4-5', width: 1080, height: 1350, label: 'Portrait', ratio: 1080/1350 },
+        
+      ];
+
+      let cropData = {};
+      let currentSize = SIZES[0].id;
+      let cropper;
+      const image = document.getElementById('image');
+      const fileInput = document.getElementById('fileInput');
+      const sizeButtons = document.getElementById('size-buttons');
+      const languageInputs = document.getElementsByName('language');
+      const zoomSlider = document.getElementById('zoomSlider');
+      const headlineInput = document.getElementById('headlineInput');
+      const previewButton = document.getElementById('previewButton');
+      const previewsContainer = document.getElementById('previews');
+      const offscreen = document.getElementById('offscreen');
+
+      // Text wrapping helper
+      function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        const lines = [];
+        let line = '';
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxWidth && line !== '') {
+            lines.push(line.trim());
+            line = words[n] + ' ';
+          } else {
+            line = testLine;
+          }
+        }
+        lines.push(line.trim());
+        // Calculate vertical start to center text within block
+        const totalHeight = lines.length * lineHeight;
+        let startY = y - totalHeight / 2 + lineHeight / 2;
+        lines.forEach((l, i) => {
+          //ctx.strokeText(l, x, startY + i * lineHeight);
+          ctx.fillText(l, x, startY + i * lineHeight);
+        });
+      }
+
+      // Initialize size buttons
+      SIZES.forEach(size => {
+        const btn = document.createElement('button');
+        btn.textContent = size.label;
+        btn.id = `btn-${size.id}`;
+        btn.addEventListener('click', () => switchSize(size.id));
+        sizeButtons.appendChild(btn);
+      });
+
+      function updateSizeButtons() {
+        SIZES.forEach(s => {
+          const btn = document.getElementById(`btn-${s.id}`);
+          if (s.id === currentSize) { btn.style.background = '#007bff'; btn.style.color = '#fff'; }
+          else { btn.style.background = ''; btn.style.color = ''; }
+        });
+      }
+
+      fileInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        image.src = url;
+        image.style.display = 'block';
+        image.onload = () => initCropper();
+      });
+
+      function initCropper() {
+        if (cropper) { cropData[currentSize] = cropper.getData(true); cropper.destroy(); }
+        const size = SIZES.find(s => s.id === currentSize);
+        updateSizeButtons();
+        cropper = new window.Cropper(image, {
+          aspectRatio: size.ratio,
+          viewMode: 1,
+          autoCropArea: 1,
+          movable: true,
+          zoomable: true,
+          scalable: false,
+          ready: () => { if (cropData[currentSize]) cropper.setData(cropData[currentSize]); }
+        });
+        zoomSlider.value = 1;
+        zoomSlider.oninput = () => cropper.zoomTo(parseFloat(zoomSlider.value));
+      }
+
+      function switchSize(sizeId) {
+        if (!image.src) return;
+        if (cropper) cropData[currentSize] = cropper.getData(true);
+        currentSize = sizeId;
+        initCropper();
+      }
+
+      async function generatePreviews() {
+        const headline = headlineInput.value.trim();
+        const lang = Array.from(languageInputs).find(r => r.checked).value;
+        
+        if (!headline) { alert('Please enter a headline before previewing.'); return; }
+        previewsContainer.innerHTML = '';
+
+        await document.fonts.load(`1em 'ArtHouseMedCon'`);
+        console.log('Fonts ready:', document.fonts.status);
+
+        //Load stripes
+        const stripes = new Image();
+        if (lang == "en") {
+          stripes.src = 'images/stripes.png';
+        } else {
+          stripes.src = 'images/stripes-red.png';
+        }
+        stripes.onload = () => console.log('stripes loaded');
+
+        //Load logo
+        const logo = new Image();
+        if (lang == "en") {
+          logo.src = 'images/nbclogo.png';
+        } else {
+          logo.src = 'images/tlmdlogo.png';
+        }
+        logo.onload = () => console.log('logo loaded');
+        
+        //Load bottom rule
+        const brule = new Image();
+        if (lang == "en") {
+          brule.src = 'images/bluerule.png';
+        } else {
+          brule.src = 'images/redrule.png';
+        }
+        brule.onload = () => console.log('rule loaded');
+
+
+        SIZES.forEach(size => {
+          const data = cropData[size.id];
+          if (!data) return;
+          const canvas = document.createElement('canvas');
+          canvas.width = size.width;
+          canvas.height = size.height;
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          img.src = image.src;
+          img.onload = () => {
+            // Draw cropped image
+            ctx.drawImage(
+              img,
+              data.x, data.y,
+              data.width, data.height,
+              0, 0,
+              size.width, size.height
+            );
+
+            // Draw color block
+            const blockHeight = size.height / 3;
+            const blockBottom = size.height - 75;
+            const blockTop = blockBottom - blockHeight;
+            if (lang == "en") {
+              ctx.fillStyle = 'rgba(2,20,72,0.8)';
+            } else {
+              ctx.fillStyle = 'rgba(128,2,1,0.8)';
+            }
+            ctx.fillRect(0, blockTop, size.width, blockHeight);
+
+            //Draw stripes
+            const stripesW = stripes.width;
+            const stripesH = stripes.height;
+            const drawSW = size.width;
+            const drawSH = (stripesH / stripesW) * drawSW;
+            const drawSX = (size.width - drawSW) / 2;
+            const drawSY = blockTop;
+            ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
+
+            //Draw logo
+            const logoW = logo.width;
+            const logoH = logo.height;
+            //const drawLW = size.width;
+            //const drawLH = (logoH / logoW) * drawSW;
+            const drawLX = size.width - 170;
+            const drawLY = 70;
+            ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+
+            //Draw bottom rule
+            const bruleW = brule.width;
+            const bruleH = brule.height;
+            const drawBX = (size.width - bruleW) / 2;
+            const drawBY = blockBottom;
+            ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
+
+            
+            // Draw wrapped text
+            //const fontSize = Math.floor(size.width / 15);
+            //ctx.font = `${fontSize}px sans-serif`;
+            const fontSize = 85;
+            ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            const maxWidth = size.width - 40;
+            const centerX = size.width / 2;
+            const centerY = blockTop + blockHeight / 2;
+            wrapText(ctx, headline, centerX, centerY, maxWidth, fontSize * 1.2);
+
+            // Build preview element
+            const div = document.createElement('div');
+            div.className = 'preview';
+            const imgEl = document.createElement('img');
+            imgEl.src = canvas.toDataURL('image/png');
+            imgEl.alt = size.label;
+            const btn = document.createElement('button');
+            btn.textContent = `Download ${size.label}`;
+            btn.addEventListener('click', () => {
+              const link = document.createElement('a');
+              link.download = `social_${size.id}.png`;
+              link.href = imgEl.src;
+              link.click();
+            });
+            div.appendChild(imgEl); div.appendChild(btn);
+            previewsContainer.appendChild(div);
+          };
+        });
+      }
+
+      previewButton.addEventListener('click', generatePreviews);
+    });
+  </script>
+
+</div>
+</body>
+</html>
