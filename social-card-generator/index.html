@@ -59,7 +59,7 @@
     </div>
   <hr/>
 
-  <h3>Step 5: Enter headline/text</h3>
+  <h3>Step 4: Enter headline/text</h3>
   <p class="notes">Ideally 50-60 characters long</p>
   <div class="controls">
     <input type="text" id="headlineInput" placeholder="Enter headline overlay" style="width:97%; padding:10px;" />
@@ -78,11 +78,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const SIZES = [
+        { id: '4-5', width: 1080, height: 1350, label: 'Portrait', ratio: 1080/1350 },
+        { id: '1-1', width: 1080, height: 1080, label: 'Square', ratio: 1 },
         { id: '16-9', width: 1920, height: 1080, label: 'Horizontal', ratio: 1920/1080 },
         { id: '9-16', width: 1080, height: 1920, label: 'Vertical', ratio: 1080/1920 },
-        { id: '1-1', width: 1080, height: 1080, label: 'Square', ratio: 1 },
-        { id: '4-5', width: 1080, height: 1350, label: 'Portrait', ratio: 1080/1350 },
-        
       ];
 
       let cropData = {};
@@ -210,7 +209,6 @@
         }
         brule.onload = () => console.log('rule loaded');
 
-
         SIZES.forEach(size => {
           const data = cropData[size.id];
           if (!data) return;
@@ -221,14 +219,28 @@
           const img = new Image();
           img.src = image.src;
           img.onload = () => {
-            // Draw cropped image
-            ctx.drawImage(
-              img,
-              data.x, data.y,
-              data.width, data.height,
-              0, 0,
-              size.width, size.height
-            );
+            // SIMPLE FIX: Just use cropper's built-in canvas method instead of manual calculation
+            if (cropper && currentSize === size.id) {
+              // If this is the currently active crop, get canvas directly from cropper
+              const croppedCanvas = cropper.getCroppedCanvas({
+                width: size.width,
+                height: size.height,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+              });
+              
+              // Draw the cropped image to our canvas
+              ctx.drawImage(croppedCanvas, 0, 0);
+            } else {
+              // For other sizes, use the manual method but keep it simple
+              ctx.drawImage(
+                img,
+                data.x, data.y,
+                data.width, data.height,
+                0, 0,
+                size.width, size.height
+              );
+            }
 
             // Draw color block
             const blockHeight = size.height / 3;
@@ -253,8 +265,6 @@
             //Draw logo
             const logoW = logo.width;
             const logoH = logo.height;
-            //const drawLW = size.width;
-            //const drawLH = (logoH / logoW) * drawSW;
             const drawLX = size.width - 170;
             const drawLY = 70;
             ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
@@ -266,10 +276,7 @@
             const drawBY = blockBottom;
             ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
 
-            
             // Draw wrapped text
-            //const fontSize = Math.floor(size.width / 15);
-            //ctx.font = `${fontSize}px sans-serif`;
             const fontSize = 85;
             ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
             ctx.textAlign = 'center';
