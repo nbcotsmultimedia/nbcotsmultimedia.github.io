@@ -61,9 +61,9 @@
   <hr/>
 
   <h3>Step 4: Enter headline/text</h3>
-  <p class="notes">Ideally 50-60 characters long</p>
+  <p class="notes">Ideally 50-60 characters long. Use | for line breaks (e.g., "Hello | world")</p>
   <div class="controls">
-    <input type="text" id="headlineInput" placeholder="Enter headline overlay" style="width:97%; padding:10px;" />
+    <input type="text" id="headlineInput" placeholder="Enter headline overlay (use | for line breaks)" style="width:97%; padding:10px;" />
     <button id="previewButton" style="margin-top:10px; padding:6px 12px;">Preview</button>
   </div>
   <hr/>
@@ -98,27 +98,36 @@
       const previewsContainer = document.getElementById('previews');
       const offscreen = document.getElementById('offscreen');
 
-      // Text wrapping helper
+      // Enhanced text wrapping helper with line break support
       function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-        const words = text.split(' ');
-        const lines = [];
-        let line = '';
-        for (let n = 0; n < words.length; n++) {
-          const testLine = line + words[n] + ' ';
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxWidth && line !== '') {
-            lines.push(line.trim());
-            line = words[n] + ' ';
-          } else {
-            line = testLine;
+        // First split by manual line breaks (using | as delimiter)
+        const paragraphs = text.split('|');
+        const allLines = [];
+        
+        paragraphs.forEach(paragraph => {
+          const words = paragraph.trim().split(' ');
+          let line = '';
+          
+          for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && line !== '') {
+              allLines.push(line.trim());
+              line = words[n] + ' ';
+            } else {
+              line = testLine;
+            }
           }
-        }
-        lines.push(line.trim());
+          if (line.trim()) {
+            allLines.push(line.trim());
+          }
+        });
+        
         // Calculate vertical start to center text within block
-        const totalHeight = lines.length * lineHeight;
+        const totalHeight = allLines.length * lineHeight;
         let startY = y - totalHeight / 2 + lineHeight / 2;
-        lines.forEach((l, i) => {
-          //ctx.strokeText(l, x, startY + i * lineHeight);
+        
+        allLines.forEach((l, i) => {
           ctx.fillText(l, x, startY + i * lineHeight);
         });
       }
@@ -183,129 +192,138 @@
         await document.fonts.load(`1em 'ArtHouseMedCon'`);
         console.log('Fonts ready:', document.fonts.status);
 
-        //Load stripes
-        const stripes = new Image();
-        if (lang == "en") {
-          stripes.src = 'images/stripes.png';
-        } else {
-          stripes.src = 'images/stripes-red.png';
-        }
-        stripes.onload = () => console.log('stripes loaded');
+        const loadImage = (src) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+              console.log(`Loaded: ${src}`);
+              resolve(img);
+            };
+            img.onerror = () => {
+              console.error(`Failed to load: ${src}`);
+              reject(new Error(`Failed to load: ${src}`));
+            };
+            img.src = src;
+          });
+        };
 
-        //Load logo
-        const logo = new Image();
-        if (lang == "en") {
-          logo.src = 'images/nbclogo.png';
-        } else {
-          logo.src = 'images/tlmdlogo.png';
-        }
-        logo.onload = () => console.log('logo loaded');
-        
-        //Load bottom rule
-        const brule = new Image();
-        if (lang == "en") {
-          brule.src = 'images/bluerule.png';
-        } else {
-          brule.src = 'images/redrule.png';
-        }
-        brule.onload = () => console.log('rule loaded');
+        try {
+          // Load all assets before proceeding
+          const stripes = await loadImage(lang === "en" ? 'images/stripes.png' : 'images/stripes-red.png');
+          const logo = await loadImage(lang === "en" ? 'images/nbclogo.png' : 'images/tlmdlogo.png');
+          const brule = await loadImage(lang === "en" ? 'images/bluerule.png' : 'images/redrule.png');
+          
+          console.log('All assets loaded successfully');
 
-        SIZES.forEach(size => {
-          const data = cropData[size.id];
-          if (!data) return;
-          const canvas = document.createElement('canvas');
-          canvas.width = size.width;
-          canvas.height = size.height;
-          const ctx = canvas.getContext('2d');
-          const img = new Image();
-          img.src = image.src;
-          img.onload = () => {
-            // SIMPLE FIX: Just use cropper's built-in canvas method instead of manual calculation
-            if (cropper && currentSize === size.id) {
-              // If this is the currently active crop, get canvas directly from cropper
-              const croppedCanvas = cropper.getCroppedCanvas({
-                width: size.width,
-                height: size.height,
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high'
+          // Now process each size
+          SIZES.forEach(size => {
+            const data = cropData[size.id];
+            if (!data) return;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = size.width;
+            canvas.height = size.height;
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = image.src;
+            
+            img.onload = () => {
+              // Draw the cropped image first
+              if (cropper && currentSize === size.id) {
+                // If this is the currently active crop, get canvas directly from cropper
+                const croppedCanvas = cropper.getCroppedCanvas({
+                  width: size.width,
+                  height: size.height,
+                  imageSmoothingEnabled: true,
+                  imageSmoothingQuality: 'high'
+                });
+                
+                // Draw the cropped image to our canvas
+                ctx.drawImage(croppedCanvas, 0, 0);
+              } else {
+                // For other sizes, use the manual method but keep it simple
+                ctx.drawImage(
+                  img,
+                  data.x, data.y,
+                  data.width, data.height,
+                  0, 0,
+                  size.width, size.height
+                );
+              }
+
+              // Draw color block
+              const blockHeight = size.height / 3;
+              const blockBottom = size.height - 75;
+              const blockTop = blockBottom - blockHeight;
+              if (lang == "en") {
+                ctx.fillStyle = 'rgba(2,20,72,0.8)';
+              } else {
+                ctx.fillStyle = 'rgba(128,2,1,0.8)';
+              }
+              ctx.fillRect(0, blockTop, size.width, blockHeight);
+
+              // FIXED: Now we know assets are loaded, so draw them
+              //Draw stripes
+              const stripesW = stripes.width;
+              const stripesH = stripes.height;
+              const drawSW = size.width;
+              const drawSH = (stripesH / stripesW) * drawSW;
+              const drawSX = (size.width - drawSW) / 2;
+              const drawSY = blockTop;
+              ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
+
+              //Draw logo
+              const logoW = logo.width;
+              const logoH = logo.height;
+              const drawLX = size.width - 170;
+              const drawLY = 70;
+              ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+
+              //Draw bottom rule
+              const bruleW = brule.width;
+              const bruleH = brule.height;
+              const drawBX = (size.width - bruleW) / 2;
+              const drawBY = blockBottom;
+              ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
+
+              // Draw wrapped text with line break support
+              const fontSize = 85;
+              ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillStyle = 'white';
+              const maxWidth = size.width - 40;
+              const centerX = size.width / 2;
+              const centerY = blockTop + blockHeight / 2;
+              wrapText(ctx, headline, centerX, centerY, maxWidth, fontSize * 1.2);
+
+              // Build preview element
+              const div = document.createElement('div');
+              div.className = 'preview';
+              const imgEl = document.createElement('img');
+              imgEl.src = canvas.toDataURL('image/png');
+              imgEl.alt = size.label;
+              const btn = document.createElement('button');
+              btn.textContent = `Download ${size.label}`;
+              btn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = `social_${size.id}.png`;
+                link.href = imgEl.src;
+                link.click();
               });
-              
-              // Draw the cropped image to our canvas
-              ctx.drawImage(croppedCanvas, 0, 0);
-            } else {
-              // For other sizes, use the manual method but keep it simple
-              ctx.drawImage(
-                img,
-                data.x, data.y,
-                data.width, data.height,
-                0, 0,
-                size.width, size.height
-              );
-            }
+              div.appendChild(imgEl); 
+              div.appendChild(btn);
+              previewsContainer.appendChild(div);
+            };
+          });
 
-            // Draw color block
-            const blockHeight = size.height / 3;
-            const blockBottom = size.height - 75;
-            const blockTop = blockBottom - blockHeight;
-            if (lang == "en") {
-              ctx.fillStyle = 'rgba(2,20,72,0.8)';
-            } else {
-              ctx.fillStyle = 'rgba(128,2,1,0.8)';
-            }
-            ctx.fillRect(0, blockTop, size.width, blockHeight);
-
-            //Draw stripes
-            const stripesW = stripes.width;
-            const stripesH = stripes.height;
-            const drawSW = size.width;
-            const drawSH = (stripesH / stripesW) * drawSW;
-            const drawSX = (size.width - drawSW) / 2;
-            const drawSY = blockTop;
-            ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
-
-            //Draw logo
-            const logoW = logo.width;
-            const logoH = logo.height;
-            const drawLX = size.width - 170;
-            const drawLY = 70;
-            ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
-
-            //Draw bottom rule
-            const bruleW = brule.width;
-            const bruleH = brule.height;
-            const drawBX = (size.width - bruleW) / 2;
-            const drawBY = blockBottom;
-            ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
-
-            // Draw wrapped text
-            const fontSize = 85;
-            ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = 'white';
-            const maxWidth = size.width - 40;
-            const centerX = size.width / 2;
-            const centerY = blockTop + blockHeight / 2;
-            wrapText(ctx, headline, centerX, centerY, maxWidth, fontSize * 1.2);
-
-            // Build preview element
-            const div = document.createElement('div');
-            div.className = 'preview';
-            const imgEl = document.createElement('img');
-            imgEl.src = canvas.toDataURL('image/png');
-            imgEl.alt = size.label;
-            const btn = document.createElement('button');
-            btn.textContent = `Download ${size.label}`;
-            btn.addEventListener('click', () => {
-              const link = document.createElement('a');
-              link.download = `social_${size.id}.png`;
-              link.href = imgEl.src;
-              link.click();
-            });
-            div.appendChild(imgEl); div.appendChild(btn);
-            previewsContainer.appendChild(div);
-          };
-        });
+        } catch (error) {
+          console.error('Error loading assets:', error);
+          alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available:\n\n' +
+                '• stripes.png / stripes-red.png\n' +
+                '• nbclogo.png / tlmdlogo.png\n' +
+                '• bluerule.png / redrule.png');
+        }
       }
 
       previewButton.addEventListener('click', generatePreviews);
