@@ -177,6 +177,16 @@ const circleId = (d, step) => {
 	return circleId;
 };
 
+const sortCircles = (a, b) => {
+	if (a.data.name === "Your vote" || a.data.name === "Your candidate") {
+		return -1;
+	} else if (b.data.name === "Your vote" || b.data.name === "Your candidate") {
+		return 1;
+	} else {
+		return b.value - a.value;
+	}
+};
+
 // initialize chart for first scrollytelling step
 const makeChart = (stepData, step) => {
 	// set up d3 packing to given size parameters, sort circles so largest are at the center
@@ -185,7 +195,7 @@ const makeChart = (stepData, step) => {
 		.padding(10)
 		(d3.hierarchy(data)
 			.sum(d => d.value)
-			.sort((a, b) => b.value - a.value));
+			.sort((a, b) => sortCircles(a, b)));
 	const root = pack(stepData);
 
 	// add circles to svg
@@ -213,7 +223,7 @@ const updateChart = (stepData, step) => {
 		.padding(10)
 		(d3.hierarchy(data)
 			.sum(d => d.value)
-			.sort((a, b) => b.value - a.value));
+			.sort((a, b) => sortCircles(a, b)));
 	const root = pack(stepData);
 
 	console.log(root)
