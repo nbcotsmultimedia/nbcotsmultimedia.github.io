@@ -140,9 +140,10 @@ const strokeColor = (d, step) => {
 	let strokeColor;
 	if (d.data["name"] === "Your vote") {
 		strokeColor = "#3d3d3d"; // dark outline for your vote
-	} else if (d.data["name"] === "Your candidate" && d.children && d.children.length > 50) {
-		// if your candidate wins
-		strokeColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)]; // stroke color based on your candidate color
+	} else if (d.data["name"] === "Your candidate") {
+		strokeColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)]; // stroke color based on circle color for your candidate
+	} else if (step === 0) {
+		strokeColor = "#71c0ad"; // turquoise outline for first slide
 	} else {
 		strokeColor = "#6b7691"; // gray outline for all other instances
 	};
@@ -155,8 +156,10 @@ const strokeWidth = (d, step) => {
 	if (step !== 0 && d.children && d.children.length > 50 || step < 2 && d.data["name"] === "Your vote") {
 		// if circle is for winning candidate, or circle is for your vote in the first two slides
 		strokeWidth = 1; // show outline
+	} else if (d.data["name"] === "Invisible votes" || d.data["name"] === "Invisible vote" || d.data["name"] === "Your vote" || d.data["name"] === "Generic vote" || (step > 1 && d.parent.data["name"] === "outer layer")) {
+		strokeWidth = 0; // don't show outline for individual votes, unless your vote on first slide
 	} else {
-		strokeWidth = 0; // otherwise, don't show outline
+		strokeWidth = 0.75; // small outline for candidate circles
 	}
 	return strokeWidth;
 };
@@ -280,12 +283,15 @@ const addLegend = step => {
 				.attr("cy", mobile ? -10 : -20)
 				.attr("r", 12)
 				.attr("fill", yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)])
-				.attr("fill-opacity", 0.5);
+				.attr("fill-opacity", 0.5)
+				.attr("stroke", yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)])
+				.attr("stroke-width", 0.75);
 
 			legend.append("text")
 				.attr("x", mobile ? 28 : 28)
 				.attr("y", mobile ? -5 : -15)
 				.attr("fill", "#3d3d3d")
+				.style("font-size", "14px")
 				.text(`Your ${yourCandidateLabel[Math.min(step, yourCandidateLabel.length - 1)]}`);
 
 			legend.append("circle")
@@ -293,12 +299,15 @@ const addLegend = step => {
 				.attr("cy", mobile ? -10 : -20)
 				.attr("r", 12)
 				.attr("fill", "#79919c")
-				.attr("fill-opacity", 0.5);
+				.attr("fill-opacity", 0.5)
+				.attr("stroke", "#79919c")
+				.attr("stroke-width", 0.75);
 
 			legend.append("text")
 				.attr("x", mobile ? 218 : 208)
 				.attr("y", mobile ? -5 : -15)
 				.attr("fill", "#3d3d3d")
+				.style("font-size", "14px")
 				.text("Other candidates");
 		}, 150)
 	} else if (step === 2) {
@@ -317,12 +326,15 @@ const addLegend = step => {
 				.attr("cy", -20)
 				.attr("r", 12)
 				.attr("fill", "#79919c")
-				.attr("fill-opacity", 0.5);
+				.attr("fill-opacity", 0.5)
+				.attr("stroke", "#79919c")
+				.attr("stroke-width", 0.75);
 
 			legend.append("text")
 				.attr("x", 28)
 				.attr("y", -15)
 				.attr("fill", "#3d3d3d")
+				.style("font-size", "14px")
 				.text("Other candidates");
 		}, 150)
 	}
@@ -357,14 +369,14 @@ const stepData = step => {
 };
 
 const annotationCoords = (x, y, radius) => {
-	let coords = [x, y - radius];
+	let coords = [x - (radius*2/3), y - (radius*2/3)];
 	return coords;
 };
 
 const annotationOffset = (x, y) => {
 	let offset = [];
-	let xOffset = x > chartWidth / 2 ? chartWidth / 10 : -chartWidth / 10;
-	let yOffset = y > chartWidth / 2 ? -chartWidth / 2 : -chartWidth / 4;
+	let xOffset = x > chartWidth / 2 ? chartWidth / 10 : -chartWidth / 3.5;
+	let yOffset = y > chartWidth / 2 ? -chartWidth / 2 : -chartWidth / 3.5;
 	offset = [xOffset, yOffset];
 	return offset;
 };
