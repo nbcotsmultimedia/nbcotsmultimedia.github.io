@@ -1,0 +1,147 @@
+.ranked-choice-slide {
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 50vw;
+    max-width: 600px;
+    float: right;
+    margin-right: 50vw;
+}
+
+.ranked-choice-caption {
+    vertical-align: middle;
+    padding: 15px 20px;
+    width: 80%;
+    z-index: 9999;
+    color: #3d3d3d !important;
+    /*background-color: rgba(107, 118, 145, 0.25);
+    border: rgba(107, 118, 145, 0.5) 1px solid;*/
+    background-color: rgba(237, 232, 208, 0.5);
+    border: #3d3d3d 1px solid;
+    border-radius: 5px;
+}
+
+.ranked-choice-note {
+    color: #a9a9a9;
+    font-size: 16px;
+}
+
+.ranked-choice-border {
+    width:700px;
+    border-bottom:#ccc 1.5px dotted;
+    margin: auto;
+}
+
+.tick {
+    color: #e3e3e3;
+}
+
+.ranked-choice-y-axis .domain {
+    stroke-width: 0;
+}
+
+.ranked-choice-x-axis {
+    stroke-width: 1.5px;
+}
+
+.ranked-choice-x-axis text,
+.ranked-choice-y-axis text {
+    color: #9d9d9d;
+}
+
+.ranked-choice-legend-item {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    width: 200px;
+}
+
+.ranked-choice-legend-item p {
+    margin-bottom: 0;
+    text-align: start;
+}
+
+#ranked-choice-container {
+    display: flex;
+    justify-content: center;
+    height: 650px !important;
+}
+
+#ranked-choice-slide-container {
+    z-index: 9999;
+    position: absolute;
+    height: 600px !important;
+    overflow: scroll;
+    width: 100vw;
+}
+
+#ranked-choice-chart-container {
+    width: 50vw;
+    position: absolute;
+    height: 600px;
+    left: 50vw;
+    top: 0;
+    z-index: 0;
+    max-width: 600px;
+}
+
+#ranked-choice-chart {
+    width: 50vw;
+    height: 600px;
+    max-width: 600px;
+}
+
+@media screen and (max-width: 768px) {
+    .ranked-choice-border {
+        width: 90vw !important;
+    }
+
+    .ranked-choice-slide {
+        width: 100vw;
+        float: none;
+        margin-right: 0;
+    }
+
+    .ranked-choice-container {
+        display: block;
+    }
+
+
+    .ranked-choice-caption {
+        max-width: 300px;
+        background-color: rgba(237, 232, 208, 0.95);
+        border: #3d3d3d 1px solid;
+    }
+
+    #ranked-choice-chart {
+        width: 100%;
+    }
+
+    #ranked-choice-chart-container {
+        max-width: 600px;
+        max-width: 700px;
+        width: 100%;
+        left: 0;
+    }
+
+    #ranked-choice-slide-container {
+        width: 100%;
+    }
+
+
+    #ranked-choice-slide-0 {
+        justify-content: end;
+        margin-top: 20px;
+    }
+
+    #ranked-choice-slide-9 {
+        position: relative;
+    }
+
+    #ranked-choice-legend {
+        position: absolute;
+        bottom: 0;
+    }
+}
