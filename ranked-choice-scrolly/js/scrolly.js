@@ -1,13 +1,11 @@
-let mobile = window.innerWidth <= 768,
-	chartWidth = mobile ? window.innerWidth : Math.min((window.innerWidth / 2), 600),
-	captions,
-	numSlides
+let mobile = window.innerWidth <= 768, // is graphic displayed on a mobile device?
+	chartWidth = mobile ? window.innerWidth : Math.min((window.innerWidth / 2), 600); // chart should be full screen width on mobile, half screen (not over 600px) on desktop
 
-const margin = { top: 40, right: 0, bottom: 10, left: 20 },
-	width = chartWidth - margin.left - margin.right,
-	height = chartWidth - margin.top - margin.bottom;
+const margin = { top: 40, right: 0, bottom: 10, left: 20 }, // chart margins (need extra left margin bc of invisible circles in first slide)
+	width = chartWidth - margin.left - margin.right, // svg width
+	height = chartWidth - margin.top - margin.bottom; // svg height
 
-
+// define svg to hold chart, set width, height, margins
 const svg = d3.select("#ranked-choice-chart")
 	.append("svg")
 	.attr("width", width + margin.left + margin.right)
@@ -15,13 +13,17 @@ const svg = d3.select("#ranked-choice-chart")
 	.append("g")
 	.attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-//const yourCandidateColors = ["", "", "#FE7743", "#FE7743", "#e77691", "#e77691", "#9FC87E", "#9FC87E"];
-const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#e77688", "#e77688", "#95b85a", "#95b85a"];
-const yourCandidateLabel = ["", "", "first choice", "first choice", "second choice", "second choice", "third choice"]
 
+// colors and labels for "your candidate" circles in different slides as 
+const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#fe9643", "#e77688", "#e77688", "#95b85a", "#95b85a"];
+/*const yourCandidateColors = ["", "", "#FE7743", "#FE7743", "#e77691", "#e77691", "#9FC87E", "#9FC87E"];*/
+const yourCandidateLabel = ["", "", "first choice","first choice", "first choice", "second choice", "second choice", "third choice"]
+
+// votes for each candidate on each slide
 const rounds = [
 	"",
-	{
+	{	
+		"Your candidate": 2,
 		"Candidate 1": 44,
 		"Candidate 2": 22,
 		"Candidate 3": 10,
@@ -30,43 +32,44 @@ const rounds = [
 		"Candidate 6": 4,
 		"Candidate 7": 3,
 		"Candidate 8": 2,
-		"Your candidate": 2
 	},
 	"",
+	"",
 	{
+		"Your candidate": 4,
 		"Candidate 1": 45,
 		"Candidate 2": 23,
 		"Candidate 3": 12,
 		"Candidate 4": 11,
 		"Candidate 5": 5,
-		"Your candidate": 4,
-		"Invisible votes": 2
+		"Invisible votes": 2 
+		// need to add "invisible votes" that don't display in the chart, since there are parent circles for each candidate, but some candidates are eliminated
 	},
 	"",
 	{
-		"Candidate 1": 46,
 		"Your candidate": 24,
+		"Candidate 1": 46,
 		"Candidate 3": 13,
 		"Candidate 4": 12,
 		"Candidate 5": 5,
 		"Invisible votes": 3
 	},
 	{
-		"Candidate 1": 48,
 		"Your candidate": 25,
+		"Candidate 1": 48,
 		"Candidate 3": 13,
 		"Candidate 4": 14,
 		"Invisible votes": 4
 	},
 	{
-		"Candidate 1": 53,
 		"Your candidate": 29,
+		"Candidate 1": 53,
 		"Candidate 4": 18,
 		"Invisible votes": 5
 	},
 	{
-		"Candidate 1": 29,
 		"Your candidate": 53,
+		"Candidate 1": 29,
 		"Candidate 4": 18,
 		"Invisible votes": 5
 	},
@@ -78,82 +81,152 @@ const rounds = [
 	},
 ];
 
-const generateData = () => {
-	let children = Array(24).fill().map(item => ({ name: `Generic vote`, value: 1 }));
-	children = children.concat(Array(1).fill().map(item => ({ name: `Your vote`, value: 1 })));
-	children = children.concat(Array(75).fill().map(item => ({ name: `Generic vote`, value: 1 })));
+// set data to 99 generic votes, 1 "your vote" and 9 invisible votes (these will be parent circles for candidates in the next slide)
+const setInitialData = () => {
+	//let children = Array(24).fill().map(item => ({ name: `Generic vote`, value: 1 }));
+	//children = children.concat(Array(1).fill().map(item => ({ name: `Your vote`, value: 1 })));
+	let children = Array(1).fill().map(item => ({ name: `Your vote`, value: 1 }));
+	children = children.concat(Array(99).fill().map(item => ({ name: `Generic vote`, value: 1 })));
 	let invisibleVotes = Array(9).fill().map(item => ({ name: "Invisible vote", value: 1 }));
+	// set data to outer layer with list of 109 votes as children
 	allData = { name: "outer layer", children: [{ name: "all votes", children: children }].concat(invisibleVotes) };
 };
 
+// determine fill color of circles in chart, based on their value/ parent value
+const fillColor = (d, step) => {
+	let fillColor;
+	if (d.data["name"] === "Your vote") {
+		fillColor = "#8865c1"; // make "your vote" a different color
+	} else if (d.data["name"] === "Your candidate" || d.parent.data["name"] === "Your candidate") {
+		// color circles for "your candidate" based on color assigned to current scrollytelling step
+		fillColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)];
+	} else if (step === 0) {
+		/*fillColor = "#71C0BB"*/
+		fillColor = "#71c0ad"; // color all other circles turquoise for first scrollyetlling step
+	} else {
+		/*fillColor = "#6b7691"*/
+		fillColor = "#79919c"; // color all other circles gray for remaining steps
+	}
+	return fillColor;
+};
+
+// determine fill opacity of circles in chart, based on their value/ parent value
 const fillOpacity = (d, step) => {
 	let opacity;
 	if (step === 0) {
+		// first step in scrollytelling
 		if (d.data["name"] === "Invisible vote") {
-			opacity = 0;
+			opacity = 0; // hide invisible votes
 		} else if (d.parent.data["name"] === "outer layer") {
-			opacity = 0.5;
+			opacity = 0.5; // set outer layer opacity to 50%
 		} else {
-			opacity = 1;
+			opacity = 1; // set non-invisible votes opacity to 100%
 		}
 	} else if ((d.parent.data["name"] === "outer layer") || (d.data["name"] === "Invisible votes") || (d.parent.data["name"] === "Invisible votes")) {
-		opacity = 0;
+		// all other steps in scrollytelling
+		opacity = 0; // hide outer-most layer that encompasses all candidates, as well as invisible votes
 	} else if (d.parent.data["name"] === "candidates") {
-		opacity = 0.5;
+		// all other steps in scrollytelling
+		opacity = 0.5; // set candidate circles opacity to 50%
 	} else {
-		opacity = 1;
+		// all other steps in scrollytelling
+		opacity = 1; // set non-invisible votes opacity to 100%
 	}
 	return opacity;
-}
+};
 
+// determine stroke color for circles in chart, based on their value/ parent value
+const strokeColor = (d, step) => {
+	let strokeColor;
+	if (d.data["name"] === "Your vote") {
+		strokeColor = "#3d3d3d"; // dark outline for your vote
+	} else if (d.data["name"] === "Your candidate" && d.children && d.children.length > 50) {
+		// if your candidate wins
+		strokeColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)]; // stroke color based on your candidate color
+	} else {
+		strokeColor = "#6b7691"; // gray outline for all other instances
+	};
+	return strokeColor;
+};
+
+// determine stroke width for circles in chart, based on whether we want them to have an outline or not
+const strokeWidth = (d, step) => {
+	let strokeWidth;
+	if (step !== 0 && d.children && d.children.length > 50 || step < 2 && d.data["name"] === "Your vote") {
+		// if circle is for winning candidate, or circle is for your vote in the first two slides
+		strokeWidth = 1; // show outline
+	} else {
+		strokeWidth = 0; // otherwise, don't show outline
+	}
+	return strokeWidth;
+};
+
+// determine ID for circles in chart, based on value/parent value
+const circleId = (d, step) => {
+	let circleId;
+	if (d.data["name"] === "Your vote") {
+		circleId = "your-vote"; // "your vote" should have it's own ID so it can be accessed later
+	} else if (step !== 0 && d.children && d.children.length > 50) {
+		circleId = "winner"; // any winning candidate circles should have an ID so they can be accessed later
+	} else {
+		circleId = ""; // other circles don't really need IDs
+	}
+	return circleId;
+};
+
+// initialize chart for first scrollytelling step
 const makeChart = (stepData, step) => {
+	// set up d3 packing to given size parameters, sort circles so largest are at the center
 	const pack = data => d3.pack()
 		.size([width, height])
 		.padding(10)
 		(d3.hierarchy(data)
 			.sum(d => d.value)
 			.sort((a, b) => b.value - a.value));
-
 	const root = pack(stepData);
 
+	// add circles to svg
+	// color your vote and your candidate differently from other candidates, color based on scrollytelling step
 	svg.append("g")
 		.selectAll("circle")
 		.data(root.descendants().slice(1))
 		.join("circle")
 		.attr("class", "vote-circle")
-		.attr("fill", d => d.data["name"] === "Your vote" ? "#8865c1" : d.data["name"] === "Your candidate" || d.parent.data["name"] === "Your candidate" ? yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)] : step === 0 ? /*"#71C0BB"*/ "#71c0ad" : "#79919c"/*"#6b7691"*/)
+		.attr("fill", d => fillColor(d, step))
 		.attr("fill-opacity", d => fillOpacity(d, step))
-		.attr("stroke", d => d.data["name"] === "Your vote" ? "#000000" : d.data["name"] === "Your candidate" && d.children && d.children.length > 50 ? yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)] : "#6b7691")
-		.attr("stroke-opacity", 1)
-		.attr("stroke-width", d => step !== 0 && d.children && d.children.length > 50 || step < 2 && d.data["name"] === "Your vote" ? 1 : 0)
-		.attr("id", d => d.data["name"] === "Your vote" ? "your-vote" : step !== 0 && d.children && d.children.length > 50 ? "winner" : "")
+		.attr("stroke", d => strokeColor(d, step))
+		.attr("stroke-width", d => strokeWidth(d, step))
+		.attr("id", d => circleId(d, step))
 		.attr("r", d => d.r)
 		.attr("cx", d => d.x)
 		.attr("cy", d => d.y);
 };
 
+// update chart on subsequent scrollytelling steps
 const updateChart = (stepData, step) => {
-
+	// set up d3 packing to given size parameters, sort circles so largest are at the center
 	const pack = data => d3.pack()
 		.size([width, height])
 		.padding(10)
 		(d3.hierarchy(data)
 			.sum(d => d.value)
 			.sort((a, b) => b.value - a.value));
-
 	const root = pack(stepData);
 
+	console.log(root)
+
+	// change chart data based on current step
+	// style according to colors for current step
 	d3.selectAll(".vote-circle")
 		.data(root.descendants().slice(1))
 		.transition()
 		.delay((d, i) => i * 5)
 		.duration(500)
-		.attr("fill", d => d.data["name"] === "Your vote" ? "#8865c1" : d.data["name"] === "Your candidate" || d.parent.data["name"] === "Your candidate" ? yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)] : step === 0 ? "#71c0ad" : "#79919c")
+		.attr("fill", d => fillColor(d, step))
 		.attr("fill-opacity", d => fillOpacity(d, step))
-		.attr("stroke", d => d.data["name"] === "Your vote" ? "#3d3d3d" : d.data["name"] === "Your candidate" && d.children && d.children.length > 50 ? yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)] : "#6b7691")
-		.attr("stroke-opacity", 1)
-		.attr("stroke-width", d => step !== 0 && d.children && d.children.length > 50 || step < 2 && d.data["name"] === "Your vote" ? 1 : 0)
-		.attr("id", d => d.data["name"] === "Your vote" ? "your-vote" : step !== 0 && d.children && d.children.length > 50 ? "winner" : "")
+		.attr("stroke", d => strokeColor(d, step))
+		.attr("stroke-width", d => strokeWidth(d, step))
+		.attr("id", d => circleId(d, step))
 		.attr("r", d => d.r)
 		.attr("cx", d => d.x)
 		.attr("cy", d => d.y);
@@ -176,7 +249,7 @@ const addWinnerLabel = step => {
 			y: voteY,
 			dy: mobile ? -20 : -30,
 			dx: mobile ? -10 : -20,
-			color: step === 9 ? "#95b85a" : "#79919c"
+			color: step === 10 ? "#95b85a" : "#79919c"
 		}
 	]
 
@@ -194,7 +267,7 @@ const removeWinnerLabel = () => {
 };
 
 const addLegend = step => {
-	if (step === 2 || step === 4 || step === 6) {
+	if (step === 2 || step === 5 || step === 7) {
 		d3.select("#ranked-choice-legend")
 			.remove();
 
@@ -228,10 +301,10 @@ const addLegend = step => {
 				.attr("fill", "#3d3d3d")
 				.text("Other candidates");
 		}, 150)
-	} else if (step === 1) {
+	} else if (step === 2) {
 		d3.select("#ranked-choice-legend")
 			.remove();
-	} else if (step === 10) {
+	} else if (step === 11) {
 		d3.select("#ranked-choice-legend")
 			.remove();
 
@@ -253,6 +326,11 @@ const addLegend = step => {
 				.text("Other candidates");
 		}, 150)
 	}
+};
+
+const removeLegend = () => {
+	d3.select("#ranked-choice-legend")
+			.remove();
 };
 
 const voteList = (candidate, votes) => {
@@ -292,6 +370,8 @@ const annotationOffset = (x, y) => {
 };
 
 const addAnnotation = () => {
+	d3.select("#ranked-choice-annotation")
+		.remove();
 	const vote = d3.select("#your-vote");
 	const voteRadius = parseFloat(vote.attr("r"));
 	const voteX = parseFloat(vote.attr("cx"));
@@ -340,24 +420,25 @@ const scrollytelling = () => {
 		const handleStepEnter = response => {
 			const slideNum = response.index;
 			addLegend(slideNum);
-			if (slideNum !== 1 && slideNum !== 3 && slideNum !== 5) {
+			if (slideNum !== 0 && slideNum !== 1 && slideNum !== 3 && slideNum !== 4 && slideNum !== 6) {
 				const data = slideNum === 0 ? allData : stepData(slideNum);
 				updateChart(data, slideNum);
 			}
 
 			if (slideNum === 0) {
 				setTimeout(() => addAnnotation(), 600);
+				removeLegend();
 			}
 
 			if (slideNum === 2) {
 				removeAnnotation();
 			}
 
-			if (slideNum >= 8) {
+			if (slideNum >= 9) {
 				setTimeout(() => addWinnerLabel(slideNum), 500);
 			}
 
-			if (slideNum === 7) {
+			if (slideNum === 8) {
 				removeWinnerLabel();
 			}
 		};
@@ -366,7 +447,7 @@ const scrollytelling = () => {
 };
 
 function init() {
-	generateData();
+	setInitialData();
 	setTimeout(() => {
 		makeChart(allData, 0);
 		scrollytelling();
