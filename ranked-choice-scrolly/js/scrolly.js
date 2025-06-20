@@ -16,7 +16,6 @@ const svg = d3.select("#ranked-choice-chart")
 
 // colors and labels for "your candidate" circles in different slides as 
 const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#fe9643", "#e77688", "#e77688", "#95b85a", "#95b85a"];
-/*const yourCandidateColors = ["", "", "#FE7743", "#FE7743", "#e77691", "#e77691", "#9FC87E", "#9FC87E"];*/
 const yourCandidateLabel = ["", "", "first choice","first choice", "first choice", "second choice", "second choice", "third choice"]
 
 // votes for each candidate on each slide
@@ -84,8 +83,6 @@ const rounds = [
 
 // set data to 99 generic votes, 1 "your vote" and 9 invisible votes (these will be parent circles for candidates in the next slide)
 const setInitialData = () => {
-	//let children = Array(24).fill().map(item => ({ name: `Generic vote`, value: 1 }));
-	//children = children.concat(Array(1).fill().map(item => ({ name: `Your vote`, value: 1 })));
 	let children = Array(1).fill().map(item => ({ name: `Your vote`, value: 1 }));
 	children = children.concat(Array(99).fill().map(item => ({ name: `Generic vote`, value: 1 })));
 	let invisibleVotes = Array(9).fill().map(item => ({ name: "Invisible vote", value: 1 }));
@@ -102,10 +99,8 @@ const fillColor = (d, step) => {
 		// color circles for "your candidate" based on color assigned to current scrollytelling step
 		fillColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)];
 	} else if (step === 0) {
-		/*fillColor = "#71C0BB"*/
 		fillColor = "#71c0ad"; // color all other circles turquoise for first scrollyetlling step
 	} else {
-		/*fillColor = "#6b7691"*/
 		fillColor = "#79919c"; // color all other circles gray for remaining steps
 	}
 	return fillColor;
@@ -234,7 +229,7 @@ const updateChart = (stepData, step) => {
 		.data(root.descendants().slice(1))
 		.transition()
 		.delay((d, i) => i * 5)
-		.duration(500)
+		.duration(800)
 		.attr("fill", d => fillColor(d, step))
 		.attr("fill-opacity", d => fillOpacity(d, step))
 		.attr("stroke", d => strokeColor(d, step))
@@ -303,8 +298,8 @@ const addYourCandidateLegend = step => {
 
 		// add circle for "your candidate"
 		legend.append("circle")
-			.attr("cx", mobile ? 10 : 10)
-			.attr("cy", mobile ? -10 : -20)
+			.attr("cx", 10)
+			.attr("cy", mobile ? -10 : -15)
 			.attr("r", 8)
 			.attr("fill", yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)])
 			.attr("fill-opacity", 0.5)
@@ -313,16 +308,16 @@ const addYourCandidateLegend = step => {
 
 		// add label for "your candidate"
 		legend.append("text")
-			.attr("x", mobile ? 20 : 20)
-			.attr("y", mobile ? -5 : -15)
+			.attr("x", 20)
+			.attr("y", mobile ? -5 : -10)
 			.attr("fill", "#3d3d3d")
 			.style("font-size", "13px")
 			.text(`Your ${yourCandidateLabel[Math.min(step, yourCandidateLabel.length - 1)]}`);
 
 		// add circle for "other candidates"
 		legend.append("circle")
-			.attr("cx", mobile ? 160 : 160)
-			.attr("cy", mobile ? -10 : -20)
+			.attr("cx", 160)
+			.attr("cy", mobile ? -10 : -15)
 			.attr("r", 8)
 			.attr("fill", "#79919c")
 			.attr("fill-opacity", 0.5)
@@ -331,8 +326,8 @@ const addYourCandidateLegend = step => {
 
 		// add label for "other candidates"
 		legend.append("text")
-			.attr("x", mobile ? 170 : 170)
-			.attr("y", mobile ? -5 : -15)
+			.attr("x", 170)
+			.attr("y", mobile ? -5 : -10)
 			.attr("fill", "#3d3d3d")
 			.style("font-size", "13px")
 			.text("Other candidates");
@@ -354,7 +349,7 @@ const addOtherCandidatesLegend = step => {
 			// add "other candidates" circle
 			legend.append("circle")
 				.attr("cx", 10)
-				.attr("cy", -20)
+				.attr("cy", mobile ? -10 : -15)
 				.attr("r", 8)
 				.attr("fill", "#79919c")
 				.attr("fill-opacity", 0.5)
@@ -364,7 +359,7 @@ const addOtherCandidatesLegend = step => {
 			// add "other candidates" label
 			legend.append("text")
 				.attr("x", 20)
-				.attr("y", -15)
+				.attr("y", mobile ? -5 : -10)
 				.attr("fill", "#3d3d3d")
 				.style("font-size", "13px")
 				.text("Other candidates");
@@ -481,8 +476,6 @@ const scrollytelling = () => {
 			const slideNum = response.index; // current "slide"/ "step"
 
 			// at different steps, call different functions
-
-
 			if (slideNum !== 1 && slideNum !== 3 && slideNum !== 4 && slideNum !== 6) {
 				// for steps where the chart should change, generate new data and update chart
 				const data = slideNum === 0 ? allData : stepData(slideNum);
@@ -507,7 +500,7 @@ const scrollytelling = () => {
 
 			// add legend for charts on steps 2 through 10
 			if (slideNum === 2 || slideNum === 5 || slideNum === 7) {
-				addYourCandidateLegend();
+				addYourCandidateLegend(slideNum);
 			}
 
 			// remove "Winner!" label if scrolling backwards before step 9
@@ -517,12 +510,12 @@ const scrollytelling = () => {
 
 			// add "Winner!" annotation for steps 9 through 11
 			if (slideNum >= 9) {
-				setTimeout(() => addWinnerLabel(slideNum), 500);
+				setTimeout(() => addWinnerLabel(slideNum), 800);
 			}
 
 			// add legend for step 11
 			if (slideNum === 11) {
-				addOtherCandidatesLegend();
+				addOtherCandidatesLegend(slideNum);
 			}
 		};
 

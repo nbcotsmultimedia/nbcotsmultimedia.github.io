@@ -18,8 +18,8 @@
     color: #3d3d3d !important;
     /*background-color: rgba(107, 118, 145, 0.25);
     border: rgba(107, 118, 145, 0.5) 1px solid;*/
-    background-color: rgba(237, 232, 208, 0.5);
-    border: rgb(212, 208, 187) 1px solid;
+    background-color: #f0f0f0;
+    border: #d6d6d6 1px solid;
     border-radius: 5px;
 }
 
@@ -32,6 +32,7 @@
     width:700px;
     border-bottom:#ccc 1.5px dotted;
     margin: auto;
+    margin-bottom: 15px;
 }
 
 .tick {
@@ -110,9 +111,8 @@
 
 
     .ranked-choice-caption {
+        background-color: rgba(240, 240, 240, 0.9);
         max-width: 300px;
-        background-color: rgba(237, 232, 208, 0.9);
-        border: rgb(212, 208, 187) 1px solid;
     }
 
     #ranked-choice-chart {

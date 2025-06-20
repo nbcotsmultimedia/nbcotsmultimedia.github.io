@@ -1,10 +1,6 @@
 
-body { 
-	background-color: rgba(237, 232, 208, 0.35)!important;
-	/*background-color: #FFF!important;*/
-}
 
-.headline {
+/*.headline {
 	font-family: 'ArtHouseBold', sans-serif;
 	font-size: 24px;
 	color: #191919;
@@ -32,7 +28,7 @@ p {
 	color: #666;
 	margin-top: 10px;
 	line-height: 1.5em;
-}
+}*/
 
 
 @media (max-width: 900px ) {
