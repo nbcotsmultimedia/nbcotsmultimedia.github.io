@@ -15,8 +15,8 @@ const svg = d3.select("#ranked-choice-chart")
 
 
 // colors and labels for "your candidate" circles in different slides as 
-const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#fe9643", "#e77688", "#e77688", "#95b85a", "#95b85a"];
-const yourCandidateLabel = ["", "", "first choice","first choice", "first choice", "second choice", "second choice", "third choice"]
+const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#fe9643", "#e77688", "#e77688", "#e77688", "#95b85a", "#95b85a", "#95b85a", "#95b85a"];
+const yourCandidateLabel = ["", "", "first choice","first choice", "first choice", "second choice", "second choice", "second choice", "third choice", "third choice", "third choice", "third choice", "third choice"];
 
 // votes for each candidate on each slide
 const rounds = [
@@ -27,57 +27,79 @@ const rounds = [
 		"Candidate 1": 44,
 		"Candidate 2": 22,
 		"Candidate 3": 10,
-		"Candidate 4": 8,
-		"Candidate 5": 5,
-		"Candidate 6": 4,
+		"Candidate 4": 7,
+		"Candidate 5": 6,
+		"Candidate 6": 5,
 		"Candidate 7": 3,
-		"Candidate 8": 2,
+		"Candidate 8": 1,
 	},
 	"",
-	"",
-	{
-		"Your candidate": 4,
-		"Candidate 1": 45,
-		"Candidate 2": 23,
-		"Candidate 3": 12,
-		"Candidate 4": 11,
-		"Candidate 5": 5,
-		"Invisible votes": 2 
+	{	
+		"Your candidate": 2,
+		"Candidate 1": 44,
+		"Candidate 2": 22,
+		"Candidate 3": 10,
+		"Candidate 4": 7,
+		"Candidate 5": 6,
+		"Candidate 6": 5,
+		"Candidate 7": 4,
+		"Invisible votes": 1
 		// need to add "invisible votes" that don't display in the chart, since there are parent circles for each candidate, but some candidates are eliminated
 	},
-	"",
 	{
-		"Your candidate": 24,
-		"Candidate 1": 46,
-		"Candidate 3": 13,
-		"Candidate 4": 12,
-		"Candidate 5": 5,
+		"Your candidate": 7,
+		"Candidate 1": 44,
+		"Candidate 2": 22,
+		"Candidate 3": 10,
+		"Candidate 4": 8,
+		"Candidate 6": 5,
+		"Candidate 7": 4,
+		"Invisible votes": 2
+	},
+	{
+		"Your candidate": 8,
+		"Candidate 1": 44,
+		"Candidate 2": 22,
+		"Candidate 3": 10,
+		"Candidate 4": 9,
+		"Candidate 6": 7,
 		"Invisible votes": 3
 	},
 	{
-		"Your candidate": 25,
-		"Candidate 1": 48,
-		"Candidate 3": 13,
-		"Candidate 4": 14,
+		"Your candidate": 8,
+		"Candidate 1": 47,
+		"Candidate 2": 26,
+		"Candidate 3": 10,
+		"Candidate 4": 9,
 		"Invisible votes": 4
+	},
+	{
+		"Your candidate": 29,
+		"Candidate 1": 51,
+		"Candidate 3": 11,
+		"Candidate 4": 9,
+		"Invisible votes": 5
 	},
 	{
 		"Your candidate": 29,
 		"Candidate 1": 53,
 		"Candidate 4": 18,
-		"Invisible votes": 5
+		"Invisible votes": 7
 	},
 	{
-		"Your candidate": 53,
-		"Candidate 1": 29,
-		"Candidate 4": 18,
-		"Invisible votes": 5
+		"Your candidate": 40,
+		"Candidate 1": 60,
+		"Invisible votes": 7
 	},
 	{
-		"Candidate 1": 29,
-		"Candidate 2": 53,
-		"Candidate 4": 18,
-		"Invisible votes": 5
+		"Your candidate": 60,
+		"Candidate 1": 40,
+		"Invisible votes": 7
+	},
+	{
+		"Candidate 1": 40,
+		"Candidate 2": 60,
+		"Invisible votes": 7
 	},
 ];
 
@@ -97,7 +119,7 @@ const fillColor = (d, step) => {
 		fillColor = "#8865c1"; // make "your vote" a different color
 	} else if (d.data["name"] === "Your candidate" || d.parent.data["name"] === "Your candidate") {
 		// color circles for "your candidate" based on color assigned to current scrollytelling step
-		fillColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)];
+		fillColor = yourCandidateColors[step];
 	} else if (step === 0) {
 		fillColor = "#71c0ad"; // color all other circles turquoise for first scrollyetlling step
 	} else {
@@ -137,7 +159,7 @@ const strokeColor = (d, step) => {
 	if (d.data["name"] === "Your vote") {
 		strokeColor = "#3d3d3d"; // dark outline for your vote
 	} else if (d.data["name"] === "Your candidate") {
-		strokeColor = yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)]; // stroke color based on circle color for your candidate
+		strokeColor = yourCandidateColors[step]; // stroke color based on circle color for your candidate
 	} else if (step === 0) {
 		strokeColor = "#71c0ad"; // turquoise outline for first slide
 	} else {
@@ -267,7 +289,7 @@ const addWinnerLabel = step => {
 			y: winnerY,
 			dy: mobile ? -20 : -30,
 			dx: mobile ? -10 : -20,
-			color: step === 10 ? "#95b85a" : "#79919c"
+			color: step === 11 ? "#95b85a" : "#79919c"
 		}
 	]
 
@@ -301,9 +323,9 @@ const addYourCandidateLegend = step => {
 			.attr("cx", 10)
 			.attr("cy", mobile ? -10 : -15)
 			.attr("r", 8)
-			.attr("fill", yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)])
+			.attr("fill", yourCandidateColors[step])
 			.attr("fill-opacity", 0.5)
-			.attr("stroke", yourCandidateColors[Math.min(step, yourCandidateColors.length - 1)])
+			.attr("stroke", yourCandidateColors[step])
 			.attr("stroke-width", 0.75);
 
 		// add label for "your candidate"
@@ -334,7 +356,7 @@ const addYourCandidateLegend = step => {
 	}, 150)
 };
 
-// add legend with only "other candidates" (relevant for step 11)
+// add legend with only "other candidates" (relevant for step 12)
 const addOtherCandidatesLegend = step => {
 	// for last slide, we just want "other candidates" in the legend
 		// remove legend if there is one
@@ -476,7 +498,9 @@ const scrollytelling = () => {
 			const slideNum = response.index; // current "slide"/ "step"
 
 			// at different steps, call different functions
-			if (slideNum !== 1 && slideNum !== 3 && slideNum !== 4 && slideNum !== 6) {
+			if (slideNum !== 1 && slideNum !== 3) {
+				console.log("updating")
+				console.log(slideNum)
 				// for steps where the chart should change, generate new data and update chart
 				const data = slideNum === 0 ? allData : stepData(slideNum);
 				updateChart(data, slideNum);
@@ -499,7 +523,7 @@ const scrollytelling = () => {
 			}
 
 			// add legend for charts on steps 2 through 10
-			if (slideNum === 2 || slideNum === 5 || slideNum === 7) {
+			if (slideNum === 2 || slideNum === 5 || slideNum === 8) {
 				addYourCandidateLegend(slideNum);
 			}
 
@@ -508,13 +532,13 @@ const scrollytelling = () => {
 				removeWinnerLabel();
 			}
 
-			// add "Winner!" annotation for steps 9 through 11
-			if (slideNum >= 9) {
+			// add "Winner!" annotation for steps 10 through 12
+			if (slideNum >= 10) {
 				setTimeout(() => addWinnerLabel(slideNum), 800);
 			}
 
-			// add legend for step 11
-			if (slideNum === 11) {
+			// add legend for step 12
+			if (slideNum === 12) {
 				addOtherCandidatesLegend(slideNum);
 			}
 		};
