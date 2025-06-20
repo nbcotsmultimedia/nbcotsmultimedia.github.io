@@ -352,7 +352,7 @@ const addYourCandidateLegend = step => {
 			.attr("y", mobile ? -5 : -10)
 			.attr("fill", "#3d3d3d")
 			.style("font-size", "13px")
-			.text("Other candidates");
+			.text("Otros candidatos");
 	}, 150)
 };
 
@@ -384,7 +384,7 @@ const addOtherCandidatesLegend = step => {
 				.attr("y", mobile ? -5 : -10)
 				.attr("fill", "#3d3d3d")
 				.style("font-size", "13px")
-				.text("Other candidates");
+				.text("Otros candidatos");
 		}, 150)
 };
 
