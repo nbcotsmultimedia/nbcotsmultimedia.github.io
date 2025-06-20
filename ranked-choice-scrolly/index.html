@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/svg+xml" href="images/calendar.jpeg" />
+  <title>Ranked-Choice Explainer</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- NBC CSS -->
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet'
+    type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="css/nbcotsbase.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+
+  </style>
+
+</head>
+
+<body>
+  <div id="ranked-choice-container">
+    <div id="ranked-choice-slide-container">
+      <div class="ranked-choice-slide" id="ranked-choice-slide-0">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-0">
+          Consider this example with 100 votes. In ranked-choice voting, if a candidate receives at
+          least 50% of first-choice votes, they automatically win the race.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-1">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-1">
+          But in the likely scenario that none of the candidates receive at least 50% of first-choice votes, low-ranking
+          candidates are eliminated and their votes are
+          redistributed.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-2">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-2">
+          Once all votes are cast, they are distributed between the nine candidates.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-3">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-3">
+          At first, your vote goes to your first-choice candidate.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-4">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-4">
+          If your first-choice candidate has enough votes, they move on to the next round.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-5">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-5">
+          But if your candidate has the fewest votes in the next round, they are eliminated. Then your vote goes to your second-choice candidate.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-6">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-6">
+          As candidates are eliminated, their votes are redistributed to voters' next-highest-ranked choice.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-7">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-7">
+          Your vote could stay with your second-choice candidate.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-8">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-8">
+          But if your second choice is also eliminated, your vote goes to
+          your third choice, and so on.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-9">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-9">
+          If your third-choice candidate never gets eliminated, your vote ultimately counts toward them.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-10">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-10">
+          But that doesn't guarantee that they will win the race. Votes are redistributed until only two candidates remain, and of those two candidates, the candidate with the most votes wins.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-11">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-11">
+          Of course, there is always the scenario where your candidate does win the race.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-12">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-12">
+          And a scenario where every candidate you ranked is eliminated, meaning your vote ultimately does not count
+          toward the election.
+        </p>
+      </div>
+    </div>
+    <div id="ranked-choice-chart-container">
+      <svg id="ranked-choice-chart">
+      </svg>
+    </div>
+  </div>
+
+
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://d3js.org/d3.v6.js"></script>
+  <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+    integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/scrollama"></script>
+  <script type="text/javascript"
+    src="https://media.nbcnewyork.com/assets/editorial/national/common/js/miso.ds.deps.min.0.4.1.js"></script>
+  <script src="js/scrolly.js"></script>
+  <!--<script src="js/test.js"></script>-->
+
+</body>
+
+</html>

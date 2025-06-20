@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" type="image/svg+xml" href="images/calendar.jpeg" />
+  <title>Ranked-Choice Explainer</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- NBC CSS -->
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100' rel='stylesheet' type='text/css'>
+  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet'
+    type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="css/nbcotsbase.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+
+  </style>
+
+</head>
+
+<body>
+  <div id="ranked-choice-container">
+    <div id="ranked-choice-slide-container">
+      <div class="ranked-choice-slide" id="ranked-choice-slide-0">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-0">
+          Considere este ejemplo con 100 votos. En la votación por orden de preferencia, si algún candidato recibe al menos el 50% de los votos de primera opción, gana automáticamente la contienda.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-1">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-1">
+          Pero en el probable escenario de que ninguno de los candidatos reciba al menos el 50% de los votos de primera opción, los candidatos con menor puntuación son eliminados y sus votos se redistribuyen.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-2">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-2">
+          Una vez que todos los votos sean emitidos, estos se distribuirán entre los nueve candidatos.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-3">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-3">
+          Inicialmente, tu voto se otorga al candidato de primera opción.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-4">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-4">
+          Si tu candidato de primera opción obtiene suficientes votos, pasará a la siguiente ronda.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-5">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-5">
+          Pero si tu candidato obtiene la menor cantidad de votos en la siguiente ronda, queda eliminado.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-6">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-6">
+          A medida que los candidatos son eliminados, sus votos se redistribuyen a la siguiente opción de mayor puntuación de los votantes.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-7">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-7">
+          Tu voto podría quedar con tu candidato de segunda opción.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-8">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-8">
+          Pero si tu segunda opción también queda eliminada, tu voto pasa a tu tercera opción, y así sucesivamente.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-9">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-9">
+          Digamos que tu candidato de tercera opción nunca es eliminado, por lo tanto tu voto finalmente cuenta para él.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-10">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-10">
+          Eso no garantiza que gane la contienda. Los votos se redistribuyen hasta que solo queden dos candidatos, y de esos dos, gana el candidato que obtenga más votos.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-11">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-11">
+          Por supuesto, siempre existe la posibilidad de que tu candidato gane la contienda.
+        </p>
+      </div>
+      <div class="ranked-choice-slide" id="ranked-choice-slide-12">
+        <p class="ranked-choice-caption" id="ranked-choice-caption-12">
+          Y también existe la posibilidad de que todos los candidatos que seleccionaste sean eliminados, lo que significa que tu voto finalmente no cuenta para la elección.
+        </p>
+      </div>
+    </div>
+    <div id="ranked-choice-chart-container">
+      <svg id="ranked-choice-chart">
+      </svg>
+    </div>
+  </div>
+
+
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="https://d3js.org/d3.v6.js"></script>
+  <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+    integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/tether.min.js"></script>
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/scrollama"></script>
+  <script type="text/javascript"
+    src="https://media.nbcnewyork.com/assets/editorial/national/common/js/miso.ds.deps.min.0.4.1.js"></script>
+  <script src="js/scrolly.js"></script>
+  <!--<script src="js/test.js"></script>-->
+
+</body>
+
+</html>
