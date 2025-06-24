@@ -75,7 +75,6 @@
     position: absolute;
     height: 600px !important;
     overflow: scroll;
-    width: 100vw;
 }
 
 #ranked-choice-chart-container {

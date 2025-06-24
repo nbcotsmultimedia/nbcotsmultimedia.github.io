@@ -1,28 +1,21 @@
-let mobile = window.innerWidth <= 768, // is graphic displayed on a mobile device?
-	chartWidth = mobile ? window.innerWidth : Math.min((window.innerWidth / 2), 600); // chart should be full screen width on mobile, half screen (not over 600px) on desktop
-
-const margin = { top: 40, right: 0, bottom: 10, left: 20 }, // chart margins (need extra left margin bc of invisible circles in first slide)
-	width = chartWidth - margin.left - margin.right, // svg width
-	height = chartWidth - margin.top - margin.bottom; // svg height
-
-// define svg to hold chart, set width, height, margins
-const svg = d3.select("#ranked-choice-chart")
-	.append("svg")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-	.attr("transform", `translate(${margin.left}, ${margin.top})`);
+let outerContainer,
+	mobile = window.innerWidth <= 600, // is graphic displayed on a mobile device?
+	chartWidth = 600,
+	svg,
+	margin,
+	width,
+	height; // chart should be full screen width on mobile, half screen (not over 600px) on desktop
 
 
 // colors and labels for "your candidate" circles in different slides as 
 const yourCandidateColors = ["", "", "#fe9643", "#fe9643", "#fe9643", "#e77688", "#e77688", "#e77688", "#95b85a", "#95b85a", "#95b85a", "#95b85a"];
-const yourCandidateLabel = ["", "", "first choice","first choice", "first choice", "second choice", "second choice", "second choice", "third choice", "third choice", "third choice", "third choice", "third choice"];
+const yourCandidateLabel = ["", "", "first choice", "first choice", "first choice", "second choice", "second choice", "second choice", "third choice", "third choice", "third choice", "third choice", "third choice"];
 
 // votes for each candidate on each slide
 const rounds = [
 	"",
 	"",
-	{	
+	{
 		"Your candidate": 2,
 		"Candidate 1": 44,
 		"Candidate 2": 22,
@@ -34,7 +27,7 @@ const rounds = [
 		"Candidate 8": 1,
 	},
 	"",
-	{	
+	{
 		"Your candidate": 2,
 		"Candidate 1": 44,
 		"Candidate 2": 22,
@@ -208,6 +201,7 @@ const sortCircles = (a, b) => {
 
 // initialize chart for first scrollytelling step
 const makeChart = (stepData, step) => {
+	console.log("margin, width, height", margin, width, height)
 	// set up d3 packing to given size parameters, sort circles so largest are at the center
 	const pack = data => d3.pack()
 		.size([width, height])
@@ -272,7 +266,7 @@ const removeWinnerLabel = () => {
 const addWinnerLabel = step => {
 	// label moves around between scrollytelling steps, so best to just remove/re-add
 	removeWinnerLabel();
-	
+
 	// get coordinates/size of winner circle, so label can be placed relative to that circle
 	const winner = d3.select("#winner");
 	const winnerRadius = winner.attr("r");
@@ -304,7 +298,7 @@ const addWinnerLabel = step => {
 // remove legend
 const removeLegend = () => {
 	d3.select("#ranked-choice-legend")
-			.remove();
+		.remove();
 };
 
 // add legend that includes "your candidate" (relevant for slides 2 through 10)
@@ -359,33 +353,33 @@ const addYourCandidateLegend = step => {
 // add legend with only "other candidates" (relevant for step 12)
 const addOtherCandidatesLegend = step => {
 	// for last slide, we just want "other candidates" in the legend
-		// remove legend if there is one
-		removeLegend();
+	// remove legend if there is one
+	removeLegend();
 
-		// wait for step to load
-		setTimeout(() => {
-			// add legend container
-			const legend = svg.append("g")
-				.attr("id", "ranked-choice-legend");
+	// wait for step to load
+	setTimeout(() => {
+		// add legend container
+		const legend = svg.append("g")
+			.attr("id", "ranked-choice-legend");
 
-			// add "other candidates" circle
-			legend.append("circle")
-				.attr("cx", 10)
-				.attr("cy", mobile ? -10 : -15)
-				.attr("r", 8)
-				.attr("fill", "#79919c")
-				.attr("fill-opacity", 0.5)
-				.attr("stroke", "#79919c")
-				.attr("stroke-width", 0.75);
+		// add "other candidates" circle
+		legend.append("circle")
+			.attr("cx", 10)
+			.attr("cy", mobile ? -10 : -15)
+			.attr("r", 8)
+			.attr("fill", "#79919c")
+			.attr("fill-opacity", 0.5)
+			.attr("stroke", "#79919c")
+			.attr("stroke-width", 0.75);
 
-			// add "other candidates" label
-			legend.append("text")
-				.attr("x", 20)
-				.attr("y", mobile ? -5 : -10)
-				.attr("fill", "#3d3d3d")
-				.style("font-size", "13px")
-				.text("Other candidates");
-		}, 150)
+		// add "other candidates" label
+		legend.append("text")
+			.attr("x", 20)
+			.attr("y", mobile ? -5 : -10)
+			.attr("fill", "#3d3d3d")
+			.style("font-size", "13px")
+			.text("Other candidates");
+	}, 150)
 };
 
 // generate a list of votes for a given candidate
@@ -421,7 +415,7 @@ const stepData = step => {
 
 // coordinates for "your vote" annotation
 const annotationCoords = (x, y, radius) => {
-	let coords = [x - (radius*2/3), y - (radius*2/3)];
+	let coords = [x - (radius * 2 / 3), y - (radius * 2 / 3)];
 	return coords;
 };
 
@@ -485,7 +479,7 @@ const addYourVoteAnnotation = () => {
 // set up scrollytelling  
 const scrollytelling = () => {
 	// wait to make sure everything has loaded
-	setTimeout(() => { 
+	setTimeout(() => {
 		// scrollama scroller
 		const scroller = scrollama();
 		scroller.setup({
@@ -499,8 +493,6 @@ const scrollytelling = () => {
 
 			// at different steps, call different functions
 			if (slideNum !== 1 && slideNum !== 3) {
-				console.log("updating")
-				console.log(slideNum)
 				// for steps where the chart should change, generate new data and update chart
 				const data = slideNum === 0 ? allData : stepData(slideNum);
 				updateChart(data, slideNum);
@@ -552,13 +544,36 @@ const scrollytelling = () => {
 function init() {
 	// generate data for first chart
 	setInitialData();
+	setTimeout(() => {
+		// set chart specifications based on parent div in wordpress
+		outerContainer = d3.select("#outer-container");
+		const outerContainerWidth = outerContainer !== null ? parseFloat(outerContainer.style("width")) : window.innerWidth;
+		chartWidth = mobile ? window.innerWidth : Math.min((outerContainerWidth / 2), 600);
+		// define svg to hold chart, set width, height, margins
+		margin = { top: 40, right: 0, bottom: 10, left: 20 }, // chart margins (need extra left margin bc of invisible circles in first slide)
+		width = chartWidth - margin.left - margin.right, // svg width
+		height = chartWidth - margin.top - margin.bottom; // svg height
+		svg = d3.select("#ranked-choice-chart")
+			.append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", `translate(${margin.left}, ${margin.top})`);
+		// set width of slide container based on parent div in wordpress
+		d3.selectAll(".ranked-choice-slide")
+			.attr("style", `margin-right: ${outerContainerWidth / 2}px; width: ${outerContainerWidth / 2}px`);
+		d3.select("#ranked-choice-slide-container")
+			.attr("style", `width: ${outerContainerWidth}px`);
+		d3.select("#ranked-choice-chart-container")
+			.attr("style", `width: ${outerContainerWidth/ 2}px`);
+	}, 200);
 	// wait for data to load
 	setTimeout(() => {
 		// create chart
 		makeChart(allData, 0);
 		// initailize scrollytelling
 		scrollytelling();
-	}, 200);
+	}, 350);
 };
 
 // when document loads, initialize page
