@@ -547,7 +547,7 @@ function init() {
 	setTimeout(() => {
 		// set chart specifications based on parent div in wordpress
 		outerContainer = d3.select("#outer-container");
-		const outerContainerWidth = outerContainer !== null ? parseFloat(outerContainer.style("width")) : window.innerWidth;
+		const outerContainerWidth = outerContainer.style("width") !== null ? parseFloat(outerContainer.style("width")) : window.innerWidth;
 		chartWidth = mobile ? window.innerWidth : Math.min((outerContainerWidth / 2), 600);
 		// define svg to hold chart, set width, height, margins
 		margin = { top: 40, right: 0, bottom: 10, left: 20 }, // chart margins (need extra left margin bc of invisible circles in first slide)
