@@ -355,9 +355,9 @@ $("#download").on('click', function () {
 		canvasHeight: 846
 	}
 
-	htmlToImage.toPng(document.getElementById('capture'), options)
+	htmlToImage.toJpeg(document.getElementById('capture'), options)
 		.then(function (dataUrl) {
-			download(dataUrl, 'image.png');
+			download(dataUrl, 'image.jpg');
 			d3.select("#capture").style("overflow", "unset")
 		});
 });
