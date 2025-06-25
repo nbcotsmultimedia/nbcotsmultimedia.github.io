@@ -210,7 +210,14 @@
 
         try {
           // Load all assets before proceeding
-          const stripes = await loadImage(lang === "en" ? 'images/stripes.png' : 'images/stripes-red.png');
+          const stripeMap = {
+              en: 'images/stripes.png',
+              esr: 'images/stripes-red.png',
+              esb: 'images/stripes.png'
+          };
+          const stripePath = stripeMap[lang]
+          const stripes = await loadImage(stripePath);
+          //const stripes = await loadImage(lang === "en" ? 'images/stripes.png' : 'images/stripes-red.png');
           const logo = await loadImage(lang === "en" ? 'images/nbclogo.png' : 'images/tlmdlogo.png');
           const brule = await loadImage(lang === "en" ? 'images/bluerule.png' : 'images/redrule.png');
           
