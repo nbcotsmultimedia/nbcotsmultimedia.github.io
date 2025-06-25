@@ -56,7 +56,8 @@
     <p class="notes">This will determine which brand style and logo to add</p>
     <div class="controls">
       <label><input type="radio" name="language" value="en" checked> English</label>
-      <label><input type="radio" name="language" value="es"> Español</label>
+      <label><input type="radio" name="language" value="esr"> Español (roja)</label>
+      <label><input type="radio" name="language" value="esb"> Español (azul)</label>
     </div>
   <hr/>
 
@@ -255,7 +256,7 @@
               const blockHeight = size.height / 3;
               const blockBottom = size.height - 75;
               const blockTop = blockBottom - blockHeight;
-              if (lang == "en") {
+              if (lang == "en" || lang == "esb") {
                 ctx.fillStyle = 'rgba(2,20,72,0.8)';
               } else {
                 ctx.fillStyle = 'rgba(128,2,1,0.8)';
