@@ -1,15 +1,7 @@
 let alertNums = [100, 107, 109, 118, 119, 121, 123, 126, 128, 129, 130, 132, 139, 140, 142, 148, 149, 152, 154, 163, 164, 166, 269, 272],
 	alertShapes = [],
 	shapeOnMap = "",
-	idx = 0,
-	shapeStyle = {
-		color: "#FF4433",
-		weight: 1,
-		opacity: 1,
-		fill: true,
-		fillCOlor: "#FF4433",
-		fillOpacity: 0.5
-	};
+	idx = 0;
 const map = L.map('map', { preferCanvas: true }).setView([30.007141806017398, -99.37252781422389], 9);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '©OpenStreetMap, ©CartoDB'
@@ -25,7 +17,7 @@ function init() {
 };
 
 const loadData = () => {
-	for(let i = 0; i < alertNums.length; i++) {
+	for (let i = 0; i < alertNums.length; i++) {
 		fetch(`data/alert_${alertNums[i]}.geojson`).then(response => {
 			return response.json()
 		}).then(data => {
@@ -35,7 +27,7 @@ const loadData = () => {
 };
 
 const updateCounter = () => {
-	let counterHTML = `${idx+1} of ${alertNums.length}`;
+	let counterHTML = `${idx + 1} of ${alertNums.length}`;
 	$("#counter")
 		.html(counterHTML);
 };
@@ -52,9 +44,28 @@ const addShapeToMap = () => {
 	shapeOnMap != "" && map.removeLayer(shapeOnMap);
 	shapeOnMap = new L.LayerGroup();
 	shapeOnMap.addTo(map);
-	L.geoJSON(alertShapes[idx], {
-		style: shapeStyle
-	}).addTo(shapeOnMap);
+	/*L.geoJSON(alertShapes[idx], {
+		color: "#FF4433",
+		weight: 1,
+		opacity: 1,
+		fill: true,
+		fillColor: "#FF4433",
+		fillOpacity: 0.5,
+		className: "alert-shape"
+	}).addTo(shapeOnMap);*/
+	const features = alertShapes[idx]["features"];
+	for (let i = 0; i < features.length; i++) {
+		const feature = features[i];
+		const coords = feature["geometry"]["coordinates"][0][0].map(coord => [coord[1], coord[0]])
+		L.polygon(coords, {
+			color: "#FF4433",
+			weight: 1,
+			opacity: 1,
+			fill: true,
+			fillColor: "#FF4433",
+			fillOpacity: 0.5
+		}).addTo(shapeOnMap);
+	}
 };
 
 const decIdx = () => {
@@ -63,15 +74,14 @@ const decIdx = () => {
 		updateCounter();
 		updateMessage();
 		addShapeToMap();
-	} 
-	if (idx == 0) {
+	}
+	if (idx === 0) {
 		$("#prev-btn")
-			.css("background-color", "#fafafa")
-			.css("color", "#565656");
-	} else {
-		$("#prev-btn")
-			.css("background-color", "#3c3c3c")
-			.css("color", "#ededed");
+			.addClass("disabled")
+	}
+	if (idx === alertShapes.length - 2) {
+		$("#next-btn")
+			.removeClass("disabled")
 	}
 };
 
@@ -82,6 +92,14 @@ const incIdx = () => {
 		updateMessage();
 		addShapeToMap();
 	};
+	if (idx === 1) {
+		$("#prev-btn")
+			.removeClass("disabled");
+	}
+	if (idx === alertShapes.length - 1) {
+		$("#next-btn")
+			.addClass("disabled");
+	}
 };
 
 $(document).ready(function () {

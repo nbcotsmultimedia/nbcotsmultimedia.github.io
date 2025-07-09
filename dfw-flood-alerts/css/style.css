@@ -11,12 +11,12 @@
 
 #alert-desc {
     padding: 10px;
+    height: 70px;
 }
 
-#prev-btn {
-    color: #565656;
-    width: 46vw;
-    background-color: #fafafa;
+.alert-shape {
+    background-color: #FF4433;
+    fill: #FF4433;
 }
 
 .btn-container {
@@ -25,14 +25,27 @@
     padding: 10px;
 }
 
+.btn.disabled {
+    color: #565656;
+    background-color: #fafafa;
+    cursor: default;
+}
+
 .btn {
     color: #3c3c3c;
     width: 46vw;
     background-color: #ededed;
+    cursor: pointer;
 }
 
 .btn:active,
 .btn:focus,
 .btn:hover {
-    outline: none;
+    outline: none !important;
+}
+
+@media (max-width: 500px ) {
+    #alert-desc {
+        height: 100px !important;
+    }
 }
