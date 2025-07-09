@@ -26,7 +26,7 @@ function init() {
 
 const loadData = () => {
 	for(let i = 0; i < alertNums.length; i++) {
-		fetch(`dfw-flood-alerts/data/alert_${alertNums[i]}.geojson`).then(response => {
+		fetch(`data/alert_${alertNums[i]}.geojson`).then(response => {
 			return response.json()
 		}).then(data => {
 			alertShapes.push(data);
@@ -68,6 +68,10 @@ const decIdx = () => {
 		$("#prev-btn")
 			.css("background-color", "#fafafa")
 			.css("color", "#565656");
+	} else {
+		$("#prev-btn")
+			.css("background-color", "#3c3c3c")
+			.css("color", "#ededed");
 	}
 };
 
