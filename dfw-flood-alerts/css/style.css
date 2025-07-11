@@ -10,7 +10,7 @@
 }
 
 #alert-desc {
-    padding: 10px;
+    padding: 12px;
     height: 70px;
 }
 
@@ -27,7 +27,8 @@
 .btn-container {
     display: flex;
     justify-content: space-evenly;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px;
 }
 
 .btn.disabled {
@@ -38,7 +39,7 @@
 
 .btn {
     color: #3c3c3c;
-    width: 46vw;
+    width: 50%;
     background-color: #ededed;
     cursor: pointer;
 }
@@ -58,14 +59,15 @@
 @media (min-width: 800px) {
     #alert-desc {
         text-align: center;
+        height: 50px !important;
     }
-    
+
     .btn-container {
         justify-content: center;
         gap: 10px;
     }
 
     .btn {
-        width: 400px;
+        width: 390px;
     }
 }
