@@ -14,9 +14,14 @@
     height: 70px;
 }
 
-.alert-shape {
-    background-color: #FF4433;
-    fill: #FF4433;
+.hide {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.show {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
 }
 
 .btn-container {
@@ -47,5 +52,20 @@
 @media (max-width: 500px ) {
     #alert-desc {
         height: 100px !important;
+    }
+}
+
+@media (min-width: 800px) {
+    #alert-desc {
+        text-align: center;
+    }
+    
+    .btn-container {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 400px;
     }
 }

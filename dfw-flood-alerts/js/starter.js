@@ -36,36 +36,38 @@ const updateMessage = () => {
 	let alertInfo = alertShapes[idx]["features"][0]["properties"];
 	let alertHTML = alertInfo["headline"];
 
+
 	$("#alert-desc")
-		.html(alertHTML);
+		.removeClass("show")
+		.addClass("hide")
+	setTimeout(() => {
+		$("#alert-desc")
+			.html(alertHTML);
+		$("#alert-desc")
+			.removeClass("hide")
+			.addClass("show");
+	}, 500);
 };
 
 const addShapeToMap = () => {
 	shapeOnMap != "" && map.removeLayer(shapeOnMap);
-	shapeOnMap = new L.LayerGroup();
-	shapeOnMap.addTo(map);
-	/*L.geoJSON(alertShapes[idx], {
-		color: "#FF4433",
-		weight: 1,
-		opacity: 1,
-		fill: true,
-		fillColor: "#FF4433",
-		fillOpacity: 0.5,
-		className: "alert-shape"
-	}).addTo(shapeOnMap);*/
-	const features = alertShapes[idx]["features"];
-	for (let i = 0; i < features.length; i++) {
-		const feature = features[i];
-		const coords = feature["geometry"]["coordinates"][0][0].map(coord => [coord[1], coord[0]])
-		L.polygon(coords, {
-			color: "#FF4433",
-			weight: 1,
-			opacity: 1,
-			fill: true,
-			fillColor: "#FF4433",
-			fillOpacity: 0.5
-		}).addTo(shapeOnMap);
-	}
+	setTimeout(() => {
+		shapeOnMap = new L.LayerGroup();
+		shapeOnMap.addTo(map);
+		const features = alertShapes[idx]["features"];
+		for (let i = 0; i < features.length; i++) {
+			const feature = features[i];
+			const coords = feature["geometry"]["coordinates"][0][0].map(coord => [coord[1], coord[0]])
+			L.polygon(coords, {
+				color: "#FF4433",
+				weight: 1,
+				opacity: 1,
+				fill: true,
+				fillColor: "#FF4433",
+				fillOpacity: 0.5
+			}).addTo(shapeOnMap);
+		}
+	}, 300);
 };
 
 const decIdx = () => {
