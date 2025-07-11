@@ -14,6 +14,7 @@ function init() {
 		updateMessage();
 		addShapeToMap();
 	}, 300);
+	var pymChild = new pym.Child({ polling: 500 });
 };
 
 const loadData = () => {
