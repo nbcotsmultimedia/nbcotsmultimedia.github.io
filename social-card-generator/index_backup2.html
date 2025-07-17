@@ -49,56 +49,12 @@
   </div>
   <hr/>
 
-  <!--<h3>Step 3: Choose language</h3>
+  <h3>Step 3: Choose language</h3>
     <p class="notes">This will determine which brand style and logo to add</p>
     <div class="controls">
       <label><input type="radio" name="language" value="en" checked> English</label>
       <label><input type="radio" name="language" value="es"> Español</label>
     </div>
-  <hr/>-->
-  <h3>Step 3: Choose your station</h3>
-  <p class="notes">Select a station or choose a generic logo to display in the corner</p>
-  <select name="stationlogo" id="stationlogo">
-    <option value="nbc" selected>Generic NBC</option>
-    <option value="tlmd">Generic Telmundo</option>
-    <option value="kntv">NBC Bay Area</option>
-    <option value="ksts">T48 Área de la Bahía</option>
-    <option value="wbts">NBC Boston</option>
-    <option value="wneu">TLMD Nueva Inglaterra</option>
-    <option value="wmaq">NBC Chicago</option>
-    <option value="wsns">TLMD Chicago</option>
-    <option value="wvit">NBC Connecticut</option>
-    <option value="kxas">NBC DFW</option>
-    <option value="kxtx">T39 Dallas</option>
-    <option value="knbc">NBC Los Angeles</option>
-    <option value="kvea">T52 Los Angeles</option>
-    <option value="wtvj">NBC Miami</option>
-    <option value="wscv">T51 Miami</option>
-    <option value="wnbc">NBC New York</option>
-    <option value="wnju">T47 Nueva York</option>
-    <option value="wcau">NBC Philadelphia</option>
-    <option value="wwsi">T62 Filadelfia</option>
-    <option value="knsd">NBC San Diego</option>
-    <option value="kuan">T20 San Diego</option>
-    <option value="wrc">NBC Washington</option>
-    <option value="wzdc">T44 Washington</option>
-
-    <option value="khrr">TLMD Arizona</option>
-    <option value="kden">TLMD Colorado</option>
-    <option value="ktdo">T48 El Paso</option>
-    <option value="knso">TLMD Fresno</option>
-    <option value="ktmd">TLMD Houston</option>
-    <option value="kblr">TLMD Las Vegas</option>
-    <option value="ktlm">T40 McAllen</option>
-    <option value="kasa">TLMD Nuevo Mexico</option>
-    <option value="wtmo">T31 Orlando</option>
-    <option value="wkaq">TLMD Puerto Rico</option>
-    <option value="kcso">T33 Sacramento</option>
-    <option value="kvda">TLMD San Antonio</option>
-    <option value="wrmd">T49 Tampa</option>
-    <option value="kulx">TLMD Utah</option>
-    
-  </select>
   <hr/>
 
   <h3>Step 4: Choose a style</h3>
@@ -118,7 +74,17 @@
   </div>
   <hr/>
 
-   
+  <!--<h3>Step 5: Choose your station</h3>
+  <p class="notes">Notes here</p>
+  <select name="stationlogo-en" id="stationlogo-en">
+    <option value="nbc">Generic</option>
+    <option value="kntv">NBC Bay Area</option>
+    <option value="wbts">NBC Boston</option>
+    <option value="wmaq">NBC Chicago</option>
+  </select>
+  <hr/>-->
+
+  
 
   <h3>Previews & Download</h3>
   <div id="previews"></div>
@@ -141,8 +107,7 @@
       const image = document.getElementById('image');
       const fileInput = document.getElementById('fileInput');
       const sizeButtons = document.getElementById('size-buttons');
-      //const languageInputs = document.getElementsByName('language');
-      const logoDrop = document.getElementById('stationlogo');
+      const languageInputs = document.getElementsByName('language');
       const styleInputs = document.getElementsByName('thestyle');
       const zoomSlider = document.getElementById('zoomSlider');
       const headlineInput = document.getElementById('headlineInput');
@@ -254,7 +219,7 @@
       }
 
       //Simple Fade style
-      function applySimpleFadeStyle(ctx, size, logo) {
+      function applySimpleFadeStyle(ctx, size, lang, logo) {
         // Calculate bottom third area
         const fadeHeight = size.height / 2;
         const fadeTop = size.height - fadeHeight;
@@ -339,12 +304,8 @@
 
       async function generatePreviews() {
         const headline = headlineInput.value.trim();
-        //const lang = Array.from(languageInputs).find(r => r.checked).value;
-        const stationlogo = logoDrop.value;
+        const lang = Array.from(languageInputs).find(r => r.checked).value;
         const style = Array.from(styleInputs).find(r => r.checked).value;
-
-        //console.log(stationlogo)
-        const logopath = "images/logo-" + stationlogo + ".png";
         
         if (!headline) { alert('Please enter a headline before previewing.'); return; }
         previewsContainer.innerHTML = '';
@@ -369,8 +330,7 @@
 
         try {
           //Load logo
-          //const logo = await loadImage(lang === "en" ? 'images/logo-nbc.png' : 'images/logo-tlmd.png');
-          const logo = await loadImage(logopath);
+          const logo = await loadImage(lang === "en" ? 'images/nbclogo.png' : 'images/tlmdlogo.png');
           
           //Load additional assets only for Arthouse styles
           let stripes, brule;
@@ -429,7 +389,7 @@
               } else if (style === 'arthouse-red') {
                 textArea = applyArthouseRedStyle(ctx, size, logo, stripes, brule);
               } else { // simple fade
-                textArea = applySimpleFadeStyle(ctx, size, logo);
+                textArea = applySimpleFadeStyle(ctx, size, lang, logo);
               }
 
               // Draw wrapped text with line break support
@@ -468,11 +428,11 @@
           if (style === 'arthouse-blue' || style === 'arthouse-red') {
             alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available:\n\n' +
                   '• stripes.png / stripes-red.png\n' +
-                  '• nbclogo.png / logo-tlmd.png\n' +
+                  '• nbclogo.png / tlmdlogo.png\n' +
                   '• bluerule.png / redrule.png');
           } else {
             alert('Logo assets failed to load. Please check that logo files are available:\n\n' +
-                  '• nbclogo.png / logo-tlmd.png');
+                  '• nbclogo.png / tlmdlogo.png');
           }
         }
       }
