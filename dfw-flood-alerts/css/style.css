@@ -1,0 +1,73 @@
+#map { 
+    height: 450px; 
+}
+
+#counter {
+    width: 100vw;
+    text-align: center;
+    font-size: 12px;
+    color: #888888;
+}
+
+#alert-desc {
+    padding: 12px;
+    height: 70px;
+}
+
+.hide {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.show {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 12px;
+    padding: 12px;
+}
+
+.btn.disabled {
+    color: #565656;
+    background-color: #fafafa;
+    cursor: default;
+}
+
+.btn {
+    color: #3c3c3c;
+    width: 50%;
+    background-color: #ededed;
+    cursor: pointer;
+}
+
+.btn:active,
+.btn:focus,
+.btn:hover {
+    outline: none !important;
+}
+
+@media (max-width: 500px ) {
+    #alert-desc {
+        height: 100px !important;
+    }
+}
+
+@media (min-width: 800px) {
+    #alert-desc {
+        text-align: center;
+        height: 50px !important;
+    }
+
+    .btn-container {
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 390px;
+    }
+}
