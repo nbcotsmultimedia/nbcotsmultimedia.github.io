@@ -319,13 +319,13 @@
               const div = document.createElement('div');
               div.className = 'preview';
               const imgEl = document.createElement('img');
-              imgEl.src = canvas.toDataURL('image/png');
+              imgEl.src = canvas.toDataURL('image/jpeg');
               imgEl.alt = size.label;
               const btn = document.createElement('button');
               btn.textContent = `Download ${size.label}`;
               btn.addEventListener('click', () => {
                 const link = document.createElement('a');
-                link.download = `social_${size.id}_${style}.png`;
+                link.download = `social_${size.id}_${style}.jpg`;
                 link.href = imgEl.src;
                 link.click();
               });
