@@ -339,6 +339,20 @@ img {
     align-items: flex-start;
 }
 
+#topper {
+    background-color: #1b396a;
+    padding: 20px 0px 1px 0px;
+    border-radius: 8px;
+	margin: 15px 15px 30px 15px;
+}
+
+h1 {
+    margin-top: 15px;
+	margin-bottom: 15px;
+    color: #FFF;
+	font-size: 35px;
+}
+
 @media (max-width: 900px ) {
 
 }

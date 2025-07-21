@@ -1,83 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NBC Local Social Image Generator</title>
-  <!-- Cropper.js CSS -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-     />
 
-   <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse-condensed.css' rel='stylesheet' type='text/css'>
-     
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .controls { margin: 10px 0; }
-    #crop-container { width: 100%; max-width: 800px; height: 534px; background: #f0f0f0; position: relative; }
-    #crop-container img { max-width: 100%; display: block; }
-    #size-buttons button { margin-right: 5px; }
-    #previews { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px; }
-    .preview { text-align: center; }
-    .preview img { max-width: 200px; display: block; margin-bottom: 5px; border: 1px solid #ccc; }
-    .notes { margin-top: -10px; color: #666; font-size: 12px;}
-    button { background-color:#007bff; color: #FFF; border: #007bff; border-radius: 16px; padding: 7px 12px;}
-    button:hover { background-color: #005bbb; cursor: pointer;}
-    hr { height: 1px; color: #CCC; background: #CCC; font-size: 0; border: 0; margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <div id="container" style="max-width: 800px; margin:0 auto">
-  
-  <div style="font-size: 11px; color: #FFF; background-color: blue; display: inline-block; padding: 3px 5px; border-radius: 4px;"><strong>BETA</strong></div>
-  <h1>NBC Local Social Cards Generator</h1>
-  
-  <h3>Step 1: Upload your image</h3>
-  <p class="notes">Image should be high quality and at least 1080x1080, jpg, png, gif.</p>
-  <input type="file" id="fileInput" accept="image/*" />
-  <hr/>
-
-  <h3>Step 2: Make your crops</h3>
-  <p class="notes">You <strong><em>must</em></strong> click on each button to at least check the crop</p>
-  <div class="controls" id="size-buttons"></div>
-
-  <div class="controls">
-    <label for="zoomSlider">Zoom:</label>
-    <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" />
-  </div>
-
-  <div id="crop-container">
-    <img id="image" style="display:none;" />
-  </div>
-  <hr/>
-
-  <h3>Step 3: Choose language</h3>
-    <p class="notes">This will determine which brand style and logo to add</p>
-    <div class="controls">
-      <label><input type="radio" name="language" value="en" checked> English</label>
-      <label><input type="radio" name="language" value="esr"> Español (roja)</label>
-      <label><input type="radio" name="language" value="esb"> Español (azul)</label>
-    </div>
-  <hr/>
-
-  <h3>Step 4: Enter headline/text</h3>
-  <p class="notes">Ideally 50-60 characters long. Use | for line breaks (e.g., "Hello | world")</p>
-  <div class="controls">
-    <input type="text" id="headlineInput" placeholder="Enter headline overlay (use | for line breaks)" style="width:97%; padding:10px;" />
-    <button id="previewButton" style="margin-top:10px; padding:6px 12px;">Preview</button>
-  </div>
-  <hr/>
-
-  <h3>Previews & Download</h3>
-  <div id="previews"></div>
-  <div id="offscreen" style="display:none;"></div>
-
-  <!-- Cropper.js  -->
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
-    ></script>
-  <script>
     document.addEventListener('DOMContentLoaded', () => {
       const SIZES = [
         { id: '4-5', width: 1080, height: 1350, label: 'Portrait', ratio: 1080/1350 },
@@ -92,16 +13,17 @@
       const image = document.getElementById('image');
       const fileInput = document.getElementById('fileInput');
       const sizeButtons = document.getElementById('size-buttons');
-      const languageInputs = document.getElementsByName('language');
+      //const languageInputs = document.getElementsByName('language');
+      const logoDrop = document.getElementById('stationlogo');
+      const styleInputs = document.getElementsByName('thestyle');
       const zoomSlider = document.getElementById('zoomSlider');
       const headlineInput = document.getElementById('headlineInput');
       const previewButton = document.getElementById('previewButton');
       const previewsContainer = document.getElementById('previews');
       const offscreen = document.getElementById('offscreen');
 
-      // Enhanced text wrapping helper with line break support
       function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-        // First split by manual line breaks (using | as delimiter)
+        //Split by manual line breaks (using | as delimiter)
         const paragraphs = text.split('|');
         const allLines = [];
         
@@ -124,7 +46,7 @@
           }
         });
         
-        // Calculate vertical start to center text within block
+        //Calculate vertical start to center text within block
         const totalHeight = allLines.length * lineHeight;
         let startY = y - totalHeight / 2 + lineHeight / 2;
         
@@ -133,7 +55,111 @@
         });
       }
 
-      // Initialize size buttons
+      //Apply Arthouse Blue style
+      function applyArthouseBlueStyle(ctx, size, logo, stripes, brule) {
+        //Draw blue color block
+        const blockHeight = size.height / 3;
+        const blockBottom = size.height - 75;
+        const blockTop = blockBottom - blockHeight;
+        ctx.fillStyle = 'rgba(2,20,72,0.8)';
+        ctx.fillRect(0, blockTop, size.width, blockHeight);
+
+        //Draw stripes
+        const stripesW = stripes.width;
+        const stripesH = stripes.height;
+        const drawSW = size.width;
+        const drawSH = (stripesH / stripesW) * drawSW;
+        const drawSX = (size.width - drawSW) / 2;
+        const drawSY = blockTop;
+        ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
+
+        //Draw logo
+        const logoW = logo.width;
+        const logoH = logo.height;
+        const drawLX = size.width - 170;
+        const drawLY = 70;
+        ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+
+        //Draw bottom rule
+        const bruleW = brule.width;
+        const bruleH = brule.height;
+        const drawBX = (size.width - bruleW) / 2;
+        const drawBY = blockBottom;
+        ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
+
+        return { textAreaTop: blockTop, textAreaHeight: blockHeight };
+      }
+
+      //Apply Arthouse Red style
+      function applyArthouseRedStyle(ctx, size, logo, stripes, brule) {
+        //Draw red color block
+        const blockHeight = size.height / 3;
+        const blockBottom = size.height - 75;
+        const blockTop = blockBottom - blockHeight;
+        ctx.fillStyle = 'rgba(128,2,1,0.8)';
+        ctx.fillRect(0, blockTop, size.width, blockHeight);
+
+        //Draw stripes
+        const stripesW = stripes.width;
+        const stripesH = stripes.height;
+        const drawSW = size.width;
+        const drawSH = (stripesH / stripesW) * drawSW;
+        const drawSX = (size.width - drawSW) / 2;
+        const drawSY = blockTop;
+        ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
+
+        //Draw logo
+        const logoW = logo.width;
+        const logoH = logo.height;
+        const drawLX = size.width - 170;
+        const drawLY = 70;
+        ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+
+        //Draw bottom rule
+        const bruleW = brule.width;
+        const bruleH = brule.height;
+        const drawBX = (size.width - bruleW) / 2;
+        const drawBY = blockBottom;
+        ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
+
+        return { textAreaTop: blockTop, textAreaHeight: blockHeight };
+      }
+
+      //Simple Fade style
+      function applySimpleFadeStyle(ctx, size, logo) {
+        // Calculate bottom third area
+        const fadeHeight = size.height / 2;
+        const fadeTop = size.height - fadeHeight;
+        
+        //Create gradient only for bottom third
+        const gradient = ctx.createLinearGradient(0, fadeTop, 0, size.height);
+        gradient.addColorStop(0, 'rgba(0,0,0,0)');     // Transparent at top of fade area
+        gradient.addColorStop(0.3, 'rgba(0,0,0,0.25)');  // Slight fade
+        gradient.addColorStop(1, 'rgba(0,0,0,0.9)');    // Opaque black at bottom
+
+        //Apply gradient overlay only to bottom third
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, fadeTop, size.width, fadeHeight);
+
+        //Apply gradient overlay
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, size.width, size.height);
+
+        //Draw logo in top right
+        const logoW = logo.width;
+        const logoH = logo.height;
+        const drawLX = size.width - 170;
+        const drawLY = 70;
+        ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+
+        //Return text area (bottom third of image)
+        const textAreaHeight = size.height / 3;
+        const textAreaTop = size.height - textAreaHeight - 50; // 50px from bottom
+        
+        return { textAreaTop: textAreaTop, textAreaHeight: textAreaHeight };
+      }
+
+      //Initialize size buttons
       SIZES.forEach(size => {
         const btn = document.createElement('button');
         btn.textContent = size.label;
@@ -185,7 +211,12 @@
 
       async function generatePreviews() {
         const headline = headlineInput.value.trim();
-        const lang = Array.from(languageInputs).find(r => r.checked).value;
+        //const lang = Array.from(languageInputs).find(r => r.checked).value;
+        const stationlogo = logoDrop.value;
+        const style = Array.from(styleInputs).find(r => r.checked).value;
+
+        //console.log(stationlogo)
+        const logopath = "images/logo-" + stationlogo + ".png";
         
         if (!headline) { alert('Please enter a headline before previewing.'); return; }
         previewsContainer.innerHTML = '';
@@ -209,21 +240,25 @@
         };
 
         try {
-          // Load all assets before proceeding
-          const stripeMap = {
-              en: 'images/stripes.png',
-              esr: 'images/stripes-red.png',
-              esb: 'images/stripes.png'
-          };
-          const stripePath = stripeMap[lang]
-          const stripes = await loadImage(stripePath);
-          //const stripes = await loadImage(lang === "en" ? 'images/stripes.png' : 'images/stripes-red.png');
-          const logo = await loadImage(lang === "en" ? 'images/nbclogo.png' : 'images/tlmdlogo.png');
-          const brule = await loadImage(lang === "en" ? 'images/bluerule.png' : 'images/redrule.png');
+          //Load logo
+          //const logo = await loadImage(lang === "en" ? 'images/logo-nbc.png' : 'images/logo-tlmd.png');
+          const logo = await loadImage(logopath);
+          
+          //Load additional assets only for Arthouse styles
+          let stripes, brule;
+          if (style === 'arthouse-blue' || style === 'arthouse-red') {
+            // Load stripes based on style
+            const stripePath = style === 'arthouse-blue' ? 'images/stripes.png' : 'images/stripes-red.png';
+            stripes = await loadImage(stripePath);
+            
+            // Load rule based on style
+            const brulePath = style === 'arthouse-blue' ? 'images/bluerule.png' : 'images/redrule.png';
+            brule = await loadImage(brulePath);
+          }
           
           console.log('All assets loaded successfully');
 
-          // Now process each size
+          //Process each size
           SIZES.forEach(size => {
             const data = cropData[size.id];
             if (!data) return;
@@ -259,40 +294,15 @@
                 );
               }
 
-              // Draw color block
-              const blockHeight = size.height / 3;
-              const blockBottom = size.height - 75;
-              const blockTop = blockBottom - blockHeight;
-              if (lang == "en" || lang == "esb") {
-                ctx.fillStyle = 'rgba(2,20,72,0.8)';
-              } else {
-                ctx.fillStyle = 'rgba(128,2,1,0.8)';
+              // Apply the selected style
+              let textArea;
+              if (style === 'arthouse-blue') {
+                textArea = applyArthouseBlueStyle(ctx, size, logo, stripes, brule);
+              } else if (style === 'arthouse-red') {
+                textArea = applyArthouseRedStyle(ctx, size, logo, stripes, brule);
+              } else { // simple fade
+                textArea = applySimpleFadeStyle(ctx, size, logo);
               }
-              ctx.fillRect(0, blockTop, size.width, blockHeight);
-
-              // FIXED: Now we know assets are loaded, so draw them
-              //Draw stripes
-              const stripesW = stripes.width;
-              const stripesH = stripes.height;
-              const drawSW = size.width;
-              const drawSH = (stripesH / stripesW) * drawSW;
-              const drawSX = (size.width - drawSW) / 2;
-              const drawSY = blockTop;
-              ctx.drawImage(stripes, drawSX, drawSY, drawSW, drawSH);
-
-              //Draw logo
-              const logoW = logo.width;
-              const logoH = logo.height;
-              const drawLX = size.width - 170;
-              const drawLY = 70;
-              ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
-
-              //Draw bottom rule
-              const bruleW = brule.width;
-              const bruleH = brule.height;
-              const drawBX = (size.width - bruleW) / 2;
-              const drawBY = blockBottom;
-              ctx.drawImage(brule, drawBX, drawBY, bruleW, bruleH);
 
               // Draw wrapped text with line break support
               const fontSize = 85;
@@ -302,7 +312,7 @@
               ctx.fillStyle = 'white';
               const maxWidth = size.width - 40;
               const centerX = size.width / 2;
-              const centerY = blockTop + blockHeight / 2;
+              const centerY = textArea.textAreaTop + textArea.textAreaHeight / 2;
               wrapText(ctx, headline, centerX, centerY, maxWidth, fontSize * 1.2);
 
               // Build preview element
@@ -315,7 +325,7 @@
               btn.textContent = `Download ${size.label}`;
               btn.addEventListener('click', () => {
                 const link = document.createElement('a');
-                link.download = `social_${size.id}.png`;
+                link.download = `social_${size.id}_${style}.png`;
                 link.href = imgEl.src;
                 link.click();
               });
@@ -327,17 +337,17 @@
 
         } catch (error) {
           console.error('Error loading assets:', error);
-          alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available:\n\n' +
-                '• stripes.png / stripes-red.png\n' +
-                '• nbclogo.png / tlmdlogo.png\n' +
-                '• bluerule.png / redrule.png');
+          if (style === 'arthouse-blue' || style === 'arthouse-red') {
+            alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available:\n\n' +
+                  '• stripes.png / stripes-red.png\n' +
+                  '• nbclogo.png / logo-tlmd.png\n' +
+                  '• bluerule.png / redrule.png');
+          } else {
+            alert('Logo assets failed to load. Please check that logo files are available:\n\n' +
+                  '• nbclogo.png / logo-tlmd.png');
+          }
         }
       }
 
       previewButton.addEventListener('click', generatePreviews);
     });
-  </script>
-
-</div>
-</body>
-</html>

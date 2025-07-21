@@ -14,29 +14,38 @@
 
   <!-- NBC CSS -->
   <link href='https://fonts.googleapis.com/css?family=Roboto:400,500,300,100,700' rel='stylesheet' type='text/css'>
-  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet' type='text/css'>
-  
+  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse.css' rel='stylesheet'
+    type='text/css'>
   <link href="css/nbcotsbase.css" rel="stylesheet">
 
-  
+  <!-- Responsive iFrame stuff -->
+  <script src="https://media.nbcnewyork.com/assets/editorial/national/common/js/crosstalk.js"></script>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      xtalk.responsive = false;
 
-  
+      var timer = setTimeout(resizeme, 2500)
+      function resizeme() {
+        xtalk.signalIframe()
+        xtalk.init()
+      }
+    });
+  </script>
+
+  </style>
+
 </head>
 
 <body>
 
+  <div id="placeholder" class="parent" style="width:100%;">
 
-    <div id="topper">
-      <div id="container" style="max-width: 800px; margin:0 auto">
-        <img src="images/nbcul-logo.png" width="200" alt="NBCU Local" />  
-        <h1>Split Photo Generator</h1>
-        </div>
-    </div>
-    
     <div class="body-wrapper">
-      
       <div class="content-wrapper">
-        
+        <div class="intro">
+          <div class="headline">NBC Local Split Photo Generator</div>
+          <div class="subhead">Upload your photos, position them then hit download to make your own photo split!</div>
+        </div>
 
         <div class="options">
 
@@ -77,6 +86,7 @@
 
 
 
+  </div>
 
 
 
