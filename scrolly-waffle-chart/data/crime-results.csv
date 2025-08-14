@@ -1,8 +1,0 @@
-reports,arrest-status,convict-status,convict-details,sentence-details,count
-Sex crime reports,No arrest made,,,,19884
-Sex crime reports,Arrest made,Not convicted of a crime,Never made it to court,,317
-Sex crime reports,Arrest made,Not convicted of a crime,Dismissed,,276
-Sex crime reports,Arrest made,Not convicted of a crime,Pending,,356
-Sex crime reports,Arrest made,Convicted of a crime,Non-sex-crime,,216
-Sex crime reports,Arrest made,Convicted of a crime,Sex crime,No prison time,99
-Sex crime reports,Arrest made,Convicted of a crime,Sex crime,With prison time,323
