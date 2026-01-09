@@ -92,7 +92,7 @@
     <hr/>
 
     <h3>Step 4: Write your headline</h3>
-    <p class="notes">Enter information about the athlete, event and medal won.</p>
+    <p class="notes">Enter information about the athlete, event and medal won. <b>Start typing athlete or sport/ event name and select an option from the list that appears.</b></p>
     <div class="controls">
       <p class="headline-subtitle">Athletes</p>
       <div class="controls">
@@ -100,12 +100,15 @@
         <datalist  id="athlete-select"></datalist>
       </div>
       <p class="headline-subtitle">Event</p>
-      <input type="text" id="event-input" placeholder="e.g. Slalom" style="width:97%; padding:10px;" />
+      <div class="controls">
+        <input id="event-input" type="search" list="event-select" placeholder="e.g. Alpine Skiing - Women’s Slalom" class="select-input">
+        <datalist  id="event-select"></datalist>
+      </div>
       <p class="headline-subtitle">Medal</p>
       <div class="controls">
-        <label><input type="radio" name="gold" value="gold" class="medal-input" checked> Gold</label>
-        <label><input type="radio" name="silver" value="silver" class="medal-input"> Silver</label>
-        <label><input type="radio" name="bronze" value="bronze" class="medal-input"> Bronze</label>
+        <label><input type="radio" name="medal-input" value="gold" class="medal-input" checked> Gold</label>
+        <label><input type="radio" name="medal-input" value="silver" class="medal-input"> Silver</label>
+        <label><input type="radio" name="medal-input" value="bronze" class="medal-input"> Bronze</label>
       </div>
       <button id="preview-button" style="margin-top:10px; padding:6px 12px;">Preview</button>
     </div>
