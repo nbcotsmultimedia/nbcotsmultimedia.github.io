@@ -194,7 +194,7 @@ const SIZES = [
     const headline = `${athleteName} wins ${selectedMedal.value} in ${eventSlugs[eventInput.value]}`.toUpperCase();
     console.log(headline)
     //const lang = Array.from(languageInputs).find(r => r.checked).value;
-    const stationlogo = logoDrop.value;
+    const stationlogo = "nbc";
 
     //console.log(stationlogo)
     const logopath = "images/logo-" + stationlogo + ".png";
