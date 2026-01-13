@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let athleteNames = ["Team USA"],
     eventNames = [],
     eventSlugs = {};
-  d3.csv("data/athletes.csv").then(data => {
+  d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwEVBPF6Uey54eQayvydVF4SjRjt9EXGaet5N1BgZDDvMnxVIjR8gYJRe4_eHsJmF_RQ9I40dgXhn/pub?gid=474628024&single=true&output=csv").then(data => {
     const filteredData = data.filter(athlete => (athlete["QUALIFIED"] == "X") & (athlete["UPDATED"] == "X"));
     athleteNames = athleteNames.concat(filteredData.map(athlete => athlete["NAME"]).sort());
     const athleteSelect = d3.select("#athlete-select");
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const previewButton = document.getElementById('preview-button');
   const previewsContainer = document.getElementById('previews');
   const offscreen = document.getElementById('offscreen');
+  const sizesCropped = [];
 
   const multipleLinesOfText = (text, maxWidth, ctx) => {
     let allLines = [];
@@ -59,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let n = 0; n < words.length; n++) {
       const testLine = line + words[n] + ' ';
       const metrics = ctx.measureText(testLine);
-      console.log(metrics.width)
       if (metrics.width > maxWidth && line !== '') {
         allLines.push(line.trim());
         line = words[n] + ' ';
@@ -117,6 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const drawLineOfText = (line, x, startY, lineHeight, ctx, linesSoFar) => {
+    ctx.strokeText(line, x, startY + linesSoFar);
+    ctx.fillText(line, x, startY + linesSoFar);
+    return linesSoFar += lineHeight;
+  }
+
   function wrapText(ctx, text, x, y, maxWidth) {
     // set default font settings for athlete name/ medal
     let italic = "italic ",
@@ -133,14 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
         "event": paragraphsAllLines[2]
       },
       shortLineHeight = 98 * 1.2,
-      tallLineHeight = 138 * 1.2;
+      tallLineHeight = 138 * 1.2,
+      lineHeight;
       
       const keys = Object.keys(allLines);
       const totalHeight = keys.map((key, idx) => {
         const paragraphs = allLines[key].length;
-          heightToReturn = 0,
-          shortLineHeight = 98 * 1.2,
-          tallLineHeight = 138 * 1.2;
+          heightToReturn = 0;
         if (key == "event") {
           heightToReturn = tallLineHeight + (shortLineHeight * (paragraphs - 1));
         } else {
@@ -159,19 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (keys[i] == "event") {
         fontSize = fontSize - 40;
         ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
-        lines.forEach((line, idx) => {
-          let lineHeightToUse = idx > 0 ? shortLineHeight : tallLineHeight;
-          ctx.strokeText(line, x, startY + (linesSoFar * lineHeightToUse));
-          ctx.fillText(line, x, startY + (linesSoFar * lineHeightToUse));
-          linesSoFar++;
-        })
+        lineHeight = shortLineHeight;
       } else {
-        lines.forEach((line, idx) => {
-          ctx.strokeText(line, x, startY + (linesSoFar * tallLineHeight));
-          ctx.fillText(line, x, startY + (linesSoFar * tallLineHeight));
-          linesSoFar++;
-        })
+        lineHeight = tallLineHeight;
       }
+      lines.forEach((line, idx) => {
+        linesSoFar = drawLineOfText(line, x, startY, lineHeight, ctx, linesSoFar);
+      })
     }
   }
 
@@ -250,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function initCropper() {
     if (cropper) { cropData[currentSize] = cropper.getData(true); cropper.destroy(); }
     const size = SIZES.find(s => s.id === currentSize);
+    sizesCropped.push(size);
     updateSizeButtons();
     cropper = new window.Cropper(image, {
       aspectRatio: size.ratio,
@@ -272,10 +272,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function generatePreviews() {
-    const athleteName = athleteInput.value;
-    if (!athleteNames.includes(athleteName)) { alert('Please select an athlete from the provided list of names.'); return; }
+    console.log(sizesCropped)
+    let athleteName = athleteInput.value,
+      connector = "WINS";
+    if (!athleteNames.includes(athleteInput.value)) { alert('Please select an athlete from the provided list of names.'); return; }
+    if (athleteName.includes(" and ")) {
+      athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(" and ");
+      connector = "WIN";
+    }
     const selectedMedal = medalInputs.filter(btn => btn.checked)[0];
-    const headline = `${athleteName.toUpperCase()}|WINS ${selectedMedal.value.toUpperCase()}|${eventSlugs[eventInput.value]}`;
+    const eventSlug = eventSlugs[eventInput.value];
+    const headline = `${athleteName.toUpperCase()}|${connector} ${selectedMedal.value.toUpperCase()}|${eventSlug}`;
 
     const logopath = "images/bug.png";
 
@@ -301,6 +308,35 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     try {
+      const cards = {
+
+      };
+    
+      const pushData = () => {
+    
+      };
+    
+      const downloadCard = (orientation) => {
+        const link = document.createElement('a');
+        link.download = cards[orientation]["path"];
+        link.href = cards[orientation]["img"].src;
+        link.click();
+        pushData();
+      };
+    
+      const downloadAllCards = () => {
+        for (let i = 0; i < Object.keys(cards).length; i++) {
+          let orientation = Object.keys(cards)[i];
+          downloadCard(orientation);
+        }
+      }
+    
+      const downloadAllBtn = document.createElement('button');
+      downloadAllBtn.textContent = "Download All";
+      document.getElementById("download-all-btn").appendChild(downloadAllBtn);
+      downloadAllBtn.addEventListener('click', downloadAllCards);
+
+
       const logo = await loadImage(logopath);
       const swirls = {};
       for (let i = 0; i < SIZES.length; i++) {
@@ -312,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('All assets loaded successfully');
 
       //Process each size
-      SIZES.forEach(size => {
+      sizesCropped.forEach(size => {
         const data = cropData[size.id];
         if (!data) return;
 
@@ -364,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const startX = 50;
           const hedCenterY = textArea.textAreaTop + textArea.textAreaHeight / 3;
           if (size.label == "Horizontal") {
-            wrapText(ctx, headline, startX, size.height / 2, (size.width / 3) - 100);
+            wrapText(ctx, headline, startX, size.height / 2, (size.width / 2.5) - 50);
           } else {
             resizeText(ctx, headline, startX, hedCenterY, maxWidth);
           }
@@ -377,17 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
           imgEl.alt = size.label;
           const btn = document.createElement('button');
           btn.textContent = `Download ${size.label}`;
-          const pushData = () => {
 
+          cards[size.label] = {
+            "path": `${athleteName.toLowerCase().replace(/ /g,"_")}_${eventSlug.toLowerCase().replace(/ /g,"_")}_${selectedMedal.value.toLowerCase().replace(/ /g,"_")}_${size.id}.jpg`,
+            "img": imgEl
           };
-
-          btn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = `social_${size.id}_${style}.jpg`;
-            link.href = imgEl.src;
-            link.click();
-            pushData();
-          });
+          btn.addEventListener('click', () => downloadCard(size.label));
           div.appendChild(imgEl);
           div.appendChild(btn);
           previewsContainer.appendChild(div);
@@ -396,15 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (error) {
       console.error('Error loading assets:', error);
-      if (style === 'arthouse-blue' || style === 'arthouse-red') {
-        alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available:\n\n' +
-          '• stripes.png / stripes-red.png\n' +
-          '• nbclogo.png / logo-tlmd.png\n' +
-          '• bluerule.png / redrule.png');
-      } else {
-        alert('Logo assets failed to load. Please check that logo files are available:\n\n' +
-          '• nbclogo.png / logo-tlmd.png');
-      }
+      alert('Some brand assets failed to load. Please check that all files in the /images/ folder are available.');
     }
   }
 
