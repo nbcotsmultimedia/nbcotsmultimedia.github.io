@@ -10,6 +10,10 @@ body {
 .headline-subtitle {
     font-weight: bold;
 }
+
+#headline-preview {
+    line-height: 1.5em;
+}
     
 #crop-container { 
     width: 100%;
@@ -55,6 +59,22 @@ body {
     margin-top: -10px; 
     color: #666; 
     font-size: 12px;
+}
+
+#event-custom-container {
+    margin-top: 1.5em;
+    margin-bottom: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+#event-custom-label {
+    font-size: 14px !important;
+}
+
+#event-custom-input {
+    display: none;
 }
     
 button { 

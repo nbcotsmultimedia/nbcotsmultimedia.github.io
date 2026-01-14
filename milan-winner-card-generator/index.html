@@ -46,21 +46,29 @@
     <div class="controls">
       <p class="headline-subtitle">Athletes</p>
       <div class="controls">
-        <input id="athlete-input" type="search" list="athlete-select" placeholder="e.g. Mikaela Shiffrin" class="select-input">
+        <input id="athlete-input" type="search" list="athlete-select" placeholder="e.g. Mikaela Shiffrin" class="select-input headline-segment">
         <datalist  id="athlete-select"></datalist>
       </div>
       <p class="headline-subtitle">Event</p>
       <div class="controls">
-        <input id="event-input" type="search" list="event-select" placeholder="e.g. Alpine Skiing - Women’s Slalom" class="select-input">
+        <input id="event-input" type="search" list="event-select" placeholder="e.g. Alpine Skiing - Women’s Slalom" class="select-input headline-segment">
         <datalist  id="event-select"></datalist>
+        <div id="event-custom-container">
+          <label id="event-custom-label"><input type="checkbox" name="event-custom-btn" value="custom" id="event-custom-btn"> <b>Write your own event slug</b> (select an event from the list above to see its predefined slug)</label>
+          <input type="text" placeholder="e.g. Women’s Slalom" id="event-custom-input" class="select-input headline-segment">
+        </div>
       </div>
       <p class="headline-subtitle">Medal</p>
       <div class="controls">
-        <label><input type="radio" name="medal-input" value="gold" class="medal-input" checked> Gold</label>
-        <label><input type="radio" name="medal-input" value="silver" class="medal-input"> Silver</label>
-        <label><input type="radio" name="medal-input" value="bronze" class="medal-input"> Bronze</label>
+        <label><input type="radio" id="medal-input-gold" name="medal-input" value="gold" class="medal-input headline-segment" checked> Gold</label>
+        <label><input type="radio" id="medal-input-silver" name="medal-input" value="silver" class="medal-input headline-segment"> Silver</label>
+        <label><input type="radio" id="medal-input-bronze" name="medal-input" value="bronze" class="medal-input headline-segment"> Bronze</label>
       </div>
-      <button id="preview-button" style="margin-top:10px; padding:6px 12px;">Preview</button>
+      <p class="headline-subtitle">Headline Preview</p>
+      <div class="controls">
+        <div id="headline-preview"><p class="notes">Select an athlete, event and medal from the options above to preview your headline.</p></div>
+      </div>
+      <button id="preview-button" style="margin-top:10px; padding:6px 12px;">Preview Cards</button>
     </div>
     <hr/>
 

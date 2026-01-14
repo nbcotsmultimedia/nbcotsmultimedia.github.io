@@ -34,23 +34,75 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: '9-16', width: 1080, height: 1920, label: 'Vertical', ratio: 1080 / 1920, swirlPath: 'images/vertical-swirls.png' },
   ];
 
-  let cropData = {};
-  let currentSize = SIZES[0].id;
-  let cropper;
-  const image = document.getElementById('image');
-  const fileInput = document.getElementById('fileInput');
-  const sizeButtons = document.getElementById('size-buttons');
-  //const languageInputs = document.getElementsByName('language');
-  const logoDrop = document.getElementById('station-logo');
-  const styleInputs = document.getElementsByName('thestyle');
-  const zoomSlider = document.getElementById('zoomSlider');
-  const athleteInput = document.getElementById('athlete-input');
-  const eventInput = document.getElementById('event-input');
-  const medalInputs = [...document.getElementsByClassName('medal-input')];
-  const previewButton = document.getElementById('preview-button');
-  const previewsContainer = document.getElementById('previews');
-  const offscreen = document.getElementById('offscreen');
-  const sizesCropped = [];
+  let cropData = {},
+    currentSize = SIZES[0].id,
+    cropper,
+    headlineSoFar = {
+      "medal": "GOLD"
+    };
+  const image = document.getElementById('image'),
+    fileInput = document.getElementById('fileInput'),
+    sizeButtons = document.getElementById('size-buttons'),
+    zoomSlider = document.getElementById('zoomSlider'),
+    athleteInput = document.getElementById('athlete-input'),
+    eventInput = document.getElementById('event-input'),
+    medalInputs = [...document.getElementsByClassName('medal-input')],
+    previewButton = document.getElementById('preview-button'),
+    previewsContainer = document.getElementById('previews'),
+    customEventInput = document.getElementById("event-custom-input"),
+    customEventButton = document.getElementById("event-custom-btn"),
+    headlinePreview = document.getElementById("headline-preview"),
+    headlineSegments = document.getElementsByClassName("headline-segment"),
+    sizesCropped = [];
+
+  customEventButton.addEventListener("click", () => {
+    const inputShown  = customEventInput.style.display === "block";
+    let newStyle;
+    if (inputShown) {
+      newStyle = "none";
+      headlineSoFar["event"] = eventSlugs[eventInput.value];
+    } else {
+      newStyle = "block";
+      if (customEventInput.value !== "") {
+        headlineSoFar["event"] = customEventInput.value;
+      }
+    }
+    customEventInput.style.display = newStyle;
+    generateHeadlinePreview();
+  });
+
+  const generateFilePath = sizeID => {
+    return `${headlineSoFar.athlete.toLowerCase().replace(/ /g,"_")}_${headlineSoFar.event.toLowerCase().replace(/ /g,"_")}_${headlineSoFar.medal.toLowerCase().replace(/ /g,"_")}_${sizeID}.jpg`;
+  }
+
+  const generateHeadline = () => {
+    let connector = "WINS",
+      athleteName = headlineSoFar.athlete;
+    if (athleteName.includes(" and ")) {
+      athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(" and ");
+      connector = "WIN";
+    }
+    return `${athleteName ? athleteName.toUpperCase() : "[ATHLETE]"}|${connector} ${headlineSoFar.medal.toUpperCase()}|${headlineSoFar.event ? headlineSoFar.event : "[EVENT]"}`;
+  }
+
+  const generateHeadlinePreview = () => {
+    let headline = generateHeadline().replaceAll("|", "<br/>");
+    headlinePreview.innerHTML = `<p>${headline}</p>`
+  }
+
+  for (let i = 0; i < headlineSegments.length; i++) {
+    let el = headlineSegments[i];
+    el.addEventListener("change", e => {
+      const headlineSegment = e.currentTarget.id.split("-")[0];
+      let segmentValue = e.currentTarget.value;
+      if (headlineSegment === "event" && (customEventInput.style.display === "none" || customEventInput.value === "")) {
+        headlineSoFar[headlineSegment] = eventSlugs[eventInput.value];
+      } else {
+        headlineSoFar[headlineSegment] = segmentValue;
+      }
+      generateHeadlinePreview();
+    })
+  }
 
   const multipleLinesOfText = (text, maxWidth, ctx) => {
     let allLines = [];
@@ -188,23 +240,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //Simple Fade style
   function applySimpleFadeStyle(ctx, size, logo) {
-    // Calculate bottom third area
-    const fadeHeight = size.height / 2;
-    const fadeTop = size.height - fadeHeight;
+    if (size.label !== "Horizontal") {
+      // Calculate bottom third area
+      const fadeHeight = size.height / 2;
+      const fadeTop = size.height - fadeHeight;
 
-    //Create gradient only for bottom third
-    const gradient = ctx.createLinearGradient(0, fadeTop, 0, size.height);
-    gradient.addColorStop(0, 'rgba(0,0,0,0)');     // Transparent at top of fade area
-    gradient.addColorStop(0.3, 'rgba(0,0,0,0.25)');  // Slight fade
-    gradient.addColorStop(1, 'rgba(0,0,0,0.9)');    // Opaque black at bottom
+      //Create gradient only for bottom third
+      const gradient = ctx.createLinearGradient(0, fadeTop, 0, size.height);
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');     // Transparent at top of fade area
+      gradient.addColorStop(0.3, 'rgba(0,0,0,0.25)');  // Slight fade
+      gradient.addColorStop(1, 'rgba(0,0,0,0.9)');    // Opaque black at bottom
 
-    //Apply gradient overlay only to bottom third
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, fadeTop, size.width, fadeHeight);
+      //Apply gradient overlay only to bottom third
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, fadeTop, size.width, fadeHeight);
 
-    //Apply gradient overlay
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size.width, size.height);
+      //Apply gradient overlay
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size.width, size.height);
+    }
 
     //Draw logo in top right
     const logoW = logo.width;
@@ -244,12 +298,15 @@ document.addEventListener('DOMContentLoaded', () => {
     image.src = url;
     image.style.display = 'block';
     image.onload = () => initCropper();
+    sizesCropped = [];
   });
 
   function initCropper() {
     if (cropper) { cropData[currentSize] = cropper.getData(true); cropper.destroy(); }
     const size = SIZES.find(s => s.id === currentSize);
-    sizesCropped.push(size);
+    if (!sizesCropped.includes(size)) {
+      sizesCropped.push(size);
+    }
     updateSizeButtons();
     cropper = new window.Cropper(image, {
       aspectRatio: size.ratio,
@@ -272,17 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function generatePreviews() {
-    console.log(sizesCropped)
-    let athleteName = athleteInput.value,
-      connector = "WINS";
-    if (!athleteNames.includes(athleteInput.value)) { alert('Please select an athlete from the provided list of names.'); return; }
-    if (athleteName.includes(" and ")) {
-      athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(" and ");
-      connector = "WIN";
-    }
-    const selectedMedal = medalInputs.filter(btn => btn.checked)[0];
-    const eventSlug = eventSlugs[eventInput.value];
-    const headline = `${athleteName.toUpperCase()}|${connector} ${selectedMedal.value.toUpperCase()}|${eventSlug}`;
+    if (!athleteNames.includes(athleteInput.value) || !Object.keys(eventSlugs).includes(eventInput.value)) { alert('Please select an athlete and event from the provided list.'); return; }
+    const headline = generateHeadline();
 
     const logopath = "images/bug.png";
 
@@ -330,11 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
           downloadCard(orientation);
         }
       }
-    
-      const downloadAllBtn = document.createElement('button');
-      downloadAllBtn.textContent = "Download All";
-      document.getElementById("download-all-btn").appendChild(downloadAllBtn);
-      downloadAllBtn.addEventListener('click', downloadAllCards);
+      
+      if (!document.getElementById("download-all-btn").hasChildNodes()) {
+        const downloadAllBtn = document.createElement('button');
+        downloadAllBtn.textContent = "Download All";
+        document.getElementById("download-all-btn").appendChild(downloadAllBtn);
+        downloadAllBtn.addEventListener('click', downloadAllCards);
+      }
 
 
       const logo = await loadImage(logopath);
@@ -415,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.textContent = `Download ${size.label}`;
 
           cards[size.label] = {
-            "path": `${athleteName.toLowerCase().replace(/ /g,"_")}_${eventSlug.toLowerCase().replace(/ /g,"_")}_${selectedMedal.value.toLowerCase().replace(/ /g,"_")}_${size.id}.jpg`,
+            "path": generateFilePath(size.id),
             "img": imgEl
           };
           btn.addEventListener('click', () => downloadCard(size.label));
