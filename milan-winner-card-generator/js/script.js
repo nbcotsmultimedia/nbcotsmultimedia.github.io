@@ -237,6 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
         return { textAreaTop: size.height - 75, textAreaHeight: size.height / 3 };
       }
+
+      const drawLogo = (ctx, size, logo) => {
+        //Draw logo in top right
+        const logoW = logo.width;
+        const logoH = logo.height;
+        const drawLX = size.width - 170;
+        const drawLY = 70;
+        ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
+      }
     
       //Simple Fade style
       function applySimpleFadeStyle(ctx, size, logo) {
@@ -259,13 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ctx.fillStyle = gradient;
           ctx.fillRect(0, 0, size.width, size.height);
         }
-    
-        //Draw logo in top right
-        const logoW = logo.width;
-        const logoH = logo.height;
-        const drawLX = size.width - 170;
-        const drawLY = 70;
-        ctx.drawImage(logo, drawLX, drawLY, logoW, logoH);
     
         //Return text area (bottom third of image)
         const textAreaHeight = size.height / 3;
@@ -356,9 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     
         try {
-          const cards = {
-    
-          };
+          const cards = { };
     
           function addMedalist() {
             // Prepare data to send
@@ -463,13 +463,16 @@ document.addEventListener('DOMContentLoaded', () => {
                   size.width, size.height
                 );
               }
-    
+
+
               // Create faded background and text overlay
               let textArea = applySimpleFadeStyle(ctx, size, logo);
     
               // Add swirled border around photo
               const sizeSwirls = swirls[size.label];
               applyStyles(ctx, size, logo, sizeSwirls);
+
+              drawLogo(ctx, size, logo);
     
               // Draw athlete/ medal text
     
