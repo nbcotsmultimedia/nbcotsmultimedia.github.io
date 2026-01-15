@@ -133,7 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let italic = "italic ",
           fontSize = 138,
           linesSoFar = 0,
-          titleFontSize = fontSize;
+          titleFontSize = fontSize,
+          buffer = 0;
         ctx.font = `${italic}${fontSize}px ArtHouseMedCon, sans-serif`;
         // add text for each line
         for (let i = 0; i < paragraphs.length; i++) {
@@ -143,11 +144,14 @@ document.addEventListener('DOMContentLoaded', () => {
             fontSize = fontSize - 40;
             italic = "";
             ctx.font = `${italic}${fontSize}px ArtHouseMedCon, sans-serif`;
+            buffer = 20;
+          } else {
+            buffer = 0;
           }
           // if this line will take up more than one line, reduce font size
           if (multipleLinesOfText(paragraphs[i], maxWidth, ctx).length > 1) {
             while (multipleLinesOfText(paragraphs[i], maxWidth, ctx).length > 1) {
-              fontSize = fontSize - 5;
+              fontSize = fontSize - 2;
               ctx.font = `${italic}${fontSize}px ArtHouseMedCon, sans-serif`;
             }
             // save font size for line spacing
@@ -162,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
           let startY = y - totalHeight / 2 + lineHeight / 2;
           // add text
           allLines.forEach(line => {
-            ctx.strokeText(line, x, startY + (i * lineHeight));
-            ctx.fillText(line, x, startY + (i * lineHeight));
+            ctx.strokeText(line, x, startY + buffer + (i * lineHeight));
+            ctx.fillText(line, x, startY + buffer +  (i * lineHeight));
             linesSoFar++;
           })
         }
@@ -190,8 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
             "medal": paragraphsAllLines[1],
             "event": paragraphsAllLines[2]
           },
-          shortLineHeight = 98 * 1.2,
-          tallLineHeight = 138 * 1,
+          shortLineHeight = 98,
+          tallLineHeight = 138,
           lineHeight;
     
         const keys = Object.keys(allLines);
@@ -205,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           return heightToReturn;
     
-        }).reduce((partialSum, a) => partialSum + a, 0);
+        }).reduce((partialSum, a) => partialSum + a, 0) + 20;
     
         // add text for each line
         for (let i = 0; i < keys.length; i++) {
@@ -213,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
           // default line height for y positioning
           let startY = y - totalHeight / 2 + tallLineHeight / 2;
           // change font settings for event line
-          if (keys[i] == "event") {
+          if (keys[i] === "event") {
             fontSize = fontSize - 40;
             ctx.font = `${fontSize}px ArtHouseMedCon, sans-serif`;
             lineHeight = shortLineHeight;
@@ -221,7 +225,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lineHeight = tallLineHeight;
           }
           lines.forEach((line, idx) => {
-            linesSoFar = drawLineOfText(line, x, startY, lineHeight, ctx, linesSoFar);
+            let lineHeighToUse = keys[i] === "medal" ? lineHeight + 30 : lineHeight;
+            linesSoFar = drawLineOfText(line, x, startY, lineHeighToUse, ctx, linesSoFar);
           })
         }
       }
@@ -294,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     
       fileInput.addEventListener('change', e => {
+        console.log("hi")
         const file = e.target.files[0];
         if (!file) return;
         const url = URL.createObjectURL(file);
