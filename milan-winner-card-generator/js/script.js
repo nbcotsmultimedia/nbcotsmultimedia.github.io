@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
         customEventInput = document.getElementById("event-custom-input"),
         customEventButton = document.getElementById("event-custom-btn"),
         headlinePreview = document.getElementById("headline-preview"),
-        headlineSegments = document.getElementsByClassName("headline-segment");
+        headlineSegments = document.getElementsByClassName("headline-segment"),
+        horizontalNote = document.getElementById("horizontal-note");
     
       customEventButton.addEventListener("click", () => {
         const inputShown = customEventInput.style.display === "block";
@@ -299,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     
       fileInput.addEventListener('change', e => {
-        console.log("hi")
         const file = e.target.files[0];
         if (!file) return;
         const url = URL.createObjectURL(file);
@@ -334,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cropper) cropData[currentSize] = cropper.getData(true);
         currentSize = sizeId;
         initCropper();
+        horizontalNote.style.display = sizeId === "16-9" ? "block" : "none";
       }
     
       async function generatePreviews() {
