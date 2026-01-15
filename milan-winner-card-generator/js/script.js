@@ -374,6 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
             dataToSend["medal"] = dataToSend["medal"].toLowerCase();
 
             if (athleteAdded !== dataToSend) {
+              athleteAdded = dataToSend;
+              
                // REPLACE THIS URL with your Google Apps Script Web App URL
               const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbytOBD5p028jEyo2nIHbI-Y7v-j7NKOTUn_HiIyjn0IBzWt9ToNybab5DLKct828jpG/exec';
       
@@ -387,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(dataToSend)
               })
                 .then(() => {
-                  athleteAdded = dataToSend;
                   console.log("success!")
                 })
                 .catch(error => {
