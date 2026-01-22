@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let athleteNames = ["Team USA"],
     eventNames = [],
     athleteAdded = {},
-    eventSlugs = {};
+    eventSlugs = {},
+    espEventSlugs = {};
     d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwEVBPF6Uey54eQayvydVF4SjRjt9EXGaet5N1BgZDDvMnxVIjR8gYJRe4_eHsJmF_RQ9I40dgXhn/pub?gid=474628024&single=true&output=csv").then(data => {
       const filteredData = data.filter(athlete => (athlete["QUALIFIED"] == "X") & (athlete["UPDATED"] == "X"));
       athleteNames = athleteNames.concat(filteredData.map(athlete => athlete["NAME"]).sort());
@@ -17,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }).then(() => {
       d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSAwEVBPF6Uey54eQayvydVF4SjRjt9EXGaet5N1BgZDDvMnxVIjR8gYJRe4_eHsJmF_RQ9I40dgXhn/pub?gid=0&single=true&output=csv").then(data => {
         eventNames = data.map(event => event["Full Event Name"].trim()).sort();
-        data.forEach(event => eventSlugs[event["Full Event Name"].trim()] = event["Social Card Event Name"]);
+        data.forEach(event => {
+          eventSlugs[event["Full Event Name"].trim()] = event["Social Card Event Name"];
+          espEventSlugs[event["Full Event Name"].trim()] = event["Spanish Social Card Event Name"];
+        });
         const eventSelect = d3.select("#event-select");
         for (let i = 0; i < eventNames.length; i++) {
           const eventName = eventNames[i].trim();
@@ -36,9 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
       let cropData = {},
         currentSize = SIZES[0].id,
+        lang = "eng",
         cropper,
         headlineSoFar = {
           "medal": "GOLD"
+        },
+        espMedals = {
+          "GOLD": "ORO",
+          "SILVER": "PLATA",
+          "BRONZE": "BRONCE"
         },
         sizesCropped = [];
       const image = document.getElementById('image'),
@@ -54,14 +64,15 @@ document.addEventListener('DOMContentLoaded', () => {
         customEventButton = document.getElementById("event-custom-btn"),
         headlinePreview = document.getElementById("headline-preview"),
         headlineSegments = document.getElementsByClassName("headline-segment"),
-        horizontalNote = document.getElementById("horizontal-note");
+        horizontalNote = document.getElementById("horizontal-note"),
+        languageInputs = document.getElementsByClassName('lang-input');
     
       customEventButton.addEventListener("click", () => {
         const inputShown = customEventInput.style.display === "block";
         let newStyle;
         if (inputShown) {
           newStyle = "none";
-          headlineSoFar["event"] = eventSlugs[eventInput.value];
+          headlineSoFar["event"] = eventInput.value;
         } else {
           newStyle = "block";
           if (customEventInput.value !== "") {
@@ -77,13 +88,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     
       const generateHeadline = () => {
-        let connector = "WINS",
-          athleteName = headlineSoFar.athlete;
-        if (athleteName.includes(" and ")) {
-          athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(" and ");
-          connector = "WIN";
+        let verb = lang === "eng" ? "WINS" : "GANA",
+          athleteName = headlineSoFar.athlete === "Team USA" && lang === "esp" ? "EL EQUIPO DE EEUU" : headlineSoFar.athlete;
+        if (athleteName && athleteName.includes(" and ")) {
+          let connector = lang === "eng" ? " AND " : " Y ";
+          athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(connector);
+          verb = lang === "eng" ? "WIN" : "GANAN";
         }
-        return `${athleteName ? athleteName.toUpperCase() : "[ATHLETE]"}|${connector} ${headlineSoFar.medal.toUpperCase()}|${headlineSoFar.event ? headlineSoFar.event : "[EVENT]"}`;
+        let medal = headlineSoFar.medal ? lang === "eng" ? headlineSoFar.medal.toUpperCase() : espMedals[headlineSoFar.medal.toUpperCase()] : "[MEDAL]";
+        let event = headlineSoFar.event ? Object.keys(eventSlugs).includes(headlineSoFar.event) ? lang === "eng" ? eventSlugs[headlineSoFar.event] : espEventSlugs[headlineSoFar.event] : headlineSoFar.event : "[EVENT]";
+        return `${athleteName ? athleteName.toUpperCase() : "[ATHLETE]"}|${verb} ${medal}|${event}`;
       }
     
       const generateHeadlinePreview = () => {
@@ -97,13 +111,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const headlineSegment = e.currentTarget.id.split("-")[0];
           let segmentValue = e.currentTarget.value;
           if (headlineSegment === "event" && (customEventInput.style.display === "none" || customEventInput.value === "")) {
-            headlineSoFar[headlineSegment] = eventSlugs[eventInput.value];
+            headlineSoFar[headlineSegment] = eventInput.value;
           } else {
             headlineSoFar[headlineSegment] = segmentValue;
           }
           generateHeadlinePreview();
         })
       }
+
+      for(let i = 0; i < languageInputs.length; i++) {
+        const langInput = languageInputs[i];
+        langInput.addEventListener("change", e => {
+          lang = e.currentTarget.value;
+          generateHeadlinePreview();
+        });
+      };
     
       const multipleLinesOfText = (text, maxWidth, ctx) => {
         let allLines = [];
