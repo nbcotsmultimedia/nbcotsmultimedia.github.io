@@ -95,9 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
           athleteName = athleteName.split(" and ").map(name => name.split(" ").slice(1).join(" ")).join(connector);
           verb = lang === "eng" ? "WIN" : "GANAN";
         }
-        let medal = headlineSoFar.medal ? lang === "eng" ? headlineSoFar.medal.toUpperCase() : espMedals[headlineSoFar.medal.toUpperCase()] : "[MEDAL]";
-        let event = headlineSoFar.event ? Object.keys(eventSlugs).includes(headlineSoFar.event) ? lang === "eng" ? eventSlugs[headlineSoFar.event] : espEventSlugs[headlineSoFar.event] : headlineSoFar.event : "[EVENT]";
-        return `${athleteName ? athleteName.toUpperCase() : "[ATHLETE]"}|${verb} ${medal}|${event}`;
+        let athlete = athleteName ? athleteName.toUpperCase() : lang === "eng" ? "[ATHLETE]" : "[ATLETA]",
+        medal = headlineSoFar.medal ? lang === "eng" ? headlineSoFar.medal.toUpperCase() : espMedals[headlineSoFar.medal.toUpperCase()] : "[MEDAL]",
+        event = headlineSoFar.event ? !Object.keys(eventSlugs).includes(headlineSoFar.event) ? headlineSoFar.event : lang === "eng" ? eventSlugs[headlineSoFar.event] : espEventSlugs[headlineSoFar.event] : lang === "eng" ? "[EVENT]" : "[EVENTO]";
+        return `${athlete}|${verb} ${medal}|${event}`;
       }
     
       const generateHeadlinePreview = () => {
