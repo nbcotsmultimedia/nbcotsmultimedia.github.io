@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBC Local Social Image Generator LCDLF</title>
+ 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
+  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse-condensed.css' rel='stylesheet' type='text/css'>
+  <link href='css/styles.css' rel='stylesheet' type='text/css'>
+     
+
+</head>
+
+<body>
+  <div id="topper">
+    <div id="container" style="max-width: 800px; margin:0 auto">
+      <img src="images/nbcul-logo.png" width="200" alt="NBCU Local" />  
+      <h1>Social Cards Generator LCDLF</h1>
+    </div>
+  </div>
+  
+  <div id="container" style="max-width: 800px; margin:0 auto">
+  
+    <h3>Step 1: Upload your image</h3>
+    <p class="notes">Image should be high quality and at least 1080x1080, jpg, png, gif.</p>
+    <input type="file" id="fileInput" accept="image/*" />
+    <hr/>
+
+    <h3>Step 2: Make your crops</h3>
+    <p class="notes">You <strong><em>must</em></strong> click on each button to at least check the crop</p>
+    <div class="controls" id="size-buttons"></div>
+
+    <div class="controls">
+      <label for="zoomSlider">Zoom:</label>
+      <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" />
+    </div>
+
+    <div id="crop-container">
+      <img id="image" style="display:none;" />
+    </div>
+    <hr/>
+
+    <!--<h3>Step 3: Choose language</h3>
+      <p class="notes">This will determine which brand style and logo to add</p>
+      <div class="controls">
+        <label><input type="radio" name="language" value="en" checked> English</label>
+        <label><input type="radio" name="language" value="es"> Español</label>
+      </div>
+    <hr/>-->
+    <h3>Step 3: Choose your station</h3>
+    <p class="notes">Select a station or choose a generic logo to display in the corner</p>
+    <select name="stationlogo" id="stationlogo">
+      <option value="tlmd" selected>Generic Telmundo</option>
+      <option value="nbc">Generic NBC</option>
+      <option value="kntv">KNTV (NBC Bay Area)</option>
+      <option value="ksts">KSTS (T48 Área de la Bahía)</option>
+      <option value="wbts">WBTS (NBC Boston)</option>
+      <option value="wneu">WNEU (TLMD Nueva Inglaterra)</option>
+      <option value="wmaq">WMAQ (NBC Chicago)</option>
+      <option value="wsns">WSNS (TLMD Chicago)</option>
+      <option value="wvit">WVIT (NBC Connecticut)</option>
+      <option value="kxas">KXAS (NBC DFW)</option>
+      <option value="kxtx">KXTX (T39 Dallas)</option>
+      <option value="knbc">KNBC (NBC Los Angeles)</option>
+      <option value="kvea">KVEA (T52 Los Angeles)</option>
+      <option value="wtvj">WTVJ (NBC Miami)</option>
+      <option value="wscv">WSCV (T51 Miami)</option>
+      <option value="wnbc">WNBC (NBC New York)</option>
+      <option value="wnju">WNJU (T47 Nueva York)</option>
+      <option value="wcau">WCAU (NBC Philadelphia)</option>
+      <option value="wwsi">WWSI (T62 Filadelfia)</option>
+      <option value="knsd">KNSD (NBC San Diego)</option>
+      <option value="kuan">KUAN (T20 San Diego)</option>
+      <option value="wrc">WRC (NBC Washington)</option>
+      <option value="wzdc">WZDC (T44 Washington)</option>
+
+      <option value="khrr">KHRR (TLMD Arizona)</option>
+      <option value="kden">KDEN (TLMD Colorado)</option>
+      <option value="ktdo">KTDO (T48 El Paso)</option>
+      <option value="knso">KNSO (TLMD Fresno)</option>
+      <option value="ktmd">KTMD (TLMD Houston)</option>
+      <option value="kblr">KBLR (TLMD Las Vegas)</option>
+      <option value="ktlm">KTLM (T40 McAllen)</option>
+      <option value="kasa">KASA (TLMD Nuevo Mexico)</option>
+      <option value="wtmo">WTMO (T31 Orlando)</option>
+      <option value="wkaq">WKAQ (TLMD Puerto Rico)</option>
+      <option value="kcso">KCSO (T33 Sacramento)</option>
+      <option value="kvda">KVDA (TLMD San Antonio)</option>
+      <option value="wrmd">WRMD (T49 Tampa)</option>
+      <option value="kulx">KULX (TLMD Utah)</option>
+
+      <option value="nbcsports">NBC Sports</option>
+      <option value="rsnbay">NBC Sports Bay Area</option>
+      <option value="rsnbos">NBC Sports Boston</option>
+      <option value="rsnphi">NBC Sports Philadelphia</option>
+      
+      
+    </select>
+    <hr/>
+
+    <h3>Step 4: Choose a style</h3>
+      <p class="notes">Arthouse styles use colored blocks with stripes. Simple fade uses a gradient overlay.</p>
+      <div class="controls">
+        <label><input type="radio" name="thestyle" value="arthouse-blue"> Arthouse blue</label>
+        <label><input type="radio" name="thestyle" value="arthouse-red"> Arthouse red</label>
+        <label><input type="radio" name="thestyle" value="fade" checked> Simple fade</label>
+      </div>
+    <hr/>
+
+    <h3>Step 5: Enter headline/text</h3>
+    <p class="notes">Ideally 50-60 characters long. Use | for line breaks (e.g., "Hello | world")</p>
+    <div class="controls">
+      <input type="text" id="headlineInput" placeholder="Enter headline overlay (use | for line breaks)" style="width:97%; padding:10px;" />
+      <button id="previewButton" style="margin-top:10px; padding:6px 12px;">Preview</button>
+    </div>
+    <hr/>
+
+    
+
+    <h3>Previews & Download</h3>
+    <div id="previews"></div>
+    <div id="offscreen" style="display:none;"></div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="js/script-lcdlf.js"></script>
+</body>
+</html>
