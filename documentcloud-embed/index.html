@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBC Local DocumentCloud Embed Creator</title>
+
+  <link href="https://media.nbcnewyork.com/assets/editorial/national/common/css/bootstrap.min.css" rel="stylesheet">
+  <link href='https://media.nbcnewyork.com/assets/editorial/national/common/fonts/arthouse-condensed.css'
+    rel='stylesheet' type='text/css'>
+  <link href='css/styles.css' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+  <div id="topper">
+    <div id="container" style="max-width: 800px; margin:0 auto">
+      <img src="images/nbcul-logo.png" width="200" alt="NBCU Local" />
+      <h1>DocumentCloud Embed Creator</h1>
+    </div>
+  </div>
+
+  <div id="container" style="max-width: 800px; margin:0 auto">
+    <br>
+    <h3>Upload your file</h3>
+    <input type="file" id="fileInput" accept="*" />
+    <br><br><br>
+    <h3>Get embed URL</h3>
+    <div class="controls">
+      <label><input type="checkbox" id="titleInput" checked> Hide document title (leave checked if unsure) </label>
+    </div>
+    <button type="button" class="btn btn-primary" id="uploadBtn">Get embed URL</button>
+    <br><br><br>
+    <h3>Copy embed URL</h3>
+    <p class="notes">Processing will take a couple of minutes.</p>
+    <div id="output"><div id="spinner" style="display:none;"><div class="spin"></div></div></div>
+    <p><a href="#" id="copyBtn">COPY URL TO CLIPBOARD</a></p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+    integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script src="js/script.js"></script>
+</body>
+
+</html>
