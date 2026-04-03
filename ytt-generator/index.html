@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NBC Local / Telemundo Thumbnail Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+  <link rel="stylesheet" href="css/ytt.css" />
+</head>
+
+<body>
+  <div id="topper">
+    <div id="container" style="max-width: 950px; margin:0 auto">
+      <img src="images/nbcul-logo.png" width="200" alt="NBCU Local" />  
+      <h1>YouTube Thumbnail Generator</h1>
+    </div>
+  </div>
+
+  <div class="app">
+    
+    <div class="layout">
+      <aside class="card">
+        <!--<h2>Controls</h2>-->
+
+        <div class="field">
+          <label for="imageUpload">1. Upload image</label>
+          <input id="imageUpload" type="file" accept="image/*" />
+        </div>
+
+        <div class="field">
+          <label for="headline">2. Headline</label>
+          <input id="headline" type="text" maxlength="30" placeholder="Enter headline" />
+          <div id="charCount" class="char-count">0 / 30</div>
+        </div>
+
+        <div class="field">
+          <label for="logoSelect">3. Logo</label>
+          <select id="logoSelect">
+            <option value="nbc">NBC</option>
+            <option value="tlmd">Telemundo</option>
+            <option value="nbcmiami">NBC Miami WTVJ</option>
+             <option value="tlmdmiami">Telemundo Miami WSCV</option>
+          </select>
+          <div class="logo-preview">
+            <img id="logoPreview" src="images/nbc.png" alt="Selected logo preview" />
+            <span id="logoName">Using nbc.png</span>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="generateBtn" class="primary" disabled>Generate previews</button>
+          <button id="resetBtn" class="secondary">Reset</button>
+        </div>
+
+        <div id="status" class="status"></div>
+        
+      </aside>
+
+      <main class="workspace">
+        <section class="card">
+          <h2>Crop image</h2>
+          <p class="help-text">You must select a crop for each ratio</p>
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="landscape">Horizontal</button>
+            <button class="tab-btn" data-tab="portrait">Vertical</button>
+          </div>
+
+          <div id="landscapePanel" class="crop-panel active">
+            <div class="crop-stage">
+              <img id="landscapeImage" alt="16:9 crop area" />
+            </div>
+            
+          </div>
+
+          <div id="portraitPanel" class="crop-panel">
+            <div class="crop-stage">
+              <img id="portraitImage" alt="9:16 crop area" />
+            </div>
+            
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Preview and download</h2>
+          <div class="preview-grid">
+            <div class="preview-card">
+              <h3>Horizontal Preview</h3>
+              <div class="preview-frame" id="landscapePreviewFrame">
+                <div class="placeholder">&nbsp;</div>
+              </div>
+             
+              <button id="downloadLandscape" class="secondary" disabled>Download</button>
+            </div>
+
+            <div class="preview-card">
+              <h3>Vertical Preview</h3>
+              <div class="preview-frame" id="portraitPreviewFrame">
+                <div class="placeholder">&nbsp;</div>
+              </div>
+              
+              <button id="downloadPortrait" class="secondary" disabled>Download</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <script src="js/ytt.js"></script>
+
+</body>
+</html>
