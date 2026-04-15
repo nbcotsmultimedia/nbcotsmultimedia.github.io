@@ -270,7 +270,8 @@ const imageUpload = document.getElementById('imageUpload');
 
       const textX = logoX + logoWidth + gap;
       const textBoxWidth = config.width - textX - sidePadding;
-      const fontSize = 150;
+      const isVertical = config.width < config.height;
+      const fontSize = isVertical ? 125 : 150;
       const lineHeight = Math.round(fontSize * 1);
 
       ctx.fillStyle = '#ffffff';
