@@ -21,7 +21,9 @@ const imageUpload = document.getElementById('imageUpload');
       nbc: 'images/nbc.png',
       tlmd: 'images/tlmd.png',
       nbcmiami: 'images/nbc-miami.png',
-      tlmdmiami: 'images/tlmd-miami.png'
+      tlmdmiami: 'images/tlmd-miami.png',
+      nbcla: 'images/nbc-la.png',
+      tlmdla: 'images/tlmd-la.png'
     };
 
     const OUTPUTS = {
