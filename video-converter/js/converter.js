@@ -61,6 +61,14 @@ function init() {
 			//console.log("SPORTS " + tmp1a);
 			srcIndex = 0;
 		} 
+
+		if ($("#partnerCode").val().indexOf("telemundo.com") > 0) {
+			console.log("TELEMUNDO");
+			partner = "TELEMUNDO";
+			$("#lead").hide();
+			tmp1a = $("#partnerCode").val();
+			srcIndex = 0;
+		} 
 		
 		var matches = [];
 
@@ -70,10 +78,16 @@ function init() {
 		} else {
 			matches[0] = tmp1a;
 		}
+
+		if (partner == "TELEMUNDO") {
+			matches[0] = tmp1a;
+		}
 	  
 	  if ($("#partnerCode").val().indexOf("nbcnews.com") > 0 || $("#partnerCode").val().indexOf("today.com") > 0) {
 		$("#leadURL").text(matches[3].substring(1, matches[3].length-1));
 	  } 
+
+	  console.log(matches[0])
        
       $("#embedCode").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\" class=\"wp-block-embed is-type-video\"><iframe style=\"position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;\" class=\"wp-block-embed is-type-video\" src=" + matches[srcIndex] + " width=\"100%\" height=\"100%\" frameborder=\"0\" allowfullscreen=\"yes\"></iframe></div>")
 
