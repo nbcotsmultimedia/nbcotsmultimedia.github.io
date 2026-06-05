@@ -110,7 +110,7 @@ function init() {
 
 		getCalls(origin);
 
-		$("#localCode").text("<iframe width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + origin + "/video-layout/amp_video/?noid=" + cid + "&amp;videoID=" + videoID + "&amp;origin=" + origin + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>");
+		$("#localCode").text("<iframe style=\"position:absolute;top:0;left:0;bottom:0;right:0;width:100%;height:100%;\" class=\"wp-block-embed is-type-video\"width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + origin + "/video-layout/amp_video/?noid=" + cid + "&amp;videoID=" + videoID + "&amp;origin=" + origin + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>");
 
 
 	});
@@ -120,6 +120,9 @@ function init() {
 	  getCalls($("#stations").val());
 
 	  $("#localCode2").text("<iframe width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>")
+
+	  $("#localCode3").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\" class=\"wp-block-embed is-type-video\"><iframe width=\"100%\" height=\"100%\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe></div>")
+
 
 	
 	});
