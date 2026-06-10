@@ -121,7 +121,13 @@ function init() {
 
 	  $("#localCode2").text("<iframe width=\"100%\" height=\"400\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe>")
 
-	  $("#localCode3").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\" class=\"wp-block-embed is-type-video\"><iframe width=\"100%\" height=\"100%\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe></div>")
+	  //$("#localCode3").text("<div style=\"position:relative;overflow:hidden;width:100%;padding-top:56.25%;\" class=\"wp-block-embed is-type-video\"><iframe width=\"100%\" height=\"100%\" scrolling=\"no\" id=\"nbcLMP141329420\" allowfullscreen=\"true\" webkitallowfullscreen=\"true\" mozallowfullscreen=\"true\" src=\"https://" + $("#stations").val() + "/video-layout/amp_video/?noid=" + $("#cidPaste").val() + "&amp;videoID=" + $("#vidPaste").val() + "&amp;origin=" + $("#stations").val() + "&amp;fullWidth=y&amp;turl=&amp;ourl=&amp;lp=5&amp;fullWidth=y&amp;random=scsqjx&amp;callletters=" + callletters + "&amp;embedded=true\" style=\"border: none;\"></iframe></div>");
+
+  	  $("#localCode3").text("<script type=\"text/javascript\" charset=\"UTF-8\" src=\"https://" + $("#stations").val() + "/portableplayer/?CID=" + $("#cidPaste").val() + "&videoID=" + $("#vidPaste").val() + "&origin=" + $("#stations").val() + "&fullWidth=y&autoplay=true\"></script>");
+
+	  
+	
+
 
 
 	
